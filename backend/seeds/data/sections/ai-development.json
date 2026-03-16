@@ -1,0 +1,746 @@
+{
+  "title": "AI-Powered Development",
+  "slug": "ai-development",
+  "description": "Learn how to use ChatGPT and Claude to build websites faster, debug errors instantly, and accelerate your learning — even as a complete beginner.",
+  "icon": "SmartToy",
+  "order": 5,
+  "estimatedMinutes": 40,
+  "difficulty": "beginner",
+  "blocks": [
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "You are about to learn a superpower.",
+      "body": "Developers who know how to work with AI tools can build in hours what used to take days. This guide will teach you how to use AI effectively so you can move faster and learn more. You do not need any prior experience with AI tools."
+    },
+    {
+      "type": "text",
+      "heading": "What is AI-Assisted Coding?",
+      "headingLevel": 2,
+      "body": "AI tools like ChatGPT and Claude can write code for you. Think of them as a knowledgeable tutor who can also do the typing. You describe what you want, and the AI writes the code."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "You Describe",
+          "body": "Tell the AI what you want in plain English. \"Create a navigation bar with a logo on the left and three links on the right.\"",
+          "icon": "SmartToy"
+        },
+        {
+          "title": "AI Writes Code",
+          "body": "The AI generates working code based on your description. It can write components, styles, API routes, and more in seconds.",
+          "icon": "AutoAwesome"
+        },
+        {
+          "title": "You Learn and Refine",
+          "body": "You review the code, learn from it, test it, and ask the AI to make changes. Each cycle teaches you more about how code works.",
+          "icon": "School"
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Important",
+      "body": "AI is a superpower for beginners, but it is not a replacement for understanding. The goal is to use AI to speed up your learning, not to skip it. As you build projects with AI help, you will naturally pick up the patterns and concepts behind the code."
+    },
+    {
+      "type": "text",
+      "heading": "What AI Can Do for You Right Now",
+      "headingLevel": 3,
+      "body": ""
+    },
+    {
+      "type": "list",
+      "items": [
+        "Write entire React components from a description",
+        "Explain error messages in plain language",
+        "Convert designs into working code",
+        "Add features to existing components",
+        "Write tests, documentation, and configuration files",
+        "Debug issues by analyzing your code and error output"
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "ChatGPT vs Claude — Which to Use",
+      "headingLevel": 2,
+      "body": "Both tools are excellent for coding. Here is an honest comparison to help you decide. The short answer: try both and use whichever feels more natural to you."
+    },
+    {
+      "type": "table",
+      "heading": "Feature Comparison",
+      "headers": ["Feature", "ChatGPT", "Claude"],
+      "rows": [
+        ["Free tier", "Yes — GPT-4o with limits", "Yes — Claude Sonnet with limits"],
+        ["Best for long code", "Good, may truncate very long outputs", "Excellent — handles large files well"],
+        ["Conversation style", "More conversational and verbose", "More precise and concise"],
+        ["Code explanations", "Excellent detailed explanations", "Excellent with clear structure"],
+        ["Following instructions", "Good at creative interpretation", "Very precise instruction following"],
+        ["CLI tool", "Not available", "Claude Code — works in your terminal"],
+        ["Image understanding", "Can analyze screenshots and designs", "Can analyze screenshots and designs"]
+      ]
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "When to Use ChatGPT",
+          "blocks": [
+            {
+              "type": "list",
+              "items": [
+                "When you want a more conversational, back-and-forth experience",
+                "When you need detailed explanations of concepts",
+                "When brainstorming ideas for a project",
+                "When you want to explore creative approaches"
+              ]
+            }
+          ]
+        },
+        {
+          "label": "When to Use Claude",
+          "blocks": [
+            {
+              "type": "list",
+              "items": [
+                "When generating large, complete code files",
+                "When you need code that follows specific patterns precisely",
+                "When working on an entire project via Claude Code (CLI)",
+                "When you need careful analysis of complex code"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "Our recommendation",
+      "body": "Start with whichever one you feel comfortable with. Many developers use both — ChatGPT for brainstorming and explanations, Claude for writing large blocks of production code. You cannot go wrong with either."
+    },
+    {
+      "type": "text",
+      "heading": "Writing Good Prompts for Code",
+      "headingLevel": 2,
+      "body": "The quality of AI-generated code depends entirely on how you ask for it. Learn the CRAFT formula to get great results every time."
+    },
+    {
+      "type": "text",
+      "heading": "The CRAFT Formula",
+      "headingLevel": 3,
+      "body": ""
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "C — Context",
+          "body": "Tell the AI about your project. What framework are you using? What does the rest of the code look like? What libraries are installed?",
+          "chip": "C"
+        },
+        {
+          "title": "R — Role",
+          "body": "Tell the AI what role to act as. \"Act as a senior React developer\" or \"You are an expert in Next.js and TypeScript.\"",
+          "chip": "R"
+        },
+        {
+          "title": "A — Action",
+          "body": "Be specific about what you want. \"Create a component\" is vague. \"Create a responsive card component that shows a user avatar, name, and bio\" is clear.",
+          "chip": "A"
+        },
+        {
+          "title": "F — Format",
+          "body": "Specify how you want the code. \"Use TypeScript,\" \"Use Material UI,\" \"Include comments explaining each section,\" \"Write it as a single file.\"",
+          "chip": "F"
+        },
+        {
+          "title": "T — Target",
+          "body": "Who is the audience? \"I am a beginner, so explain your choices\" or \"This is for a production app, so prioritize performance.\"",
+          "chip": "T"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Bad vs Good Prompts",
+      "headingLevel": 3,
+      "body": ""
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Bad Prompt",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "text",
+              "code": "Make me a card component.",
+              "description": "Too vague. The AI does not know what framework you are using, what the card should display, or how it should look."
+            }
+          ]
+        },
+        {
+          "label": "Good Prompt",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "text",
+              "code": "I am building a Next.js app with TypeScript and\nMaterial UI. Create a UserCard component that\ndisplays a user's avatar (circular, 64px),\ntheir full name as a heading, their email\nbelow it, and a \"View Profile\" button.\nThe card should have a subtle shadow and\nrounded corners. Use the sx prop for styling.\nI am a beginner, so add comments explaining\neach part.",
+              "description": "Includes context (Next.js, MUI), action (create UserCard), format (TypeScript, sx prop), and target (beginner with comments)."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "10 Ready-to-Use Prompt Templates",
+      "headingLevel": 3,
+      "body": "Copy any of these templates and fill in the blanks for your specific project. They are designed to give the AI enough context to produce high-quality code on the first try."
+    },
+    {
+      "type": "accordion",
+      "title": "1. Create a New Component",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "code": "I am using Next.js with TypeScript and [your CSS library].\nCreate a [component name] component that:\n- [describe feature 1]\n- [describe feature 2]\n- [describe feature 3]\nUse [styling approach] for all styling.\nAdd comments explaining each section. I am a beginner."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "2. Fix an Error",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "code": "I am getting this error in my Next.js TypeScript project:\n\n[paste the full error message here]\n\nHere is the relevant code:\n\n[paste your code here]\n\nWhat is causing this error and how do I fix it?\nExplain in simple terms."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "3. Add a Feature to Existing Code",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "code": "Here is my existing [component/page] code:\n\n[paste your code here]\n\nI want to add [describe the feature].\nKeep the existing functionality working.\nMatch the current code style."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "4. Style a Component",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "code": "I have this React component:\n\n[paste your code here]\n\nMake it responsive so it looks good on both\nmobile (375px wide) and desktop (1200px wide).\nUse [CSS approach] for styling.\nThe design should be clean and modern."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "5. Create an API Route",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "code": "Create a Next.js API route at /api/[endpoint name]\nthat [describe what it should do].\nIt should accept [GET/POST/PUT/DELETE] requests.\nInclude error handling and return proper\nstatus codes. Use TypeScript."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "6. Add Form Validation",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "code": "I have a form with these fields: [list your fields].\nAdd client-side validation that checks:\n- [validation rule 1]\n- [validation rule 2]\n- [validation rule 3]\nShow error messages below each field.\nUse [library or approach] for validation."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "7. Write Tests",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "code": "Write tests for this component/function:\n\n[paste your code here]\n\nUse [testing library, e.g., Jest and React\nTesting Library].\nTest the main functionality, edge cases,\nand error states."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "8. Explain Code",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "code": "Explain this code to me like I am a complete\nbeginner. Go line by line and tell me what\neach part does and why it is written that way:\n\n[paste the code here]"
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "9. Refactor Code",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "code": "Here is my working code:\n\n[paste your code here]\n\nRefactor it to be cleaner and more maintainable.\nExplain what you changed and why.\nKeep the same functionality.\nUse [TypeScript/JavaScript] best practices."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "10. Add Dark Mode",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "code": "I have a [Next.js/React] app using [CSS approach].\nAdd a dark mode toggle that:\n- Switches between light and dark themes\n- Remembers the user's preference\n- Applies to all existing components\nShow me the theme setup and the toggle component."
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Building a Component with AI",
+      "headingLevel": 2,
+      "body": "Let us walk through the entire process of using AI to build a real component, from first prompt to finished code."
+    },
+    {
+      "type": "step",
+      "step": 1,
+      "title": "Describe What You Want",
+      "body": "Start by writing a clear description. Do not worry about code yet — just describe the end result in plain English.",
+      "code": "I am building a Next.js app with TypeScript and Material UI.\nCreate a UserCard component that shows:\n- A circular avatar image (64px)\n- The user's full name as a bold heading\n- Their job title in lighter text below the name\n- An \"Email\" button and a \"Profile\" button at the bottom\nThe component should accept these as props.\nUse the sx prop for all styling.\nAdd a subtle elevation/shadow to the card.",
+      "language": "text"
+    },
+    {
+      "type": "step",
+      "step": 2,
+      "title": "Review the Generated Code",
+      "body": "The AI will produce a complete component. Here is what you might get:",
+      "code": "import Box from '@mui/material/Box';\nimport Card from '@mui/material/Card';\nimport CardContent from '@mui/material/CardContent';\nimport Typography from '@mui/material/Typography';\nimport Avatar from '@mui/material/Avatar';\nimport Button from '@mui/material/Button';\nimport EmailIcon from '@mui/icons-material/Email';\nimport PersonIcon from '@mui/icons-material/Person';\n\n// Define the shape of the data this component needs\ninterface UserCardProps {\n  name: string;\n  jobTitle: string;\n  avatarUrl: string;\n  onEmailClick: () => void;\n  onProfileClick: () => void;\n}\n\nexport default function UserCard({\n  name,\n  jobTitle,\n  avatarUrl,\n  onEmailClick,\n  onProfileClick,\n}: UserCardProps) {\n  return (\n    <Card sx={{ maxWidth: 320, borderRadius: 3, boxShadow: 3 }}>\n      <CardContent sx={{ textAlign: 'center', py: 4 }}>\n        {/* Circular avatar image */}\n        <Avatar\n          src={avatarUrl}\n          alt={name}\n          sx={{ width: 64, height: 64, mx: 'auto', mb: 2 }}\n        />\n\n        {/* User's name */}\n        <Typography variant=\"h6\" fontWeight={700}>\n          {name}\n        </Typography>\n\n        {/* Job title in lighter text */}\n        <Typography variant=\"body2\" color=\"text.secondary\" sx={{ mb: 3 }}>\n          {jobTitle}\n        </Typography>\n\n        {/* Action buttons */}\n        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>\n          <Button\n            variant=\"outlined\"\n            startIcon={<EmailIcon />}\n            onClick={onEmailClick}\n          >\n            Email\n          </Button>\n          <Button\n            variant=\"contained\"\n            startIcon={<PersonIcon />}\n            onClick={onProfileClick}\n          >\n            Profile\n          </Button>\n        </Box>\n      </CardContent>\n    </Card>\n  );\n}",
+      "language": "tsx"
+    },
+    {
+      "type": "step",
+      "step": 3,
+      "title": "Test It in Your Project",
+      "body": "Copy the component into your project and use it in a page to see if it works:",
+      "code": "import UserCard from '@/components/UserCard';\n\nexport default function HomePage() {\n  return (\n    <main style={{ padding: '2rem' }}>\n      <UserCard\n        name=\"Jane Smith\"\n        jobTitle=\"Frontend Developer\"\n        avatarUrl=\"https://i.pravatar.cc/150?img=1\"\n        onEmailClick={() => alert('Email clicked!')}\n        onProfileClick={() => alert('Profile clicked!')}\n      />\n    </main>\n  );\n}",
+      "language": "tsx"
+    },
+    {
+      "type": "step",
+      "step": 4,
+      "title": "Iterate and Improve",
+      "body": "If something is not quite right, tell the AI what to change. Be specific:",
+      "code": "The UserCard looks good, but I want to make these changes:\n1. Add a colored banner/stripe at the top of the card\n2. Make the avatar overlap the banner slightly\n3. Add a \"status\" indicator (online/offline dot)\n   next to the avatar\nKeep everything else the same.",
+      "language": "text"
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Tip",
+      "body": "You do not have to start over. Each follow-up message refines the code. This back-and-forth is how experienced developers work with AI too."
+    },
+    {
+      "type": "text",
+      "heading": "Debugging with AI",
+      "headingLevel": 2,
+      "body": "Error messages can be scary when you are starting out. AI tools are excellent at translating cryptic errors into plain language and telling you exactly how to fix them."
+    },
+    {
+      "type": "text",
+      "heading": "The 3-Step Debugging Process",
+      "headingLevel": 3,
+      "body": ""
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "1. Copy the Error",
+          "body": "Select the entire error message from your terminal or browser console. Include the full stack trace — the more context you give the AI, the better the answer.",
+          "chip": "1"
+        },
+        {
+          "title": "2. Describe What You Expected",
+          "body": "Tell the AI what you were trying to do and what you expected to happen. This helps it understand the gap between your intention and the result.",
+          "chip": "2"
+        },
+        {
+          "title": "3. Share the Relevant Code",
+          "body": "Paste the file where the error is happening. If the error points to a specific line number, highlight that area. You do not need to share your entire project.",
+          "chip": "3"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Example: Debugging a Real Error",
+      "headingLevel": 3,
+      "body": ""
+    },
+    {
+      "type": "text",
+      "heading": "Your message to the AI:",
+      "headingLevel": 4,
+      "body": ""
+    },
+    {
+      "type": "code",
+      "language": "text",
+      "code": "I am getting this error when I try to run my Next.js app:\n\nError: Objects are not valid as a React child\n(found: object with keys {name, email}).\nIf you meant to render a collection of children,\nuse an array instead.\n\nI was trying to display a user's name on the page.\nHere is my code:\n\nexport default function UserPage({ user }) {\n  return <div>{user}</div>;\n}\n\nThe user prop is an object like { name: \"Jane\", email: \"jane@example.com\" }.\nWhat am I doing wrong?"
+    },
+    {
+      "type": "text",
+      "heading": "The AI will explain:",
+      "headingLevel": 4,
+      "body": ""
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "body": "The error happens because React cannot directly display a JavaScript object. When you write {user}, React tries to render the entire object, which is not valid. You need to access specific properties like {user.name}."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "Fixed code",
+      "code": "export default function UserPage({ user }) {\n  return (\n    <div>\n      <h1>{user.name}</h1>\n      <p>{user.email}</p>\n    </div>\n  );\n}"
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "You are learning every time you debug.",
+      "body": "Each error you fix with AI help teaches you something. After fixing the same type of error a few times, you will start recognizing it on your own without needing to ask."
+    },
+    {
+      "type": "text",
+      "heading": "Using Claude Code (CLI)",
+      "headingLevel": 2,
+      "body": "Claude Code is a command-line tool that brings AI directly into your terminal. Instead of copying code back and forth, it can read your project, make changes across multiple files, and even run commands for you."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "What Makes It Special",
+          "blocks": [
+            {
+              "type": "list",
+              "items": [
+                "Reads your entire project structure automatically",
+                "Makes changes across multiple files at once",
+                "Runs terminal commands (npm install, git, etc.)",
+                "Understands how your files relate to each other",
+                "No copy-pasting code back and forth"
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Getting Started",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Install Claude Code globally with npm:"
+            },
+            {
+              "type": "code",
+              "language": "bash",
+              "code": "npm install -g @anthropic-ai/claude-code"
+            },
+            {
+              "type": "text",
+              "body": "Navigate to your project folder and start it:"
+            },
+            {
+              "type": "code",
+              "language": "bash",
+              "code": "cd my-website\nclaude"
+            },
+            {
+              "type": "text",
+              "body": "Claude Code will analyze your project and you can start giving it instructions in natural language, right in your terminal."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Example Commands You Can Give Claude Code",
+      "headingLevel": 3,
+      "body": ""
+    },
+    {
+      "type": "code",
+      "language": "text",
+      "code": "> Add a dark mode toggle to the header component\n  that saves the user's preference in localStorage.\n\n> Fix the TypeScript errors in the UserCard component.\n\n> Create a new API route at /api/users that returns\n  a list of users from the database.\n\n> Add form validation to the contact form.\n  Email should be required and properly formatted.\n  Name should be at least 2 characters.\n\n> Run the tests and fix any that are failing."
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Note",
+      "body": "Claude Code requires an Anthropic API key or a Claude subscription. It is a paid tool, but the time it saves is significant."
+    },
+    {
+      "type": "text",
+      "heading": "AI Limitations — What to Watch Out For",
+      "headingLevel": 2,
+      "body": "AI is incredibly powerful, but it is not perfect. Knowing its weaknesses will save you hours of frustration and make you a better developer."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 2,
+      "cards": [
+        {
+          "title": "Hallucinated Packages",
+          "body": "AI sometimes invents npm packages or APIs that do not exist. It might tell you to install \"react-awesome-modal\" when no such package exists.\n\nFix: Always verify that a package exists on npmjs.com before installing it. If the install fails, tell the AI and ask for an alternative."
+        },
+        {
+          "title": "Outdated Patterns",
+          "body": "AI might suggest older ways of doing things, like using class components in React instead of hooks, or the old Next.js pages directory instead of the App Router.\n\nFix: Tell the AI which version you are using. \"I am using Next.js 15 with the App Router\" prevents most outdated suggestions."
+        },
+        {
+          "title": "Security Issues",
+          "body": "AI-generated code might not follow security best practices. It could put API keys in client-side code, skip input validation, or use insecure patterns.\n\nFix: Never put secrets in client-side code. Ask the AI: \"Are there any security concerns with this code?\" It is usually good at reviewing its own output for issues."
+        },
+        {
+          "title": "Over-Reliance",
+          "body": "The biggest risk is using AI as a crutch and never learning the fundamentals. If you always let AI write code without understanding it, you will struggle to debug or modify it later.\n\nFix: Always read the code the AI generates. Ask it to explain parts you do not understand. Over time, you will need to ask less because you will recognize the patterns."
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "The Golden Rule",
+      "headingLevel": 3,
+      "body": "AI is a power tool, not a replacement for understanding. A power drill makes building a bookshelf faster, but you still need to know what a bookshelf looks like, where the screws go, and whether it is level. Use AI to build faster, but always take time to understand what it built for you."
+    },
+    {
+      "type": "text",
+      "heading": "Practical Workflow",
+      "headingLevel": 2,
+      "body": "Here is a proven 5-step workflow that combines AI with good development habits. Follow this process and you will build features quickly while keeping your code reliable."
+    },
+    {
+      "type": "step",
+      "step": 1,
+      "title": "Plan — Decide What to Build",
+      "body": "Before you touch any AI tool, spend two minutes writing down what you want. A simple bullet list is enough. This plan becomes the basis for your AI prompts. Without a plan, you will end up going in circles, asking the AI to redo things over and over.",
+      "code": "Feature: User profile page\n- Show avatar, name, email, and bio\n- \"Edit Profile\" button opens a modal form\n- Save changes to the database\n- Show a success message after saving",
+      "language": "text"
+    },
+    {
+      "type": "step",
+      "step": 2,
+      "title": "Prompt — Ask the AI to Write Code",
+      "body": "Use your plan to write a CRAFT prompt (see the section above). Feed each bullet point to the AI as a separate task, or ask it to build the whole feature at once if it is small enough."
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Tip",
+      "body": "Start with the simplest piece first. For the profile page above, you might start with just displaying the user data before adding the edit functionality."
+    },
+    {
+      "type": "step",
+      "step": 3,
+      "title": "Review — Read What the AI Wrote",
+      "body": "This is the most important step. Before you paste anything into your project:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Read through the code. Do you understand what each part does?",
+        "Check the imports. Are all the packages ones you already have installed?",
+        "Look for hardcoded values that should be props or environment variables.",
+        "Ask the AI to explain anything you do not recognize."
+      ]
+    },
+    {
+      "type": "step",
+      "step": 4,
+      "title": "Test — Make Sure It Works",
+      "body": "Add the code to your project and check it in the browser. If something is wrong, go back to step 2 and tell the AI what needs fixing."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Does it render without errors?",
+        "Does it do what you expected?",
+        "Does it look right on different screen sizes?",
+        "Do the interactive parts (buttons, forms) work?"
+      ]
+    },
+    {
+      "type": "step",
+      "step": 5,
+      "title": "Commit — Save Your Progress",
+      "body": "Once the feature is working, save it with Git. Committing often gives you checkpoints. If something breaks later, you can always go back to a working version.",
+      "code": "git add .\ngit commit -m \"Add user profile page with avatar and edit form\"",
+      "language": "bash"
+    },
+    {
+      "type": "text",
+      "heading": "10 Prompts Every Beginner Should Know",
+      "headingLevel": 2,
+      "body": "Copy these prompts directly and customize the bracketed sections for your project. Each one is battle-tested to produce high-quality results."
+    },
+    {
+      "type": "accordion",
+      "title": "1. Create a Component from Scratch",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "code": "Act as a senior React developer. I am using Next.js 15\nwith TypeScript and the App Router.\n\nCreate a [ComponentName] component that:\n- [Feature 1]\n- [Feature 2]\n- [Feature 3]\n\nRequirements:\n- Use 'use client' directive if it needs interactivity\n- Use TypeScript interfaces for all props\n- Include proper accessibility attributes\n- Add brief comments explaining key sections\n\nI am a beginner learning React."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "2. Fix an Error Message",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "code": "I am getting this error in my Next.js project:\n\n[Paste the COMPLETE error message here]\n\nHere is the file where the error occurs:\n\n[Paste the complete file here]\n\nWhat is causing this error? Fix it and explain\nwhat went wrong in simple terms so I can avoid\nthis mistake in the future."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "3. Add Dark Mode Support",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "code": "I have a Next.js app using Material UI (MUI).\nSet up a dark mode system that:\n- Creates a ThemeProvider with light and dark themes\n- Adds a toggle button in the header\n- Saves the user's preference in localStorage\n- Respects the system preference by default\n\nShow me all the files I need to create or modify.\nUse TypeScript."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "4. Create an API Route",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "code": "Create a Next.js 15 App Router API route at\n/api/[your-endpoint].\n\nIt should:\n- Handle [GET/POST/PUT/DELETE] requests\n- [Describe what the endpoint does]\n- Validate the request body/params\n- Return proper JSON responses with status codes\n- Include error handling for edge cases\n\nUse TypeScript. Use the new Route Handler format\nwith export async function GET/POST."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "5. Add Form Validation",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "code": "I have this form component:\n\n[Paste your form code here]\n\nAdd validation with the following rules:\n- [Field]: [validation rule]\n- [Field]: [validation rule]\n- [Field]: [validation rule]\n\nRequirements:\n- Show inline error messages below each field\n- Validate on form submission\n- Disable the submit button while submitting\n- Show a success message after submission\n\nUse React state for validation (no extra libraries)."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "6. Make a Component Responsive",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "code": "Here is my component:\n\n[Paste your component code]\n\nMake it fully responsive:\n- Mobile (below 600px): stack elements vertically,\n  full width\n- Tablet (600px-900px): 2-column grid\n- Desktop (above 900px): current layout with\n  max-width container\n\nUse [MUI sx prop / CSS / Tailwind] for the\nresponsive styles. Keep all existing functionality."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "7. Add Unit Tests",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "code": "Write tests for this component using Jest and\nReact Testing Library:\n\n[Paste your component code here]\n\nTest these scenarios:\n- Component renders without crashing\n- All text content is displayed correctly\n- Button clicks trigger the expected behavior\n- Props are applied correctly\n- Edge cases (empty data, long text, etc.)\n\nUse TypeScript. Include setup and cleanup."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "8. Explain Code Line by Line",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "code": "I found this code in a tutorial but I do not\nunderstand parts of it. Please explain each\nsection in simple terms, like you are teaching\na complete beginner:\n\n[Paste the code here]\n\nFor each concept you mention (hooks, props,\nstate, etc.), give me a one-sentence definition\nso I can build my vocabulary."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "9. Refactor and Improve Code",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "code": "Here is my working code that I want to improve:\n\n[Paste your code here]\n\nPlease refactor it to:\n- Follow React and TypeScript best practices\n- Remove any code duplication\n- Improve readability and maintainability\n- Add proper TypeScript types where missing\n- Keep the exact same functionality\n\nShow me the refactored code and list what you\nchanged and why, so I can learn from it."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "10. Deployment Checklist",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "code": "I have a Next.js app that is ready to deploy.\nGive me a step-by-step deployment guide for\n[Vercel / Netlify / your platform].\n\nInclude:\n- Pre-deployment checklist (environment variables,\n  build test, etc.)\n- The exact commands to run\n- How to set up a custom domain\n- Common deployment errors and how to fix them\n\nI am a beginner and this is my first deployment."
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "Pro tip",
+      "body": "Save your best prompts in a text file. Over time you will build a personal prompt library that matches your project, coding style, and tech stack. This is one of the most valuable things you can create as a developer working with AI."
+    },
+    {
+      "type": "text",
+      "heading": "You Are Ready to Build with AI",
+      "headingLevel": 2,
+      "body": "You now know how to write effective prompts, build components, debug errors, and follow a professional workflow using AI tools. The more you practice, the faster and more confident you will become. Start with a small project, use the prompt templates above, and build something you are proud of."
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Remember",
+      "body": "Every professional developer started as a beginner. AI just means you get to build real things from day one instead of waiting months. Go build something amazing."
+    }
+  ],
+  "keyPoints": [
+    "AI tools like ChatGPT and Claude can write code, debug errors, and explain concepts in plain language",
+    "Use the CRAFT formula (Context, Role, Action, Format, Target) for effective prompts",
+    "Always review AI-generated code before adding it to your project",
+    "Follow the Plan, Prompt, Review, Test, Commit workflow for reliable results",
+    "Claude Code CLI lets you work with AI directly in your terminal without copy-pasting",
+    "AI has limitations: it can hallucinate packages, suggest outdated patterns, and miss security issues",
+    "Use AI to build faster, but always take time to understand what it built for you"
+  ]
+}

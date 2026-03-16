@@ -1,0 +1,386 @@
+{
+  "title": "Website Examples",
+  "slug": "examples",
+  "description": "Explore eight real-world website types you can build with React, ranging from simple portfolios to advanced chat applications. Each example includes a working code sample, the technologies involved, and notes on what a production version would add.",
+  "icon": "WebAsset",
+  "order": 3,
+  "estimatedMinutes": 45,
+  "difficulty": "beginner",
+  "blocks": [
+    {
+      "type": "text",
+      "heading": "Website Examples",
+      "headingLevel": 2,
+      "body": "One of the best ways to learn web development is to study real website types and build simplified versions of them. Below are eight common types of websites, each with a description, a working React code example, a list of technologies used, and notes on what a real production version would include."
+    },
+    {
+      "type": "accordion",
+      "title": "Portfolio Website",
+      "defaultExpanded": true,
+      "blocks": [
+        {
+          "type": "text",
+          "body": "A personal portfolio is a website that shows off who you are and what you have built. It is one of the most common first projects for new developers because it is simple, useful, and looks great on a resume. You typically include your name, a short bio, and cards for each project you have worked on."
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "title": "Difficulty",
+          "body": "Beginner"
+        },
+        {
+          "type": "list",
+          "heading": "Technologies",
+          "items": [
+            "React",
+            "CSS / Material UI",
+            "Next.js (optional)"
+          ]
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "Portfolio.tsx",
+          "description": "A simple portfolio component with project cards",
+          "code": "function ProjectCard({ title, description, link }) {\n  return (\n    <div style={{\n      border: '1px solid #ddd',\n      borderRadius: 12,\n      padding: 20,\n      marginBottom: 16,\n    }}>\n      <h3>{title}</h3>\n      <p>{description}</p>\n      <a href={link} target=\"_blank\" rel=\"noreferrer\">\n        View Project &rarr;\n      </a>\n    </div>\n  );\n}\n\nexport default function Portfolio() {\n  const projects = [\n    {\n      title: 'Weather App',\n      description: 'Shows the weather for any city using a free API.',\n      link: '#',\n    },\n    {\n      title: 'Todo List',\n      description: 'A simple app to add, complete, and delete tasks.',\n      link: '#',\n    },\n  ];\n\n  return (\n    <div style={{ maxWidth: 600, margin: '0 auto', padding: 32 }}>\n      <h1>Jane Doe</h1>\n      <p>\n        Hi! I am a beginner web developer who loves building things\n        with React. Here are some of my projects:\n      </p>\n\n      {projects.map((project) => (\n        <ProjectCard\n          key={project.title}\n          title={project.title}\n          description={project.description}\n          link={project.link}\n        />\n      ))}\n    </div>\n  );\n}"
+        },
+        {
+          "type": "list",
+          "heading": "What a real version would add",
+          "items": [
+            "A contact form so visitors can reach you",
+            "Animated page transitions for a polished feel",
+            "A dark mode toggle",
+            "Hosting on Vercel or Netlify so anyone can visit your site",
+            "Links to your GitHub, LinkedIn, and other social profiles"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Blog",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "A blog lets you write articles and share them with the world. Blog projects teach you how to work with lists of data, how to create detail pages for individual posts, and how to organize content with categories. Many professional developers keep a blog to share what they learn."
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "title": "Difficulty",
+          "body": "Beginner"
+        },
+        {
+          "type": "list",
+          "heading": "Technologies",
+          "items": [
+            "React",
+            "React Router or Next.js",
+            "Markdown (optional)"
+          ]
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "Blog.tsx",
+          "description": "A blog with post listing and detail view using useState",
+          "code": "import { useState } from 'react';\n\nconst posts = [\n  {\n    id: 1,\n    title: 'My First Day Learning React',\n    category: 'React',\n    date: 'March 10, 2026',\n    content:\n      'Today I learned about components and props. A component is like a reusable building block for your website. Props are the way you pass information into a component, kind of like giving instructions to a function.',\n  },\n  {\n    id: 2,\n    title: 'What is State?',\n    category: 'React',\n    date: 'March 12, 2026',\n    content:\n      'State is data that can change over time. When state changes, React automatically updates the screen to show the new data. This is what makes React apps feel interactive.',\n  },\n  {\n    id: 3,\n    title: 'CSS Tips for Beginners',\n    category: 'CSS',\n    date: 'March 14, 2026',\n    content:\n      'Flexbox is your best friend. Use display: flex on a container to line up its children in a row or column. Add justify-content and align-items to control spacing.',\n  },\n];\n\nexport default function Blog() {\n  const [selectedPost, setSelectedPost] = useState(null);\n\n  if (selectedPost) {\n    return (\n      <div style={{ maxWidth: 600, margin: '0 auto', padding: 32 }}>\n        <button onClick={() => setSelectedPost(null)}>\n          &larr; Back to all posts\n        </button>\n        <h1>{selectedPost.title}</h1>\n        <p style={{ color: '#666' }}>\n          {selectedPost.date} &middot; {selectedPost.category}\n        </p>\n        <p>{selectedPost.content}</p>\n      </div>\n    );\n  }\n\n  return (\n    <div style={{ maxWidth: 600, margin: '0 auto', padding: 32 }}>\n      <h1>My Dev Blog</h1>\n      {posts.map((post) => (\n        <div\n          key={post.id}\n          onClick={() => setSelectedPost(post)}\n          style={{\n            border: '1px solid #ddd',\n            borderRadius: 8,\n            padding: 16,\n            marginBottom: 12,\n            cursor: 'pointer',\n          }}\n        >\n          <h3>{post.title}</h3>\n          <p style={{ color: '#666', fontSize: 14 }}>\n            {post.date} &middot; {post.category}\n          </p>\n        </div>\n      ))}\n    </div>\n  );\n}"
+        },
+        {
+          "type": "list",
+          "heading": "What a real version would add",
+          "items": [
+            "A database to store posts (like Supabase or a headless CMS)",
+            "Markdown support so you can write posts in a simple format",
+            "Categories and tags for filtering posts",
+            "A search bar to find posts by title or content",
+            "Comments section for reader interaction",
+            "RSS feed so people can subscribe to your blog"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "E-Commerce Store",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "An online store lets people browse products, add them to a shopping cart, and check out. This is one of the most common types of websites on the internet. Building one teaches you about managing state across multiple components (the cart needs to be available everywhere) and handling user interactions like adding and removing items."
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "title": "Difficulty",
+          "body": "Intermediate"
+        },
+        {
+          "type": "list",
+          "heading": "Technologies",
+          "items": [
+            "React",
+            "State management (Context or Redux)",
+            "Stripe for payments",
+            "A backend API"
+          ]
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "Store.tsx",
+          "description": "An e-commerce store with product cards and a shopping cart",
+          "code": "import { useState } from 'react';\n\nconst products = [\n  { id: 1, name: 'React Sticker Pack', price: 5.99, emoji: '\ud83c\udfa8' },\n  { id: 2, name: 'JavaScript Mug',     price: 12.99, emoji: '\u2615' },\n  { id: 3, name: 'Code Notebook',      price: 8.99,  emoji: '\ud83d\udcd3' },\n];\n\nfunction ProductCard({ product, onAddToCart }) {\n  return (\n    <div style={{\n      border: '1px solid #ddd',\n      borderRadius: 12,\n      padding: 20,\n      textAlign: 'center',\n    }}>\n      <div style={{ fontSize: 48 }}>{product.emoji}</div>\n      <h3>{product.name}</h3>\n      <p style={{ fontWeight: 'bold' }}>${product.price.toFixed(2)}</p>\n      <button\n        onClick={() => onAddToCart(product)}\n        style={{\n          padding: '8px 16px',\n          backgroundColor: '#1976d2',\n          color: 'white',\n          border: 'none',\n          borderRadius: 6,\n          cursor: 'pointer',\n        }}\n      >\n        Add to Cart\n      </button>\n    </div>\n  );\n}\n\nfunction ShoppingCart({ items, onRemove }) {\n  const total = items.reduce((sum, item) => sum + item.price, 0);\n\n  return (\n    <div style={{\n      border: '2px solid #1976d2',\n      borderRadius: 12,\n      padding: 20,\n      marginTop: 24,\n    }}>\n      <h2>Shopping Cart ({items.length})</h2>\n      {items.length === 0 ? (\n        <p>Your cart is empty.</p>\n      ) : (\n        <>\n          {items.map((item, index) => (\n            <div\n              key={index}\n              style={{\n                display: 'flex',\n                justifyContent: 'space-between',\n                padding: '8px 0',\n                borderBottom: '1px solid #eee',\n              }}\n            >\n              <span>{item.name}</span>\n              <span>\n                ${item.price.toFixed(2)}{' '}\n                <button onClick={() => onRemove(index)}>X</button>\n              </span>\n            </div>\n          ))}\n          <h3 style={{ marginTop: 12 }}>\n            Total: ${total.toFixed(2)}\n          </h3>\n        </>\n      )}\n    </div>\n  );\n}\n\nexport default function Store() {\n  const [cart, setCart] = useState([]);\n\n  const addToCart = (product) => {\n    setCart([...cart, product]);\n  };\n\n  const removeFromCart = (index) => {\n    setCart(cart.filter((_, i) => i !== index));\n  };\n\n  return (\n    <div style={{ maxWidth: 700, margin: '0 auto', padding: 32 }}>\n      <h1>Dev Merch Store</h1>\n      <div style={{\n        display: 'grid',\n        gridTemplateColumns: 'repeat(3, 1fr)',\n        gap: 16,\n      }}>\n        {products.map((product) => (\n          <ProductCard\n            key={product.id}\n            product={product}\n            onAddToCart={addToCart}\n          />\n        ))}\n      </div>\n      <ShoppingCart items={cart} onRemove={removeFromCart} />\n    </div>\n  );\n}"
+        },
+        {
+          "type": "list",
+          "heading": "What a real version would add",
+          "items": [
+            "A real payment system like Stripe to process credit cards",
+            "User accounts so shoppers can track their orders",
+            "A database to store products, inventory, and order history",
+            "Search and filter functionality",
+            "Product images, sizes, and variations",
+            "Shipping address form and delivery calculation"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Dashboard",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "A dashboard is a page that shows important data at a glance using cards, numbers, and charts. Businesses use dashboards to monitor sales, website traffic, user activity, and more. Building a dashboard teaches you how to lay out data in a clear, organized way and how to work with chart libraries."
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "title": "Difficulty",
+          "body": "Intermediate"
+        },
+        {
+          "type": "list",
+          "heading": "Technologies",
+          "items": [
+            "React",
+            "A chart library (Recharts or Chart.js)",
+            "CSS Grid or Flexbox",
+            "A data API"
+          ]
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "Dashboard.tsx",
+          "description": "A dashboard with stat cards and a simple bar chart",
+          "code": "function StatCard({ label, value, change, color }) {\n  const isPositive = change >= 0;\n\n  return (\n    <div style={{\n      border: '1px solid #ddd',\n      borderRadius: 12,\n      padding: 20,\n      borderTop: `4px solid ${color}`,\n    }}>\n      <p style={{ color: '#666', margin: 0, fontSize: 14 }}>{label}</p>\n      <h2 style={{ margin: '8px 0' }}>{value}</h2>\n      <p style={{\n        margin: 0,\n        fontSize: 14,\n        color: isPositive ? 'green' : 'red',\n      }}>\n        {isPositive ? '+' : ''}{change}% from last month\n      </p>\n    </div>\n  );\n}\n\nfunction SimpleBarChart({ data }) {\n  const max = Math.max(...data.map((d) => d.value));\n\n  return (\n    <div style={{\n      border: '1px solid #ddd',\n      borderRadius: 12,\n      padding: 20,\n    }}>\n      <h3>Weekly Visitors</h3>\n      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 120 }}>\n        {data.map((d) => (\n          <div key={d.day} style={{ textAlign: 'center', flex: 1 }}>\n            <div\n              style={{\n                height: `${(d.value / max) * 100}px`,\n                backgroundColor: '#1976d2',\n                borderRadius: '4px 4px 0 0',\n              }}\n            />\n            <p style={{ fontSize: 12, margin: '4px 0 0' }}>{d.day}</p>\n          </div>\n        ))}\n      </div>\n    </div>\n  );\n}\n\nexport default function Dashboard() {\n  const stats = [\n    { label: 'Total Users', value: '1,234', change: 12, color: '#1976d2' },\n    { label: 'Revenue',     value: '$8,420', change: 8,  color: '#2e7d32' },\n    { label: 'Orders',      value: '64',     change: -3, color: '#ed6c02' },\n    { label: 'Page Views',  value: '12.5k',  change: 24, color: '#9c27b0' },\n  ];\n\n  const chartData = [\n    { day: 'Mon', value: 120 },\n    { day: 'Tue', value: 200 },\n    { day: 'Wed', value: 150 },\n    { day: 'Thu', value: 280 },\n    { day: 'Fri', value: 320 },\n    { day: 'Sat', value: 250 },\n    { day: 'Sun', value: 180 },\n  ];\n\n  return (\n    <div style={{ maxWidth: 800, margin: '0 auto', padding: 32 }}>\n      <h1>Admin Dashboard</h1>\n      <div style={{\n        display: 'grid',\n        gridTemplateColumns: 'repeat(4, 1fr)',\n        gap: 16,\n        marginBottom: 24,\n      }}>\n        {stats.map((stat) => (\n          <StatCard key={stat.label} {...stat} />\n        ))}\n      </div>\n      <SimpleBarChart data={chartData} />\n    </div>\n  );\n}"
+        },
+        {
+          "type": "list",
+          "heading": "What a real version would add",
+          "items": [
+            "Real-time data from APIs that updates automatically",
+            "Interactive charts you can hover and click on (using Recharts or Chart.js)",
+            "Date range pickers to view data for different time periods",
+            "Export to CSV or PDF functionality",
+            "User authentication so only authorized people see the data",
+            "Responsive layout that works on mobile devices"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Social Media App",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Social media apps let users create posts, like content, and leave comments. Think of a simplified Instagram or Twitter. Building one teaches you about user interactions, managing lists of data that change over time, and how features like \"liking\" a post work under the hood."
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "title": "Difficulty",
+          "body": "Intermediate"
+        },
+        {
+          "type": "list",
+          "heading": "Technologies",
+          "items": [
+            "React",
+            "State management",
+            "A backend with a database",
+            "User authentication"
+          ]
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "SocialFeed.tsx",
+          "description": "A social feed with posts, likes, and comments",
+          "code": "import { useState } from 'react';\n\nfunction PostCard({ post, onLike, onComment }) {\n  const [commentText, setCommentText] = useState('');\n\n  const handleSubmitComment = () => {\n    if (commentText.trim()) {\n      onComment(post.id, commentText);\n      setCommentText('');\n    }\n  };\n\n  return (\n    <div style={{\n      border: '1px solid #ddd',\n      borderRadius: 12,\n      padding: 20,\n      marginBottom: 16,\n    }}>\n      {/* Post header */}\n      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>\n        <div style={{\n          width: 40, height: 40, borderRadius: '50%',\n          backgroundColor: '#1976d2', color: 'white',\n          display: 'flex', alignItems: 'center', justifyContent: 'center',\n          fontWeight: 'bold',\n        }}>\n          {post.author[0]}\n        </div>\n        <div>\n          <strong>{post.author}</strong>\n          <p style={{ margin: 0, fontSize: 12, color: '#666' }}>{post.time}</p>\n        </div>\n      </div>\n\n      {/* Post content */}\n      <p style={{ marginTop: 12 }}>{post.content}</p>\n\n      {/* Like button */}\n      <button\n        onClick={() => onLike(post.id)}\n        style={{\n          background: 'none', border: 'none', cursor: 'pointer',\n          fontSize: 16, color: post.liked ? 'red' : '#666',\n        }}\n      >\n        {post.liked ? '\\u2764' : '\\u2661'} {post.likes}\n      </button>\n\n      {/* Comments */}\n      {post.comments.map((comment, i) => (\n        <div key={i} style={{\n          backgroundColor: '#f5f5f5', borderRadius: 8,\n          padding: '8px 12px', marginTop: 8, fontSize: 14,\n        }}>\n          <strong>{comment.author}:</strong> {comment.text}\n        </div>\n      ))}\n\n      {/* Add comment */}\n      <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>\n        <input\n          value={commentText}\n          onChange={(e) => setCommentText(e.target.value)}\n          placeholder=\"Write a comment...\"\n          style={{\n            flex: 1, padding: 8, borderRadius: 8,\n            border: '1px solid #ddd',\n          }}\n        />\n        <button onClick={handleSubmitComment}>Post</button>\n      </div>\n    </div>\n  );\n}\n\nexport default function SocialFeed() {\n  const [posts, setPosts] = useState([\n    {\n      id: 1,\n      author: 'Alice',\n      time: '2 hours ago',\n      content: 'Just finished my first React project! It is a todo app and I am so proud of it.',\n      likes: 12,\n      liked: false,\n      comments: [\n        { author: 'Bob', text: 'Great job! Keep it up!' },\n      ],\n    },\n    {\n      id: 2,\n      author: 'Charlie',\n      time: '5 hours ago',\n      content: 'Can anyone recommend a good tutorial for learning CSS Grid?',\n      likes: 5,\n      liked: false,\n      comments: [],\n    },\n  ]);\n\n  const handleLike = (postId) => {\n    setPosts(posts.map((post) =>\n      post.id === postId\n        ? { ...post, liked: !post.liked, likes: post.liked ? post.likes - 1 : post.likes + 1 }\n        : post\n    ));\n  };\n\n  const handleComment = (postId, text) => {\n    setPosts(posts.map((post) =>\n      post.id === postId\n        ? { ...post, comments: [...post.comments, { author: 'You', text }] }\n        : post\n    ));\n  };\n\n  return (\n    <div style={{ maxWidth: 500, margin: '0 auto', padding: 32 }}>\n      <h1>Dev Feed</h1>\n      {posts.map((post) => (\n        <PostCard\n          key={post.id}\n          post={post}\n          onLike={handleLike}\n          onComment={handleComment}\n        />\n      ))}\n    </div>\n  );\n}"
+        },
+        {
+          "type": "list",
+          "heading": "What a real version would add",
+          "items": [
+            "User sign-up and login with profile pages",
+            "A database to store posts, likes, and comments permanently",
+            "Image and video uploads",
+            "Real-time notifications when someone likes or comments on your post",
+            "A follow system so you only see posts from people you follow",
+            "Infinite scrolling to load more posts as you scroll down"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "SaaS Landing Page",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "A SaaS (Software as a Service) landing page is a marketing website designed to convince visitors to sign up for your product. It typically has a hero section with a headline, a features section, a pricing table, and call-to-action buttons. Every startup needs one, making this a very practical skill to learn."
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "title": "Difficulty",
+          "body": "Beginner"
+        },
+        {
+          "type": "list",
+          "heading": "Technologies",
+          "items": [
+            "React",
+            "CSS / Material UI",
+            "Responsive design"
+          ]
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "LandingPage.tsx",
+          "description": "A SaaS landing page with hero, features, and pricing sections",
+          "code": "function FeatureCard({ icon, title, description }) {\n  return (\n    <div style={{\n      textAlign: 'center',\n      padding: 24,\n      border: '1px solid #eee',\n      borderRadius: 12,\n    }}>\n      <div style={{ fontSize: 36 }}>{icon}</div>\n      <h3>{title}</h3>\n      <p style={{ color: '#666' }}>{description}</p>\n    </div>\n  );\n}\n\nfunction PricingCard({ name, price, features, highlighted }) {\n  return (\n    <div style={{\n      border: highlighted ? '2px solid #1976d2' : '1px solid #ddd',\n      borderRadius: 12,\n      padding: 24,\n      textAlign: 'center',\n      backgroundColor: highlighted ? '#f0f7ff' : 'white',\n    }}>\n      <h3>{name}</h3>\n      <p style={{ fontSize: 36, fontWeight: 'bold', margin: '8px 0' }}>\n        ${price}<span style={{ fontSize: 16 }}>/mo</span>\n      </p>\n      <ul style={{ listStyle: 'none', padding: 0, textAlign: 'left' }}>\n        {features.map((feature, i) => (\n          <li key={i} style={{ padding: '6px 0' }}>\n            \\u2713 {feature}\n          </li>\n        ))}\n      </ul>\n      <button style={{\n        width: '100%',\n        padding: 12,\n        borderRadius: 8,\n        border: 'none',\n        backgroundColor: highlighted ? '#1976d2' : '#eee',\n        color: highlighted ? 'white' : '#333',\n        cursor: 'pointer',\n        fontWeight: 'bold',\n      }}>\n        Get Started\n      </button>\n    </div>\n  );\n}\n\nexport default function LandingPage() {\n  return (\n    <div style={{ maxWidth: 900, margin: '0 auto', padding: 32 }}>\n      {/* Hero */}\n      <div style={{ textAlign: 'center', padding: '60px 0' }}>\n        <h1 style={{ fontSize: 48 }}>Build Websites Faster</h1>\n        <p style={{ fontSize: 20, color: '#666', maxWidth: 500, margin: '0 auto' }}>\n          The all-in-one toolkit for developers who want to ship\n          beautiful websites without the hassle.\n        </p>\n        <button style={{\n          marginTop: 24, padding: '14px 32px', fontSize: 18,\n          backgroundColor: '#1976d2', color: 'white',\n          border: 'none', borderRadius: 8, cursor: 'pointer',\n        }}>\n          Start Free Trial\n        </button>\n      </div>\n\n      {/* Features */}\n      <div style={{\n        display: 'grid',\n        gridTemplateColumns: 'repeat(3, 1fr)',\n        gap: 20,\n        margin: '40px 0',\n      }}>\n        <FeatureCard icon=\"\\u26a1\" title=\"Lightning Fast\" description=\"Optimized builds that load in under a second.\" />\n        <FeatureCard icon=\"\\ud83d\\udd12\" title=\"Secure\" description=\"Built-in security best practices out of the box.\" />\n        <FeatureCard icon=\"\\ud83d\\ude80\" title=\"Easy Deploy\" description=\"One-click deployment to the cloud.\" />\n      </div>\n\n      {/* Pricing */}\n      <h2 style={{ textAlign: 'center' }}>Simple Pricing</h2>\n      <div style={{\n        display: 'grid',\n        gridTemplateColumns: 'repeat(3, 1fr)',\n        gap: 20,\n        marginTop: 20,\n      }}>\n        <PricingCard name=\"Hobby\" price={0} features={['1 project', 'Basic analytics', 'Community support']} highlighted={false} />\n        <PricingCard name=\"Pro\" price={19} features={['Unlimited projects', 'Advanced analytics', 'Priority support', 'Custom domain']} highlighted={true} />\n        <PricingCard name=\"Team\" price={49} features={['Everything in Pro', 'Team collaboration', 'SSO login', 'SLA guarantee']} highlighted={false} />\n      </div>\n    </div>\n  );\n}"
+        },
+        {
+          "type": "list",
+          "heading": "What a real version would add",
+          "items": [
+            "Smooth scroll animations as sections come into view",
+            "A testimonials section with real customer quotes",
+            "An FAQ accordion section",
+            "Mobile-responsive layout that adjusts for phone screens",
+            "Analytics tracking to see which sections visitors spend time on",
+            "A newsletter signup form connected to a mailing list service"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Chat Application",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "A chat application lets users send and receive messages in real time. Think of Discord, Slack, or iMessage. Building a chat app teaches you about real-time communication, managing a scrolling list of messages, and handling user input. It is a great way to learn about WebSockets and live data."
+        },
+        {
+          "type": "alert",
+          "severity": "warning",
+          "title": "Difficulty",
+          "body": "Advanced"
+        },
+        {
+          "type": "list",
+          "heading": "Technologies",
+          "items": [
+            "React",
+            "WebSockets or Firebase",
+            "User authentication",
+            "A backend server (Node.js)"
+          ]
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "ChatApp.tsx",
+          "description": "A chat application with message bubbles and real-time input",
+          "code": "import { useState } from 'react';\n\nfunction MessageBubble({ message, isOwn }) {\n  return (\n    <div style={{\n      display: 'flex',\n      justifyContent: isOwn ? 'flex-end' : 'flex-start',\n      marginBottom: 8,\n    }}>\n      <div style={{\n        maxWidth: '70%',\n        padding: '10px 16px',\n        borderRadius: 16,\n        backgroundColor: isOwn ? '#1976d2' : '#f0f0f0',\n        color: isOwn ? 'white' : '#333',\n      }}>\n        {!isOwn && (\n          <p style={{ margin: 0, fontSize: 12, fontWeight: 'bold', marginBottom: 4 }}>\n            {message.sender}\n          </p>\n        )}\n        <p style={{ margin: 0 }}>{message.text}</p>\n        <p style={{\n          margin: 0, fontSize: 11, marginTop: 4,\n          opacity: 0.7, textAlign: 'right',\n        }}>\n          {message.time}\n        </p>\n      </div>\n    </div>\n  );\n}\n\nexport default function ChatApp() {\n  const currentUser = 'You';\n\n  const [messages, setMessages] = useState([\n    { id: 1, sender: 'Alice', text: 'Hey! How is your React project going?', time: '10:30 AM' },\n    { id: 2, sender: 'You',   text: 'Pretty good! I just learned about useState.', time: '10:31 AM' },\n    { id: 3, sender: 'Alice', text: 'Nice! That is one of the most important hooks.', time: '10:32 AM' },\n    { id: 4, sender: 'Bob',   text: 'useState and useEffect are the two big ones to learn first.', time: '10:33 AM' },\n  ]);\n\n  const [newMessage, setNewMessage] = useState('');\n\n  const handleSend = () => {\n    if (!newMessage.trim()) return;\n    setMessages([\n      ...messages,\n      {\n        id: messages.length + 1,\n        sender: currentUser,\n        text: newMessage,\n        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),\n      },\n    ]);\n    setNewMessage('');\n  };\n\n  return (\n    <div style={{\n      maxWidth: 500, margin: '0 auto',\n      border: '1px solid #ddd', borderRadius: 12,\n      display: 'flex', flexDirection: 'column', height: 500,\n    }}>\n      {/* Header */}\n      <div style={{\n        padding: 16, borderBottom: '1px solid #ddd',\n        fontWeight: 'bold', fontSize: 18,\n      }}>\n        #general\n      </div>\n\n      {/* Messages */}\n      <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>\n        {messages.map((msg) => (\n          <MessageBubble\n            key={msg.id}\n            message={msg}\n            isOwn={msg.sender === currentUser}\n          />\n        ))}\n      </div>\n\n      {/* Input */}\n      <div style={{\n        display: 'flex', gap: 8, padding: 12,\n        borderTop: '1px solid #ddd',\n      }}>\n        <input\n          value={newMessage}\n          onChange={(e) => setNewMessage(e.target.value)}\n          onKeyDown={(e) => e.key === 'Enter' && handleSend()}\n          placeholder=\"Type a message...\"\n          style={{\n            flex: 1, padding: 10, borderRadius: 20,\n            border: '1px solid #ddd', outline: 'none',\n          }}\n        />\n        <button\n          onClick={handleSend}\n          style={{\n            padding: '10px 20px', borderRadius: 20,\n            backgroundColor: '#1976d2', color: 'white',\n            border: 'none', cursor: 'pointer',\n          }}\n        >\n          Send\n        </button>\n      </div>\n    </div>\n  );\n}"
+        },
+        {
+          "type": "list",
+          "heading": "What a real version would add",
+          "items": [
+            "WebSockets for real-time message delivery without refreshing",
+            "Multiple chat rooms or direct messages",
+            "Read receipts and typing indicators",
+            "File and image sharing",
+            "Message search and history",
+            "Push notifications for new messages",
+            "User presence (online, offline, away status)"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Game / Interactive App",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Web games and interactive apps are a fantastic way to learn React because they are pure fun. If you have ever played Roblox or Minecraft, you already understand the idea of building interactive experiences. Web games use the same React concepts (state, events, rendering) but apply them to things like scores, timers, and player actions."
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "title": "Difficulty",
+          "body": "Beginner"
+        },
+        {
+          "type": "list",
+          "heading": "Technologies",
+          "items": [
+            "React",
+            "useState and useEffect hooks",
+            "CSS animations",
+            "HTML Canvas (for advanced games)"
+          ]
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "ClickGame.tsx",
+          "description": "A click speed challenge game with timer and high score tracking",
+          "code": "import { useState, useEffect } from 'react';\n\nexport default function ClickGame() {\n  const [score, setScore] = useState(0);\n  const [timeLeft, setTimeLeft] = useState(10);\n  const [isPlaying, setIsPlaying] = useState(false);\n  const [highScore, setHighScore] = useState(0);\n\n  // Timer countdown\n  useEffect(() => {\n    if (!isPlaying || timeLeft <= 0) return;\n\n    const timer = setTimeout(() => {\n      setTimeLeft(timeLeft - 1);\n    }, 1000);\n\n    // When time runs out\n    if (timeLeft === 1) {\n      setTimeout(() => {\n        setIsPlaying(false);\n        if (score > highScore) {\n          setHighScore(score);\n        }\n      }, 1000);\n    }\n\n    return () => clearTimeout(timer);\n  }, [isPlaying, timeLeft, score, highScore]);\n\n  const startGame = () => {\n    setScore(0);\n    setTimeLeft(10);\n    setIsPlaying(true);\n  };\n\n  const handleClick = () => {\n    if (isPlaying) {\n      setScore(score + 1);\n    }\n  };\n\n  return (\n    <div style={{ textAlign: 'center', maxWidth: 400, margin: '0 auto', padding: 32 }}>\n      <h1>Click Speed Challenge</h1>\n      <p>How many times can you click in 10 seconds?</p>\n\n      <div style={{\n        fontSize: 48, fontWeight: 'bold',\n        margin: '20px 0', color: '#1976d2',\n      }}>\n        {score}\n      </div>\n\n      <p style={{ fontSize: 24 }}>\n        Time: {timeLeft}s\n      </p>\n\n      {isPlaying ? (\n        <button\n          onClick={handleClick}\n          style={{\n            width: 200, height: 200, borderRadius: '50%',\n            fontSize: 24, fontWeight: 'bold',\n            backgroundColor: '#1976d2', color: 'white',\n            border: 'none', cursor: 'pointer',\n          }}\n        >\n          CLICK ME!\n        </button>\n      ) : (\n        <div>\n          {score > 0 && (\n            <p style={{ fontSize: 20 }}>\n              You clicked {score} times!\n              {score > highScore ? ' New high score!' : ''}\n            </p>\n          )}\n          <button\n            onClick={startGame}\n            style={{\n              padding: '14px 32px', fontSize: 18,\n              backgroundColor: '#2e7d32', color: 'white',\n              border: 'none', borderRadius: 8, cursor: 'pointer',\n            }}\n          >\n            {score > 0 ? 'Play Again' : 'Start Game'}\n          </button>\n        </div>\n      )}\n\n      {highScore > 0 && (\n        <p style={{ marginTop: 20, color: '#666' }}>\n          High Score: {highScore}\n        </p>\n      )}\n    </div>\n  );\n}"
+        },
+        {
+          "type": "list",
+          "heading": "What a real version would add",
+          "items": [
+            "Sound effects when you click or when time runs out",
+            "Animations and particle effects for visual flair",
+            "A leaderboard where players compete for the top score",
+            "Multiple game modes (timed, survival, target practice)",
+            "Mobile touch support so it works on phones",
+            "Save progress using localStorage or a database",
+            "Multiplayer using WebSockets"
+          ]
+        }
+      ]
+    }
+  ],
+  "keyPoints": [
+    "Portfolio websites are ideal beginner projects that showcase your work and teach component composition",
+    "Blogs teach you about lists, detail pages, and content organization with categories",
+    "E-commerce stores introduce state management across components with shopping cart functionality",
+    "Dashboards teach data visualization with stat cards and chart libraries",
+    "Social media apps demonstrate user interactions like likes, comments, and dynamic lists",
+    "SaaS landing pages are practical marketing sites with hero sections, features, and pricing tables",
+    "Chat applications introduce real-time communication concepts with WebSockets",
+    "Games and interactive apps apply React concepts like state, events, and effects to fun experiences"
+  ]
+}

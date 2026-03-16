@@ -1,0 +1,21 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": ["src/app/**/*.{ts,tsx}"],
+  "project": ["src/**/*.{ts,tsx}"],
+  "ignore": [
+    "src/i18n/**",
+    "src/store/slices/**"
+  ],
+  "ignoreDependencies": [
+    "@swc/helpers",
+    "@testing-library/*",
+    "@typescript-eslint/eslint-plugin",
+    "eslint",
+    "eslint-config-next",
+    "eslint-plugin-import",
+    "jest-environment-jsdom",
+    "ts-jest",
+    "ts-node"
+  ],
+  "ignoreExportsUsedInFile": true
+}
