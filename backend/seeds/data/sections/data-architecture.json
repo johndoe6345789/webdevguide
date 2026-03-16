@@ -1,0 +1,585 @@
+{
+  "title": "Data Architecture",
+  "slug": "data-architecture",
+  "description": "Splitting data and styling between JSON and TSX for cleaner, more maintainable applications.",
+  "icon": "Storage",
+  "order": 7,
+  "estimatedMinutes": 50,
+  "difficulty": "intermediate",
+  "prerequisites": [],
+  "keyPoints": [
+    "Hardcoding data inside components becomes painful as projects grow — separation is the answer",
+    "JSON files store the WHAT (content, questions, topics) while TSX files handle the HOW (layout, styling, interactions)",
+    "The backend is the home for your data — the frontend asks for it through an API",
+    "TypeScript interfaces act as a contract between your JSON data and your frontend code",
+    "Use local JSON for small, static data and a backend API for large, dynamic, or shared data"
+  ],
+  "blocks": [
+    {
+      "type": "alert",
+      "severity": "info",
+      "body": "This page explains one of the most important patterns in modern web development: keeping your data (what you show) separate from your display code (how you show it). If you have ever struggled to update content buried deep inside a component, this pattern will change your life."
+    },
+    {
+      "type": "accordion",
+      "title": "1. The Problem: Mixed Data and Code",
+      "defaultExpanded": true,
+      "blocks": [
+        {
+          "type": "text",
+          "body": "When you first start building a React app, it feels natural to put everything in one place. Your component has the layout, the styling, and the data all mashed together. It works — until it does not."
+        },
+        {
+          "type": "text",
+          "heading": "A \"bad\" example — data hardcoded into the component",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "QuizPage.tsx (everything mixed together)",
+          "code": "function QuizPage() {\n  return (\n    <div>\n      <h1>Ham Radio Quiz</h1>\n      {/* Question 1 is hardcoded right here */}\n      <div className=\"question-card\">\n        <h2>Question 1</h2>\n        <p>What does the acronym \"RF\" stand for?</p>\n        <ul>\n          <li>Radio Frequency</li>\n          <li>Resonant Filter</li>\n          <li>Rapid Feedback</li>\n          <li>Register Function</li>\n        </ul>\n        <p>Correct answer: Radio Frequency</p>\n      </div>\n      {/* Question 2 is also hardcoded */}\n      <div className=\"question-card\">\n        <h2>Question 2</h2>\n        <p>What is the purpose of an antenna?</p>\n        <ul>\n          <li>To convert electrical signals to radio waves</li>\n          <li>To amplify sound</li>\n          <li>To store energy</li>\n          <li>To measure voltage</li>\n        </ul>\n        <p>Correct answer: To convert electrical signals to radio waves</p>\n      </div>\n      {/* Imagine 400 more questions here... */}\n    </div>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "heading": "Why is this a problem?",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "cardGrid",
+          "columns": 2,
+          "cards": [
+            {
+              "title": "Maintenance nightmare",
+              "body": "Imagine you have 400 quiz questions. To fix a typo in question 347, you have to scroll through hundreds of lines of JSX."
+            },
+            {
+              "title": "No reuse",
+              "body": "Want to show the same questions on a mobile app? You would have to copy-paste the entire component. Change one question, and now you need to update it in two places."
+            },
+            {
+              "title": "Messy version control",
+              "body": "When a content editor changes a question and a developer changes the styling in the same file, you get merge conflicts even though the changes are unrelated."
+            },
+            {
+              "title": "Hard to test",
+              "body": "You cannot test the data separately from the display. If a test fails, is it the data or the component logic?"
+            }
+          ]
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "Hardcoding data inside your components is fine for a quick prototype but becomes painful the moment your project grows. The answer is separation — keep data in one place and display logic in another."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "2. The Solution: JSON for Data, TSX for Display",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "The core idea is simple: JSON files store the WHAT (content, questions, topics, navigation items) and TSX files handle the HOW (layout, styling, interactions, animations)."
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "body": "Think of a restaurant. The menu (JSON) lists every dish, its price, and its ingredients. The decor (TSX) decides whether the menu is printed on paper, displayed on a chalkboard, or shown on a tablet. You can change the menu without repainting the walls, and you can redecorate without touching the food."
+        },
+        {
+          "type": "text",
+          "heading": "JSON stores the data",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "json",
+          "filename": "backend/data/questions.json",
+          "code": "[\n  {\n    \"id\": \"q1\",\n    \"text\": \"What does the acronym RF stand for?\",\n    \"topicSlug\": \"basics\",\n    \"options\": [\n      { \"label\": \"A\", \"text\": \"Radio Frequency\" },\n      { \"label\": \"B\", \"text\": \"Resonant Filter\" },\n      { \"label\": \"C\", \"text\": \"Rapid Feedback\" },\n      { \"label\": \"D\", \"text\": \"Register Function\" }\n    ],\n    \"correctAnswer\": \"A\",\n    \"explanation\": \"RF stands for Radio Frequency...\"\n  }\n]"
+        },
+        {
+          "type": "text",
+          "heading": "TSX handles the display",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "QuestionCard.tsx",
+          "code": "// The component knows nothing about what the questions are.\n// It only knows HOW to display one.\ninterface QuestionCardProps {\n  question: Question;       // comes from JSON via the API\n  onAnswer: (id: string, answer: string) => void;\n}\n\nfunction QuestionCard({ question, onAnswer }: QuestionCardProps) {\n  return (\n    <Card>\n      <CardContent>\n        <Typography variant=\"h6\">{question.text}</Typography>\n        {question.options.map((opt) => (\n          <Button\n            key={opt.label}\n            onClick={() => onAnswer(question.id, opt.label)}\n          >\n            {opt.label}. {opt.text}\n          </Button>\n        ))}\n      </CardContent>\n    </Card>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "heading": "Side-by-side comparison",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "table",
+          "headers": ["Aspect", "JSON (the data)", "TSX (the display)"],
+          "rows": [
+            ["Contains", "Questions, topics, options, correct answers", "Cards, buttons, layout, colors"],
+            ["Edited by", "Content editors, subject-matter experts", "Frontend developers, designers"],
+            ["File type", ".json files in the backend", ".tsx files in the frontend"],
+            ["Changes when", "Content is added, corrected, or removed", "Design or UX is updated"],
+            ["Looks like", "Plain text with curly braces", "HTML-like code with logic"]
+          ]
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "Separating data (JSON) from display (TSX) makes your project easier to maintain, easier to collaborate on, and easier to scale. Each file has one job."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "3. JSON Lives in the Backend",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "In the hamradiosite pattern, JSON data files live in the backend, typically inside backend/data/ or backend/seeds/. The frontend never stores its own copy of the data — instead, it fetches what it needs through the API."
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "filename": "Project structure",
+          "code": "my-project/\n\u251c\u2500\u2500 backend/\n\u2502   \u251c\u2500\u2500 data/                   # <-- JSON data lives here\n\u2502   \u2502   \u251c\u2500\u2500 topics.json\n\u2502   \u2502   \u251c\u2500\u2500 questions.json\n\u2502   \u2502   \u2514\u2500\u2500 navigation.json\n\u2502   \u251c\u2500\u2500 seeds/                  # <-- Or here for database seeding\n\u2502   \u2502   \u2514\u2500\u2500 seed-questions.json\n\u2502   \u251c\u2500\u2500 routes/\n\u2502   \u2502   \u2514\u2500\u2500 questions.ts        # API endpoint serves the JSON\n\u2502   \u2514\u2500\u2500 server.ts\n\u2502\n\u2514\u2500\u2500 frontend/\n    \u251c\u2500\u2500 src/\n    \u2502   \u251c\u2500\u2500 api/\n    \u2502   \u2502   \u2514\u2500\u2500 client.ts       # Fetches data from the backend\n    \u2502   \u251c\u2500\u2500 components/\n    \u2502   \u2502   \u2514\u2500\u2500 QuestionCard.tsx # Displays the data\n    \u2502   \u2514\u2500\u2500 types/\n    \u2502       \u2514\u2500\u2500 question.ts     # TypeScript interface for the data\n    \u2514\u2500\u2500 package.json"
+        },
+        {
+          "type": "text",
+          "heading": "Why keep JSON in the backend?",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "cardGrid",
+          "columns": 2,
+          "cards": [
+            {
+              "title": "Single source of truth",
+              "body": "There is exactly one place where questions live. No risk of the frontend and backend having different versions."
+            },
+            {
+              "title": "Security",
+              "body": "Correct answers stay on the server. The frontend only receives what it needs for each request."
+            },
+            {
+              "title": "Multiple consumers",
+              "body": "A React web app, a React Native mobile app, and an admin dashboard can all fetch from the same API."
+            },
+            {
+              "title": "Easy updates",
+              "body": "A content editor can update a JSON file in the backend repo without ever opening the frontend code."
+            }
+          ]
+        },
+        {
+          "type": "alert",
+          "severity": "warning",
+          "body": "Common beginner mistake: Copying JSON files into the frontend's public/ folder. This works for prototypes, but in production your data should live behind an API so you can control access, filter results, and paginate large datasets."
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "The backend is the home for your data. The frontend asks for data when it needs it, displays it, and never tries to be the permanent storage."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "4. Advantages of This Approach",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Why go through the trouble of splitting things up? Because the benefits compound as your project grows."
+        },
+        {
+          "type": "cardGrid",
+          "columns": 2,
+          "cards": [
+            {
+              "title": "Non-developers can update content",
+              "body": "A subject-matter expert can open questions.json, fix a typo, or add a new question without knowing any React. JSON is just text with a predictable format.",
+              "chip": "Collaboration"
+            },
+            {
+              "title": "Multiple frontends share the same data",
+              "body": "Your website, your mobile app, and your admin panel all call the same API. Update the data once and every client sees the change.",
+              "chip": "Scalability"
+            },
+            {
+              "title": "Easier testing",
+              "body": "You can validate JSON data with a simple schema check (are all required fields present?). You can test components by passing in mock data. Each side is tested independently.",
+              "chip": "Quality"
+            },
+            {
+              "title": "Data is portable",
+              "body": "JSON is a universal format. You can import it into a database, export it to a spreadsheet, or feed it to another system. Your data is never trapped inside a React component.",
+              "chip": "Flexibility"
+            },
+            {
+              "title": "Cleaner version control",
+              "body": "When data changes and code changes live in separate files, Git diffs are cleaner. A content update only touches JSON files. A design update only touches TSX files. No merge conflicts between unrelated changes.",
+              "chip": "Workflow"
+            },
+            {
+              "title": "Performance optimization",
+              "body": "With data in the backend, you can add pagination, caching, and search without changing the frontend. Serve 10 questions at a time instead of loading all 400.",
+              "chip": "Performance"
+            }
+          ]
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "Separation of data and display is not just a nice pattern — it is a force multiplier. It makes your project easier to maintain, share, test, and grow."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "5. Linking Multiple JSON Files",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "One giant JSON file with everything in it becomes just as hard to maintain as a giant component. The solution is to split your data across multiple files and link them with IDs and slugs."
+        },
+        {
+          "type": "text",
+          "heading": "topics.json — references question IDs",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "json",
+          "filename": "backend/data/topics.json",
+          "code": "[\n  {\n    \"slug\": \"basics\",\n    \"title\": \"Radio Basics\",\n    \"description\": \"Fundamental concepts every operator should know.\",\n    \"questionIds\": [\"q1\", \"q2\", \"q3\", \"q4\", \"q5\"]\n  },\n  {\n    \"slug\": \"regulations\",\n    \"title\": \"Rules & Regulations\",\n    \"description\": \"FCC rules, call signs, and operating procedures.\",\n    \"questionIds\": [\"q6\", \"q7\", \"q8\", \"q9\"]\n  }\n]"
+        },
+        {
+          "type": "text",
+          "heading": "questions.json — links back to topic slugs",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "json",
+          "filename": "backend/data/questions.json",
+          "code": "[\n  {\n    \"id\": \"q1\",\n    \"topicSlug\": \"basics\",\n    \"text\": \"What does the acronym RF stand for?\",\n    \"options\": [\n      { \"label\": \"A\", \"text\": \"Radio Frequency\" },\n      { \"label\": \"B\", \"text\": \"Resonant Filter\" }\n    ],\n    \"correctAnswer\": \"A\"\n  },\n  {\n    \"id\": \"q6\",\n    \"topicSlug\": \"regulations\",\n    \"text\": \"What is the maximum power for a Technician license?\",\n    \"options\": [\n      { \"label\": \"A\", \"text\": \"1500 watts\" },\n      { \"label\": \"B\", \"text\": \"200 watts\" }\n    ],\n    \"correctAnswer\": \"A\"\n  }\n]"
+        },
+        {
+          "type": "text",
+          "heading": "navigation.json — defines the site structure",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "json",
+          "filename": "backend/data/navigation.json",
+          "code": "{\n  \"sections\": [\n    {\n      \"title\": \"Study Guide\",\n      \"items\": [\n        { \"label\": \"Radio Basics\", \"path\": \"/topics/basics\" },\n        { \"label\": \"Rules & Regulations\", \"path\": \"/topics/regulations\" }\n      ]\n    },\n    {\n      \"title\": \"Practice\",\n      \"items\": [\n        { \"label\": \"Quiz Mode\", \"path\": \"/quiz\" },\n        { \"label\": \"Flashcards\", \"path\": \"/flashcards\" }\n      ]\n    }\n  ]\n}"
+        },
+        {
+          "type": "text",
+          "heading": "How the files reference each other",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "filename": "Relationship diagram",
+          "code": "  navigation.json                topics.json               questions.json\n  \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510         \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510       \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n  \u2502 path:        \u2502         \u2502 slug: \"basics\"   \u2502       \u2502 id: \"q1\"         \u2502\n  \u2502 \"/topics/    \u2502\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500>\u2502                  \u2502       \u2502 topicSlug:       \u2502\n  \u2502   basics\"    \u2502         \u2502 questionIds:     \u2502\u2500\u2500\u2500\u2500\u2500\u2500>\u2502   \"basics\"       \u2502\n  \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518         \u2502   [\"q1\",\"q2\"...] \u2502       \u2502                  \u2502\n                           \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518       \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n                                    ^                          \u2502\n                                    \u2502      topicSlug           \u2502\n                                    \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\n  Navigation tells you WHERE to go.\n  Topics tell you WHAT is covered and WHICH questions belong.\n  Questions tell you the ACTUAL content and link back to their topic."
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "body": "Tip: Use slugs (like \"basics\") for human-readable references and IDs (like \"q1\") for machine references. Slugs work well in URLs. IDs work well in code."
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "Keep JSON file sizes manageable by splitting data into logical files. Use IDs and slugs so files can reference each other without duplicating content."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "6. TypeScript Interfaces for JSON",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "JSON is flexible — a little too flexible. Nothing stops you from accidentally writing \"corectAnswer\" instead of \"correctAnswer\". TypeScript interfaces act as a contract: they define exactly what shape your data should have, and your editor will warn you if something does not match."
+        },
+        {
+          "type": "text",
+          "heading": "Define interfaces that match your JSON",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "frontend/src/types/question.ts",
+          "code": "// This interface is a \"blueprint\" for one quiz question.\n// It must match the shape of objects in questions.json.\n\nexport interface QuestionOption {\n  label: string;   // \"A\", \"B\", \"C\", or \"D\"\n  text: string;    // The answer text\n}\n\nexport interface Question {\n  id: string;             // \"q1\", \"q2\", etc.\n  topicSlug: string;      // links to a topic in topics.json\n  text: string;           // the question itself\n  options: QuestionOption[];\n  correctAnswer: string;  // matches one of the option labels\n  explanation?: string;   // optional detailed explanation\n}"
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "frontend/src/types/topic.ts",
+          "code": "// This interface matches objects in topics.json\n\nexport interface Topic {\n  slug: string;          // \"basics\", \"regulations\"\n  title: string;         // \"Radio Basics\"\n  description: string;   // short summary\n  questionIds: string[]; // [\"q1\", \"q2\", \"q3\"]\n}"
+        },
+        {
+          "type": "text",
+          "heading": "How it helps you",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "Using the typed data",
+          "code": "import { Question } from '@/types/question';\n\n// TypeScript knows exactly what \"q\" contains\nfunction displayQuestion(q: Question) {\n  console.log(q.text);          // \u2705 works - \"text\" exists on Question\n  console.log(q.options[0].text); // \u2705 works - \"text\" exists on QuestionOption\n  console.log(q.anwser);        // \u274c ERROR - \"anwser\" does not exist\n                                 //    Did you mean \"correctAnswer\"?\n}\n\n// When you fetch data from the API, tell TypeScript the shape:\nconst response = await fetch('/api/questions');\nconst questions: Question[] = await response.json();\n\n// Now \"questions\" has full autocomplete and type checking!\nquestions.forEach((q) => {\n  console.log(q.id, q.text); // your editor autocompletes these\n});"
+        },
+        {
+          "type": "cardGrid",
+          "columns": 3,
+          "cards": [
+            {
+              "title": "Autocomplete",
+              "body": "Your editor suggests field names as you type. No more guessing whether it is \"answer\" or \"correctAnswer\"."
+            },
+            {
+              "title": "Catch mistakes early",
+              "body": "Typos, missing fields, and wrong types are flagged before you even run the code."
+            },
+            {
+              "title": "Living documentation",
+              "body": "New team members can look at the interface file to understand the data structure instantly."
+            }
+          ]
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "Always create TypeScript interfaces that mirror your JSON data. They give you autocomplete, catch typos, and serve as documentation for your data shapes."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "7. Fetching JSON from the API",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Now that the data lives in the backend and you have TypeScript interfaces, you need a way to fetch that data in the frontend. You can use the built-in fetch function or a library like axios."
+        },
+        {
+          "type": "text",
+          "heading": "A simple API client with axios",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "frontend/src/api/client.ts",
+          "code": "import axios from 'axios';\n\n// Create a reusable axios instance with defaults\nconst apiClient = axios.create({\n  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',\n  timeout: 10000,  // 10 second timeout\n  headers: {\n    'Content-Type': 'application/json',\n  },\n});\n\n// --- Interceptors ---\n// Interceptors run automatically on every request or response.\n// Think of them as middleware for your API calls.\n\n// Request interceptor: runs BEFORE every request is sent\napiClient.interceptors.request.use((config) => {\n  // Example: attach an auth token if it exists\n  const token = localStorage.getItem('token');\n  if (token) {\n    config.headers.Authorization = `Bearer ${token}`;\n  }\n  return config;\n});\n\n// Response interceptor: runs AFTER every response arrives\napiClient.interceptors.response.use(\n  (response) => response,  // success: just pass it through\n  (error) => {\n    // Error: log it and show a user-friendly message\n    if (error.response?.status === 401) {\n      console.error('Session expired. Please log in again.');\n    }\n    return Promise.reject(error);\n  }\n);\n\nexport default apiClient;"
+        },
+        {
+          "type": "text",
+          "heading": "Fetching questions with error handling",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "frontend/src/api/questions.ts",
+          "code": "import apiClient from './client';\nimport { Question } from '@/types/question';\n\n// Fetch all questions (or questions filtered by topic)\nexport async function getQuestions(topicSlug?: string): Promise<Question[]> {\n  try {\n    const params = topicSlug ? { topic: topicSlug } : {};\n    const response = await apiClient.get<Question[]>('/questions', { params });\n    return response.data;\n  } catch (error) {\n    console.error('Failed to fetch questions:', error);\n    throw error;  // let the component decide how to handle it\n  }\n}\n\n// Fetch a single question by ID\nexport async function getQuestionById(id: string): Promise<Question> {\n  try {\n    const response = await apiClient.get<Question>(`/questions/${id}`);\n    return response.data;\n  } catch (error) {\n    console.error(`Failed to fetch question ${id}:`, error);\n    throw error;\n  }\n}"
+        },
+        {
+          "type": "text",
+          "heading": "Using it in a component with loading states",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "QuizPage.tsx (with loading and error states)",
+          "code": "import { useState, useEffect } from 'react';\nimport { getQuestions } from '@/api/questions';\nimport { Question } from '@/types/question';\n\nfunction QuizPage({ topicSlug }: { topicSlug: string }) {\n  const [questions, setQuestions] = useState<Question[]>([]);\n  const [loading, setLoading] = useState(true);\n  const [error, setError] = useState<string | null>(null);\n\n  useEffect(() => {\n    async function loadQuestions() {\n      try {\n        setLoading(true);\n        setError(null);\n        const data = await getQuestions(topicSlug);\n        setQuestions(data);\n      } catch (err) {\n        setError('Could not load questions. Please try again.');\n      } finally {\n        setLoading(false);  // runs whether it succeeded or failed\n      }\n    }\n\n    loadQuestions();\n  }, [topicSlug]);\n\n  if (loading) return <CircularProgress />;\n  if (error) return <Alert severity=\"error\">{error}</Alert>;\n  if (questions.length === 0) return <Typography>No questions found.</Typography>;\n\n  return (\n    <div>\n      {questions.map((q) => (\n        <QuestionCard key={q.id} question={q} />\n      ))}\n    </div>\n  );\n}"
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "body": "Three states to always handle: (1) Loading — show a spinner. (2) Error — show a helpful message. (3) Empty — show a \"nothing here\" message. Never leave the user staring at a blank screen."
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "Create a centralized API client with interceptors for auth and error handling. Always handle loading, error, and empty states in your components."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "8. Practical Example: Quiz Data Flow",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Let us trace a quiz question from its origin in a JSON file all the way to appearing on the user's screen. This is the full data flow in action."
+        },
+        {
+          "type": "step",
+          "step": 1,
+          "title": "JSON question in the backend",
+          "body": "The data starts as a JSON object in a file on the server.",
+          "code": "{\n  \"id\": \"q42\",\n  \"topicSlug\": \"basics\",\n  \"text\": \"What frequency band is the 2-meter band?\",\n  \"options\": [\n    { \"label\": \"A\", \"text\": \"144-148 MHz\" },\n    { \"label\": \"B\", \"text\": \"220-225 MHz\" },\n    { \"label\": \"C\", \"text\": \"420-450 MHz\" },\n    { \"label\": \"D\", \"text\": \"50-54 MHz\" }\n  ],\n  \"correctAnswer\": \"A\",\n  \"explanation\": \"The 2-meter band covers 144 to 148 MHz in the VHF range.\"\n}",
+          "language": "json"
+        },
+        {
+          "type": "step",
+          "step": 2,
+          "title": "API endpoint serves the data",
+          "body": "An Express route reads the JSON and sends it to any client that asks.",
+          "code": "import express from 'express';\nimport questions from '../data/questions.json';\n\nconst router = express.Router();\n\n// GET /api/questions         -> all questions\n// GET /api/questions?topic=basics -> filtered by topic\nrouter.get('/questions', (req, res) => {\n  const { topic } = req.query;\n\n  if (topic) {\n    const filtered = questions.filter((q) => q.topicSlug === topic);\n    return res.json(filtered);\n  }\n\n  res.json(questions);\n});\n\nexport default router;",
+          "language": "tsx"
+        },
+        {
+          "type": "step",
+          "step": 3,
+          "title": "Frontend fetches via API client",
+          "body": "The frontend uses axios to request questions from the API.",
+          "code": "import apiClient from './client';\nimport { Question } from '@/types/question';\n\nexport async function getQuestions(topicSlug?: string): Promise<Question[]> {\n  const params = topicSlug ? { topic: topicSlug } : {};\n  const { data } = await apiClient.get<Question[]>('/questions', { params });\n  return data;\n}",
+          "language": "tsx"
+        },
+        {
+          "type": "step",
+          "step": 4,
+          "title": "Redux slice stores the state",
+          "body": "The fetched data is stored in a Redux slice for the rest of the app to use.",
+          "code": "import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';\nimport { getQuestions } from '@/api/questions';\nimport { Question } from '@/types/question';\n\ninterface QuizState {\n  questions: Question[];\n  currentIndex: number;\n  loading: boolean;\n  error: string | null;\n}\n\nconst initialState: QuizState = {\n  questions: [],\n  currentIndex: 0,\n  loading: false,\n  error: null,\n};\n\n// Async thunk: fetches questions and puts them in Redux\nexport const fetchQuestions = createAsyncThunk(\n  'quiz/fetchQuestions',\n  async (topicSlug: string) => {\n    const questions = await getQuestions(topicSlug);\n    return questions;\n  }\n);\n\nconst quizSlice = createSlice({\n  name: 'quiz',\n  initialState,\n  reducers: {\n    nextQuestion(state) {\n      if (state.currentIndex < state.questions.length - 1) {\n        state.currentIndex += 1;\n      }\n    },\n    resetQuiz(state) {\n      state.currentIndex = 0;\n    },\n  },\n  extraReducers: (builder) => {\n    builder\n      .addCase(fetchQuestions.pending, (state) => {\n        state.loading = true;\n        state.error = null;\n      })\n      .addCase(fetchQuestions.fulfilled, (state, action) => {\n        state.loading = false;\n        state.questions = action.payload;\n        state.currentIndex = 0;\n      })\n      .addCase(fetchQuestions.rejected, (state, action) => {\n        state.loading = false;\n        state.error = action.error.message || 'Failed to load questions';\n      });\n  },\n});\n\nexport const { nextQuestion, resetQuiz } = quizSlice.actions;\nexport default quizSlice.reducer;",
+          "language": "tsx"
+        },
+        {
+          "type": "step",
+          "step": 5,
+          "title": "QuestionCard component displays it",
+          "body": "A presentational component receives a question object and renders it.",
+          "code": "import Card from '@mui/material/Card';\nimport CardContent from '@mui/material/CardContent';\nimport Typography from '@mui/material/Typography';\nimport Button from '@mui/material/Button';\nimport { Question } from '@/types/question';\n\ninterface QuestionCardProps {\n  question: Question;\n  onAnswer: (questionId: string, selectedLabel: string) => void;\n}\n\nexport default function QuestionCard({ question, onAnswer }: QuestionCardProps) {\n  return (\n    <Card variant=\"outlined\" sx={{ maxWidth: 600, mx: 'auto', mt: 3 }}>\n      <CardContent>\n        <Typography variant=\"h6\" gutterBottom>\n          {question.text}\n        </Typography>\n        {question.options.map((option) => (\n          <Button\n            key={option.label}\n            variant=\"outlined\"\n            fullWidth\n            sx={{ mb: 1, justifyContent: 'flex-start', textTransform: 'none' }}\n            onClick={() => onAnswer(question.id, option.label)}\n          >\n            <strong>{option.label}.</strong>&nbsp;{option.text}\n          </Button>\n        ))}\n      </CardContent>\n    </Card>\n  );\n}",
+          "language": "tsx"
+        },
+        {
+          "type": "step",
+          "step": 6,
+          "title": "The user sees the question",
+          "body": "The page component wires everything together — dispatching the fetch, reading from Redux, and rendering the QuestionCard.",
+          "code": "'use client';\n\nimport { useEffect } from 'react';\nimport { useAppDispatch, useAppSelector } from '@/store/hooks';\nimport { fetchQuestions, nextQuestion } from '@/store/slices/quizSlice';\nimport QuestionCard from '@/components/QuestionCard';\nimport CircularProgress from '@mui/material/CircularProgress';\nimport Alert from '@mui/material/Alert';\n\nexport default function QuizPage() {\n  const dispatch = useAppDispatch();\n  const { questions, currentIndex, loading, error } = useAppSelector(\n    (state) => state.quiz\n  );\n\n  useEffect(() => {\n    dispatch(fetchQuestions('basics'));\n  }, [dispatch]);\n\n  if (loading) return <CircularProgress />;\n  if (error) return <Alert severity=\"error\">{error}</Alert>;\n  if (questions.length === 0) return <p>No questions available.</p>;\n\n  const currentQuestion = questions[currentIndex];\n\n  const handleAnswer = (questionId: string, selectedLabel: string) => {\n    console.log(`Answered ${questionId}: ${selectedLabel}`);\n    dispatch(nextQuestion());\n  };\n\n  return (\n    <div>\n      <p>Question {currentIndex + 1} of {questions.length}</p>\n      <QuestionCard\n        question={currentQuestion}\n        onAnswer={handleAnswer}\n      />\n    </div>\n  );\n}",
+          "language": "tsx"
+        },
+        {
+          "type": "text",
+          "heading": "The complete flow at a glance",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "filename": "Data flow summary",
+          "code": "questions.json \u2500\u2500> API endpoint \u2500\u2500> API client \u2500\u2500> Redux store \u2500\u2500> Component \u2500\u2500> Screen\n   (backend)       (Express)      (axios)      (quizSlice)  (QuestionCard)  (user)\n\n   THE DATA       SERVES IT     FETCHES IT    STORES IT    RENDERS IT     SEES IT"
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "Data flows in one direction: from the JSON source, through the API, into the frontend state, and finally onto the screen. Each layer has a single responsibility, making the system easy to understand, debug, and maintain."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "9. When to Use Local JSON vs API",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Not everything needs to go through an API. Some data is so small and static that keeping it in a local JSON file inside the frontend is perfectly fine. Here is how to decide."
+        },
+        {
+          "type": "table",
+          "headers": ["Criteria", "Local JSON (in frontend)", "Backend API"],
+          "rows": [
+            ["Data size", "Small (under ~50 items)", "Large or growing over time"],
+            ["Updates", "Rarely changes", "Changes frequently or by multiple people"],
+            ["Shared", "Only this frontend uses it", "Multiple apps need the same data"],
+            ["User content", "No user-generated content", "Users create or modify data"],
+            ["Security", "Nothing sensitive", "Contains answers, user data, etc."],
+            ["Example", "Navigation links, glossary terms", "Quiz questions, user profiles"]
+          ]
+        },
+        {
+          "type": "text",
+          "heading": "Example: Local JSON for navigation",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "json",
+          "filename": "frontend/src/data/navigation.json",
+          "code": "{\n  \"mainNav\": [\n    { \"label\": \"Home\", \"path\": \"/\" },\n    { \"label\": \"Study Guide\", \"path\": \"/topics\" },\n    { \"label\": \"Practice Quiz\", \"path\": \"/quiz\" },\n    { \"label\": \"Glossary\", \"path\": \"/glossary\" }\n  ]\n}"
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "Using local JSON (no API needed)",
+          "code": "// You can import JSON directly in your component\nimport navData from '@/data/navigation.json';\n\nfunction Sidebar() {\n  return (\n    <nav>\n      {navData.mainNav.map((item) => (\n        <Link key={item.path} href={item.path}>\n          {item.label}\n        </Link>\n      ))}\n    </nav>\n  );\n}\n\n// This works because:\n// - Navigation rarely changes\n// - The data is tiny (4 items)\n// - Only this frontend uses it\n// - There is nothing sensitive"
+        },
+        {
+          "type": "text",
+          "heading": "Example: API for quiz questions",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "Quiz questions need an API",
+          "code": "// DON'T import questions directly in the frontend!\n// \u274c import questions from '@/data/questions.json';\n\n// DO fetch them from the API:\n// \u2705\nimport { getQuestions } from '@/api/questions';\n\nfunction QuizPage() {\n  useEffect(() => {\n    // Fetching from API because:\n    // - There are 400+ questions (too large for a bundle)\n    // - Content editors update them regularly\n    // - The mobile app also needs the same questions\n    // - Correct answers should stay on the server\n    getQuestions('basics').then(setQuestions);\n  }, []);\n}"
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "body": "Rule of thumb: If you would be comfortable pasting the data directly into your component and it would not make the file unreasonably long, local JSON is fine. If the data feels like it belongs in a database, use an API."
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "Use local JSON for small, static, frontend-only data like navigation and glossary terms. Use a backend API for large, dynamic, or shared data like quiz questions and user content. When in doubt, start local and move to an API when you outgrow it."
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Summary",
+      "headingLevel": 2,
+      "body": "JSON holds the data. TSX handles the display. The backend serves the data through an API. TypeScript interfaces keep everything in sync. This separation makes your projects easier to maintain, test, collaborate on, and scale. Start small with local JSON files and graduate to a full API as your project grows."
+    }
+  ]
+}

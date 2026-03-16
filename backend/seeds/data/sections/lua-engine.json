@@ -1,0 +1,777 @@
+{
+  "title": "Lua Scripting Engine",
+  "slug": "lua-engine",
+  "description": "Learn how to embed Lua as a scripting engine in your web applications. Let users write custom rules, game logic, and configuration — all running safely in the browser.",
+  "icon": "Code",
+  "order": 6,
+  "estimatedMinutes": 35,
+  "difficulty": "intermediate",
+  "prerequisites": ["fundamentals", "features"],
+  "keyPoints": [
+    "Lua is a lightweight scripting language you can embed inside your web app to let users write custom logic",
+    "Fengari and Wasmoon are two libraries that run Lua code directly in the browser — no server needed",
+    "You can pass data back and forth between JavaScript and Lua, giving Lua scripts controlled access to your app",
+    "Common use cases include game scripting, user-defined rules, configuration files, and educational playgrounds",
+    "Lua runs in a sandbox, meaning user scripts cannot access anything you have not explicitly allowed",
+    "For most web app logic you should use JavaScript — Lua shines when you need a safe, user-facing scripting layer",
+    "Performance is good for most tasks, but loading the Lua engine adds startup cost and bundle size",
+    "Always validate and sandbox user-provided Lua scripts to keep your application secure"
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "heading": "What Is Lua and Why Should You Care?",
+      "headingLevel": 2,
+      "body": "Lua (pronounced LOO-ah, meaning \"moon\" in Portuguese) is a small, fast programming language designed to be embedded inside other applications. If you have ever played a game that lets you write mods or custom scripts, there is a good chance it was using Lua under the hood."
+    },
+    {
+      "type": "text",
+      "body": "Think of Lua like a **plug-in engine for your app**. Your web application is the car, and Lua is a small, lightweight motor you bolt on to handle specific tasks. Your main app stays in JavaScript and React, but when you need users to write their own logic — custom rules, game behavior, automation scripts — Lua gives them a safe, simple language to do it in."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "Lightweight",
+          "body": "The entire Lua interpreter is tiny. It was designed from the ground up to be embedded inside other programs without adding bloat.",
+          "icon": "Feather"
+        },
+        {
+          "title": "Safe Sandbox",
+          "body": "Lua code runs in an isolated environment. User scripts cannot access your filesystem, database, or anything you have not explicitly allowed.",
+          "icon": "Shield"
+        },
+        {
+          "title": "Easy to Learn",
+          "body": "Lua has simple, clean syntax with only a few keywords. If someone knows basic programming concepts, they can pick up Lua in an afternoon.",
+          "icon": "School"
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Where is Lua used in the real world?",
+      "body": "Lua powers scripting in Roblox, World of Warcraft add-ons, Nginx web server configuration, Redis scripting, Adobe Lightroom plugins, and hundreds of video games. It is one of the most widely embedded languages in existence."
+    },
+    {
+      "type": "accordion",
+      "title": "Why Embed a Scripting Engine in a Web App?",
+      "defaultExpanded": true,
+      "blocks": [
+        {
+          "type": "text",
+          "heading": "The Problem: Hard-Coded Logic",
+          "headingLevel": 3,
+          "body": "Imagine you are building a web app that calculates shipping costs. Right now, the rules are hard-coded in JavaScript: free shipping over $50, flat rate $5 under $50. Every time the business wants to change a rule, a developer has to edit code, test it, and redeploy the whole application."
+        },
+        {
+          "type": "text",
+          "body": "Now imagine giving your business users a simple scripting interface where they can write rules like this:"
+        },
+        {
+          "type": "code",
+          "language": "lua",
+          "filename": "shipping-rules.lua",
+          "code": "-- Business users can edit these rules without touching the main app\nif order.total > 100 then\n  return 0  -- Free shipping for orders over $100\nelseif order.total > 50 then\n  return 4.99  -- Discounted shipping\nelse\n  return 9.99  -- Standard shipping\nend",
+          "description": "A simple Lua script that calculates shipping costs based on order total"
+        },
+        {
+          "type": "text",
+          "body": "That is the power of embedding a scripting engine. You separate the **what** (business logic that changes often) from the **how** (your application infrastructure that stays stable). The business team updates rules in Lua, and your app picks them up instantly — no redeployment needed."
+        },
+        {
+          "type": "list",
+          "heading": "Real scenarios where an embedded scripting engine makes sense",
+          "ordered": false,
+          "items": [
+            "Game development: Let players write custom AI behavior, item effects, or level scripts",
+            "Business rules: Allow non-developers to define pricing rules, discount logic, or approval workflows",
+            "Education: Build coding playgrounds where students can write and run code safely in the browser",
+            "Content management: Let authors create dynamic content with scripted interactions",
+            "Data transformation: Allow power users to write custom data processing pipelines",
+            "Plugin systems: Give third-party developers a safe way to extend your application"
+          ]
+        },
+        {
+          "type": "alert",
+          "severity": "warning",
+          "title": "Why not just use JavaScript for user scripts?",
+          "body": "JavaScript has full access to the browser environment — the DOM, cookies, network requests, and more. Running untrusted JavaScript is extremely dangerous. Lua runs in a complete sandbox with zero access to anything outside what you explicitly provide. This makes it far safer for user-facing scripting."
+        },
+        {
+          "type": "table",
+          "headers": ["Approach", "Flexibility", "Safety", "Complexity"],
+          "rows": [
+            ["Hard-coded JS logic", "Low — requires redeployment", "High — developer-controlled", "Low"],
+            ["JSON configuration", "Medium — data only, no logic", "High — just data", "Low"],
+            ["Embedded Lua", "High — full scripting", "High — sandboxed", "Medium"],
+            ["User-provided JavaScript (eval)", "High — full scripting", "Very Low — dangerous", "Low"]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Lua Basics: A Quick Crash Course",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "heading": "Lua Syntax in 5 Minutes",
+          "headingLevel": 3,
+          "body": "Before we start embedding Lua in a web app, let us learn just enough Lua to be productive. If you already know JavaScript, Lua will feel familiar — but with some key differences."
+        },
+        {
+          "type": "text",
+          "body": "Lua uses **local** to declare variables. Without it, variables become global (which is usually a mistake). Strings are joined with two dots (..) instead of the plus sign. Comments start with two dashes (--)."
+        },
+        {
+          "type": "code",
+          "language": "lua",
+          "filename": "basics.lua",
+          "code": "-- Variables\nlocal name = \"Alice\"\nlocal score = 42\nlocal isActive = true\n\n-- String concatenation uses ..\nlocal greeting = \"Hello, \" .. name .. \"!\"\nprint(greeting)  -- \"Hello, Alice!\"\n\n-- Multiple assignment\nlocal x, y, z = 1, 2, 3",
+          "description": "Basic variable declarations and string operations in Lua"
+        },
+        {
+          "type": "code",
+          "language": "lua",
+          "filename": "control-flow.lua",
+          "code": "-- If / elseif / else\nlocal temperature = 72\n\nif temperature > 90 then\n  print(\"It is hot!\")\nelseif temperature > 60 then\n  print(\"It is nice outside\")\nelse\n  print(\"It is cold!\")\nend\n\n-- While loop\nlocal count = 1\nwhile count <= 5 do\n  print(\"Count: \" .. count)\n  count = count + 1\nend\n\n-- For loop (start, end, step)\nfor i = 1, 10 do\n  print(i)\nend\n\n-- For loop counting backwards\nfor i = 10, 1, -1 do\n  print(i)\nend",
+          "description": "Conditionals and loops in Lua"
+        },
+        {
+          "type": "code",
+          "language": "lua",
+          "filename": "functions.lua",
+          "code": "-- Basic function\nlocal function greet(personName)\n  return \"Hello, \" .. personName .. \"!\"\nend\n\nprint(greet(\"Bob\"))  -- \"Hello, Bob!\"\n\n-- Functions can return multiple values\nlocal function divide(a, b)\n  if b == 0 then\n    return nil, \"Cannot divide by zero\"\n  end\n  return a / b, nil\nend\n\nlocal result, err = divide(10, 3)\nif err then\n  print(\"Error: \" .. err)\nelse\n  print(\"Result: \" .. result)  -- \"Result: 3.3333...\"\nend",
+          "description": "Functions in Lua, including multiple return values"
+        },
+        {
+          "type": "code",
+          "language": "lua",
+          "filename": "tables.lua",
+          "code": "-- Tables are Lua's only data structure\n-- They work as both arrays and dictionaries (objects)\n\n-- As an array (note: Lua arrays start at 1, not 0!)\nlocal fruits = {\"apple\", \"banana\", \"cherry\"}\nprint(fruits[1])  -- \"apple\" (not fruits[0]!)\nprint(#fruits)    -- 3 (the # operator gives the length)\n\n-- As a dictionary (like a JavaScript object)\nlocal player = {\n  name = \"Alice\",\n  health = 100,\n  level = 5\n}\nprint(player.name)    -- \"Alice\"\nprint(player[\"level\"]) -- 5 (bracket notation also works)\n\n-- Iterating over a table\nfor key, value in pairs(player) do\n  print(key .. \": \" .. tostring(value))\nend\n\n-- Iterating over an array\nfor index, fruit in ipairs(fruits) do\n  print(index .. \". \" .. fruit)\nend",
+          "description": "Tables in Lua serve as both arrays and objects"
+        },
+        {
+          "type": "alert",
+          "severity": "warning",
+          "title": "The biggest gotcha: arrays start at 1",
+          "body": "In JavaScript, the first item in an array is at index 0. In Lua, it is at index 1. This trips up almost everyone coming from JavaScript. When you are passing arrays between JS and Lua, remember to account for this difference."
+        },
+        {
+          "type": "tabs",
+          "tabs": [
+            {
+              "label": "Lua Syntax",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "lua",
+                  "filename": "example.lua",
+                  "code": "local name = \"World\"\nlocal items = {\"a\", \"b\", \"c\"}\n\nif #items > 0 then\n  for i, item in ipairs(items) do\n    print(i .. \": \" .. item)\n  end\nend\n\nlocal function add(a, b)\n  return a + b\nend"
+                }
+              ]
+            },
+            {
+              "label": "JavaScript Equivalent",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "javascript",
+                  "filename": "example.js",
+                  "code": "const name = \"World\";\nconst items = [\"a\", \"b\", \"c\"];\n\nif (items.length > 0) {\n  items.forEach((item, i) => {\n    console.log(`${i}: ${item}`);\n  });\n}\n\nfunction add(a, b) {\n  return a + b;\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "headers": ["Concept", "Lua", "JavaScript"],
+          "rows": [
+            ["Declare variable", "local x = 5", "let x = 5; / const x = 5;"],
+            ["Print output", "print(\"hi\")", "console.log(\"hi\");"],
+            ["String join", "\"a\" .. \"b\"", "\"a\" + \"b\""],
+            ["Not equal", "~=", "!=="],
+            ["And / Or / Not", "and / or / not", "&& / || / !"],
+            ["Array index start", "1", "0"],
+            ["Null value", "nil", "null / undefined"],
+            ["Array length", "#myTable", "myArray.length"],
+            ["Block end", "end", "}"],
+            ["Comments", "-- comment", "// comment"],
+            ["Block comments", "--[[ block ]]", "/* block */"]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Setting Up Lua in the Browser with Fengari",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "heading": "What Is Fengari?",
+          "headingLevel": 3,
+          "body": "Fengari (meaning \"moon\" in Greek) is a Lua 5.3 interpreter written entirely in JavaScript. Because it is pure JavaScript, it works everywhere JavaScript works — no WebAssembly required. Think of it as a JavaScript program that knows how to read and execute Lua code."
+        },
+        {
+          "type": "step",
+          "step": 1,
+          "title": "Install Fengari",
+          "body": "Add fengari-web to your project. This is the browser-friendly version of Fengari that includes everything you need.",
+          "code": "npm install fengari-web",
+          "language": "bash"
+        },
+        {
+          "type": "step",
+          "step": 2,
+          "title": "Run Your First Lua Code",
+          "body": "Create a simple utility function that accepts a Lua code string and executes it. This is the foundation for everything else we will build.",
+          "code": "import { lauxlib, lua, lualib, to_jsstring } from 'fengari-web';\n\n/**\n * Execute a string of Lua code and return any output.\n * Think of this like a tiny Lua \"virtual machine\" in your browser.\n */\nfunction executeLua(code: string): string[] {\n  const output: string[] = [];\n\n  // Create a new Lua state (a fresh, empty environment)\n  const L = lauxlib.luaL_newstate();\n  lualib.luaL_openlibs(L);\n\n  // Override Lua's print() to capture output instead of\n  // sending it to the browser console\n  lua.lua_pushcfunction(L, (luaState: any) => {\n    const numArgs = lua.lua_gettop(luaState);\n    const parts: string[] = [];\n    for (let i = 1; i <= numArgs; i++) {\n      parts.push(to_jsstring(\n        lauxlib.luaL_tolstring(luaState, i, null)\n      ));\n      lua.lua_pop(luaState, 1);\n    }\n    output.push(parts.join('\\t'));\n    return 0;\n  });\n  lua.lua_setglobal(L, 'print');\n\n  // Run the Lua code\n  const status = lauxlib.luaL_dostring(L, code);\n\n  if (status !== 0) {\n    // If there was an error, capture the error message\n    const errorMsg = to_jsstring(lua.lua_tostring(L, -1));\n    output.push('Error: ' + errorMsg);\n  }\n\n  // Clean up\n  lua.lua_close(L);\n\n  return output;\n}\n\n// Try it out\nconst result = executeLua(`\n  local sum = 0\n  for i = 1, 100 do\n    sum = sum + i\n  end\n  print(\"Sum of 1 to 100 is: \" .. sum)\n`);\n\nconsole.log(result); // [\"Sum of 1 to 100 is: 5050\"]",
+          "language": "typescript"
+        },
+        {
+          "type": "step",
+          "step": 3,
+          "title": "Pass Data from JavaScript to Lua",
+          "body": "To make Lua scripts useful, they need access to data from your app. You can push JavaScript values into the Lua environment before running the script.",
+          "code": "import { lauxlib, lua, lualib, to_luastring } from 'fengari-web';\n\nfunction executeLuaWithContext(\n  code: string,\n  context: Record<string, string | number | boolean>\n): string[] {\n  const output: string[] = [];\n  const L = lauxlib.luaL_newstate();\n  lualib.luaL_openlibs(L);\n\n  // Push each context value as a Lua global variable\n  for (const [key, value] of Object.entries(context)) {\n    if (typeof value === 'string') {\n      lua.lua_pushstring(L, to_luastring(value));\n    } else if (typeof value === 'number') {\n      lua.lua_pushnumber(L, value);\n    } else if (typeof value === 'boolean') {\n      lua.lua_pushboolean(L, value ? 1 : 0);\n    }\n    lua.lua_setglobal(L, to_luastring(key));\n  }\n\n  lauxlib.luaL_dostring(L, to_luastring(code));\n  lua.lua_close(L);\n  return output;\n}\n\n// Now your Lua script can access JavaScript values!\nexecuteLuaWithContext(\n  `print(\"Hello, \" .. userName .. \"! Your score is \" .. score)`,\n  { userName: \"Alice\", score: 42 }\n);",
+          "language": "typescript"
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "title": "When to choose Fengari",
+          "body": "Fengari is a good choice when you need maximum browser compatibility (no WebAssembly required), when your Lua scripts are simple, or when you want the smallest possible dependency. For more demanding use cases, consider Wasmoon instead."
+        },
+        {
+          "type": "text",
+          "body": "Fengari has a few limitations to be aware of. It only supports Lua 5.3 (not the latest 5.4). It is slower than WebAssembly-based alternatives for compute-heavy scripts. And the API is lower-level, meaning you write more boilerplate code. For many projects, these trade-offs are perfectly acceptable."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Setting Up Lua in the Browser with Wasmoon",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "heading": "What Is Wasmoon?",
+          "headingLevel": 3,
+          "body": "Wasmoon takes a different approach than Fengari. Instead of rewriting Lua in JavaScript, it takes the real Lua 5.4 interpreter (written in C) and compiles it to WebAssembly. This means you get the exact same Lua that runs on servers and in games, but inside your browser. It is faster and more complete than Fengari."
+        },
+        {
+          "type": "step",
+          "step": 1,
+          "title": "Install Wasmoon",
+          "body": "Install wasmoon from npm. It includes the precompiled WASM binary, so there is nothing extra to configure.",
+          "code": "npm install wasmoon",
+          "language": "bash"
+        },
+        {
+          "type": "step",
+          "step": 2,
+          "title": "Create a Lua Engine Wrapper",
+          "body": "Create a reusable helper that manages the Lua engine lifecycle. This handles loading the WASM binary, creating the engine, and cleaning up afterward.",
+          "code": "import { LuaFactory, LuaEngine } from 'wasmoon';\n\n// Cache the factory so we only load the WASM binary once\nlet factoryInstance: LuaFactory | null = null;\n\nasync function getFactory(): Promise<LuaFactory> {\n  if (!factoryInstance) {\n    factoryInstance = new LuaFactory();\n  }\n  return factoryInstance;\n}\n\n/**\n * Run a Lua script and return the captured output lines.\n * Automatically creates and cleans up the Lua engine.\n */\nexport async function runLuaScript(\n  code: string,\n  globals?: Record<string, unknown>\n): Promise<{ output: string[]; error: string | null }> {\n  const factory = await getFactory();\n  const lua = await factory.createEngine();\n  const output: string[] = [];\n\n  try {\n    // Replace print() so we can capture output\n    lua.global.set('print', (...args: unknown[]) => {\n      output.push(args.map(String).join('\\t'));\n    });\n\n    // Inject any global variables the script needs\n    if (globals) {\n      for (const [key, value] of Object.entries(globals)) {\n        lua.global.set(key, value);\n      }\n    }\n\n    // Execute the Lua code\n    await lua.doString(code);\n\n    return { output, error: null };\n  } catch (err: unknown) {\n    const message = err instanceof Error ? err.message : String(err);\n    return { output, error: message };\n  } finally {\n    // Always clean up to avoid memory leaks\n    lua.global.close();\n  }\n}",
+          "language": "typescript"
+        },
+        {
+          "type": "step",
+          "step": 3,
+          "title": "Use It in Your App",
+          "body": "Now you can run Lua scripts from anywhere in your application with a clean, simple API.",
+          "code": "import { runLuaScript } from './lua-engine';\n\n// Simple script\nconst result = await runLuaScript(`\n  local total = 0\n  for i = 1, 100 do\n    total = total + i\n  end\n  print(\"The sum is: \" .. total)\n`);\nconsole.log(result.output); // [\"The sum is: 5050\"]\n\n// Script with injected variables\nconst result2 = await runLuaScript(\n  `print(\"Welcome, \" .. playerName .. \"! Level: \" .. level)`,\n  { playerName: \"Alice\", level: 5 }\n);\nconsole.log(result2.output); // [\"Welcome, Alice! Level: 5\"]\n\n// Handling errors gracefully\nconst result3 = await runLuaScript(`\n  local x = 10 / 0  -- this does not error in Lua (gives inf)\n  print(x)\n  error(\"Something went wrong!\")  -- this does error\n`);\nif (result3.error) {\n  console.error(\"Lua error:\", result3.error);\n}",
+          "language": "typescript"
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Wasmoon handles type conversion automatically",
+          "body": "When you pass JavaScript objects, arrays, numbers, strings, or booleans into Lua using global.set(), Wasmoon automatically converts them to the appropriate Lua types. When you read values back with global.get(), they are converted back to JavaScript types. This makes the bridge between the two languages nearly seamless."
+        },
+        {
+          "type": "step",
+          "step": 4,
+          "title": "Expose JavaScript Functions to Lua",
+          "body": "The real power comes from letting Lua call your JavaScript functions. This lets scripts interact with your app in controlled ways.",
+          "code": "import { runLuaScript } from './lua-engine';\n\n// Expose specific functions that Lua is allowed to call\nconst result = await runLuaScript(\n  `\n    -- Lua can now call these JS functions!\n    local price = getProductPrice(\"widget-123\")\n    local discounted = applyDiscount(price, 0.15)\n    setCartTotal(discounted)\n    print(\"Final price: $\" .. string.format(\"%.2f\", discounted))\n  `,\n  {\n    getProductPrice: (productId: string) => {\n      // Look up from your app's data\n      const prices: Record<string, number> = {\n        'widget-123': 29.99,\n        'gadget-456': 49.99\n      };\n      return prices[productId] ?? 0;\n    },\n    applyDiscount: (price: number, percent: number) => {\n      return price * (1 - percent);\n    },\n    setCartTotal: (total: number) => {\n      // Update your React state, dispatch an action, etc.\n      console.log('Cart total updated to:', total);\n    }\n  }\n);",
+          "language": "typescript"
+        },
+        {
+          "type": "text",
+          "body": "Notice how the Lua script can call getProductPrice, applyDiscount, and setCartTotal as if they were native Lua functions. But each one is actually running JavaScript code that you defined. You control exactly what the Lua script can and cannot do."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Building a Lua Playground in React",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "heading": "A Live Code Editor Component",
+          "headingLevel": 3,
+          "body": "One of the most popular uses for embedded Lua is building interactive code playgrounds. Users type Lua code, click Run, and see the results instantly. Let us build one step by step as a React component."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "src/components/LuaPlayground.tsx",
+          "code": "'use client';\n\nimport { useState, useCallback, useRef } from 'react';\n\n// Lazy-load wasmoon so it does not slow down initial page load\nlet LuaFactory: any = null;\n\nconst DEFAULT_CODE = `-- Try writing some Lua code!\nlocal function fibonacci(n)\n  if n <= 1 then return n end\n  return fibonacci(n - 1) + fibonacci(n - 2)\nend\n\nfor i = 0, 10 do\n  print(\"fib(\" .. i .. \") = \" .. fibonacci(i))\nend`;\n\nexport default function LuaPlayground() {\n  const [code, setCode] = useState(DEFAULT_CODE);\n  const [output, setOutput] = useState<string[]>([]);\n  const [error, setError] = useState<string | null>(null);\n  const [isRunning, setIsRunning] = useState(false);\n  const textareaRef = useRef<HTMLTextAreaElement>(null);\n\n  const runCode = useCallback(async () => {\n    setIsRunning(true);\n    setError(null);\n    const lines: string[] = [];\n\n    try {\n      // Load wasmoon on first run (lazy loading)\n      if (!LuaFactory) {\n        const wasmoon = await import('wasmoon');\n        LuaFactory = wasmoon.LuaFactory;\n      }\n\n      const factory = new LuaFactory();\n      const lua = await factory.createEngine();\n\n      try {\n        // Capture print output\n        lua.global.set('print', (...args: any[]) => {\n          lines.push(args.map(String).join('\\t'));\n        });\n\n        // Set a timeout to prevent infinite loops\n        const timeout = setTimeout(() => {\n          lua.global.close();\n        }, 5000);\n\n        await lua.doString(code);\n        clearTimeout(timeout);\n        setOutput(lines);\n      } finally {\n        lua.global.close();\n      }\n    } catch (err: any) {\n      setError(err.message || 'An unknown error occurred');\n      setOutput(lines);\n    } finally {\n      setIsRunning(false);\n    }\n  }, [code]);\n\n  return (\n    <div style={{ border: '1px solid #e0e0e0', borderRadius: 8, overflow: 'hidden' }}>\n      {/* Code editor area */}\n      <div style={{ padding: 8, backgroundColor: '#f5f5f5', borderBottom: '1px solid #e0e0e0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>\n        <span style={{ fontWeight: 600, fontSize: 14 }}>Lua Playground</span>\n        <button\n          onClick={runCode}\n          disabled={isRunning}\n          style={{ padding: '6px 16px', backgroundColor: '#1976d2', color: 'white', border: 'none', borderRadius: 4, cursor: isRunning ? 'not-allowed' : 'pointer' }}\n        >\n          {isRunning ? 'Running...' : 'Run Code'}\n        </button>\n      </div>\n\n      <textarea\n        ref={textareaRef}\n        value={code}\n        onChange={(e) => setCode(e.target.value)}\n        spellCheck={false}\n        style={{ width: '100%', minHeight: 200, padding: 12, fontFamily: 'monospace', fontSize: 14, border: 'none', outline: 'none', resize: 'vertical', backgroundColor: '#1e1e1e', color: '#d4d4d4' }}\n      />\n\n      {/* Output area */}\n      <div style={{ padding: 12, backgroundColor: '#0d1117', color: '#58a6ff', fontFamily: 'monospace', fontSize: 13, minHeight: 60 }}>\n        <div style={{ color: '#8b949e', marginBottom: 4 }}>Output:</div>\n        {error && <div style={{ color: '#f85149' }}>{error}</div>}\n        {output.map((line, i) => (\n          <div key={i}>{line}</div>\n        ))}\n        {!error && output.length === 0 && (\n          <div style={{ color: '#8b949e' }}>Click \"Run Code\" to see output</div>\n        )}\n      </div>\n    </div>\n  );\n}",
+          "description": "A complete Lua playground React component with code editor, run button, and output display"
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "body": "This component lazy-loads the wasmoon library on first use. This means your page loads fast, and the Lua engine only downloads when someone actually clicks Run. The WASM binary is around 200-400 KB, so lazy loading makes a real difference."
+        },
+        {
+          "type": "text",
+          "heading": "How It Works",
+          "headingLevel": 4,
+          "body": "When the user clicks Run, the component creates a fresh Lua virtual machine, injects a custom print function that captures output into a React state array, executes the user's code, and then displays the results. Each run gets a completely clean environment, so variables from a previous run do not carry over."
+        },
+        {
+          "type": "list",
+          "heading": "Features you could add to this playground",
+          "ordered": false,
+          "items": [
+            "Syntax highlighting with a library like CodeMirror or Monaco Editor",
+            "Preset example scripts that users can load with a dropdown menu",
+            "A \"Share\" button that encodes the code in a URL parameter",
+            "Execution time display so users can see how fast their code runs",
+            "Line numbers in the editor for easier debugging",
+            "Autocomplete for Lua keywords and built-in functions"
+          ]
+        },
+        {
+          "type": "alert",
+          "severity": "warning",
+          "title": "Protect against infinite loops",
+          "body": "User-written code might accidentally create an infinite loop (like while true do end). The timeout mechanism in our component helps, but it is not bulletproof. For production use, consider running Lua in a Web Worker so infinite loops do not freeze the main thread."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Practical Example: Game Scripting",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "heading": "Using Lua for Game Logic",
+          "headingLevel": 3,
+          "body": "One of Lua's most famous uses is game scripting. The idea is simple: your game engine (JavaScript, in our case) handles rendering, input, and physics, while Lua scripts define the game rules, enemy behavior, item effects, and dialogue. This separation makes it easy to tweak gameplay without touching the engine code."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "src/game/lua-game-engine.ts",
+          "code": "import { LuaFactory } from 'wasmoon';\n\ninterface GameState {\n  playerHealth: number;\n  playerScore: number;\n  enemies: Array<{ name: string; health: number; x: number; y: number }>;\n  items: Array<{ name: string; effect: string }>;\n}\n\nexport async function createGameScriptEngine(initialState: GameState) {\n  const factory = new LuaFactory();\n  const lua = await factory.createEngine();\n\n  // Expose game state to Lua\n  lua.global.set('gameState', initialState);\n\n  // Expose safe game actions that Lua can call\n  lua.global.set('dealDamage', (target: string, amount: number) => {\n    const enemy = initialState.enemies.find(e => e.name === target);\n    if (enemy) {\n      enemy.health = Math.max(0, enemy.health - amount);\n      return true;\n    }\n    return false;\n  });\n\n  lua.global.set('addScore', (points: number) => {\n    initialState.playerScore += points;\n  });\n\n  lua.global.set('healPlayer', (amount: number) => {\n    initialState.playerHealth = Math.min(100, initialState.playerHealth + amount);\n  });\n\n  lua.global.set('spawnEnemy', (name: string, health: number, x: number, y: number) => {\n    initialState.enemies.push({ name, health, x, y });\n  });\n\n  return {\n    /** Run a Lua game script */\n    async runScript(code: string) {\n      await lua.doString(code);\n    },\n\n    /** Get current game state */\n    getState(): GameState {\n      return { ...initialState };\n    },\n\n    /** Clean up when done */\n    destroy() {\n      lua.global.close();\n    }\n  };\n}",
+          "description": "A game script engine that exposes controlled game actions to Lua"
+        },
+        {
+          "type": "code",
+          "language": "lua",
+          "filename": "scripts/enemy-behavior.lua",
+          "code": "-- This script defines enemy behavior\n-- Game designers can edit this without touching JavaScript\n\n-- When an enemy is hit, check if it should drop loot\nfunction onEnemyDefeated(enemyName)\n  addScore(100)\n\n  -- Boss enemies give bonus score\n  if enemyName == \"Dragon\" then\n    addScore(500)\n    healPlayer(25)\n    print(enemyName .. \" defeated! Bonus score and healing!\")\n  else\n    print(enemyName .. \" defeated!\")\n  end\nend\n\n-- Spawn a wave of enemies\nfunction spawnWave(waveNumber)\n  local enemyCount = waveNumber * 2\n\n  for i = 1, enemyCount do\n    local x = math.random(0, 800)\n    local y = math.random(0, 600)\n    local health = 50 + (waveNumber * 10)\n\n    if waveNumber > 3 and i == enemyCount then\n      -- Last enemy in waves 4+ is a boss\n      spawnEnemy(\"Dragon\", health * 3, x, y)\n    else\n      spawnEnemy(\"Goblin_\" .. i, health, x, y)\n    end\n  end\n\n  print(\"Wave \" .. waveNumber .. \": Spawned \" .. enemyCount .. \" enemies!\")\nend\n\n-- Start wave 1\nspawnWave(1)",
+          "description": "A Lua script that defines enemy behavior and wave spawning logic"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "Using the game script engine",
+          "code": "// In your React component or game loop\nimport { createGameScriptEngine } from './lua-game-engine';\n\nconst engine = await createGameScriptEngine({\n  playerHealth: 100,\n  playerScore: 0,\n  enemies: [],\n  items: []\n});\n\n// Load and run the enemy behavior script\nconst behaviorScript = await fetch('/scripts/enemy-behavior.lua')\n  .then(r => r.text());\nawait engine.runScript(behaviorScript);\n\n// Later, when an enemy is defeated:\nawait engine.runScript(`onEnemyDefeated(\"Goblin_1\")`);\n\nconsole.log(engine.getState());\n// { playerHealth: 100, playerScore: 100, enemies: [...], items: [] }\n\n// Clean up\nengine.destroy();",
+          "description": "Running the Lua game scripts from JavaScript"
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "body": "Notice how the Lua script has no idea it is running in a browser. It calls dealDamage, addScore, and spawnEnemy as if they were built-in functions. This is the beauty of embedding — you define the API, and script authors use it without worrying about the underlying platform."
+        },
+        {
+          "type": "text",
+          "body": "This pattern is exactly how professional game studios use Lua. The engine developers build the core systems in a fast language (C++, or in our case JavaScript), then expose a clean scripting API. Game designers write Lua scripts to define content and behavior. Everyone works in their area of expertise."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Practical Example: Configuration and Business Rules",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "heading": "Lua as a Smart Configuration Language",
+          "headingLevel": 3,
+          "body": "JSON is great for static configuration, but what happens when your config needs logic? For example, a shipping rate that depends on the destination, weight, and whether it is a holiday. JSON cannot express conditions, loops, or calculations. Lua can."
+        },
+        {
+          "type": "tabs",
+          "tabs": [
+            {
+              "label": "JSON (static only)",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "json",
+                  "filename": "shipping-config.json",
+                  "code": "{\n  \"domestic\": {\n    \"standard\": 5.99,\n    \"express\": 12.99,\n    \"freeThreshold\": 50\n  },\n  \"international\": {\n    \"standard\": 15.99,\n    \"express\": 29.99,\n    \"freeThreshold\": 200\n  }\n}"
+                },
+                {
+                  "type": "text",
+                  "body": "This works for simple cases, but what if you want: weekend surcharges, weight-based pricing, holiday specials, or loyalty discounts? You would need to add more and more fields, and the logic to interpret them gets complicated."
+                }
+              ]
+            },
+            {
+              "label": "Lua (logic included)",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "lua",
+                  "filename": "shipping-rules.lua",
+                  "code": "-- Shipping rules with full logic\n-- Business team can edit this without a developer\n\nfunction calculateShipping(order)\n  local base = 0\n\n  -- Free shipping for large orders\n  if order.total > 100 then\n    return 0\n  end\n\n  -- Base rate depends on destination\n  if order.country == \"US\" then\n    base = 5.99\n  elseif order.country == \"CA\" then\n    base = 8.99\n  else\n    base = 15.99\n  end\n\n  -- Weight surcharge\n  if order.weightKg > 5 then\n    base = base + (order.weightKg - 5) * 1.50\n  end\n\n  -- Express shipping multiplier\n  if order.shippingMethod == \"express\" then\n    base = base * 2\n  end\n\n  -- Weekend surcharge\n  if order.isWeekend then\n    base = base + 3.00\n  end\n\n  -- Loyalty discount\n  if order.customerTier == \"gold\" then\n    base = base * 0.8  -- 20% off\n  elseif order.customerTier == \"silver\" then\n    base = base * 0.9  -- 10% off\n  end\n\n  return math.floor(base * 100 + 0.5) / 100\nend"
+                },
+                {
+                  "type": "text",
+                  "body": "Now the business team can update shipping logic directly. Need a holiday special? Add an if block. Want to change the free shipping threshold? Edit one number. No developer needed, no redeployment required."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "src/services/shipping-calculator.ts",
+          "code": "import { LuaFactory } from 'wasmoon';\n\ninterface Order {\n  total: number;\n  country: string;\n  weightKg: number;\n  shippingMethod: 'standard' | 'express';\n  isWeekend: boolean;\n  customerTier: 'bronze' | 'silver' | 'gold';\n}\n\nexport async function calculateShipping(order: Order): Promise<number> {\n  const factory = new LuaFactory();\n  const lua = await factory.createEngine();\n\n  try {\n    // Load the shipping rules (could be from a database, file, or API)\n    const rulesScript = await fetch('/config/shipping-rules.lua')\n      .then(r => r.text());\n\n    // Load the rules into the Lua environment\n    await lua.doString(rulesScript);\n\n    // Pass the order data to Lua\n    lua.global.set('orderData', order);\n\n    // Call the Lua function and get the result\n    await lua.doString(`\n      shippingCost = calculateShipping(orderData)\n    `);\n\n    const cost = lua.global.get('shippingCost') as number;\n    return cost;\n  } finally {\n    lua.global.close();\n  }\n}\n\n// Usage in a React component\n// const cost = await calculateShipping({\n//   total: 75.00,\n//   country: 'US',\n//   weightKg: 3,\n//   shippingMethod: 'standard',\n//   isWeekend: false,\n//   customerTier: 'gold'\n// });\n// cost => 4.79",
+          "description": "JavaScript wrapper that loads Lua shipping rules and calculates costs"
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "title": "Where to store Lua scripts",
+          "body": "In a real application, you would store Lua scripts in a database so business users can edit them through an admin interface. Fetch the latest script each time you need it (with caching for performance). This gives you a dynamic rules engine without rebuilding your app."
+        },
+        {
+          "type": "list",
+          "heading": "Other business rule examples that work great with Lua",
+          "ordered": false,
+          "items": [
+            "Pricing rules: Dynamic pricing based on quantity, customer type, season, or inventory levels",
+            "Approval workflows: Define who needs to approve purchases above certain amounts",
+            "Discount logic: Buy-one-get-one deals, tiered discounts, coupon stacking rules",
+            "Content filtering: Rules for what content to show different user segments",
+            "Notification triggers: When to send alerts based on custom conditions",
+            "Data validation: Complex validation rules that go beyond simple type checking"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Practical Example: User-Defined Automation Rules",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "heading": "Let Users Write Their Own Rules",
+          "headingLevel": 3,
+          "body": "Some of the most powerful web apps give users the ability to create custom automation rules. Think of email filters, smart home routines, or task automation tools. Lua is perfect for this because users get real scripting power while staying safely sandboxed."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "src/components/AutomationRuleEditor.tsx",
+          "code": "'use client';\n\nimport { useState } from 'react';\n\nconst EXAMPLE_RULES = {\n  'Email Filter': `-- Automatically label incoming emails\nfunction processEmail(email)\n  if string.find(email.subject, \"invoice\") then\n    addLabel(email, \"Finance\")\n    moveTo(email, \"Invoices\")\n  end\n\n  if email.from == \"boss@company.com\" then\n    markImportant(email)\n    notify(\"New email from your boss: \" .. email.subject)\n  end\n\n  if string.find(email.subject, \"unsubscribe\") then\n    moveTo(email, \"Trash\")\n  end\nend`,\n  'Data Alert': `-- Monitor data and send alerts\nfunction checkMetrics(metrics)\n  if metrics.cpuUsage > 90 then\n    alert(\"warning\", \"CPU usage is \" .. metrics.cpuUsage .. \"%\")\n  end\n\n  if metrics.errorRate > 5 then\n    alert(\"critical\", \"Error rate spiked to \" .. metrics.errorRate .. \"%\")\n    notify(\"on-call\", \"High error rate detected\")\n  end\n\n  if metrics.responseTime > 2000 then\n    alert(\"info\", \"Slow responses: \" .. metrics.responseTime .. \"ms\")\n  end\nend`\n};\n\nexport default function AutomationRuleEditor() {\n  const [selectedExample, setSelectedExample] = useState<string>(\n    Object.keys(EXAMPLE_RULES)[0]\n  );\n  const [code, setCode] = useState(\n    EXAMPLE_RULES[selectedExample as keyof typeof EXAMPLE_RULES]\n  );\n  const [testOutput, setTestOutput] = useState<string[]>([]);\n\n  const handleTest = async () => {\n    // Run the rule with mock data to test it\n    const { LuaFactory } = await import('wasmoon');\n    const factory = new LuaFactory();\n    const lua = await factory.createEngine();\n    const output: string[] = [];\n\n    try {\n      lua.global.set('print', (...args: any[]) =>\n        output.push(args.map(String).join('\\t'))\n      );\n\n      // Provide mock implementations of the API\n      lua.global.set('addLabel', (item: any, label: string) =>\n        output.push(`[Action] Add label \"${label}\"`)\n      );\n      lua.global.set('moveTo', (item: any, folder: string) =>\n        output.push(`[Action] Move to \"${folder}\"`)\n      );\n      lua.global.set('markImportant', (item: any) =>\n        output.push('[Action] Marked as important')\n      );\n      lua.global.set('notify', (...args: any[]) =>\n        output.push(`[Notify] ${args.join(': ')}`)\n      );\n      lua.global.set('alert', (level: string, msg: string) =>\n        output.push(`[Alert:${level}] ${msg}`)\n      );\n\n      await lua.doString(code);\n\n      // Run with mock data\n      await lua.doString(`\n        -- Test with sample data\n        if processEmail then\n          processEmail({\n            subject = \"New invoice #1234\",\n            from = \"boss@company.com\",\n            body = \"Please review\"\n          })\n        end\n        if checkMetrics then\n          checkMetrics({ cpuUsage = 95, errorRate = 7, responseTime = 1500 })\n        end\n      `);\n\n      setTestOutput(output);\n    } catch (err: any) {\n      setTestOutput([`Error: ${err.message}`]);\n    } finally {\n      lua.global.close();\n    }\n  };\n\n  return (\n    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>\n      {/* Example selector, code editor, test button, and output display */}\n      {/* ... render UI similar to the LuaPlayground component ... */}\n    </div>\n  );\n}",
+          "description": "An automation rule editor that lets users write and test Lua-based rules"
+        },
+        {
+          "type": "text",
+          "body": "The key insight here is that you define the API (addLabel, moveTo, notify, alert) in JavaScript, and users write rules using those functions in Lua. Users do not need to know JavaScript, React, or how your app works internally. They just use the functions you provide, like building with blocks."
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "body": "This pattern is used by many real products. Game engines let modders write scripts. Email clients let users write filters. Analytics platforms let users define custom metrics. The concept is always the same: expose a safe API, let users write logic in a sandboxed language."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Running Lua in a Web Worker (Performance Best Practice)",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "heading": "Why Use a Web Worker?",
+          "headingLevel": 3,
+          "body": "When you run Lua code on the main thread, your entire web page freezes until the script finishes. For short scripts (under 100ms) this is fine. But user-written scripts might accidentally create infinite loops, or your game logic might take a while to process. A Web Worker runs Lua in a separate thread, keeping your UI responsive no matter what the script does."
+        },
+        {
+          "type": "text",
+          "body": "Think of it like this: your main thread is the cashier at a restaurant. If the cashier also has to cook the food (run Lua scripts), customers have to wait. A Web Worker is like having a separate cook in the kitchen. The cashier keeps taking orders (handling clicks and rendering) while the cook works in the background."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "src/workers/lua-worker.ts",
+          "code": "// This file runs in a separate thread (Web Worker)\nimport { LuaFactory } from 'wasmoon';\n\nlet factory: LuaFactory | null = null;\n\nasync function getFactory() {\n  if (!factory) {\n    factory = new LuaFactory();\n  }\n  return factory;\n}\n\n// Listen for messages from the main thread\nself.addEventListener('message', async (event) => {\n  const { id, code, globals } = event.data;\n  const output: string[] = [];\n\n  try {\n    const f = await getFactory();\n    const lua = await f.createEngine();\n\n    try {\n      lua.global.set('print', (...args: any[]) => {\n        output.push(args.map(String).join('\\t'));\n      });\n\n      if (globals) {\n        for (const [key, value] of Object.entries(globals)) {\n          lua.global.set(key, value);\n        }\n      }\n\n      await lua.doString(code);\n\n      // Send results back to the main thread\n      self.postMessage({ id, output, error: null });\n    } finally {\n      lua.global.close();\n    }\n  } catch (err: any) {\n    self.postMessage({ id, output, error: err.message });\n  }\n});",
+          "description": "A Web Worker that runs Lua scripts in a background thread"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "src/hooks/useLuaWorker.ts",
+          "code": "import { useRef, useCallback } from 'react';\n\ninterface LuaResult {\n  output: string[];\n  error: string | null;\n}\n\n/**\n * React hook that runs Lua scripts in a Web Worker.\n * Your UI stays responsive even if the Lua script takes a while.\n */\nexport function useLuaWorker() {\n  const workerRef = useRef<Worker | null>(null);\n  const callbacksRef = useRef<Map<string, (result: LuaResult) => void>>(\n    new Map()\n  );\n\n  const getWorker = useCallback(() => {\n    if (!workerRef.current) {\n      workerRef.current = new Worker(\n        new URL('../workers/lua-worker.ts', import.meta.url)\n      );\n\n      workerRef.current.addEventListener('message', (event) => {\n        const { id, output, error } = event.data;\n        const callback = callbacksRef.current.get(id);\n        if (callback) {\n          callback({ output, error });\n          callbacksRef.current.delete(id);\n        }\n      });\n    }\n    return workerRef.current;\n  }, []);\n\n  const runLua = useCallback(\n    (code: string, globals?: Record<string, unknown>): Promise<LuaResult> => {\n      return new Promise((resolve) => {\n        const id = crypto.randomUUID();\n        callbacksRef.current.set(id, resolve);\n        getWorker().postMessage({ id, code, globals });\n      });\n    },\n    [getWorker]\n  );\n\n  return { runLua };\n}",
+          "description": "A React hook that manages the Lua Web Worker"
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "Using the hook in a component",
+          "code": "'use client';\n\nimport { useState } from 'react';\nimport { useLuaWorker } from '../hooks/useLuaWorker';\n\nexport default function LuaDemo() {\n  const { runLua } = useLuaWorker();\n  const [output, setOutput] = useState<string[]>([]);\n\n  const handleRun = async () => {\n    // This runs in a Web Worker, so the UI stays responsive!\n    const result = await runLua(`\n      -- Even a long-running script won't freeze the page\n      local sum = 0\n      for i = 1, 1000000 do\n        sum = sum + i\n      end\n      print(\"Sum: \" .. sum)\n    `);\n\n    if (result.error) {\n      setOutput(['Error: ' + result.error]);\n    } else {\n      setOutput(result.output);\n    }\n  };\n\n  return (\n    <div>\n      <button onClick={handleRun}>Run Heavy Lua Script</button>\n      {output.map((line, i) => <p key={i}>{line}</p>)}\n    </div>\n  );\n}",
+          "description": "A React component using the Lua Web Worker hook"
+        },
+        {
+          "type": "alert",
+          "severity": "warning",
+          "title": "Web Worker limitations",
+          "body": "Functions cannot be passed between the main thread and a Web Worker — only plain data (strings, numbers, objects, arrays). This means you cannot pass JavaScript callback functions as Lua globals when using a Worker. Design your API to use message passing instead: Lua produces data, the worker sends it back, and the main thread acts on it."
+        },
+        {
+          "type": "text",
+          "body": "For most applications, the Web Worker approach is the right choice. The only time you should run Lua on the main thread is when scripts are guaranteed to be short-lived (under 50ms) and you need to pass JavaScript functions directly into the Lua environment."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Performance Considerations",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "heading": "Understanding the Performance Trade-offs",
+          "headingLevel": 3,
+          "body": "Embedding Lua in a web app is not free — there are costs you should understand before deciding whether it is the right approach for your project. The good news is that for most use cases, these costs are completely manageable."
+        },
+        {
+          "type": "table",
+          "headers": ["Cost", "Wasmoon", "Fengari", "Impact"],
+          "rows": [
+            ["Initial download", "~200-400 KB (WASM binary)", "~150 KB (JS bundle)", "One-time cost, cacheable"],
+            ["Engine startup", "~50-200ms (first run)", "~10-50ms", "Noticeable on first use"],
+            ["Script execution", "Near-native speed", "3-10x slower than native Lua", "Matters for heavy computation"],
+            ["Memory per engine", "~1-2 MB", "~500 KB", "Matters if running many engines"],
+            ["Creating new engine", "~20-50ms", "~5-10ms", "Relevant if creating per request"]
+          ]
+        },
+        {
+          "type": "list",
+          "heading": "Performance best practices",
+          "ordered": true,
+          "items": [
+            "Cache the LuaFactory instance. Loading the WASM binary is the slowest part, and you only need to do it once.",
+            "Reuse Lua engines when possible. If you are running many scripts with the same setup, keep one engine alive instead of creating new ones each time.",
+            "Lazy-load the Lua library. Use dynamic import() so the WASM binary only downloads when someone actually uses the Lua feature.",
+            "Run scripts in a Web Worker for anything user-facing. This prevents the UI from freezing if a script takes too long.",
+            "Set execution time limits. Use timeouts or instruction count limits to prevent runaway scripts from consuming resources.",
+            "Minimize data transfer between JS and Lua. Each time you pass a large object across the bridge, it gets serialized and deserialized. Keep the data small or pass only what the script needs."
+          ]
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "Performance-optimized engine pool",
+          "code": "import { LuaFactory, LuaEngine } from 'wasmoon';\n\n/**\n * An engine pool that reuses Lua engines instead of creating new ones.\n * This avoids the startup cost of creating a fresh engine for each script.\n */\nclass LuaEnginePool {\n  private factory: LuaFactory | null = null;\n  private available: LuaEngine[] = [];\n  private maxSize: number;\n\n  constructor(maxSize = 3) {\n    this.maxSize = maxSize;\n  }\n\n  private async getFactory(): Promise<LuaFactory> {\n    if (!this.factory) {\n      this.factory = new LuaFactory();\n    }\n    return this.factory;\n  }\n\n  async acquire(): Promise<LuaEngine> {\n    // Reuse an existing engine if available\n    const existing = this.available.pop();\n    if (existing) return existing;\n\n    // Otherwise create a new one\n    const factory = await this.getFactory();\n    return factory.createEngine();\n  }\n\n  release(engine: LuaEngine) {\n    if (this.available.length < this.maxSize) {\n      // Reset the engine state and return it to the pool\n      // Note: you may want to clear globals here\n      this.available.push(engine);\n    } else {\n      // Pool is full, just close this engine\n      engine.global.close();\n    }\n  }\n\n  destroy() {\n    for (const engine of this.available) {\n      engine.global.close();\n    }\n    this.available = [];\n  }\n}\n\n// Usage\nconst pool = new LuaEnginePool(3);\n\nasync function runWithPool(code: string): Promise<string[]> {\n  const engine = await pool.acquire();\n  const output: string[] = [];\n\n  try {\n    engine.global.set('print', (...args: any[]) =>\n      output.push(args.map(String).join('\\t'))\n    );\n    await engine.doString(code);\n    return output;\n  } finally {\n    pool.release(engine);\n  }\n}",
+          "description": "An engine pool that reuses Lua engines to avoid repeated startup costs"
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "title": "When performance matters and when it does not",
+          "body": "If you are running Lua scripts in response to a button click or form submission, performance is rarely an issue — even a 200ms startup is imperceptible. If you are running Lua in a game loop (60 times per second) or processing thousands of records, you need to be more careful. Use the engine pool pattern and keep a single engine alive for the entire session."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Security: Sandboxing User Scripts",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "heading": "Keeping User Scripts Safe",
+          "headingLevel": 3,
+          "body": "When you let users write code that runs in your application, security is critical. The good news is that Lua is designed for embedding and has strong sandboxing capabilities. The bad news is that you still need to be thoughtful about what you expose."
+        },
+        {
+          "type": "text",
+          "body": "By default, a Lua engine running in the browser through Wasmoon or Fengari has **no access** to the DOM, the filesystem, the network, cookies, localStorage, or any browser API. It can only use what you explicitly give it. This is fundamentally different from running user JavaScript with eval(), which has access to everything."
+        },
+        {
+          "type": "list",
+          "heading": "Security rules to follow",
+          "ordered": true,
+          "items": [
+            "Never expose raw DOM access. Instead, provide specific functions like setScore() or updateDisplay() that do exactly one thing.",
+            "Never expose network access (fetch, XMLHttpRequest). If scripts need data, provide it through pre-loaded globals.",
+            "Remove dangerous Lua standard libraries. The os and io libraries can access the filesystem in native Lua — remove them even though they do not work in the browser, just to be safe.",
+            "Set execution time limits. A while true do end loop should be caught and terminated, not left to consume resources.",
+            "Set memory limits. Prevent scripts from allocating enormous tables that eat up browser memory.",
+            "Validate script output. Do not blindly insert Lua output into HTML — sanitize it to prevent XSS attacks.",
+            "Log script execution. Keep records of what scripts run and what they do, especially in multi-user applications."
+          ]
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "src/utils/safe-lua-engine.ts",
+          "code": "import { LuaFactory } from 'wasmoon';\n\n/**\n * Create a sandboxed Lua engine with dangerous functions removed.\n * Only the functions you explicitly allow will be available.\n */\nexport async function createSandboxedEngine() {\n  const factory = new LuaFactory();\n  const lua = await factory.createEngine();\n\n  // Remove potentially dangerous standard library functions\n  await lua.doString(`\n    -- Remove access to the OS library (filesystem, process execution)\n    os = nil\n\n    -- Remove access to the IO library (file reading/writing)\n    io = nil\n\n    -- Remove the ability to load external files\n    dofile = nil\n    loadfile = nil\n\n    -- Remove the debug library (can be used to escape the sandbox)\n    debug = nil\n\n    -- Remove the ability to load C modules\n    package = nil\n    require = nil\n\n    -- Remove raw access to the global table modification\n    rawset = nil\n    rawget = nil\n\n    -- Keep only safe standard libraries:\n    -- math, string, table, utf8, tonumber, tostring,\n    -- pairs, ipairs, next, select, type, error, pcall, xpcall\n  `);\n\n  return lua;\n}\n\n// Usage\nconst lua = await createSandboxedEngine();\n\n// Now only provide the specific functions users need\nlua.global.set('print', (...args: any[]) => { /* safe output */ });\nlua.global.set('getPlayerScore', () => { /* safe data access */ });\n\n// User code cannot access the filesystem, network, or DOM\n// It can only use the functions you provided\nawait lua.doString(userScript);",
+          "description": "A hardened Lua engine with dangerous functions removed"
+        },
+        {
+          "type": "alert",
+          "severity": "error",
+          "title": "Never use eval() for user scripts",
+          "body": "JavaScript's eval() function runs code with full access to your entire application. A malicious user could steal cookies, redirect users, modify the page, make network requests, or access sensitive data. Lua's sandbox prevents all of this by design. Always use Lua (or a similar sandboxed language) for user-facing scripting."
+        },
+        {
+          "type": "alert",
+          "severity": "warning",
+          "title": "Sanitize Lua output before rendering",
+          "body": "If you display Lua output in your React components, make sure to escape HTML. A script that prints '<script>alert(\"hacked\")</script>' should not execute as HTML. React's JSX automatically escapes strings in curly braces, so {output} is safe. But if you use dangerouslySetInnerHTML, you must sanitize first."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "When to Use Lua vs When to Use JavaScript",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "heading": "Making the Right Choice",
+          "headingLevel": 3,
+          "body": "Lua is a powerful tool, but it is not the right choice for every situation. Here is a practical guide to help you decide when embedding Lua makes sense and when plain JavaScript is the better path."
+        },
+        {
+          "type": "cardGrid",
+          "columns": 2,
+          "cards": [
+            {
+              "title": "Use Lua When...",
+              "body": "You need users to write custom logic safely. You want to separate business rules from app code. You are building a game with moddable behavior. You need a plugin or extension system. You want non-developers to edit application logic.",
+              "icon": "CheckCircle"
+            },
+            {
+              "title": "Use JavaScript When...",
+              "body": "You are building standard web app features. You need direct DOM manipulation. You need access to browser APIs (fetch, localStorage). Performance is critical and every millisecond counts. Your team already knows JavaScript well.",
+              "icon": "Code"
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "headers": ["Scenario", "Recommended Approach", "Why"],
+          "rows": [
+            ["Form validation", "JavaScript", "Direct DOM access needed, simple logic"],
+            ["User-defined pricing rules", "Lua", "Business users edit rules, needs sandbox"],
+            ["API calls and data fetching", "JavaScript", "Lua cannot make network requests"],
+            ["Game enemy AI behavior", "Lua", "Game designers tweak scripts without rebuilding"],
+            ["UI animations", "JavaScript/CSS", "Direct browser API access needed"],
+            ["Custom report formulas", "Lua", "Power users write formulas safely"],
+            ["Authentication flow", "JavaScript", "Security-critical, needs full browser access"],
+            ["Plugin/extension system", "Lua", "Third-party code must be sandboxed"],
+            ["Real-time data processing", "JavaScript", "Performance critical, avoid bridge overhead"],
+            ["Educational coding playground", "Lua", "Safe execution of student code"]
+          ]
+        },
+        {
+          "type": "text",
+          "heading": "The 80/20 Rule",
+          "headingLevel": 4,
+          "body": "In most web applications that use Lua, about 80% of the code is still JavaScript. Lua handles the 20% where you specifically need safe, user-editable scripting. Do not try to write your entire app in Lua — use it surgically for the parts where it provides a clear advantage."
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "body": "A good rule of thumb: if the code is written by your development team and deployed with the app, use JavaScript. If the code might be written by end users, business analysts, game designers, or third-party developers, Lua is worth considering."
+        },
+        {
+          "type": "list",
+          "heading": "Signs that Lua is the right choice for your project",
+          "ordered": false,
+          "items": [
+            "You find yourself adding more and more configuration options to JSON files and wishing they could have if/else logic",
+            "Business stakeholders frequently ask for changes to rules or logic that require a developer to implement",
+            "You need a plugin system but cannot trust third-party JavaScript code",
+            "You are building anything game-related where behavior needs to be tweakable without recompiling",
+            "Users are asking for automation features (IFTTT-style rules, macros, custom workflows)"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Quick Start Checklist",
+      "headingLevel": 2,
+      "body": "Ready to add Lua to your next React project? Here is a step-by-step summary of everything you need to do."
+    },
+    {
+      "type": "step",
+      "step": 1,
+      "title": "Install Wasmoon",
+      "body": "Add the wasmoon package to your project.",
+      "code": "npm install wasmoon",
+      "language": "bash"
+    },
+    {
+      "type": "step",
+      "step": 2,
+      "title": "Create a Lua Engine Utility",
+      "body": "Build a reusable wrapper that handles engine creation, output capture, and cleanup. See the 'Setting Up Lua with Wasmoon' section above for the complete code.",
+      "code": "// src/utils/lua-engine.ts\nimport { LuaFactory } from 'wasmoon';\n\nlet factory: LuaFactory | null = null;\n\nexport async function runLua(code: string, globals?: Record<string, unknown>) {\n  if (!factory) factory = new LuaFactory();\n  const lua = await factory.createEngine();\n  // ... setup, execute, cleanup\n}",
+      "language": "typescript"
+    },
+    {
+      "type": "step",
+      "step": 3,
+      "title": "Sandbox the Environment",
+      "body": "Remove dangerous functions and only expose the specific API your scripts need.",
+      "code": "await lua.doString(`os = nil; io = nil; debug = nil; dofile = nil; loadfile = nil; require = nil; package = nil`);",
+      "language": "typescript"
+    },
+    {
+      "type": "step",
+      "step": 4,
+      "title": "Build Your Component",
+      "body": "Create a React component that uses the Lua engine — whether it is a playground, a rules editor, or a game scripting interface.",
+      "code": "const { runLua } = useLuaWorker();\n\nconst handleExecute = async () => {\n  const result = await runLua(userCode, { score, playerName });\n  setOutput(result.output);\n};",
+      "language": "typescript"
+    },
+    {
+      "type": "step",
+      "step": 5,
+      "title": "Test with Real User Scripts",
+      "body": "Try running intentionally broken or malicious scripts to make sure your sandbox holds up. Test infinite loops, large memory allocations, and attempts to access things outside the sandbox.",
+      "code": "// Test these scripts to verify your sandbox\nawait runLua(`while true do end`);           // Should timeout\nawait runLua(`os.execute(\"rm -rf /\")`);       // Should error (os is nil)\nawait runLua(`print(document)`);              // Should error (no DOM access)\nawait runLua(`local t = {}; for i=1,1e8 do t[i] = i end`); // Should handle gracefully",
+      "language": "typescript"
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "You are ready to go!",
+      "body": "Embedding Lua in a web app might sound advanced, but as you have seen, the actual implementation is straightforward. Start with the playground component, get comfortable with the JS-Lua bridge, and then expand to more complex use cases like game scripting or business rules. The Lua community is welcoming, and the language itself is a joy to work with."
+    }
+  ]
+}

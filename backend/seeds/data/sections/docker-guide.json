@@ -1,0 +1,685 @@
+{
+  "title": "Docker Guide",
+  "slug": "docker-guide",
+  "description": "Learn how to package your applications into containers that run the same everywhere. No more \"works on my machine\" problems.",
+  "icon": "Inventory2",
+  "order": 10,
+  "estimatedMinutes": 45,
+  "difficulty": "intermediate",
+  "blocks": [
+    {
+      "type": "text",
+      "heading": "What is Docker?",
+      "headingLevel": 2,
+      "body": "Before we look at any code, let us understand the problem Docker solves and why every developer should know it."
+    },
+    {
+      "type": "text",
+      "body": "Imagine you are moving to a new apartment. You could carry everything loose -- plates, clothes, books -- and hope nothing breaks along the way. Or you could put everything into **shipping containers**. Each container is sealed, standardized, and works the same whether it goes on a truck, a train, or a cargo ship."
+    },
+    {
+      "type": "text",
+      "body": "Docker does the same thing for software. It takes your application, all its dependencies (libraries, tools, configuration files), and everything it needs to run, then packages it all into a sealed **container**. That container will run exactly the same way on your laptop, your teammate's laptop, and a server in the cloud."
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "The \"works on my machine\" problem",
+      "body": "You write code, it runs perfectly on your computer, but when you share it with a teammate it crashes. Maybe they have a different version of Python. Maybe they are missing a library. Maybe their operating system works differently. Docker eliminates this problem entirely because everyone runs the same container."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "Consistency",
+          "body": "Your app runs the same everywhere -- your machine, your coworker's machine, and the production server. No more environment surprises.",
+          "icon": "ViewInAr"
+        },
+        {
+          "title": "Isolation",
+          "body": "Each container is its own little world. One project can use Python 3.9 while another uses Python 3.12, and they will never conflict with each other.",
+          "icon": "Layers"
+        },
+        {
+          "title": "Speed",
+          "body": "Containers start in seconds, not minutes. Setting up a new developer on your project goes from hours of installation to a single command.",
+          "icon": "RocketLaunch"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Docker vs Virtual Machines",
+      "headingLevel": 2,
+      "body": "You might have heard of virtual machines (VMs). Containers are a different approach to the same idea."
+    },
+    {
+      "type": "text",
+      "body": "A **virtual machine** is like renting an entire apartment in a building. You get your own kitchen, bathroom, living room -- a complete, self-contained unit. It works great, but it takes a lot of space and resources."
+    },
+    {
+      "type": "text",
+      "body": "A **container** is more like renting a room in a shared house. You have your own private room (your app and dependencies), but you share the kitchen and bathroom (the operating system kernel) with other tenants. This is far more efficient."
+    },
+    {
+      "type": "table",
+      "heading": "Docker vs VM Comparison",
+      "headers": ["Feature", "Docker Container", "Virtual Machine"],
+      "rows": [
+        ["Startup time", "Seconds", "Minutes"],
+        ["Size", "Megabytes (typically 50-500 MB)", "Gigabytes (often 2-10 GB)"],
+        ["OS", "Shares host OS kernel", "Runs its own full OS"],
+        ["Performance", "Near-native speed", "Some overhead from virtualization"],
+        ["Isolation", "Process-level isolation", "Full hardware-level isolation"],
+        ["Resource usage", "Lightweight -- run dozens on one machine", "Heavy -- each VM reserves its own RAM and CPU"]
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "When to use a VM instead",
+      "body": "Virtual machines are better when you need complete security isolation (running untrusted code) or when you need to run a completely different operating system (like running Windows on a Mac). For most web development work, containers are the right choice."
+    },
+    {
+      "type": "text",
+      "heading": "Key Docker Concepts",
+      "headingLevel": 2,
+      "body": "Five terms you will see everywhere. Learn these and everything else will click."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 2,
+      "cards": [
+        {
+          "title": "Image",
+          "body": "An image is a read-only template that contains everything needed to run your app -- the code, runtime, libraries, and configuration. Think of it like a cookie cutter. You create one image, and you can stamp out as many identical containers as you want.",
+          "chip": "A recipe or blueprint"
+        },
+        {
+          "title": "Container",
+          "body": "A container is what you get when you \"run\" an image. It is a live, running process with its own isolated filesystem and network. If an image is a cookie cutter, a container is an actual cookie. You can run multiple containers from the same image.",
+          "chip": "A running instance of an image"
+        },
+        {
+          "title": "Dockerfile",
+          "body": "A Dockerfile is a plain text file with step-by-step instructions that tell Docker how to build an image. It says things like \"start from Python 3.12, copy my code, install these packages, and run this command.\"",
+          "chip": "The instructions to build an image"
+        },
+        {
+          "title": "Volume",
+          "body": "By default, when a container is deleted, all its data is lost. A volume is like an external hard drive you plug into a container. Data stored in a volume survives even when the container is removed. Essential for databases and user uploads.",
+          "chip": "Persistent storage"
+        },
+        {
+          "title": "Port Mapping",
+          "body": "Containers are isolated -- your computer cannot reach inside by default. Port mapping creates a tunnel. If your app runs on port 3000 inside the container, you can map it to port 3000 on your computer so you can open localhost:3000 in your browser.",
+          "chip": "Connecting container ports to your computer"
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "How they all connect",
+      "body": "You write a Dockerfile (instructions). Docker uses it to build an Image (blueprint). You run the image to create a Container (live app). You attach a Volume for data that should persist. You set up Port Mapping so you can access the container from your browser."
+    },
+    {
+      "type": "text",
+      "heading": "Installing Docker",
+      "headingLevel": 2,
+      "body": "Getting Docker on your machine takes just a few minutes."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Mac",
+          "blocks": [
+            {
+              "type": "step",
+              "step": 1,
+              "title": "Download Docker Desktop",
+              "body": "Go to docker.com/products/docker-desktop and download Docker Desktop for Mac. Choose the correct chip -- Apple Silicon for M1/M2/M3/M4 Macs, or Intel for older Macs."
+            },
+            {
+              "type": "step",
+              "step": 2,
+              "title": "Install the app",
+              "body": "Open the downloaded .dmg file and drag Docker into your Applications folder, just like any other Mac app."
+            },
+            {
+              "type": "step",
+              "step": 3,
+              "title": "Launch and verify",
+              "body": "Open Docker Desktop from your Applications folder. You will see the Docker whale icon in your menu bar. Open a terminal and run:",
+              "code": "docker --version",
+              "language": "bash"
+            }
+          ]
+        },
+        {
+          "label": "Windows",
+          "blocks": [
+            {
+              "type": "step",
+              "step": 1,
+              "title": "Check system requirements",
+              "body": "You need Windows 10 version 2004 or higher (or Windows 11). Docker Desktop uses WSL 2. If you do not have WSL 2 yet, open PowerShell as Administrator and run:",
+              "code": "wsl --install",
+              "language": "powershell"
+            },
+            {
+              "type": "step",
+              "step": 2,
+              "title": "Download Docker Desktop",
+              "body": "Go to docker.com/products/docker-desktop and download Docker Desktop for Windows."
+            },
+            {
+              "type": "step",
+              "step": 3,
+              "title": "Install and restart",
+              "body": "Run the installer and follow the prompts. You may need to restart your computer. After restarting, Docker Desktop will launch automatically."
+            },
+            {
+              "type": "step",
+              "step": 4,
+              "title": "Verify the installation",
+              "body": "Open a terminal (Command Prompt, PowerShell, or Git Bash) and run:",
+              "code": "docker --version",
+              "language": "bash"
+            }
+          ]
+        },
+        {
+          "label": "Linux (Ubuntu)",
+          "blocks": [
+            {
+              "type": "step",
+              "step": 1,
+              "title": "Update your package index",
+              "body": "Start by updating your package index.",
+              "code": "sudo apt-get update",
+              "language": "bash"
+            },
+            {
+              "type": "step",
+              "step": 2,
+              "title": "Install prerequisite packages",
+              "body": "Install the required prerequisite packages.",
+              "code": "sudo apt-get install \\\n  ca-certificates \\\n  curl \\\n  gnupg \\\n  lsb-release",
+              "language": "bash"
+            },
+            {
+              "type": "step",
+              "step": 3,
+              "title": "Add Docker's official GPG key and repository",
+              "body": "Add the GPG key and repository so your system can download Docker packages.",
+              "code": "# Add Docker's official GPG key\nsudo install -m 0755 -d /etc/apt/keyrings\ncurl -fsSL https://download.docker.com/linux/ubuntu/gpg | \\\n  sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg\n\n# Add the repository\necho \\\n  \"deb [arch=$(dpkg --print-architecture) \\\n  signed-by=/etc/apt/keyrings/docker.gpg] \\\n  https://download.docker.com/linux/ubuntu \\\n  $(lsb_release -cs) stable\" | \\\n  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null",
+              "language": "bash"
+            },
+            {
+              "type": "step",
+              "step": 4,
+              "title": "Install Docker Engine",
+              "body": "Update the package index again and install Docker Engine.",
+              "code": "sudo apt-get update\nsudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin",
+              "language": "bash"
+            },
+            {
+              "type": "step",
+              "step": 5,
+              "title": "Run Docker without sudo (optional but recommended)",
+              "body": "Add your user to the docker group so you do not need sudo for every command.",
+              "code": "sudo usermod -aG docker $USER\n# Log out and log back in for this to take effect",
+              "language": "bash"
+            },
+            {
+              "type": "step",
+              "step": 6,
+              "title": "Verify the installation",
+              "body": "Check that Docker is installed correctly.",
+              "code": "docker --version",
+              "language": "bash"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Your First Dockerfile",
+      "headingLevel": 2,
+      "body": "A Dockerfile is a recipe that tells Docker how to build your image. Let us walk through a real one line by line."
+    },
+    {
+      "type": "text",
+      "body": "This example uses a **multi-stage build** -- a technique where you use one stage to build your app and a second, smaller stage to run it. This keeps your final image small and clean."
+    },
+    {
+      "type": "code",
+      "language": "dockerfile",
+      "filename": "Dockerfile",
+      "code": "# ---- Stage 1: Build stage ----\n# Start from a Python 3.12 image with the \"slim\" variant (smaller size)\nFROM python:3.12-slim AS builder\n\n# Set the working directory inside the container\nWORKDIR /app\n\n# Copy only the requirements file first (for better caching)\nCOPY requirements.txt .\n\n# Install Python dependencies\nRUN pip install --no-cache-dir -r requirements.txt\n\n# Copy the rest of the application code\nCOPY . .\n\n# ---- Stage 2: Production stage ----\n# Start fresh from a clean slim image\nFROM python:3.12-slim\n\n# Set the working directory\nWORKDIR /app\n\n# Copy installed packages from the builder stage\nCOPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages\nCOPY --from=builder /usr/local/bin /usr/local/bin\n\n# Copy application code from the builder stage\nCOPY --from=builder /app .\n\n# Tell Docker this container will listen on port 5000\nEXPOSE 5000\n\n# The command to run when the container starts\nCMD [\"python\", \"app.py\"]"
+    },
+    {
+      "type": "text",
+      "heading": "What each instruction does",
+      "headingLevel": 3,
+      "body": ""
+    },
+    {
+      "type": "cardGrid",
+      "columns": 2,
+      "cards": [
+        {
+          "title": "FROM",
+          "body": "Sets the base image. Every Dockerfile starts with FROM. Think of it as choosing your starting ingredients. \"python:3.12-slim\" means \"start with a lightweight Linux system that already has Python 3.12 installed.\""
+        },
+        {
+          "title": "WORKDIR",
+          "body": "Sets the current directory inside the container. All following commands will run from this directory. It is like running \"cd /app\" -- if the folder does not exist, Docker creates it."
+        },
+        {
+          "title": "COPY",
+          "body": "Copies files from your computer into the container. \"COPY requirements.txt .\" means \"take the requirements.txt from my project folder and put it in the current working directory inside the container.\""
+        },
+        {
+          "title": "RUN",
+          "body": "Executes a command during the build process. This is where you install dependencies, compile code, or run setup scripts. Each RUN creates a new layer in the image."
+        },
+        {
+          "title": "EXPOSE",
+          "body": "Documents which port the app will use. This does not actually open the port -- it is like a note for other developers. You still need to use -p when running the container."
+        },
+        {
+          "title": "CMD",
+          "body": "The command that runs when the container starts. There can be only one CMD. In this case it runs \"python app.py\" to start the application."
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Why copy requirements.txt separately?",
+      "body": "Docker caches each step. If your code changes but requirements.txt does not, Docker will reuse the cached layer with the installed packages instead of reinstalling everything. This makes rebuilds much faster."
+    },
+    {
+      "type": "text",
+      "heading": "Building and Running",
+      "headingLevel": 2,
+      "body": "Now that you have a Dockerfile, let us turn it into a running container."
+    },
+    {
+      "type": "step",
+      "step": 1,
+      "title": "Build the image",
+      "body": "Open a terminal in the folder that contains your Dockerfile and run:",
+      "code": "docker build -t my-app .",
+      "language": "bash"
+    },
+    {
+      "type": "list",
+      "heading": "Breaking this down:",
+      "items": [
+        "`docker build` -- tells Docker to build an image",
+        "`-t my-app` -- gives the image a name (tag). You can choose any name.",
+        "`.` -- the dot means \"use the current directory\" as the build context (where Docker looks for the Dockerfile and your code)"
+      ]
+    },
+    {
+      "type": "step",
+      "step": 2,
+      "title": "Run the container",
+      "body": "Once the build finishes, start a container from your new image:",
+      "code": "docker run -p 5000:5000 my-app",
+      "language": "bash"
+    },
+    {
+      "type": "list",
+      "heading": "Breaking this down:",
+      "items": [
+        "`docker run` -- creates and starts a new container",
+        "`-p 5000:5000` -- maps port 5000 on your computer to port 5000 inside the container. Format is HOST_PORT:CONTAINER_PORT.",
+        "`my-app` -- the name of the image to run"
+      ]
+    },
+    {
+      "type": "text",
+      "body": "Now open **http://localhost:5000** in your browser -- your app is running inside a container!"
+    },
+    {
+      "type": "step",
+      "step": 3,
+      "title": "Run in the background (detached mode)",
+      "body": "The previous command locks up your terminal. To run in the background, add the -d flag:",
+      "code": "docker run -d -p 5000:5000 --name my-running-app my-app",
+      "language": "bash"
+    },
+    {
+      "type": "text",
+      "body": "The `--name` flag gives your container a human-readable name so you can refer to it easily when stopping or checking logs."
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "That is it!",
+      "body": "Two commands -- `docker build` and `docker run` -- are all you need to go from code to a running app. Everything else in Docker builds on top of these two ideas."
+    },
+    {
+      "type": "text",
+      "heading": "Docker Compose",
+      "headingLevel": 2,
+      "body": "Real projects usually have more than one container. Docker Compose lets you define and run them all together."
+    },
+    {
+      "type": "text",
+      "body": "Imagine your project has a React frontend, a Python backend, and a database. You could run three separate `docker run` commands, remembering all the flags for each one. Or you could describe everything in a single file and start it all with one command."
+    },
+    {
+      "type": "text",
+      "body": "That file is called **docker-compose.yml**. It uses YAML format (a simple, human-readable way to write configuration)."
+    },
+    {
+      "type": "code",
+      "language": "yaml",
+      "filename": "docker-compose.yml",
+      "code": "services:\n  # ---- Frontend (React/Next.js) ----\n  frontend:\n    build:\n      context: ./frontend          # Where to find the Dockerfile\n      dockerfile: Dockerfile       # Which Dockerfile to use\n    ports:\n      - \"3000:3000\"                # Map port 3000 on your machine to port 3000 in the container\n    depends_on:\n      backend:\n        condition: service_healthy  # Wait for backend to be healthy before starting\n    environment:\n      - API_URL=http://backend:5000 # Containers can talk to each other by service name\n\n  # ---- Backend (Python Flask) ----\n  backend:\n    build:\n      context: ./backend\n      dockerfile: Dockerfile\n    ports:\n      - \"5000:5000\"\n    volumes:\n      - app-data:/app/data         # Persist data even if container is recreated\n    healthcheck:\n      test: [\"CMD\", \"curl\", \"-f\", \"http://localhost:5000/health\"]\n      interval: 30s                # Check every 30 seconds\n      timeout: 10s                 # Wait up to 10 seconds for a response\n      retries: 3                   # Fail after 3 unsuccessful checks\n      start_period: 10s            # Give the app 10 seconds to start up\n\n  # ---- Database (PostgreSQL) ----\n  db:\n    image: postgres:16             # Use the official PostgreSQL image (no build needed)\n    ports:\n      - \"5432:5432\"\n    environment:\n      POSTGRES_USER: myuser\n      POSTGRES_PASSWORD: mypassword\n      POSTGRES_DB: myapp\n    volumes:\n      - db-data:/var/lib/postgresql/data  # Persist database data\n\n# Named volumes — Docker manages the storage location for you\nvolumes:\n  app-data:\n  db-data:"
+    },
+    {
+      "type": "text",
+      "heading": "Key concepts in this file",
+      "headingLevel": 3,
+      "body": ""
+    },
+    {
+      "type": "cardGrid",
+      "columns": 2,
+      "cards": [
+        {
+          "title": "services",
+          "body": "Each service is one container. You give each one a name (frontend, backend, db) and tell Docker how to build or find it."
+        },
+        {
+          "title": "build",
+          "body": "Tells Docker to build an image from a Dockerfile. You specify the context (folder) and optionally which Dockerfile to use."
+        },
+        {
+          "title": "image",
+          "body": "Instead of building, you can use a pre-built image from Docker Hub. The \"postgres:16\" image is maintained by the PostgreSQL team."
+        },
+        {
+          "title": "ports",
+          "body": "Same as the -p flag in docker run. Maps a port on your computer to a port inside the container."
+        },
+        {
+          "title": "volumes",
+          "body": "Persistent storage. Named volumes (like db-data) survive container restarts. Without them, your database would lose all data when the container stops."
+        },
+        {
+          "title": "depends_on",
+          "body": "Controls startup order. With \"condition: service_healthy\", Docker waits until the backend passes its health check before starting the frontend."
+        },
+        {
+          "title": "healthcheck",
+          "body": "Defines how Docker checks if a service is working. It runs a test command on an interval and marks the service as healthy or unhealthy."
+        },
+        {
+          "title": "environment",
+          "body": "Sets environment variables inside the container. This is how you pass configuration (database passwords, API URLs) without hardcoding them."
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Starting everything",
+      "body": "Run `docker compose up` in the folder with your docker-compose.yml file. Docker will build all the images (if needed), create the containers, and start them together. Add `-d` to run in the background. Run `docker compose down` to stop everything."
+    },
+    {
+      "type": "text",
+      "heading": "Development vs Production",
+      "headingLevel": 2,
+      "body": "Your Docker setup should behave differently depending on where it is running."
+    },
+    {
+      "type": "text",
+      "body": "During **development**, you want your code changes to appear immediately without rebuilding the container. During **production**, you want a clean, optimized build that is fast and secure. Docker Compose supports this with multiple configuration files."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Development",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "yaml",
+              "filename": "docker-compose.dev.yml",
+              "code": "services:\n  frontend:\n    build:\n      context: ./frontend\n      dockerfile: Dockerfile.dev       # Use a dev-specific Dockerfile\n    ports:\n      - \"3000:3000\"\n    volumes:\n      - ./frontend/src:/app/src        # Mount source code — changes appear instantly\n      - /app/node_modules              # Do NOT mount node_modules (use container's copy)\n    environment:\n      - NODE_ENV=development\n      - WATCHPACK_POLLING=true         # Enable hot reload in Docker\n\n  backend:\n    build:\n      context: ./backend\n      dockerfile: Dockerfile.dev\n    ports:\n      - \"5000:5000\"\n    volumes:\n      - ./backend:/app                 # Mount all backend code\n      - /app/__pycache__               # Exclude Python cache\n    environment:\n      - FLASK_ENV=development\n      - FLASK_DEBUG=1                  # Auto-restart on code changes"
+            },
+            {
+              "type": "alert",
+              "severity": "info",
+              "title": "The secret sauce",
+              "body": "The volumes section mounts your local source code into the container. When you edit a file on your computer, the change is immediately visible inside the container. Combined with hot-reload tools, your app updates in real time without rebuilding."
+            }
+          ]
+        },
+        {
+          "label": "Production",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "yaml",
+              "filename": "docker-compose.yml",
+              "code": "services:\n  frontend:\n    build:\n      context: ./frontend\n      dockerfile: Dockerfile           # Uses the production multi-stage Dockerfile\n    ports:\n      - \"3000:3000\"\n    restart: always                    # Auto-restart if the container crashes\n    environment:\n      - NODE_ENV=production\n\n  backend:\n    build:\n      context: ./backend\n      dockerfile: Dockerfile\n    ports:\n      - \"5000:5000\"\n    restart: always\n    environment:\n      - FLASK_ENV=production\n    healthcheck:\n      test: [\"CMD\", \"curl\", \"-f\", \"http://localhost:5000/health\"]\n      interval: 30s\n      timeout: 10s\n      retries: 3"
+            },
+            {
+              "type": "alert",
+              "severity": "warning",
+              "title": "No volume mounts for code",
+              "body": "In production, the code is baked into the image during the build step. There are no live code mounts. This ensures the running app is exactly what was tested and built."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Running each configuration",
+      "headingLevel": 3,
+      "body": ""
+    },
+    {
+      "type": "code",
+      "language": "bash",
+      "code": "# Development — uses the dev compose file\ndocker compose -f docker-compose.dev.yml up\n\n# Production — uses the default compose file\ndocker compose up -d"
+    },
+    {
+      "type": "text",
+      "heading": "Common Docker Commands",
+      "headingLevel": 2,
+      "body": "A quick reference for the commands you will use every day."
+    },
+    {
+      "type": "text",
+      "heading": "Image and container commands",
+      "headingLevel": 3,
+      "body": ""
+    },
+    {
+      "type": "table",
+      "heading": "Image & Container Commands",
+      "headers": ["Command", "Description", "Example"],
+      "rows": [
+        ["docker build -t <name> .", "Build an image from the Dockerfile in the current directory and give it a name.", "docker build -t my-app ."],
+        ["docker run -p <host>:<container> <image>", "Create and start a new container from an image, mapping ports between your machine and the container.", "docker run -p 3000:3000 my-app"],
+        ["docker ps", "List all running containers. Add -a to also see stopped containers.", "docker ps -a"],
+        ["docker stop <container>", "Gracefully stop a running container. You can use the container name or ID.", "docker stop my-running-app"],
+        ["docker logs <container>", "View the output (stdout/stderr) of a container. Add -f to follow the log in real time.", "docker logs -f my-running-app"],
+        ["docker exec -it <container> <command>", "Run a command inside a running container. The -it flags let you interact with it (like opening a terminal inside the container).", "docker exec -it my-running-app bash"]
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Docker Compose commands",
+      "headingLevel": 3,
+      "body": ""
+    },
+    {
+      "type": "table",
+      "heading": "Docker Compose Commands",
+      "headers": ["Command", "Description", "Example"],
+      "rows": [
+        ["docker compose up", "Build images (if needed) and start all services defined in docker-compose.yml. Add -d to run in the background. Add --build to force a rebuild.", "docker compose up -d --build"],
+        ["docker compose down", "Stop and remove all containers, networks, and resources created by 'up'. Add -v to also remove volumes (deletes data!).", "docker compose down -v"],
+        ["docker compose logs <service>", "View logs for a specific service. Omit the service name to see logs from all services.", "docker compose logs -f backend"]
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Cleanup commands",
+      "headingLevel": 3,
+      "body": ""
+    },
+    {
+      "type": "table",
+      "heading": "Cleanup Commands",
+      "headers": ["Command", "Description"],
+      "rows": [
+        ["docker image ls", "List all images on your machine, showing their size and when they were created."],
+        ["docker system prune", "Remove all stopped containers, unused networks, and dangling images to free up disk space. Add -a to also remove unused images."]
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Troubleshooting",
+      "headingLevel": 2,
+      "body": "Docker problems can be confusing at first. Here are the most common issues and how to fix them."
+    },
+    {
+      "type": "accordion",
+      "title": "Container won't start",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "*Symptoms:* You run docker run and the container exits immediately, or you see an error message."
+        },
+        {
+          "type": "list",
+          "heading": "Solutions",
+          "items": [
+            "Check the logs: docker logs <container-name> -- this almost always tells you what went wrong.",
+            "Make sure your CMD in the Dockerfile is correct. A typo in the filename (e.g., \"app.py\" vs \"main.py\") will crash the container.",
+            "Verify that all required environment variables are set. Missing config is a common cause.",
+            "If the image fails to build, read the build output carefully. It usually fails at a specific RUN step."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Port already in use",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "*Symptoms:* Error message: \"Bind for 0.0.0.0:3000 failed: port is already allocated\""
+        },
+        {
+          "type": "list",
+          "heading": "Solutions",
+          "items": [
+            "Something else is already using that port on your machine. Find it with: lsof -i :3000 (Mac/Linux) or netstat -ano | findstr :3000 (Windows).",
+            "Stop the other process, or change the host port: docker run -p 3001:3000 my-app -- this maps your port 3001 to the container's port 3000.",
+            "If a previous container is still running, stop it first: docker stop <container-name>."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "File changes not showing up",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "*Symptoms:* You edit your code but the running container does not reflect the changes."
+        },
+        {
+          "type": "list",
+          "heading": "Solutions",
+          "items": [
+            "If you are NOT using volumes, you need to rebuild: docker compose up --build.",
+            "If you ARE using volumes, make sure the volume path in docker-compose.yml points to the correct directory.",
+            "Check that your framework's hot-reload is working. Some frameworks need WATCHPACK_POLLING=true inside Docker.",
+            "On Windows/Mac, Docker Desktop sometimes has issues with file watching. Try restarting Docker Desktop."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Out of disk space",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "*Symptoms:* \"no space left on device\" error during build, or Docker Desktop reports high disk usage."
+        },
+        {
+          "type": "list",
+          "heading": "Solutions",
+          "items": [
+            "Run docker system prune to remove stopped containers, unused networks, and dangling images.",
+            "Run docker system prune -a to also remove all unused images (more aggressive).",
+            "Check image sizes with docker image ls and remove large images you no longer need: docker image rm <image-name>.",
+            "In Docker Desktop, go to Settings and increase the disk space limit, or reduce it after pruning."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Cannot connect to Docker daemon",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "*Symptoms:* \"Cannot connect to the Docker daemon. Is the Docker daemon running?\""
+        },
+        {
+          "type": "list",
+          "heading": "Solutions",
+          "items": [
+            "Make sure Docker Desktop is running. Look for the whale icon in your system tray (Windows) or menu bar (Mac).",
+            "On Linux, start the Docker service: sudo systemctl start docker.",
+            "Try restarting Docker Desktop completely.",
+            "On Linux, make sure your user is in the \"docker\" group: sudo usermod -aG docker $USER (then log out and back in)."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "Golden rule of Docker debugging",
+      "body": "Always check the logs first. Run `docker logs <container-name>` or `docker compose logs <service-name>`. Nine times out of ten, the answer is right there in the output."
+    },
+    {
+      "type": "text",
+      "heading": "You Know Docker!",
+      "headingLevel": 2,
+      "body": "You now understand what Docker is, how to write a Dockerfile, build and run containers, orchestrate multi-container setups with Docker Compose, and configure separate development and production environments."
+    },
+    {
+      "type": "text",
+      "body": "**Next steps:** Try dockerizing one of your own projects. Start with a simple Dockerfile, then add Docker Compose when you need multiple services. The best way to learn Docker is to use it on a real project."
+    }
+  ],
+  "keyPoints": [
+    "Docker packages your app and all its dependencies into a container that runs the same everywhere",
+    "Containers are lightweight and start in seconds, unlike virtual machines",
+    "A Dockerfile is a recipe for building an image; docker build and docker run are the two essential commands",
+    "Docker Compose lets you define and run multi-container setups with a single YAML file",
+    "Use volume mounts in development for live code reloading, and baked-in images for production",
+    "Always check container logs first when troubleshooting issues"
+  ]
+}
