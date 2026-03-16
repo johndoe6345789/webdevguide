@@ -1,0 +1,721 @@
+{
+  "title": "Additional Resources",
+  "slug": "resources",
+  "description": "The things beginners do not think to learn -- but absolutely need to know. From accessibility and security to debugging, testing, and launching your career.",
+  "icon": "MenuBook",
+  "order": 11,
+  "estimatedMinutes": 60,
+  "difficulty": "advanced",
+  "blocks": [
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "How to use this page",
+      "body": "These topics are things you will encounter as you build real projects. You do not need to master them all at once -- expand any section to learn about it when you are ready. Each section is self-contained."
+    },
+    {
+      "type": "accordion",
+      "title": "1. Accessibility (a11y)",
+      "defaultExpanded": true,
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Accessibility (often abbreviated **a11y** because there are 11 letters between the \"a\" and the \"y\") means making your website usable by *everyone*, including people who use screen readers, navigate with a keyboard, or have low vision."
+        },
+        {
+          "type": "alert",
+          "severity": "warning",
+          "title": "Legal note",
+          "body": "In many countries, public-facing websites are legally required to be accessible (ADA in the US, EAA in the EU). Ignoring accessibility can lead to lawsuits and fines -- but more importantly, it means excluding real people from using your site."
+        },
+        {
+          "type": "text",
+          "heading": "Key accessibility practices",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "list",
+          "items": [
+            "**Semantic HTML:** Use <button> for buttons, <nav> for navigation, <main> for main content, <h1>-<h6> for headings. Screen readers rely on these to understand your page structure.",
+            "**Alt text on images:** Every <img> needs an alt attribute describing the image. Decorative images should use alt=\"\".",
+            "**ARIA labels:** When HTML semantics are not enough, use aria-label, aria-describedby, or role attributes to provide context to assistive technology.",
+            "**Keyboard navigation:** Users should be able to navigate your entire site using only Tab, Enter, and Escape. Never make something clickable without making it keyboard-focusable too.",
+            "**Color contrast:** Text should have a contrast ratio of at least 4.5:1 against its background. Tools like the Chrome DevTools contrast checker can verify this."
+          ]
+        },
+        {
+          "type": "text",
+          "heading": "Inaccessible vs accessible code",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "tabs",
+          "tabs": [
+            {
+              "label": "Bad -- Inaccessible",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "tsx",
+                  "code": "{/* Div pretending to be a button */}\n<div onClick={handleClick} style={{ cursor: 'pointer' }}>\n  Click me\n</div>\n\n{/* Image with no alt text */}\n<img src=\"/logo.png\" />\n\n{/* Icon-only button with no label */}\n<button><SearchIcon /></button>"
+                }
+              ]
+            },
+            {
+              "label": "Good -- Accessible",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "tsx",
+                  "code": "{/* Real button element */}\n<button onClick={handleClick}>\n  Click me\n</button>\n\n{/* Image with descriptive alt text */}\n<img src=\"/logo.png\" alt=\"Company logo\" />\n\n{/* Icon button with aria-label */}\n<button aria-label=\"Search\">\n  <SearchIcon />\n</button>"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Good news",
+          "body": "Material UI components have strong accessibility built in. MUI Buttons, Dialogs, and form controls already handle focus management, ARIA attributes, and keyboard interaction. Using MUI correctly gives you a head start on a11y."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "2. SEO (Search Engine Optimization)",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "SEO is how you make your website appear in Google search results. If nobody can find your site, nobody will use it. The good news is that Next.js makes many SEO best practices easy."
+        },
+        {
+          "type": "text",
+          "heading": "The essentials",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "list",
+          "items": [
+            "**Title tag:** Every page needs a unique, descriptive <title>. It appears in browser tabs and search results.",
+            "**Meta description:** A short summary (under 160 characters) that shows up below the title in search results.",
+            "**Open Graph tags:** Control how your page looks when shared on social media (Twitter, Facebook, LinkedIn). Set the title, description, and preview image.",
+            "**Semantic HTML:** Search engines understand <article>, <nav>, <header>, and heading tags much better than a sea of <div> elements.",
+            "**Site speed:** Faster sites rank higher. Optimize images, minimize JavaScript, and use caching.",
+            "**Sitemaps:** An XML file that lists all your pages so search engines can discover them. Next.js can generate these automatically."
+          ]
+        },
+        {
+          "type": "text",
+          "heading": "Adding metadata in Next.js",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "app/about/page.tsx",
+          "code": "import type { Metadata } from 'next';\n\n// Next.js reads this export and generates the\n// <title>, <meta>, and Open Graph tags for you.\nexport const metadata: Metadata = {\n  title: 'About Us | My Website',\n  description: 'Learn about our team and mission.',\n  openGraph: {\n    title: 'About Us | My Website',\n    description: 'Learn about our team and mission.',\n    images: ['/images/og-about.png'],\n  },\n};\n\nexport default function AboutPage() {\n  return (\n    <main>\n      <h1>About Us</h1>\n      <p>We build great things for the web.</p>\n    </main>\n  );\n}"
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "title": "Tip",
+          "body": "Use the Next.js metadata export in Server Components (no \"use client\"). For dynamic metadata, export an async generateMetadata function instead."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "3. Performance Optimization",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "A slow website loses visitors. Studies show most users abandon a page if it takes more than 3 seconds to load. Here are the most impactful techniques for keeping your React app fast."
+        },
+        {
+          "type": "text",
+          "heading": "Code splitting with dynamic imports",
+          "headingLevel": 3,
+          "body": "Instead of loading your entire app at once, split it into smaller chunks. Users only download the code they actually need."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "app/dashboard/page.tsx",
+          "code": "import dynamic from 'next/dynamic';\n\n// The chart library is large, so only load it\n// when the component is actually rendered.\nconst HeavyChart = dynamic(() => import('@/components/HeavyChart'), {\n  loading: () => <p>Loading chart...</p>,\n});\n\nexport default function Dashboard() {\n  return (\n    <div>\n      <h1>Dashboard</h1>\n      <HeavyChart />\n    </div>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "heading": "Memoization -- avoiding unnecessary work",
+          "headingLevel": 3,
+          "body": "React re-renders components whenever state changes. `useMemo` caches expensive calculations, and `useCallback` caches function references so child components do not re-render needlessly."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "code": "import { useMemo, useCallback } from 'react';\n\nfunction ProductList({ products, filter }: Props) {\n  // Only recalculate when products or filter change\n  const filtered = useMemo(\n    () => products.filter((p) => p.category === filter),\n    [products, filter]\n  );\n\n  // Stable function reference for child components\n  const handleSelect = useCallback((id: string) => {\n    console.log('Selected:', id);\n  }, []);\n\n  return filtered.map((p) => (\n    <ProductCard key={p.id} product={p} onSelect={handleSelect} />\n  ));\n}"
+        },
+        {
+          "type": "text",
+          "heading": "Image optimization with next/image",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "code": "import Image from 'next/image';\n\n// next/image automatically:\n// - Serves modern formats (WebP, AVIF)\n// - Lazy-loads images below the fold\n// - Resizes images to the exact size needed\n<Image\n  src=\"/photos/hero.jpg\"\n  alt=\"Hero banner\"\n  width={1200}\n  height={600}\n  priority  // Load this image immediately (above the fold)\n/>"
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "title": "Measure first",
+          "body": "Use Chrome Lighthouse (DevTools > Lighthouse tab) to get a performance score and specific recommendations. Do not optimize blindly -- measure, fix, then measure again."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "4. Testing Your Code",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Testing means writing code that checks whether your other code works correctly. It sounds like extra work, but it saves you from shipping broken features and spending hours debugging later."
+        },
+        {
+          "type": "text",
+          "heading": "Types of tests",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "cardGrid",
+          "columns": 3,
+          "cards": [
+            {
+              "title": "Unit Tests",
+              "body": "Test individual functions in isolation. \"Does this function add two numbers correctly?\" Tools: Jest or Vitest."
+            },
+            {
+              "title": "Component Tests",
+              "body": "Render a component and check it displays correctly. \"Does the button show the right label?\" Tools: React Testing Library."
+            },
+            {
+              "title": "End-to-End (E2E) Tests",
+              "body": "Simulate a real user clicking through your entire app. \"Can a user sign up and create a post?\" Tools: Playwright or Cypress."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "heading": "A simple component test",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "Greeting.test.tsx",
+          "code": "import { render, screen } from '@testing-library/react';\nimport Greeting from './Greeting';\n\ntest('renders the greeting message', () => {\n  render(<Greeting name=\"Alice\" />);\n\n  // Check that the text appears on screen\n  expect(screen.getByText('Hello, Alice!')).toBeInTheDocument();\n});\n\ntest('renders default greeting when no name given', () => {\n  render(<Greeting />);\n\n  expect(screen.getByText('Hello, World!')).toBeInTheDocument();\n});"
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Real-world example",
+          "body": "The ham radio site in our Examples section has tests for every component. Check it out to see how a real project organizes its test suite."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "5. Version Control with Git",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Git tracks every change you make to your code. Think of it as an unlimited undo/redo system for your entire project. Every professional developer uses Git -- learning it early will save you countless headaches."
+        },
+        {
+          "type": "text",
+          "heading": "Basic daily workflow",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "bash",
+          "filename": "Terminal",
+          "code": "# 1. Initialize a new repository (only once per project)\ngit init\n\n# 2. Check what has changed\ngit status\n\n# 3. Stage files you want to commit\ngit add .                    # Stage everything\ngit add src/App.tsx          # Or stage specific files\n\n# 4. Commit with a descriptive message\ngit commit -m \"Add user login form\"\n\n# 5. Push to GitHub (after setting up a remote)\ngit push origin main"
+        },
+        {
+          "type": "text",
+          "heading": "Branching for features",
+          "headingLevel": 3,
+          "body": "Never work directly on `main`. Create a branch for each feature, then merge it back via a Pull Request (PR)."
+        },
+        {
+          "type": "code",
+          "language": "bash",
+          "filename": "Terminal",
+          "code": "# Create and switch to a new branch\ngit checkout -b feature/user-profile\n\n# ... make changes, commit them ...\ngit add .\ngit commit -m \"Add user profile page\"\n\n# Push the branch to GitHub\ngit push origin feature/user-profile\n\n# Then open a Pull Request on GitHub to merge into main"
+        },
+        {
+          "type": "text",
+          "heading": "Essential .gitignore",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "bash",
+          "filename": ".gitignore",
+          "code": "# Dependencies (reinstalled with npm install)\nnode_modules/\n\n# Environment variables (contains secrets!)\n.env\n.env.local\n\n# Build output\n.next/\ndist/\nbuild/\n\n# OS files\n.DS_Store\nThumbs.db"
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "title": "Commit message tips",
+          "body": "Use present tense (\"Add feature\" not \"Added feature\"), keep the first line under 72 characters, and describe what changed and why."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "6. Package Management",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Packages (also called libraries or dependencies) are pre-written code that you install into your project instead of writing from scratch. React itself is a package! A package manager handles installing, updating, and removing them."
+        },
+        {
+          "type": "text",
+          "heading": "npm vs yarn vs pnpm",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "cardGrid",
+          "columns": 3,
+          "cards": [
+            {
+              "title": "npm",
+              "body": "Comes with Node.js. The default and most common package manager. If you are a beginner, just use npm -- it works great."
+            },
+            {
+              "title": "yarn",
+              "body": "Made by Facebook. Slightly faster than npm in some cases. Uses a yarn.lock file. Many older tutorials use yarn."
+            },
+            {
+              "title": "pnpm",
+              "body": "The fastest and most disk-efficient. Uses symlinks to avoid duplicate packages. Becoming very popular in modern projects."
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "heading": "Understanding package.json",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "json",
+          "filename": "package.json (simplified)",
+          "code": "{\n  \"name\": \"my-app\",\n  \"version\": \"1.0.0\",\n  \"dependencies\": {\n    \"react\": \"^19.0.0\",\n    \"next\": \"^15.0.0\",\n    \"@mui/material\": \"^6.4.0\"\n  },\n  \"devDependencies\": {\n    \"typescript\": \"^5.7.0\",\n    \"@testing-library/react\": \"^16.0.0\"\n  },\n  \"scripts\": {\n    \"dev\": \"next dev\",\n    \"build\": \"next build\",\n    \"test\": \"jest\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "heading": "Semantic versioning explained",
+          "headingLevel": 3,
+          "body": "Version numbers follow the format **MAJOR.MINOR.PATCH** (e.g., 19.0.2):"
+        },
+        {
+          "type": "list",
+          "items": [
+            "**^19.0.0** -- Accept any 19.x.x version (minor and patch updates). This is the default and safest choice.",
+            "**~19.0.0** -- Accept only 19.0.x versions (patch updates only).",
+            "**19.0.0** -- Exact version only. Use this when you need absolute consistency."
+          ]
+        },
+        {
+          "type": "alert",
+          "severity": "warning",
+          "title": "Lock files matter",
+          "body": "Always commit your package-lock.json (or yarn.lock / pnpm-lock.yaml). Lock files ensure every developer and your deployment server install the exact same versions. Run npm audit regularly to check for known vulnerabilities."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "7. Debugging",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Bugs are inevitable. What separates a productive developer from a frustrated one is knowing how to find and fix them quickly. Here are the tools and techniques you should learn early."
+        },
+        {
+          "type": "text",
+          "heading": "Browser DevTools (F12)",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "list",
+          "items": [
+            "**Elements tab:** Inspect and modify HTML/CSS in real time. Right-click any element and select Inspect.",
+            "**Console tab:** See errors, warnings, and your console.log() output. This is your first stop when something breaks.",
+            "**Network tab:** See every HTTP request your app makes. Check if API calls succeed or fail, and inspect the response data.",
+            "**Sources tab:** Set breakpoints to pause execution and step through your code line by line."
+          ]
+        },
+        {
+          "type": "text",
+          "heading": "React DevTools & Redux DevTools",
+          "headingLevel": 3,
+          "body": "Install the **React Developer Tools** browser extension. It adds a \"Components\" tab that lets you inspect the component tree, see props and state for each component, and trigger re-renders. If you use Redux, the **Redux DevTools** extension shows every dispatched action and state change."
+        },
+        {
+          "type": "text",
+          "heading": "Common errors and what they mean",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "bash",
+          "code": "# \"Cannot read properties of undefined\"\n# You are trying to access a property on something that does not exist.\n# Fix: Check that your variable is defined before accessing its properties.\n// user?.name instead of user.name\n\n# \"Objects are not valid as a React child\"\n# You are trying to render an object directly in JSX.\n# Fix: Render a specific property like {user.name} instead of {user}\n\n# \"Each child in a list should have a unique 'key' prop\"\n# You forgot to add a key prop when rendering a list.\n# Fix: Add key={item.id} to the top element in your .map()\n\n# \"Too many re-renders\"\n# You are calling setState during render, creating an infinite loop.\n# Fix: Move the setState call into an event handler or useEffect"
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "title": "Stack traces",
+          "body": "When you see an error, read it from the top down. The first line tells you what went wrong, and the lines below show where in your code it happened. Look for file names you recognize -- those are the lines to investigate."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "8. Security Basics",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Security is not just for backend developers. As a frontend developer, there are critical practices you need to follow to protect your users and yourself."
+        },
+        {
+          "type": "text",
+          "heading": "Never commit secrets",
+          "headingLevel": 3,
+          "body": "API keys, database passwords, and other secrets belong in `.env` files, which must be listed in your `.gitignore`. If you accidentally commit a secret to GitHub, consider it compromised and rotate it immediately."
+        },
+        {
+          "type": "code",
+          "language": "bash",
+          "filename": ".env.local",
+          "code": "# These values are only available on the server\nDATABASE_URL=postgresql://user:password@localhost:5432/mydb\nAPI_SECRET_KEY=sk_live_abc123\n\n# Prefix with NEXT_PUBLIC_ to expose to the browser\n# (only for non-sensitive values!)\nNEXT_PUBLIC_SITE_URL=https://mysite.com"
+        },
+        {
+          "type": "text",
+          "heading": "XSS (Cross-Site Scripting)",
+          "headingLevel": 3,
+          "body": "XSS attacks inject malicious JavaScript into your page. React protects you by automatically escaping text rendered in JSX. However, using `dangerouslySetInnerHTML` bypasses this protection -- avoid it unless you sanitize the content first."
+        },
+        {
+          "type": "tabs",
+          "tabs": [
+            {
+              "label": "Dangerous",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "tsx",
+                  "code": "// NEVER do this with user input!\n<div dangerouslySetInnerHTML={{\n  __html: userComment\n}} />"
+                }
+              ]
+            },
+            {
+              "label": "Safe (React default)",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "tsx",
+                  "code": "// React escapes this automatically\n// Even if userComment contains <script>,\n// it renders as plain text, not code.\n<div>{userComment}</div>"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "heading": "Other security essentials",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "list",
+          "items": [
+            "**CORS:** Browsers block requests to different domains by default. Your API server must explicitly allow your frontend domain. This is a feature, not a bug.",
+            "**HTTPS:** Always serve your site over HTTPS. Hosting platforms like Vercel and Netlify provide this automatically.",
+            "**Dependency auditing:** Run npm audit regularly. It checks your packages for known vulnerabilities and suggests fixes.",
+            "**Environment variables:** In Next.js, only variables prefixed with NEXT_PUBLIC_ are visible to the browser. Keep everything else server-side."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "9. CI/CD (Continuous Integration/Deployment)",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "CI/CD automates the boring parts of development: running tests, checking code quality, and deploying to production. Instead of manually doing these steps, a service does them every time you push code."
+        },
+        {
+          "type": "text",
+          "heading": "How it works",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "list",
+          "items": [
+            "**Continuous Integration (CI):** Automatically run your tests and linting every time you push code or open a Pull Request. If something breaks, you find out immediately.",
+            "**Continuous Deployment (CD):** Automatically deploy your app to production when code is merged into main. Vercel does this by default for Next.js projects."
+          ]
+        },
+        {
+          "type": "text",
+          "heading": "A simple GitHub Actions workflow",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "yaml",
+          "filename": ".github/workflows/ci.yml",
+          "code": "name: CI\n\non:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]\n\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n\n      - name: Setup Node.js\n        uses: actions/setup-node@v4\n        with:\n          node-version: 20\n          cache: 'npm'\n\n      - name: Install dependencies\n        run: npm ci\n\n      - name: Run linting\n        run: npm run lint\n\n      - name: Run tests\n        run: npm test\n\n      - name: Build\n        run: npm run build"
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Free tier",
+          "body": "GitHub Actions gives you 2,000 minutes per month for free on public repositories. That is more than enough for most personal and small team projects."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "10. Progressive Web Apps (PWA)",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "A Progressive Web App is a website that can work like a native app on your phone or desktop. Users can install it to their home screen, use it offline, and receive push notifications -- all without going through an app store."
+        },
+        {
+          "type": "text",
+          "heading": "What makes a PWA",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "list",
+          "items": [
+            "**Service Worker:** A script that runs in the background, intercepting network requests and caching assets. This is what enables offline support.",
+            "**Web App Manifest:** A JSON file (manifest.json) that tells the browser your app's name, icons, theme colors, and how to display it when installed.",
+            "**HTTPS:** PWAs require a secure connection. All modern hosting platforms provide this."
+          ]
+        },
+        {
+          "type": "text",
+          "heading": "Basic manifest.json",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "json",
+          "filename": "public/manifest.json",
+          "code": "{\n  \"name\": \"My Web App\",\n  \"short_name\": \"MyApp\",\n  \"description\": \"A great progressive web app\",\n  \"start_url\": \"/\",\n  \"display\": \"standalone\",\n  \"background_color\": \"#ffffff\",\n  \"theme_color\": \"#1976d2\",\n  \"icons\": [\n    {\n      \"src\": \"/icons/icon-192.png\",\n      \"sizes\": \"192x192\",\n      \"type\": \"image/png\"\n    },\n    {\n      \"src\": \"/icons/icon-512.png\",\n      \"sizes\": \"512x512\",\n      \"type\": \"image/png\"\n    }\n  ]\n}"
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "title": "Next.js PWA",
+          "body": "Use the next-pwa package to add PWA support to your Next.js app with minimal configuration. It handles service worker generation and caching strategies for you."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "11. Web APIs You Should Know",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Modern browsers come with powerful built-in APIs. You do not always need a library -- sometimes the browser already has what you need."
+        },
+        {
+          "type": "text",
+          "heading": "localStorage & sessionStorage",
+          "headingLevel": 3,
+          "body": "Store small amounts of data in the browser. `localStorage` persists even after the browser is closed; `sessionStorage` clears when the tab closes."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "code": "// Save data\nlocalStorage.setItem('theme', 'dark');\n\n// Read data\nconst theme = localStorage.getItem('theme'); // 'dark'\n\n// Remove data\nlocalStorage.removeItem('theme');\n\n// Store objects (must convert to/from JSON)\nlocalStorage.setItem('user', JSON.stringify({ name: 'Alice' }));\nconst user = JSON.parse(localStorage.getItem('user') || '{}');"
+        },
+        {
+          "type": "text",
+          "heading": "Fetch API",
+          "headingLevel": 3,
+          "body": "The built-in way to make HTTP requests. No library needed."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "code": "// GET request\nconst response = await fetch('https://api.example.com/posts');\nconst posts = await response.json();\n\n// POST request\nconst result = await fetch('https://api.example.com/posts', {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify({ title: 'New Post', content: 'Hello!' }),\n});"
+        },
+        {
+          "type": "text",
+          "heading": "Other useful APIs",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "cardGrid",
+          "columns": 2,
+          "cards": [
+            {
+              "title": "Geolocation",
+              "body": "Access the user's location with `navigator.geolocation.getCurrentPosition()`. Always requires user permission."
+            },
+            {
+              "title": "Clipboard API",
+              "body": "Copy and read text from the clipboard with `navigator.clipboard.writeText()` and `navigator.clipboard.readText()`."
+            },
+            {
+              "title": "Notifications",
+              "body": "Send desktop notifications with the `Notification` API. Requires user permission via `Notification.requestPermission()`."
+            },
+            {
+              "title": "Intersection Observer",
+              "body": "Detect when an element scrolls into view. Perfect for lazy loading images, infinite scroll, and scroll-triggered animations."
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "description": "Geolocation example",
+          "code": "navigator.geolocation.getCurrentPosition(\n  (pos) => {\n    console.log(pos.coords.latitude);\n    console.log(pos.coords.longitude);\n  },\n  (err) => console.error(err)\n);"
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "description": "Clipboard API example",
+          "code": "// Copy text to clipboard\nawait navigator.clipboard.writeText(\n  'Copied!'\n);\n\n// Read from clipboard\nconst text =\n  await navigator.clipboard.readText();"
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "description": "Notifications example",
+          "code": "// Request permission first\nconst perm =\n  await Notification.requestPermission();\n\nif (perm === 'granted') {\n  new Notification('Hello!', {\n    body: 'This is a notification.',\n  });\n}"
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "description": "Intersection Observer example",
+          "code": "// Detect when an element scrolls\n// into view (lazy loading, animations)\nconst observer = new IntersectionObserver(\n  (entries) => {\n    entries.forEach((e) => {\n      if (e.isIntersecting) loadMore();\n    });\n  }\n);\nobserver.observe(targetElement);"
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "12. Career & Next Steps",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "You have learned the technical skills -- now what? Here is practical advice for turning your knowledge into a career or meaningful projects."
+        },
+        {
+          "type": "text",
+          "heading": "Build a portfolio",
+          "headingLevel": 3,
+          "body": "Your portfolio is more important than any resume. Build 3-5 real projects that demonstrate different skills. Deploy them, put the code on GitHub, and write a brief description of what each project does and what you learned."
+        },
+        {
+          "type": "text",
+          "heading": "Contribute to open source",
+          "headingLevel": 3,
+          "body": "You do not need to be an expert. Start by fixing typos in documentation, adding tests, or tackling issues labeled \"good first issue\" on GitHub. It builds real experience and shows employers you can collaborate with others."
+        },
+        {
+          "type": "text",
+          "heading": "Suggested learning path",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "list",
+          "ordered": true,
+          "items": [
+            "HTML, CSS, JavaScript fundamentals -- The foundation everything else is built on.",
+            "React + TypeScript -- The most popular frontend framework with type safety.",
+            "Next.js -- Full-stack React framework with routing, SSR, and API routes.",
+            "State management (Redux Toolkit, Zustand) -- Managing complex application state.",
+            "Testing (Jest, React Testing Library, Playwright) -- Writing reliable, tested code.",
+            "Backend basics (APIs, databases, authentication) -- Understand the full stack, even as a frontend developer."
+          ]
+        },
+        {
+          "type": "text",
+          "heading": "Job market tips",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "list",
+          "items": [
+            "**Freelancing:** Platforms like Upwork and Fiverr can help you get your first paid projects. Start with small gigs to build reviews and confidence.",
+            "**Networking:** Join developer communities on Discord, attend local meetups, and engage on platforms like Dev.to and Twitter/X. Many jobs come through connections, not job boards.",
+            "**Keep building:** The best way to learn is to build real things. Every project you complete teaches you more than any tutorial."
+          ]
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Remember",
+          "body": "Every senior developer was once a beginner who did not quit. The learning never stops, and that is what makes this field exciting. You are already on the right path by being here."
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "You Are Ready to Build",
+      "headingLevel": 2,
+      "body": "You now know about accessibility, SEO, performance, testing, Git, package management, debugging, security, CI/CD, PWAs, browser APIs, and career paths. These are the skills that separate a beginner from a confident, professional developer."
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "What to do next",
+      "body": "Pick one topic that caught your interest and apply it to a project you are building. The best way to learn is by doing -- not by reading one more tutorial."
+    }
+  ],
+  "keyPoints": [
+    "Accessibility (a11y) means making your website usable by everyone, including screen reader users and keyboard navigators",
+    "SEO best practices like metadata, semantic HTML, and sitemaps help users find your site through search engines",
+    "Performance optimization through code splitting, memoization, and image optimization keeps your app fast",
+    "Testing with unit tests, component tests, and E2E tests catches bugs before they reach users",
+    "Git version control tracks every code change and enables team collaboration through branches and pull requests",
+    "Package managers (npm, yarn, pnpm) handle installing and managing third-party libraries",
+    "Browser DevTools and React DevTools are essential for finding and fixing bugs quickly",
+    "Frontend security includes avoiding XSS, never committing secrets, and using HTTPS",
+    "CI/CD automates testing and deployment every time you push code",
+    "Progressive Web Apps can work offline and be installed like native apps",
+    "Built-in browser APIs like Fetch, localStorage, and Intersection Observer reduce the need for external libraries",
+    "Building a portfolio and contributing to open source are key steps toward a development career"
+  ]
+}

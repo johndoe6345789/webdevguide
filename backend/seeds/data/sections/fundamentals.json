@@ -1,0 +1,693 @@
+{
+  "title": "React Fundamentals",
+  "slug": "fundamentals",
+  "description": "Everything you need to know to start building real things with React -- explained from scratch with plain language, analogies, and hands-on code examples.",
+  "icon": "School",
+  "order": 2,
+  "estimatedMinutes": 60,
+  "difficulty": "beginner",
+  "blocks": [
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "How to use this page",
+      "body": "Click on any topic below to expand it. Each section builds on the ones before it, so if you are brand new, start at the top and work your way down. If you already know some React, feel free to jump to any section."
+    },
+    {
+      "type": "accordion",
+      "title": "1. What is a Component?",
+      "defaultExpanded": true,
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Imagine you are building something with LEGO bricks. Each brick is a small, self-contained piece. You can combine bricks to make bigger things -- a wall, a window, an entire house. In React, **components** are your LEGO bricks."
+        },
+        {
+          "type": "text",
+          "body": "A component is simply a **JavaScript function that returns some HTML-like code**. That is it. Every button, every card, every page you see on a React website is a component."
+        },
+        {
+          "type": "text",
+          "heading": "Your first component",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "Greeting.tsx",
+          "code": "// A component is just a function that returns JSX (HTML-like code)\nfunction Greeting() {\n  return (\n    <div>\n      <h1>Hello, World!</h1>\n      <p>Welcome to my website.</p>\n    </div>\n  );\n}\n\nexport default Greeting;"
+        },
+        {
+          "type": "text",
+          "body": "Notice a few important rules:"
+        },
+        {
+          "type": "list",
+          "items": [
+            "The function name starts with a **capital letter** (Greeting, not greeting). React requires this so it can tell your components apart from regular HTML tags.",
+            "The function **returns** some HTML-like code. This special syntax is called JSX (we will cover it next).",
+            "You can **use components inside other components**, just like stacking LEGO bricks."
+          ]
+        },
+        {
+          "type": "text",
+          "heading": "Using one component inside another",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "App.tsx",
+          "code": "function Greeting() {\n  return <h1>Hello, World!</h1>;\n}\n\nfunction App() {\n  return (\n    <div>\n      {/* Use your component like an HTML tag */}\n      <Greeting />\n      <p>This is the rest of my app.</p>\n    </div>\n  );\n}"
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "A component is a function that returns JSX. Name it with a capital letter. You can use components inside other components, just like nesting LEGO bricks to build bigger structures."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "2. JSX - HTML Inside JavaScript",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "JSX stands for **JavaScript XML**. It looks like HTML, but it lives right inside your JavaScript files. Think of it as a template language that lets you describe what the screen should look like."
+        },
+        {
+          "type": "text",
+          "heading": "Curly braces: the escape hatch to JavaScript",
+          "headingLevel": 3,
+          "body": "Inside JSX, curly braces `{}` let you drop back into JavaScript. You can put any JavaScript expression inside them -- variables, math, function calls."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "UserGreeting.tsx",
+          "code": "function UserGreeting() {\n  const name = \"Sarah\";\n  const age = 25;\n\n  return (\n    <div>\n      {/* Curly braces let you use JavaScript values */}\n      <h1>Hello, {name}!</h1>\n      <p>You are {age} years old.</p>\n      <p>Next year you will be {age + 1}.</p>\n    </div>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "heading": "Key differences from HTML",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "JsxRules.tsx",
+          "code": "function JsxRules() {\n  return (\n    <>\n      {/* 1. Use className instead of class */}\n      <div className=\"container\">\n\n        {/* 2. Self-closing tags MUST have a slash */}\n        <img src=\"/photo.jpg\" alt=\"A photo\" />\n        <input type=\"text\" />\n        <br />\n\n        {/* 3. Use camelCase for attributes */}\n        <button onClick={handleClick}>Click me</button>\n        <label htmlFor=\"email\">Email</label>\n        <div tabIndex={0}>Focusable</div>\n\n      </div>\n    </>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "heading": "Fragments: returning multiple elements",
+          "headingLevel": 3,
+          "body": "A component can only return **one** top-level element. If you do not want to add an extra `<div>`, use a **fragment** -- an empty tag `<>...</>` that wraps your elements without adding anything to the page."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "code": "function TwoHeadings() {\n  return (\n    <>\n      <h1>First heading</h1>\n      <h2>Second heading</h2>\n    </>\n  );\n}"
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "JSX looks like HTML but lives in JavaScript. Use curly braces to embed JavaScript expressions. Remember: `className` instead of `class`, self-closing tags need a slash, and wrap multiple elements in a fragment `<></>`."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "3. Props - Passing Data to Components",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Think of props like the settings on a TV remote. When you use a component, you can pass it information that changes what it displays or how it behaves. The component receives these settings as an object called **props**."
+        },
+        {
+          "type": "text",
+          "heading": "Passing and receiving props",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "WelcomeCard.tsx",
+          "code": "// Define what props your component accepts using an interface\ninterface WelcomeCardProps {\n  name: string;\n  age: number;\n  isStudent?: boolean; // The ? makes this optional\n}\n\n// Destructure props directly in the function parameters\nfunction WelcomeCard({ name, age, isStudent }: WelcomeCardProps) {\n  return (\n    <div>\n      <h2>Welcome, {name}!</h2>\n      <p>Age: {age}</p>\n      {isStudent && <p>Student discount applied!</p>}\n    </div>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "heading": "Using the component with props",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "App.tsx",
+          "code": "function App() {\n  return (\n    <div>\n      {/* Pass props just like HTML attributes */}\n      <WelcomeCard name=\"Alice\" age={30} />\n      <WelcomeCard name=\"Bob\" age={22} isStudent />\n      <WelcomeCard name=\"Carol\" age={28} isStudent={false} />\n    </div>\n  );\n}"
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "body": "**Strings** use quotes: `name=\"Alice\"`. Everything else (numbers, booleans, objects, arrays) uses curly braces: `age={30}`. A boolean prop written without a value (like `isStudent`) defaults to `true`."
+        },
+        {
+          "type": "text",
+          "heading": "The children prop",
+          "headingLevel": 3,
+          "body": "There is one special prop called `children`. It represents whatever you put between the opening and closing tags of your component."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "code": "interface CardProps {\n  title: string;\n  children: React.ReactNode;\n}\n\nfunction Card({ title, children }: CardProps) {\n  return (\n    <div className=\"card\">\n      <h3>{title}</h3>\n      <div>{children}</div>\n    </div>\n  );\n}\n\n// Usage: anything between <Card> and </Card> becomes \"children\"\nfunction App() {\n  return (\n    <Card title=\"My Card\">\n      <p>This paragraph is the children prop.</p>\n      <button>So is this button.</button>\n    </Card>\n  );\n}"
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "Props let you pass data from a parent component to a child component. Define the shape of your props with a TypeScript interface. Use `?` for optional props and destructure them in the function parameters for clean code."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "4. State - Components That Remember",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Props come from outside the component. But what if a component needs to keep track of something on its own? For example, how many times a button has been clicked, or whether a menu is open or closed. That is what **state** is for."
+        },
+        {
+          "type": "text",
+          "body": "Think of state like a sticky note that a component writes to itself. It can read the note and update it whenever something happens. When the note changes, React automatically redraws the component on the screen with the new information."
+        },
+        {
+          "type": "text",
+          "heading": "The useState hook",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "Counter.tsx",
+          "code": "import { useState } from 'react';\n\nfunction Counter() {\n  // useState returns two things:\n  // 1. The current value (count)\n  // 2. A function to update it (setCount)\n  const [count, setCount] = useState(0); // 0 is the starting value\n\n  return (\n    <div>\n      <p>You clicked {count} times.</p>\n      <button onClick={() => setCount(count + 1)}>\n        Click me\n      </button>\n    </div>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "heading": "State with different types",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "UserForm.tsx",
+          "code": "import { useState } from 'react';\n\nfunction UserForm() {\n  const [name, setName] = useState(\"\");        // string state\n  const [age, setAge] = useState(0);           // number state\n  const [isHappy, setIsHappy] = useState(true); // boolean state\n\n  return (\n    <div>\n      <input\n        value={name}\n        onChange={(e) => setName(e.target.value)}\n        placeholder=\"Your name\"\n      />\n\n      <p>Hello, {name || \"stranger\"}! You are {age} years old.</p>\n      <p>Mood: {isHappy ? \"Happy!\" : \"Sad\"}</p>\n\n      <button onClick={() => setIsHappy(!isHappy)}>\n        Toggle mood\n      </button>\n    </div>\n  );\n}"
+        },
+        {
+          "type": "alert",
+          "severity": "warning",
+          "title": "Important rule",
+          "body": "Never change state directly. Always use the setter function. Write `setCount(count + 1)`, never `count = count + 1`. Direct changes will not trigger a re-render and your screen will not update."
+        },
+        {
+          "type": "text",
+          "heading": "State is local to each component",
+          "headingLevel": 3,
+          "body": "If you render the same component twice, each copy gets its own separate state. Clicking a button in one `<Counter />` does not affect the other."
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "`useState` gives a component its own memory. It returns a value and a setter function. When you call the setter, React re-renders the component with the new value. Each component instance has its own independent state."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "5. Events - Responding to User Actions",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Websites need to respond when users do things -- click a button, type in a field, submit a form. In React, you handle these actions with **event handlers**, which are functions that run when something happens."
+        },
+        {
+          "type": "text",
+          "heading": "Common events",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "EventExamples.tsx",
+          "code": "import { useState } from 'react';\n\nfunction EventExamples() {\n  const [text, setText] = useState(\"\");\n\n  // onClick - runs when the user clicks\n  function handleClick() {\n    alert(\"Button was clicked!\");\n  }\n\n  // onChange - runs when an input value changes\n  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {\n    setText(e.target.value);\n  }\n\n  // onSubmit - runs when a form is submitted\n  function handleSubmit(e: React.FormEvent) {\n    e.preventDefault(); // Stops the page from refreshing\n    alert(\"Form submitted with: \" + text);\n  }\n\n  return (\n    <div>\n      <button onClick={handleClick}>Click me</button>\n\n      <form onSubmit={handleSubmit}>\n        <input\n          type=\"text\"\n          value={text}\n          onChange={handleChange}\n          placeholder=\"Type something...\"\n        />\n        <button type=\"submit\">Submit</button>\n      </form>\n\n      <p>You typed: {text}</p>\n    </div>\n  );\n}"
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "body": "**Pass the function, do not call it.** Write `onClick={handleClick}`, not `onClick={handleClick()}`. With the parentheses, the function runs immediately when the page loads instead of waiting for a click."
+        },
+        {
+          "type": "text",
+          "heading": "Inline event handlers",
+          "headingLevel": 3,
+          "body": "For short, simple actions, you can write the function directly in the JSX using an arrow function."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "code": "function QuickExample() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div>\n      {/* Inline arrow function for simple logic */}\n      <button onClick={() => setCount(count + 1)}>\n        Count: {count}\n      </button>\n\n      {/* When you need the event object inline */}\n      <input onChange={(e) => console.log(e.target.value)} />\n    </div>\n  );\n}"
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "Event handlers are functions you attach to JSX elements. The most common are `onClick`, `onChange`, and `onSubmit`. Use `e.preventDefault()` in forms to stop the page from refreshing. Always pass the function reference, not the function call."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "6. Conditional Rendering",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Sometimes you want to show something on the screen only when a certain condition is true. Maybe you show a \"Welcome back!\" message only when the user is logged in, or display an error message only when something goes wrong. This is called **conditional rendering**."
+        },
+        {
+          "type": "text",
+          "heading": "Three ways to render conditionally",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "ConditionalExamples.tsx",
+          "code": "function ConditionalExamples() {\n  const isLoggedIn = true;\n  const unreadMessages = 5;\n  const errorMessage = \"\";\n\n  return (\n    <div>\n      {/* Method 1: Ternary operator (condition ? ifTrue : ifFalse) */}\n      <p>{isLoggedIn ? \"Welcome back!\" : \"Please log in.\"}</p>\n\n      {/* Method 2: && operator (show only if true) */}\n      {unreadMessages > 0 && (\n        <p>You have {unreadMessages} unread messages.</p>\n      )}\n\n      {/* Method 3: && with nothing shown when false */}\n      {errorMessage && <p style={{ color: \"red\" }}>{errorMessage}</p>}\n    </div>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "heading": "Conditional rendering with early return",
+          "headingLevel": 3,
+          "body": "For bigger blocks of content, you can use an if statement and return early. This keeps your JSX clean."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "code": "interface DashboardProps {\n  isLoading: boolean;\n  error: string | null;\n  data: string[];\n}\n\nfunction Dashboard({ isLoading, error, data }: DashboardProps) {\n  // Show loading spinner while data loads\n  if (isLoading) {\n    return <p>Loading...</p>;\n  }\n\n  // Show error if something went wrong\n  if (error) {\n    return <p>Error: {error}</p>;\n  }\n\n  // Show empty state if no data\n  if (data.length === 0) {\n    return <p>No items found.</p>;\n  }\n\n  // Normal render when everything is fine\n  return (\n    <ul>\n      {data.map((item) => (\n        <li key={item}>{item}</li>\n      ))}\n    </ul>\n  );\n}"
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "Use the ternary operator `? :` when you have two options (show A or show B). Use `&&` when you want to show something or nothing. Use early returns with `if` statements for larger blocks or multiple conditions."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "7. Lists and Loops",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Most websites display lists of things: a list of products, a list of comments, a list of search results. In React, you use the JavaScript `.map()` method to turn an array of data into an array of JSX elements."
+        },
+        {
+          "type": "text",
+          "heading": "Rendering a simple list",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "FruitList.tsx",
+          "code": "function FruitList() {\n  const fruits = [\"Apple\", \"Banana\", \"Cherry\", \"Date\"];\n\n  return (\n    <ul>\n      {fruits.map((fruit) => (\n        // Every item in a list MUST have a unique \"key\" prop\n        <li key={fruit}>{fruit}</li>\n      ))}\n    </ul>\n  );\n}"
+        },
+        {
+          "type": "alert",
+          "severity": "warning",
+          "title": "Why do we need the key prop?",
+          "body": "React uses keys to track which items changed, were added, or were removed. Without keys, React has to re-render the entire list every time. Always use a unique identifier (like an ID from a database) as the key, not the array index."
+        },
+        {
+          "type": "text",
+          "heading": "Rendering a list of objects",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "UserList.tsx",
+          "code": "interface User {\n  id: number;\n  name: string;\n  email: string;\n}\n\nfunction UserList() {\n  const users: User[] = [\n    { id: 1, name: \"Alice\", email: \"alice@example.com\" },\n    { id: 2, name: \"Bob\", email: \"bob@example.com\" },\n    { id: 3, name: \"Carol\", email: \"carol@example.com\" },\n  ];\n\n  return (\n    <div>\n      <h2>Users</h2>\n      {users.map((user) => (\n        <div key={user.id}>\n          <h3>{user.name}</h3>\n          <p>{user.email}</p>\n        </div>\n      ))}\n    </div>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "heading": "Filtering before rendering",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "code": "function ActiveUsers() {\n  const users = [\n    { id: 1, name: \"Alice\", active: true },\n    { id: 2, name: \"Bob\", active: false },\n    { id: 3, name: \"Carol\", active: true },\n  ];\n\n  // Filter first, then map\n  const activeUsers = users.filter((user) => user.active);\n\n  return (\n    <ul>\n      {activeUsers.map((user) => (\n        <li key={user.id}>{user.name}</li>\n      ))}\n    </ul>\n  );\n  // Renders: Alice, Carol (Bob is filtered out)\n}"
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "Use `.map()` to turn arrays into lists of JSX elements. Always provide a unique `key` prop. Use `.filter()` before `.map()` when you only want to show some items. Chain these methods for powerful data transformations."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "8. useEffect - Running Code at the Right Time",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Sometimes you need to do things that are outside the normal \"receive data, show it on the screen\" cycle. For example: fetching data from the internet, setting up a timer, or updating the page title. These are called **side effects**, and React gives you `useEffect` to handle them."
+        },
+        {
+          "type": "text",
+          "body": "Think of `useEffect` like a note that says: \"After you finish drawing the screen, also do this other thing.\""
+        },
+        {
+          "type": "text",
+          "heading": "Basic usage: run on every render",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "PageTitle.tsx",
+          "code": "import { useState, useEffect } from 'react';\n\nfunction PageTitle() {\n  const [count, setCount] = useState(0);\n\n  // This runs AFTER every render\n  useEffect(() => {\n    document.title = `You clicked ${count} times`;\n  });\n\n  return (\n    <button onClick={() => setCount(count + 1)}>\n      Clicked {count} times\n    </button>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "heading": "The dependency array: controlling when it runs",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "code": "import { useState, useEffect } from 'react';\n\nfunction DataFetcher() {\n  const [data, setData] = useState(null);\n\n  // Empty array [] = run ONCE when the component first appears\n  useEffect(() => {\n    fetch(\"/api/data\")\n      .then((response) => response.json())\n      .then((result) => setData(result));\n  }, []); // <-- This empty array is the dependency array\n\n  // With values = run when those values change\n  const [searchTerm, setSearchTerm] = useState(\"\");\n\n  useEffect(() => {\n    // This runs every time searchTerm changes\n    console.log(\"Searching for:\", searchTerm);\n  }, [searchTerm]); // <-- Runs when searchTerm changes\n\n  return <div>{/* ... */}</div>;\n}"
+        },
+        {
+          "type": "table",
+          "heading": "Dependency array cheat sheet",
+          "headers": ["Code", "When it runs"],
+          "rows": [
+            ["useEffect(fn)", "Runs after every render."],
+            ["useEffect(fn, [])", "Runs once when the component first appears (mounts)."],
+            ["useEffect(fn, [a, b])", "Runs when a or b changes."]
+          ]
+        },
+        {
+          "type": "text",
+          "heading": "Cleanup: undoing what you started",
+          "headingLevel": 3,
+          "body": "Some effects set things up that need to be torn down -- like timers or event listeners. Return a cleanup function from your effect to handle this."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "code": "function Timer() {\n  const [seconds, setSeconds] = useState(0);\n\n  useEffect(() => {\n    // Set up: start a timer\n    const interval = setInterval(() => {\n      setSeconds((prev) => prev + 1);\n    }, 1000);\n\n    // Cleanup: stop the timer when the component disappears\n    return () => {\n      clearInterval(interval);\n    };\n  }, []); // Run once on mount\n\n  return <p>Seconds: {seconds}</p>;\n}"
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "`useEffect` lets you run code after React updates the screen. Control when it runs with the dependency array: empty array for once, specific values to watch for changes. Return a cleanup function to undo effects when the component is removed."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "9. Custom Hooks - Reusing Logic",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "As your components grow, they can get cluttered with logic -- fetching data, handling forms, managing timers. Custom hooks let you **extract that logic into a separate function** so your component files stay clean and focused."
+        },
+        {
+          "type": "text",
+          "body": "A good rule of thumb: **keep your TSX files under 50 lines of JSX**. If a component is getting longer, move the logic into a custom hook."
+        },
+        {
+          "type": "text",
+          "heading": "Naming convention",
+          "headingLevel": 3,
+          "body": "Custom hooks **must** start with the word `use`. This tells React that the function follows hook rules (it can call `useState`, `useEffect`, and other hooks inside it)."
+        },
+        {
+          "type": "text",
+          "heading": "Example: a useCounter hook",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "useCounter.ts",
+          "code": "import { useState } from 'react';\n\n// Custom hook: extracts counter logic into a reusable function\nfunction useCounter(initialValue: number = 0) {\n  const [count, setCount] = useState(initialValue);\n\n  function increment() {\n    setCount((prev) => prev + 1);\n  }\n\n  function decrement() {\n    setCount((prev) => prev - 1);\n  }\n\n  function reset() {\n    setCount(initialValue);\n  }\n\n  return { count, increment, decrement, reset };\n}\n\nexport default useCounter;"
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "CounterComponent.tsx",
+          "code": "import useCounter from './useCounter';\n\n// The component is now clean and focused on the UI\nfunction CounterComponent() {\n  const { count, increment, decrement, reset } = useCounter(0);\n\n  return (\n    <div>\n      <p>Count: {count}</p>\n      <button onClick={increment}>+1</button>\n      <button onClick={decrement}>-1</button>\n      <button onClick={reset}>Reset</button>\n    </div>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "heading": "Example: a useLocalStorage hook",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "useLocalStorage.ts",
+          "code": "import { useState, useEffect } from 'react';\n\nfunction useLocalStorage(key: string, defaultValue: string) {\n  const [value, setValue] = useState(() => {\n    const saved = localStorage.getItem(key);\n    return saved !== null ? saved : defaultValue;\n  });\n\n  useEffect(() => {\n    localStorage.setItem(key, value);\n  }, [key, value]);\n\n  return [value, setValue] as const;\n}\n\nexport default useLocalStorage;\n\n// Usage in any component:\n// const [name, setName] = useLocalStorage(\"username\", \"Guest\");"
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "Custom hooks are functions starting with `use` that extract reusable logic from components. They keep your components small and focused on rendering. If multiple components need the same logic, put it in a custom hook and share it."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "10. TypeScript for React",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "TypeScript is JavaScript with **type checking**. Imagine you have a function that expects a number, but someone accidentally passes a word. Without TypeScript, the code would break at runtime. With TypeScript, the editor highlights the mistake *as you type*."
+        },
+        {
+          "type": "text",
+          "heading": "Basic types",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "basics.ts",
+          "code": "// Primitive types\nconst name: string = \"Alice\";\nconst age: number = 30;\nconst isStudent: boolean = true;\n\n// Arrays\nconst fruits: string[] = [\"Apple\", \"Banana\", \"Cherry\"];\nconst scores: number[] = [95, 87, 92];\n\n// A variable that could be one type or another\nconst id: string | number = \"abc123\"; // \"union type\""
+        },
+        {
+          "type": "text",
+          "heading": "Interfaces: describing the shape of objects",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "code": "// An interface describes what an object looks like\ninterface User {\n  id: number;\n  name: string;\n  email: string;\n  bio?: string; // Optional (might not exist)\n}\n\n// TypeScript will catch errors if you miss a required field\nconst user: User = {\n  id: 1,\n  name: \"Alice\",\n  email: \"alice@example.com\",\n  // bio is optional, so we can leave it out\n};"
+        },
+        {
+          "type": "text",
+          "heading": "Typing props and state in React",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "TypedComponent.tsx",
+          "code": "import { useState } from 'react';\n\n// Props interface\ninterface ProfileCardProps {\n  name: string;\n  age: number;\n  hobbies: string[];\n  onFollow?: () => void; // Optional callback function\n}\n\nfunction ProfileCard({ name, age, hobbies, onFollow }: ProfileCardProps) {\n  // Typed state - TypeScript knows \"bio\" is a string\n  const [bio, setBio] = useState<string>(\"\");\n\n  // TypeScript knows \"friends\" is an array of strings\n  const [friends, setFriends] = useState<string[]>([]);\n\n  return (\n    <div>\n      <h2>{name}, {age}</h2>\n      <ul>\n        {hobbies.map((hobby) => (\n          <li key={hobby}>{hobby}</li>\n        ))}\n      </ul>\n      {onFollow && <button onClick={onFollow}>Follow</button>}\n    </div>\n  );\n}"
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "title": "Why bother with types?",
+          "body": "Types catch bugs before your users do. If you rename a prop or change a data shape, TypeScript immediately shows you every file that needs updating."
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "TypeScript adds type safety to your code. Use `string`, `number`, and `boolean` for primitives. Use interfaces to describe object shapes. Type your props with an interface and your state with `useState<Type>()`."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "11. Imports and Exports",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "As your project grows, you will split your code across many files. Imports and exports are how files share code with each other. Think of it like a library system: a file **exports** (makes available) certain functions or values, and other files **import** (borrow) what they need."
+        },
+        {
+          "type": "text",
+          "heading": "Default exports (one per file)",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "Button.tsx",
+          "code": "// Default export: the \"main thing\" this file provides\nfunction Button() {\n  return <button>Click me</button>;\n}\n\nexport default Button;\n\n// In another file, import it with any name you want:\n// import Button from './Button';\n// import MyButton from './Button'; // Also works! Name is up to you."
+        },
+        {
+          "type": "text",
+          "heading": "Named exports (multiple per file)",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "utils.ts",
+          "code": "// Named exports: you can have many in one file\nexport function formatDate(date: Date): string {\n  return date.toLocaleDateString();\n}\n\nexport function capitalize(text: string): string {\n  return text.charAt(0).toUpperCase() + text.slice(1);\n}\n\nexport const MAX_ITEMS = 100;\n\n// In another file, import with curly braces:\n// import { formatDate, capitalize, MAX_ITEMS } from './utils';"
+        },
+        {
+          "type": "text",
+          "heading": "Importing from packages",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "code": "// Importing from npm packages (no ./ path needed)\nimport { useState, useEffect } from 'react';\nimport Box from '@mui/material/Box';\nimport Typography from '@mui/material/Typography';\n\n// Importing from your own files (use ./ or ../ paths)\nimport Button from './components/Button';\nimport { formatDate } from './utils';\nimport type { User } from './types';"
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "title": "The @/ shortcut",
+          "body": "In many React projects, `@/` is set up as a shortcut to the `src/` folder. So `@/components/Button` means `src/components/Button`. This avoids messy relative paths like `../../../components/Button`."
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "Use `export default` for the main thing a file provides (one per file). Use named `export` for utilities and helpers (many per file). Import defaults without braces, import named exports with braces."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "12. Project Structure",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "How you organize your files matters more as your project grows. A good structure means you can find any file in seconds. A bad structure means you waste time searching through dozens of files every time you need to make a change."
+        },
+        {
+          "type": "text",
+          "heading": "Feature-based folder structure (recommended)",
+          "headingLevel": 3,
+          "body": "Instead of grouping files by type (all components together, all hooks together), group them by **feature**. Each feature gets its own folder with everything it needs."
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "filename": "Project structure",
+          "code": "src/\n\u251c\u2500\u2500 app/                    # Pages (Next.js App Router)\n\u2502   \u251c\u2500\u2500 page.tsx            # Home page\n\u2502   \u251c\u2500\u2500 layout.tsx          # Root layout\n\u2502   \u251c\u2500\u2500 dashboard/\n\u2502   \u2502   \u2514\u2500\u2500 page.tsx        # Dashboard page\n\u2502   \u2514\u2500\u2500 settings/\n\u2502       \u2514\u2500\u2500 page.tsx        # Settings page\n\u2502\n\u251c\u2500\u2500 components/\n\u2502   \u251c\u2500\u2500 common/             # Shared across the whole app\n\u2502   \u2502   \u251c\u2500\u2500 CodeBlock.tsx\n\u2502   \u2502   \u251c\u2500\u2500 BookmarkButton.tsx\n\u2502   \u2502   \u2514\u2500\u2500 LoadingSpinner.tsx\n\u2502   \u2502\n\u2502   \u251c\u2500\u2500 dashboard/          # Only used on the dashboard\n\u2502   \u2502   \u251c\u2500\u2500 StatsCard.tsx\n\u2502   \u2502   \u251c\u2500\u2500 ActivityChart.tsx\n\u2502   \u2502   \u2514\u2500\u2500 useDashboardData.ts  # Hook for this feature\n\u2502   \u2502\n\u2502   \u2514\u2500\u2500 settings/           # Only used in settings\n\u2502       \u251c\u2500\u2500 ProfileForm.tsx\n\u2502       \u2514\u2500\u2500 useSettings.ts\n\u2502\n\u251c\u2500\u2500 hooks/                  # Shared custom hooks\n\u2502   \u251c\u2500\u2500 useLocalStorage.ts\n\u2502   \u2514\u2500\u2500 useMediaQuery.ts\n\u2502\n\u251c\u2500\u2500 types/                  # Shared TypeScript types\n\u2502   \u2514\u2500\u2500 index.ts\n\u2502\n\u2514\u2500\u2500 utils/                  # Shared utility functions\n    \u251c\u2500\u2500 formatDate.ts\n    \u2514\u2500\u2500 api.ts"
+        },
+        {
+          "type": "text",
+          "heading": "Guidelines for keeping components small",
+          "headingLevel": 3,
+          "body": ""
+        },
+        {
+          "type": "cardGrid",
+          "columns": 2,
+          "cards": [
+            { "title": "Do", "body": "Keep components under 50 lines of JSX\nOne component per file\nExtract logic into custom hooks\nBreak big components into smaller ones\nName files after the component they export", "icon": "CheckCircle", "chip": "Best Practices" },
+            { "title": "Avoid", "body": "Files with hundreds of lines\nMultiple components in one file (usually)\nDeeply nested folder structures\nMixing business logic with UI code\nGeneric names like \"Helper.tsx\"", "icon": "Cancel", "chip": "Anti-Patterns" }
+          ]
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "Before: one big file",
+          "description": "This component does too much",
+          "code": "// BAD: This component does too much\nfunction UserDashboard() {\n  const [users, setUsers] = useState([]);\n  const [search, setSearch] = useState(\"\");\n  const [sortBy, setSortBy] = useState(\"name\");\n  // ... 20 more lines of logic ...\n\n  return (\n    <div>\n      {/* 100+ lines of JSX... */}\n    </div>\n  );\n}"
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "After: split into pieces",
+          "description": "Small, focused components",
+          "code": "// GOOD: Small, focused components\nfunction UserDashboard() {\n  const { users, search, setSearch, sortBy, setSortBy } = useUserDashboard();\n\n  return (\n    <div>\n      <SearchBar value={search} onChange={setSearch} />\n      <SortControls value={sortBy} onChange={setSortBy} />\n      <UserList users={users} />\n    </div>\n  );\n}"
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "Organize files by feature, not by type. Keep components small (under 50 lines of JSX) and extract logic into custom hooks. One component per file, named after the component. If a component is getting big, split it."
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "You Know the Fundamentals!",
+      "headingLevel": 2,
+      "body": "You have covered components, JSX, props, state, events, conditional rendering, lists, effects, custom hooks, TypeScript, imports, and project structure. These are the building blocks of every React application. From here, the next step is to practice by building something real."
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "What to do next",
+      "body": "Pick a small project idea -- a to-do list, a weather app, a personal blog -- and try to build it using only the concepts on this page. You will be surprised how far they take you."
+    }
+  ],
+  "keyPoints": [
+    "A component is a JavaScript function that returns JSX -- name it with a capital letter",
+    "JSX looks like HTML but lives in JavaScript; use curly braces to embed expressions",
+    "Props pass data from parent to child components; use TypeScript interfaces to define them",
+    "useState gives components their own memory that persists across re-renders",
+    "Event handlers are functions attached to JSX elements like onClick and onChange",
+    "Conditional rendering uses ternary operators, && short-circuit, or early returns",
+    "Use .map() with a unique key prop to render lists from arrays",
+    "useEffect runs side effects after render; control timing with the dependency array",
+    "Custom hooks (starting with 'use') extract reusable logic from components",
+    "TypeScript catches bugs at edit time with type annotations and interfaces",
+    "Use default exports for main components and named exports for utilities",
+    "Organize project files by feature, keeping components small and focused"
+  ]
+}

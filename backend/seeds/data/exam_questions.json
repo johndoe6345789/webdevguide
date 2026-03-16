@@ -1,0 +1,1402 @@
+[
+  {
+    "id": "q1",
+    "text": "What does HTML stand for?",
+    "options": [
+      { "id": "a", "text": "HyperText Markup Language" },
+      { "id": "b", "text": "High Tech Modern Language" },
+      { "id": "c", "text": "Home Tool Markup Language" },
+      { "id": "d", "text": "Hyperlink Text Management Language" }
+    ],
+    "correctOptionId": "a",
+    "explanation": "HTML stands for HyperText Markup Language. It is the standard language used to structure content on web pages, defining elements like headings, paragraphs, links, and images.",
+    "category": "HTML & CSS Basics",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q2",
+    "text": "Which HTML tag is used to create a hyperlink?",
+    "options": [
+      { "id": "a", "text": "<link>" },
+      { "id": "b", "text": "<a>" },
+      { "id": "c", "text": "<href>" },
+      { "id": "d", "text": "<url>" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The <a> (anchor) tag is used to create hyperlinks in HTML. The 'href' attribute inside the <a> tag specifies the destination URL. For example: <a href=\"https://example.com\">Click here</a>.",
+    "category": "HTML & CSS Basics",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q3",
+    "text": "What CSS property is used to change the text color of an element?",
+    "options": [
+      { "id": "a", "text": "text-color" },
+      { "id": "b", "text": "font-color" },
+      { "id": "c", "text": "color" },
+      { "id": "d", "text": "text-style" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "The 'color' property in CSS is used to set the text color of an element. For example: color: red; or color: #ff0000;. Despite the generic name, it specifically controls text color.",
+    "category": "HTML & CSS Basics",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q4",
+    "text": "Which CSS property controls the space between an element's border and its content?",
+    "options": [
+      { "id": "a", "text": "margin" },
+      { "id": "b", "text": "spacing" },
+      { "id": "c", "text": "border-spacing" },
+      { "id": "d", "text": "padding" }
+    ],
+    "correctOptionId": "d",
+    "explanation": "Padding is the space between an element's content and its border. Margin, on the other hand, is the space outside the border between the element and other elements. This is part of the CSS Box Model.",
+    "category": "HTML & CSS Basics",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q5",
+    "text": "What does the CSS 'display: flex' property do?",
+    "options": [
+      { "id": "a", "text": "Makes an element invisible" },
+      { "id": "b", "text": "Creates a flexible box layout container" },
+      { "id": "c", "text": "Makes text flexible in size" },
+      { "id": "d", "text": "Adds animation to an element" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Setting display: flex on an element turns it into a flex container. This enables a powerful layout system called Flexbox, which makes it easy to align, distribute, and arrange child elements in rows or columns.",
+    "category": "HTML & CSS Basics",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q6",
+    "text": "Which HTML5 tag is used to define navigation links?",
+    "options": [
+      { "id": "a", "text": "<navigation>" },
+      { "id": "b", "text": "<nav>" },
+      { "id": "c", "text": "<menu>" },
+      { "id": "d", "text": "<links>" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The <nav> tag is a semantic HTML5 element used to define a section of navigation links. Using semantic tags like <nav> helps screen readers and search engines understand the structure of your page.",
+    "category": "HTML & CSS Basics",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q7",
+    "text": "What is the correct CSS syntax to make all <p> elements bold?",
+    "options": [
+      { "id": "a", "text": "p { font-weight: bold; }" },
+      { "id": "b", "text": "p { text-style: bold; }" },
+      { "id": "c", "text": "<p style=\"bold\">" },
+      { "id": "d", "text": "p { bold: true; }" }
+    ],
+    "correctOptionId": "a",
+    "explanation": "The correct CSS syntax uses a selector (p), curly braces, and the font-weight property set to 'bold'. CSS rules follow the pattern: selector { property: value; }.",
+    "category": "HTML & CSS Basics",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q8",
+    "text": "What is the difference between 'class' and 'id' selectors in CSS?",
+    "options": [
+      { "id": "a", "text": "There is no difference" },
+      { "id": "b", "text": "An id must be unique on a page, while a class can be reused on multiple elements" },
+      { "id": "c", "text": "A class must be unique on a page, while an id can be reused" },
+      { "id": "d", "text": "Classes are for styling, ids are only for JavaScript" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "An 'id' should be unique within a page (selected with #myId), while a 'class' can be applied to multiple elements (selected with .myClass). This makes classes ideal for reusable styles and ids for targeting specific elements.",
+    "category": "HTML & CSS Basics",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q9",
+    "text": "Which CSS property is used to create space between grid items?",
+    "options": [
+      { "id": "a", "text": "grid-space" },
+      { "id": "b", "text": "gap" },
+      { "id": "c", "text": "grid-margin" },
+      { "id": "d", "text": "spacing" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The 'gap' property (previously called grid-gap) sets the space between rows and columns in a CSS Grid or Flexbox layout. You can also use 'row-gap' and 'column-gap' to control each direction independently.",
+    "category": "HTML & CSS Basics",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q10",
+    "text": "What does the CSS 'position: sticky' do?",
+    "options": [
+      { "id": "a", "text": "Fixes the element to a permanent position on the screen" },
+      { "id": "b", "text": "Makes the element invisible until scrolled to" },
+      { "id": "c", "text": "The element scrolls normally until it reaches a specified offset, then sticks in place" },
+      { "id": "d", "text": "Glues two elements together so they move as one" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "position: sticky is a hybrid of relative and fixed positioning. The element scrolls with its container until it reaches a threshold (set with top, bottom, etc.), then it 'sticks' in place. This is commonly used for sticky headers.",
+    "category": "HTML & CSS Basics",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q11",
+    "text": "What is the purpose of the 'alt' attribute in an <img> tag?",
+    "options": [
+      { "id": "a", "text": "It sets the image alignment" },
+      { "id": "b", "text": "It provides alternative text for screen readers and when the image fails to load" },
+      { "id": "c", "text": "It changes the image style" },
+      { "id": "d", "text": "It sets an alternate image source" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The 'alt' attribute provides alternative text that describes the image. It is essential for accessibility (screen readers read it aloud) and is displayed when the image cannot be loaded. Always include meaningful alt text for images.",
+    "category": "HTML & CSS Basics",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q12",
+    "text": "How does CSS specificity determine which styles are applied when there are conflicts?",
+    "options": [
+      { "id": "a", "text": "The last rule written always wins" },
+      { "id": "b", "text": "Inline styles > IDs > Classes > Element selectors, with more specific selectors taking priority" },
+      { "id": "c", "text": "Styles are applied alphabetically" },
+      { "id": "d", "text": "External stylesheets always override internal styles" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "CSS specificity is a scoring system: inline styles have the highest specificity, followed by ID selectors (#id), then class selectors (.class), and finally element selectors (div, p). When specificity is equal, the last rule written wins.",
+    "category": "HTML & CSS Basics",
+    "difficulty": "hard"
+  },
+  {
+    "id": "q13",
+    "text": "What is the CSS Box Model's correct order from inside to outside?",
+    "options": [
+      { "id": "a", "text": "Margin → Border → Padding → Content" },
+      { "id": "b", "text": "Content → Padding → Border → Margin" },
+      { "id": "c", "text": "Content → Margin → Border → Padding" },
+      { "id": "d", "text": "Padding → Content → Border → Margin" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The CSS Box Model layers from inside to outside are: Content (the actual text/image), Padding (space around content), Border (the edge around padding), and Margin (space outside the border). Understanding this model is fundamental to CSS layout.",
+    "category": "HTML & CSS Basics",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q14",
+    "text": "What does the 'viewport' meta tag do in responsive web design?",
+    "options": [
+      { "id": "a", "text": "It adds scrollbars to the page" },
+      { "id": "b", "text": "It controls how the page scales and displays on different devices" },
+      { "id": "c", "text": "It prevents the page from loading on mobile" },
+      { "id": "d", "text": "It adds a navigation bar" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The viewport meta tag (<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">) tells the browser how to control the page's dimensions and scaling. Without it, mobile devices may render the page at a desktop width and then scale it down.",
+    "category": "HTML & CSS Basics",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q15",
+    "text": "What is a CSS media query used for?",
+    "options": [
+      { "id": "a", "text": "Playing media files like audio and video" },
+      { "id": "b", "text": "Querying a database for media content" },
+      { "id": "c", "text": "Applying different styles based on device characteristics like screen width" },
+      { "id": "d", "text": "Loading external CSS files" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "Media queries let you apply CSS rules conditionally based on device characteristics. For example, @media (max-width: 768px) { ... } applies styles only when the viewport is 768 pixels wide or less. This is the foundation of responsive design.",
+    "category": "HTML & CSS Basics",
+    "difficulty": "hard"
+  },
+  {
+    "id": "q16",
+    "text": "What keyword is used to declare a variable that can be reassigned in JavaScript?",
+    "options": [
+      { "id": "a", "text": "const" },
+      { "id": "b", "text": "var" },
+      { "id": "c", "text": "let" },
+      { "id": "d", "text": "define" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "The 'let' keyword declares a block-scoped variable that can be reassigned. 'const' declares a variable that cannot be reassigned. 'var' also allows reassignment but has function scope instead of block scope and is generally avoided in modern JavaScript.",
+    "category": "JavaScript Fundamentals",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q17",
+    "text": "What will console.log(typeof null) output in JavaScript?",
+    "options": [
+      { "id": "a", "text": "\"null\"" },
+      { "id": "b", "text": "\"undefined\"" },
+      { "id": "c", "text": "\"object\"" },
+      { "id": "d", "text": "\"none\"" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "This is a well-known JavaScript quirk. typeof null returns 'object', which is actually a bug from the earliest days of JavaScript that was never fixed for backward compatibility. null is its own primitive type, not actually an object.",
+    "category": "JavaScript Fundamentals",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q18",
+    "text": "What does the array method .map() do?",
+    "options": [
+      { "id": "a", "text": "Removes elements from an array" },
+      { "id": "b", "text": "Creates a new array by transforming each element with a provided function" },
+      { "id": "c", "text": "Sorts the array in place" },
+      { "id": "d", "text": "Finds a single element in the array" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The .map() method creates a new array by calling a function on every element of the original array. For example, [1,2,3].map(x => x * 2) returns [2,4,6]. It does not modify the original array, which is important in React.",
+    "category": "JavaScript Fundamentals",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q19",
+    "text": "What is the difference between '==' and '===' in JavaScript?",
+    "options": [
+      { "id": "a", "text": "There is no difference" },
+      { "id": "b", "text": "'==' compares values only, '===' compares both value and type" },
+      { "id": "c", "text": "'===' is for strings only" },
+      { "id": "d", "text": "'==' is the assignment operator, '===' is comparison" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The '==' operator performs type coercion before comparing (so '5' == 5 is true), while '===' checks both value and type without coercion (so '5' === 5 is false). Best practice is to always use '===' to avoid unexpected type coercion bugs.",
+    "category": "JavaScript Fundamentals",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q20",
+    "text": "What is an arrow function in JavaScript?",
+    "options": [
+      { "id": "a", "text": "A function that can only return numbers" },
+      { "id": "b", "text": "A shorter syntax for writing functions, using '=>' notation" },
+      { "id": "c", "text": "A function that navigates between pages" },
+      { "id": "d", "text": "A function that can only be called once" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Arrow functions provide a concise way to write functions: const add = (a, b) => a + b. They also don't have their own 'this' binding, which makes them particularly useful in React components and callbacks.",
+    "category": "JavaScript Fundamentals",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q21",
+    "text": "What does the spread operator (...) do in JavaScript?",
+    "options": [
+      { "id": "a", "text": "It creates a loop over an array" },
+      { "id": "b", "text": "It expands an iterable into individual elements or copies object properties" },
+      { "id": "c", "text": "It deletes all elements in an array" },
+      { "id": "d", "text": "It concatenates two strings" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The spread operator (...) expands arrays or objects. For arrays: [...arr1, ...arr2] merges arrays. For objects: {...obj, newProp: value} creates a copy with additions. This is heavily used in React for immutable state updates.",
+    "category": "JavaScript Fundamentals",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q22",
+    "text": "What is destructuring in JavaScript?",
+    "options": [
+      { "id": "a", "text": "Deleting an object or array from memory" },
+      { "id": "b", "text": "A syntax for extracting values from objects or arrays into separate variables" },
+      { "id": "c", "text": "Converting an object to a string" },
+      { "id": "d", "text": "Breaking a function into smaller functions" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Destructuring lets you unpack values from arrays or properties from objects into distinct variables. For example: const { name, age } = person; or const [first, second] = myArray;. This is used extensively in React, especially with props and hooks.",
+    "category": "JavaScript Fundamentals",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q23",
+    "text": "What does 'async/await' help you do in JavaScript?",
+    "options": [
+      { "id": "a", "text": "Make code run faster" },
+      { "id": "b", "text": "Write asynchronous code that looks and behaves more like synchronous code" },
+      { "id": "c", "text": "Create multiple threads" },
+      { "id": "d", "text": "Skip slow functions" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "async/await is syntactic sugar over Promises that makes asynchronous code easier to read and write. An async function always returns a Promise, and 'await' pauses execution until the Promise resolves. This is commonly used for API calls in React applications.",
+    "category": "JavaScript Fundamentals",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q24",
+    "text": "What is a Promise in JavaScript?",
+    "options": [
+      { "id": "a", "text": "A guarantee that code will run without errors" },
+      { "id": "b", "text": "An object representing the eventual completion or failure of an asynchronous operation" },
+      { "id": "c", "text": "A type of variable that never changes" },
+      { "id": "d", "text": "A function that runs immediately" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "A Promise is an object that represents a value that may not be available yet but will be resolved at some point (or rejected if an error occurs). It has three states: pending, fulfilled, and rejected. Promises are the foundation for handling async operations like API calls.",
+    "category": "JavaScript Fundamentals",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q25",
+    "text": "What does Array.filter() return?",
+    "options": [
+      { "id": "a", "text": "The first element that matches the condition" },
+      { "id": "b", "text": "A boolean indicating if any element matches" },
+      { "id": "c", "text": "A new array containing only elements that pass the test function" },
+      { "id": "d", "text": "The original array with non-matching elements removed" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "The .filter() method creates and returns a new array containing only the elements for which the callback function returns true. The original array is not modified. For example: [1,2,3,4].filter(n => n > 2) returns [3,4].",
+    "category": "JavaScript Fundamentals",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q26",
+    "text": "What is a closure in JavaScript?",
+    "options": [
+      { "id": "a", "text": "A way to close the browser window" },
+      { "id": "b", "text": "A function that has access to variables from its outer scope even after the outer function has returned" },
+      { "id": "c", "text": "A way to end a loop early" },
+      { "id": "d", "text": "A method to seal an object from changes" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "A closure is created when a function remembers and can access variables from its outer (enclosing) scope, even after the outer function has finished executing. Closures are fundamental to JavaScript and are used extensively in React hooks.",
+    "category": "JavaScript Fundamentals",
+    "difficulty": "hard"
+  },
+  {
+    "id": "q27",
+    "text": "What will [1, 2, 3].reduce((acc, val) => acc + val, 0) return?",
+    "options": [
+      { "id": "a", "text": "[1, 2, 3]" },
+      { "id": "b", "text": "0" },
+      { "id": "c", "text": "6" },
+      { "id": "d", "text": "3" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "The .reduce() method executes a reducer function on each element, accumulating a single result. Starting with 0 (the initial value), it adds each element: 0+1=1, 1+2=3, 3+3=6. Reduce is powerful for transforming arrays into any other value.",
+    "category": "JavaScript Fundamentals",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q28",
+    "text": "What is optional chaining (?.) in JavaScript?",
+    "options": [
+      { "id": "a", "text": "A way to create optional function parameters" },
+      { "id": "b", "text": "A syntax to safely access nested properties without checking each level for null/undefined" },
+      { "id": "c", "text": "A way to chain multiple functions together" },
+      { "id": "d", "text": "A shorthand for if/else statements" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Optional chaining (?.) allows you to safely access deeply nested object properties. If any part of the chain is null or undefined, it returns undefined instead of throwing an error. For example: user?.address?.city returns undefined if user or address is null/undefined.",
+    "category": "JavaScript Fundamentals",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q29",
+    "text": "What is the purpose of template literals (backtick strings) in JavaScript?",
+    "options": [
+      { "id": "a", "text": "They are only used for multi-line strings" },
+      { "id": "b", "text": "They allow string interpolation with ${expression} and multi-line strings" },
+      { "id": "c", "text": "They create read-only strings" },
+      { "id": "d", "text": "They are an older syntax replaced by quotes" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Template literals use backticks (`) and allow embedded expressions using ${...} syntax. For example: `Hello, ${name}! You are ${age} years old.` They also support multi-line strings without needing escape characters.",
+    "category": "JavaScript Fundamentals",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q30",
+    "text": "What is event bubbling in JavaScript?",
+    "options": [
+      { "id": "a", "text": "When an event creates visual bubbles on the page" },
+      { "id": "b", "text": "When an event on a child element propagates up through its parent elements" },
+      { "id": "c", "text": "When multiple events fire at the same time" },
+      { "id": "d", "text": "When events are queued and processed one by one" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Event bubbling means that when an event occurs on an element, it first runs handlers on that element, then on its parent, then on the next ancestor, and so on up the DOM tree. You can stop this with event.stopPropagation(). React's synthetic event system is built on this concept.",
+    "category": "JavaScript Fundamentals",
+    "difficulty": "hard"
+  },
+  {
+    "id": "q31",
+    "text": "What is a React component?",
+    "options": [
+      { "id": "a", "text": "A CSS class for styling" },
+      { "id": "b", "text": "A reusable piece of UI that can accept inputs (props) and returns JSX describing what should appear on screen" },
+      { "id": "c", "text": "A database table" },
+      { "id": "d", "text": "A type of HTML element" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "A React component is a reusable building block of a UI. It's a JavaScript function (or class) that accepts inputs called 'props' and returns JSX that describes what the UI should look like. Components let you split the UI into independent, reusable pieces.",
+    "category": "React Core Concepts",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q32",
+    "text": "What is JSX?",
+    "options": [
+      { "id": "a", "text": "A new programming language" },
+      { "id": "b", "text": "A syntax extension that lets you write HTML-like code inside JavaScript" },
+      { "id": "c", "text": "A CSS framework" },
+      { "id": "d", "text": "A testing library" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "JSX (JavaScript XML) is a syntax extension for JavaScript that looks similar to HTML. It lets you write UI structure directly in your JavaScript code. JSX is compiled to regular JavaScript function calls (React.createElement) by tools like Babel.",
+    "category": "React Core Concepts",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q33",
+    "text": "What is the correct way to pass a prop called 'name' with value 'Alice' to a component?",
+    "options": [
+      { "id": "a", "text": "<MyComponent name='Alice' />" },
+      { "id": "b", "text": "<MyComponent props='Alice' />" },
+      { "id": "c", "text": "<MyComponent>Alice</MyComponent>" },
+      { "id": "d", "text": "MyComponent.name = 'Alice'" }
+    ],
+    "correctOptionId": "a",
+    "explanation": "Props are passed to components as attributes in JSX, just like HTML attributes. <MyComponent name='Alice' /> passes the string 'Alice' as the 'name' prop. Inside MyComponent, you'd access it as props.name or by destructuring: function MyComponent({ name }).",
+    "category": "React Core Concepts",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q34",
+    "text": "What does the useState hook return?",
+    "options": [
+      { "id": "a", "text": "Just the current state value" },
+      { "id": "b", "text": "An array with the current state value and a function to update it" },
+      { "id": "c", "text": "An object with get and set methods" },
+      { "id": "d", "text": "A Promise that resolves to the state" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "useState returns an array with exactly two elements: [currentValue, setterFunction]. We typically destructure it: const [count, setCount] = useState(0). The setter function triggers a re-render when called with a new value.",
+    "category": "React Core Concepts",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q35",
+    "text": "Why should you not call React hooks inside loops or conditions?",
+    "options": [
+      { "id": "a", "text": "It makes the code slower" },
+      { "id": "b", "text": "React relies on the order of hook calls to correctly track state between renders" },
+      { "id": "c", "text": "Hooks are not real JavaScript" },
+      { "id": "d", "text": "It is allowed but not recommended" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "React tracks hooks by the order they are called. If you put a hook inside a condition, the order could change between renders, causing React to associate the wrong state with the wrong hook. This is the 'Rules of Hooks' and must always be followed.",
+    "category": "React Core Concepts",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q36",
+    "text": "What is the purpose of the useEffect hook?",
+    "options": [
+      { "id": "a", "text": "To add visual effects like animations" },
+      { "id": "b", "text": "To perform side effects like data fetching, subscriptions, or DOM manipulation after render" },
+      { "id": "c", "text": "To style components" },
+      { "id": "d", "text": "To create new state variables" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "useEffect lets you perform side effects in function components. Side effects include fetching data, setting up subscriptions, or directly changing the DOM. It runs after the component renders and can optionally clean up before the component unmounts.",
+    "category": "React Core Concepts",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q37",
+    "text": "What is the virtual DOM in React?",
+    "options": [
+      { "id": "a", "text": "A copy of the browser's DOM stored in the cloud" },
+      { "id": "b", "text": "A lightweight JavaScript representation of the actual DOM that React uses to efficiently determine what changes need to be made" },
+      { "id": "c", "text": "A special HTML file that React creates" },
+      { "id": "d", "text": "A browser extension for React developers" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The virtual DOM is a lightweight copy of the actual DOM kept in memory. When state changes, React creates a new virtual DOM, compares it with the previous one (a process called 'diffing'), and only updates the real DOM where differences are found. This makes updates efficient.",
+    "category": "React Core Concepts",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q38",
+    "text": "What is the purpose of the 'key' prop when rendering a list in React?",
+    "options": [
+      { "id": "a", "text": "It sets a keyboard shortcut for each item" },
+      { "id": "b", "text": "It helps React identify which items have changed, been added, or removed for efficient re-rendering" },
+      { "id": "c", "text": "It encrypts the list data" },
+      { "id": "d", "text": "It is just for debugging purposes" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Keys help React identify each list item uniquely. When the list changes, React uses keys to determine which items were modified, added, or removed, allowing it to update only the necessary DOM elements. Use stable, unique identifiers (not array indices) as keys.",
+    "category": "React Core Concepts",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q39",
+    "text": "What happens when you call a state setter function like setCount(count + 1)?",
+    "options": [
+      { "id": "a", "text": "The value updates immediately and you can use it on the next line" },
+      { "id": "b", "text": "React schedules a re-render with the new state value; the update is not immediate" },
+      { "id": "c", "text": "The component unmounts and remounts" },
+      { "id": "d", "text": "The page refreshes" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "State updates in React are asynchronous. When you call setCount(count + 1), React schedules a re-render but the current render continues with the old value. The new value is available on the next render. For updates based on previous state, use the functional form: setCount(prev => prev + 1).",
+    "category": "React Core Concepts",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q40",
+    "text": "What is the difference between props and state in React?",
+    "options": [
+      { "id": "a", "text": "They are the same thing" },
+      { "id": "b", "text": "Props are passed from parent to child and are read-only; state is managed within a component and can be updated" },
+      { "id": "c", "text": "State is for styling, props are for data" },
+      { "id": "d", "text": "Props can be changed by the child, state cannot" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Props (short for properties) are passed down from parent to child components and are read-only from the child's perspective. State is data managed within a component that can change over time using setter functions. When state or props change, the component re-renders.",
+    "category": "React Core Concepts",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q41",
+    "text": "What does the useRef hook allow you to do?",
+    "options": [
+      { "id": "a", "text": "Create a reference to a CSS file" },
+      { "id": "b", "text": "Hold a mutable value that persists across renders without causing re-renders when changed" },
+      { "id": "c", "text": "Reference another component's state" },
+      { "id": "d", "text": "Create a link to an external website" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "useRef returns a mutable ref object whose .current property persists across renders. Unlike state, changing a ref does not trigger a re-render. Common uses include accessing DOM elements directly (e.g., focusing an input) and storing mutable values like timers.",
+    "category": "React Core Concepts",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q42",
+    "text": "How do you conditionally render content in JSX?",
+    "options": [
+      { "id": "a", "text": "Using if/else statements directly inside the JSX return" },
+      { "id": "b", "text": "Using ternary operators {condition ? <A/> : <B/>} or logical AND {condition && <A/>}" },
+      { "id": "c", "text": "Using CSS display: none" },
+      { "id": "d", "text": "It is not possible to conditionally render in React" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Since JSX is an expression, you can't use if/else directly inside it. Instead, use ternary operators for either/or rendering: {isLoggedIn ? <Dashboard /> : <Login />}, or the && operator to render something or nothing: {showMessage && <Message />}.",
+    "category": "React Core Concepts",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q43",
+    "text": "What is React.memo() used for?",
+    "options": [
+      { "id": "a", "text": "Adding notes or memos to your components for documentation" },
+      { "id": "b", "text": "Preventing a component from re-rendering if its props have not changed" },
+      { "id": "c", "text": "Storing data in the browser's memory" },
+      { "id": "d", "text": "Creating a memoized version of a state variable" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "React.memo() is a higher-order component that memoizes a component. If the component's props haven't changed between renders, React will skip rendering that component and reuse the last rendered result. This is a performance optimization for components that render often with the same props.",
+    "category": "React Core Concepts",
+    "difficulty": "hard"
+  },
+  {
+    "id": "q44",
+    "text": "What is the useCallback hook used for?",
+    "options": [
+      { "id": "a", "text": "Creating callback URLs for API requests" },
+      { "id": "b", "text": "Memoizing a function so it is not recreated on every render, useful for passing stable callbacks to child components" },
+      { "id": "c", "text": "Scheduling a function to run later" },
+      { "id": "d", "text": "Handling errors in asynchronous functions" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "useCallback returns a memoized version of a callback function that only changes if its dependencies change. This is useful when passing callbacks to optimized child components that rely on reference equality to avoid unnecessary renders.",
+    "category": "React Core Concepts",
+    "difficulty": "hard"
+  },
+  {
+    "id": "q45",
+    "text": "What is the children prop in React?",
+    "options": [
+      { "id": "a", "text": "A list of child components that belong to a parent component" },
+      { "id": "b", "text": "A special prop that contains the content placed between the opening and closing tags of a component" },
+      { "id": "c", "text": "A method to create child elements dynamically" },
+      { "id": "d", "text": "The child routes in React Router" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The children prop is a special prop automatically provided to components. It contains whatever content is placed between the component's opening and closing tags. For example: <Card><p>Hello</p></Card> makes <p>Hello</p> available as props.children inside Card. This pattern is called composition.",
+    "category": "React Core Concepts",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q46",
+    "text": "What does TypeScript add to JavaScript?",
+    "options": [
+      { "id": "a", "text": "A different runtime environment" },
+      { "id": "b", "text": "Static type checking and type annotations at development time" },
+      { "id": "c", "text": "Better performance at runtime" },
+      { "id": "d", "text": "New DOM manipulation methods" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "TypeScript adds optional static type checking to JavaScript. You can annotate variables, function parameters, and return values with types. TypeScript catches type errors during development (compile time), before the code runs. It compiles down to plain JavaScript.",
+    "category": "TypeScript",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q47",
+    "text": "What is the correct way to define a typed variable in TypeScript?",
+    "options": [
+      { "id": "a", "text": "let name = string: 'Alice';" },
+      { "id": "b", "text": "let name: string = 'Alice';" },
+      { "id": "c", "text": "string let name = 'Alice';" },
+      { "id": "d", "text": "let name = (string)'Alice';" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "In TypeScript, you add type annotations after the variable name with a colon: let name: string = 'Alice'. The type comes after the variable name and before the assignment. TypeScript can often infer types automatically, so explicit annotations aren't always necessary.",
+    "category": "TypeScript",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q48",
+    "text": "What is an interface in TypeScript?",
+    "options": [
+      { "id": "a", "text": "A visual UI component" },
+      { "id": "b", "text": "A contract that defines the shape of an object, specifying what properties and types it should have" },
+      { "id": "c", "text": "A way to connect to APIs" },
+      { "id": "d", "text": "A CSS styling method" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "An interface defines the structure an object must have. For example: interface User { name: string; age: number; } ensures any object of type User must have a name (string) and age (number). Interfaces are heavily used in React for defining prop types.",
+    "category": "TypeScript",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q49",
+    "text": "How do you type the props of a React functional component in TypeScript?",
+    "options": [
+      { "id": "a", "text": "function MyComponent(props: any) {}" },
+      { "id": "b", "text": "function MyComponent({ name, age }: { name: string; age: number }) {}" },
+      { "id": "c", "text": "function MyComponent<string, number>(props) {}" },
+      { "id": "d", "text": "function MyComponent(props) : types {}" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "You can define prop types inline with destructuring, or create an interface/type first: interface Props { name: string; age: number; } then use it: function MyComponent({ name, age }: Props) {}. This gives you autocomplete and catches errors when wrong props are passed.",
+    "category": "TypeScript",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q50",
+    "text": "What is a union type in TypeScript?",
+    "options": [
+      { "id": "a", "text": "A type that combines all properties of two objects" },
+      { "id": "b", "text": "A type that allows a value to be one of several specified types, using the | operator" },
+      { "id": "c", "text": "A type for arrays only" },
+      { "id": "d", "text": "A type that merges two interfaces" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "A union type uses the | operator to specify that a value can be one of several types. For example: let status: 'loading' | 'success' | 'error' means status can only be one of those three string values. Union types are great for state machines and variants.",
+    "category": "TypeScript",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q51",
+    "text": "What does the 'unknown' type represent in TypeScript, and how does it differ from 'any'?",
+    "options": [
+      { "id": "a", "text": "They are identical" },
+      { "id": "b", "text": "'unknown' is a type-safe version of 'any' that requires type checking before you can use the value" },
+      { "id": "c", "text": "'unknown' is for undefined variables only" },
+      { "id": "d", "text": "'any' is safer than 'unknown'" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Both 'any' and 'unknown' can hold any value, but 'unknown' is type-safe. With 'any', you can do anything without checks. With 'unknown', you must narrow the type (using typeof, instanceof, etc.) before performing operations. Prefer 'unknown' over 'any' for better safety.",
+    "category": "TypeScript",
+    "difficulty": "hard"
+  },
+  {
+    "id": "q52",
+    "text": "What are generics in TypeScript?",
+    "options": [
+      { "id": "a", "text": "A way to generate code automatically" },
+      { "id": "b", "text": "Type variables that allow you to create reusable components that work with multiple types" },
+      { "id": "c", "text": "Generic CSS styles that apply to all elements" },
+      { "id": "d", "text": "Default values for function parameters" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Generics let you write functions, classes, or interfaces that work with any type while still maintaining type safety. For example: function identity<T>(arg: T): T { return arg; }. The type T is determined when the function is called. useState<number>(0) is an example of generics in React.",
+    "category": "TypeScript",
+    "difficulty": "hard"
+  },
+  {
+    "id": "q53",
+    "text": "What does the 'optional property' syntax (?) mean in a TypeScript interface?",
+    "options": [
+      { "id": "a", "text": "The property must be a boolean" },
+      { "id": "b", "text": "The property may or may not be present on the object" },
+      { "id": "c", "text": "The property is read-only" },
+      { "id": "d", "text": "The property is deprecated" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Adding ? after a property name makes it optional: interface User { name: string; nickname?: string; }. This means objects of type User must have 'name' but 'nickname' is optional. The type of an optional property includes undefined automatically.",
+    "category": "TypeScript",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q54",
+    "text": "How do you type a function's return value as an array of strings in TypeScript?",
+    "options": [
+      { "id": "a", "text": "function getNames(): string {}" },
+      { "id": "b", "text": "function getNames(): string[] {}" },
+      { "id": "c", "text": "function getNames(): [string] {}" },
+      { "id": "d", "text": "function getNames(): array<string> {}" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The return type annotation comes after the parameter list with a colon. string[] means an array of strings. You could also write Array<string> using the generic syntax. For example: function getNames(): string[] { return ['Alice', 'Bob']; }.",
+    "category": "TypeScript",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q55",
+    "text": "What is a type assertion in TypeScript?",
+    "options": [
+      { "id": "a", "text": "A runtime type check that throws errors" },
+      { "id": "b", "text": "A way to tell the TypeScript compiler to treat a value as a specific type using 'as' keyword" },
+      { "id": "c", "text": "A test to verify types are correct" },
+      { "id": "d", "text": "A way to create new types from existing ones" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Type assertions use the 'as' keyword to tell TypeScript you know more about a value's type than it does. For example: const input = document.getElementById('myInput') as HTMLInputElement. This does not perform any runtime conversion; it only affects type checking at compile time.",
+    "category": "TypeScript",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q56",
+    "text": "What is the purpose of the pages (or app) directory in a Next.js project?",
+    "options": [
+      { "id": "a", "text": "To store static images" },
+      { "id": "b", "text": "Each file automatically becomes a route based on its file name" },
+      { "id": "c", "text": "To configure the database" },
+      { "id": "d", "text": "To store test files" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Next.js uses file-system based routing. In the pages directory, each file becomes a route: pages/about.tsx becomes /about. In the newer App Router (app directory), folders define routes and page.tsx files define the UI. This eliminates the need for manual route configuration.",
+    "category": "Next.js & Routing",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q57",
+    "text": "What is Server-Side Rendering (SSR) in Next.js?",
+    "options": [
+      { "id": "a", "text": "Rendering components only on the client's browser" },
+      { "id": "b", "text": "Generating the HTML for a page on the server for each request, improving initial load and SEO" },
+      { "id": "c", "text": "Running JavaScript tests on the server" },
+      { "id": "d", "text": "A way to serve static files" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "SSR generates the full HTML for a page on the server for each incoming request. The browser receives complete HTML instead of an empty page, which improves initial load time and SEO since search engines can read the content. The page then becomes interactive through hydration.",
+    "category": "Next.js & Routing",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q58",
+    "text": "What is the difference between Static Site Generation (SSG) and Server-Side Rendering (SSR) in Next.js?",
+    "options": [
+      { "id": "a", "text": "There is no difference" },
+      { "id": "b", "text": "SSG generates pages at build time (once), while SSR generates pages at request time (every time)" },
+      { "id": "c", "text": "SSG is for APIs, SSR is for pages" },
+      { "id": "d", "text": "SSR is faster than SSG in all cases" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "SSG pre-renders pages at build time, creating static HTML files that can be cached by a CDN for fast delivery. SSR renders pages on each request, ensuring the content is always up-to-date. SSG is faster for content that doesn't change often; SSR is better for dynamic, personalized content.",
+    "category": "Next.js & Routing",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q59",
+    "text": "How do you create a dynamic route in Next.js App Router?",
+    "options": [
+      { "id": "a", "text": "By adding a query parameter to the URL" },
+      { "id": "b", "text": "By naming a folder with square brackets, like [id], which captures the URL segment as a parameter" },
+      { "id": "c", "text": "By writing a custom router configuration" },
+      { "id": "d", "text": "By using JavaScript to change the URL" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "In Next.js App Router, you create dynamic routes by using folders with square brackets: app/blog/[slug]/page.tsx matches /blog/hello-world, /blog/my-post, etc. The dynamic segment is available as a parameter in the page component, making it easy to create pages for dynamic content.",
+    "category": "Next.js & Routing",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q60",
+    "text": "What is the purpose of the Link component in Next.js?",
+    "options": [
+      { "id": "a", "text": "To link external CSS stylesheets" },
+      { "id": "b", "text": "To enable client-side navigation between pages without a full page reload" },
+      { "id": "c", "text": "To create database connections" },
+      { "id": "d", "text": "To link to external APIs" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The Next.js Link component enables client-side navigation, meaning clicking a link doesn't trigger a full page reload. Instead, only the content that changed is updated, making navigation faster. Link also prefetches linked pages in the background for even faster transitions.",
+    "category": "Next.js & Routing",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q61",
+    "text": "What are React Server Components in Next.js App Router?",
+    "options": [
+      { "id": "a", "text": "Components that can only render on the server, reducing JavaScript sent to the client" },
+      { "id": "b", "text": "Components that manage server configuration" },
+      { "id": "c", "text": "Components that replace API routes" },
+      { "id": "d", "text": "Components that only work in testing environments" }
+    ],
+    "correctOptionId": "a",
+    "explanation": "React Server Components render only on the server and send just the HTML to the client, without any JavaScript for those components. This reduces the client-side bundle size. In Next.js App Router, all components are Server Components by default. Add 'use client' at the top of a file to make it a Client Component.",
+    "category": "Next.js & Routing",
+    "difficulty": "hard"
+  },
+  {
+    "id": "q62",
+    "text": "What is the purpose of the layout.tsx file in Next.js App Router?",
+    "options": [
+      { "id": "a", "text": "It defines CSS grid layouts" },
+      { "id": "b", "text": "It wraps pages with shared UI (like headers and sidebars) and preserves state during navigation" },
+      { "id": "c", "text": "It configures the build layout" },
+      { "id": "d", "text": "It positions elements using coordinates" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "layout.tsx files in the App Router define shared UI that wraps child routes. A layout receives its child pages as the 'children' prop and renders them alongside shared elements like headers, sidebars, and footers. Layouts persist across page navigations, preserving state and avoiding unnecessary re-renders.",
+    "category": "Next.js & Routing",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q63",
+    "text": "How do you handle 404 (Not Found) pages in Next.js App Router?",
+    "options": [
+      { "id": "a", "text": "Create a file named 404.js in the root" },
+      { "id": "b", "text": "Create a not-found.tsx file in the app directory" },
+      { "id": "c", "text": "Add a catch-all error handler" },
+      { "id": "d", "text": "Next.js does not support custom 404 pages" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "In the App Router, you create a not-found.tsx file in the app directory (or any route segment) to display a custom 404 page. You can also call the notFound() function from next/navigation inside a page or layout to programmatically trigger the not-found UI.",
+    "category": "Next.js & Routing",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q64",
+    "text": "What does the 'use client' directive do at the top of a Next.js file?",
+    "options": [
+      { "id": "a", "text": "It restricts the file to run only in development mode" },
+      { "id": "b", "text": "It marks the component as a Client Component that can use hooks, event handlers, and browser APIs" },
+      { "id": "c", "text": "It imports client-side libraries automatically" },
+      { "id": "d", "text": "It optimizes the component for mobile clients" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "In Next.js App Router, adding 'use client' at the top of a file marks it as a Client Component. Client Components can use React hooks (useState, useEffect), handle user events (onClick, onChange), and access browser APIs. Without it, components are Server Components by default.",
+    "category": "Next.js & Routing",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q65",
+    "text": "What is middleware in Next.js used for?",
+    "options": [
+      { "id": "a", "text": "Adding CSS styles to components" },
+      { "id": "b", "text": "Running code before a request is completed, useful for authentication, redirects, and request modification" },
+      { "id": "c", "text": "Managing database migrations" },
+      { "id": "d", "text": "Compiling TypeScript files" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Next.js middleware runs before a request is completed. It can modify the response, redirect users, rewrite URLs, or set headers. Common uses include checking authentication before allowing access to protected pages, A/B testing, and internationalization.",
+    "category": "Next.js & Routing",
+    "difficulty": "hard"
+  },
+  {
+    "id": "q66",
+    "text": "What is the React Context API used for?",
+    "options": [
+      { "id": "a", "text": "Making API calls to a backend server" },
+      { "id": "b", "text": "Sharing data across components without passing props through every level of the tree" },
+      { "id": "c", "text": "Creating context menus in the UI" },
+      { "id": "d", "text": "Managing CSS themes only" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The Context API solves the 'prop drilling' problem by letting you share values (like themes, user data, or language) across the component tree without manually passing props through every intermediate component. You create a context, provide a value, and consume it anywhere below.",
+    "category": "State Management",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q67",
+    "text": "What problem does 'prop drilling' refer to in React?",
+    "options": [
+      { "id": "a", "text": "Props being too large and slowing down the app" },
+      { "id": "b", "text": "Passing props through many layers of intermediate components that don't need them" },
+      { "id": "c", "text": "Drilling holes in the component structure" },
+      { "id": "d", "text": "Using too many props on a single component" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Prop drilling happens when you pass data through many nested components just to get it to a deeply nested child, even though the intermediate components don't use that data. Solutions include React Context, state management libraries like Redux or Zustand, and component composition patterns.",
+    "category": "State Management",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q68",
+    "text": "What is the useReducer hook best suited for?",
+    "options": [
+      { "id": "a", "text": "Making API calls" },
+      { "id": "b", "text": "Managing complex state logic with multiple sub-values or when the next state depends on the previous one" },
+      { "id": "c", "text": "Reducing the size of components" },
+      { "id": "d", "text": "Reducing the number of re-renders" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "useReducer is an alternative to useState for complex state logic. It uses a reducer function that takes the current state and an action, then returns the new state. It's ideal when state has multiple sub-values, complex update logic, or when the next state depends on the previous state.",
+    "category": "State Management",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q69",
+    "text": "What is Zustand in the context of React state management?",
+    "options": [
+      { "id": "a", "text": "A React component library" },
+      { "id": "b", "text": "A small, fast, and simple state management library that uses hooks" },
+      { "id": "c", "text": "A testing framework" },
+      { "id": "d", "text": "A CSS-in-JS library" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Zustand is a lightweight state management library for React. It provides a simple API to create stores with a hook-based approach. Unlike Redux, it requires minimal boilerplate: you create a store with create(), define state and actions, and use the hook directly in components.",
+    "category": "State Management",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q70",
+    "text": "What is the main benefit of using Redux Toolkit over plain Redux?",
+    "options": [
+      { "id": "a", "text": "Redux Toolkit uses a different state management pattern" },
+      { "id": "b", "text": "It reduces boilerplate by providing utilities like createSlice that auto-generate action creators and reducers" },
+      { "id": "c", "text": "It makes the app faster" },
+      { "id": "d", "text": "It replaces the need for React entirely" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Redux Toolkit simplifies Redux by reducing boilerplate code. createSlice generates action types and creators automatically. It includes immer for simpler immutable updates, configureStore for easy store setup, and createAsyncThunk for handling async operations. It's now the recommended way to use Redux.",
+    "category": "State Management",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q71",
+    "text": "When should you use local component state vs. a global state management solution?",
+    "options": [
+      { "id": "a", "text": "Always use global state for everything" },
+      { "id": "b", "text": "Use local state for UI-specific data (form inputs, toggles); use global state when data is shared across many unrelated components" },
+      { "id": "c", "text": "Always use local state for everything" },
+      { "id": "d", "text": "Use global state for styling, local state for data" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Local state (useState) is best for data that only one component or its close children need, like form inputs, toggles, or modal visibility. Global state (Context, Redux, Zustand) is appropriate when many unrelated components across the app need access to the same data, like user authentication or theme settings.",
+    "category": "State Management",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q72",
+    "text": "What is React Query (TanStack Query) primarily used for?",
+    "options": [
+      { "id": "a", "text": "Querying the DOM for elements" },
+      { "id": "b", "text": "Managing server state including data fetching, caching, synchronization, and updates" },
+      { "id": "c", "text": "Writing database queries" },
+      { "id": "d", "text": "Querying CSS styles" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "React Query (now TanStack Query) manages 'server state' — data that lives on the server and needs to be fetched, cached, and kept in sync. It handles loading/error states, background refetching, caching, pagination, and more, replacing a lot of manual useEffect + useState patterns for data fetching.",
+    "category": "State Management",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q73",
+    "text": "What is the difference between 'server state' and 'client state'?",
+    "options": [
+      { "id": "a", "text": "They are the same thing stored in different places" },
+      { "id": "b", "text": "Server state is data from external sources that can be stale; client state is local UI data fully controlled by the app" },
+      { "id": "c", "text": "Server state is always faster to access" },
+      { "id": "d", "text": "Client state requires a database, server state does not" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Server state comes from an external source (API, database), can be out of date (stale), and is shared across users. Client state is local to the browser (UI state, form data, selected tabs) and is fully controlled by the app. Recognizing this distinction helps you choose the right state management tools.",
+    "category": "State Management",
+    "difficulty": "hard"
+  },
+  {
+    "id": "q74",
+    "text": "What does immutability mean in the context of state management?",
+    "options": [
+      { "id": "a", "text": "State can never change" },
+      { "id": "b", "text": "Instead of modifying existing state directly, you create a new copy with the changes applied" },
+      { "id": "c", "text": "State is stored in a secure, encrypted format" },
+      { "id": "d", "text": "State values must be constants" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Immutability means never modifying state directly. Instead of changing an object or array in place, you create a new one with the changes. For example, instead of state.items.push(newItem), you write [...state.items, newItem]. React relies on reference comparison to detect changes, so immutability is essential for correct re-rendering.",
+    "category": "State Management",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q75",
+    "text": "What is the useMemo hook used for?",
+    "options": [
+      { "id": "a", "text": "Storing notes and memos in the component" },
+      { "id": "b", "text": "Memoizing an expensive computation so it only recalculates when its dependencies change" },
+      { "id": "c", "text": "Creating memoized versions of components" },
+      { "id": "d", "text": "Caching API responses" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "useMemo caches the result of an expensive calculation and only recomputes when its dependency array values change. For example: const sorted = useMemo(() => expensiveSort(items), [items]). This avoids running the expensive sort on every render if items haven't changed.",
+    "category": "State Management",
+    "difficulty": "hard"
+  },
+  {
+    "id": "q76",
+    "text": "What is Material UI (MUI)?",
+    "options": [
+      { "id": "a", "text": "A JavaScript runtime environment" },
+      { "id": "b", "text": "A React component library that implements Google's Material Design with pre-built, customizable components" },
+      { "id": "c", "text": "A CSS preprocessor like SASS" },
+      { "id": "d", "text": "A state management library" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Material UI (MUI) is a popular React component library that provides pre-built, accessible, and customizable UI components following Google's Material Design guidelines. It includes components like Button, TextField, Card, Dialog, and many more, saving you from building common UI elements from scratch.",
+    "category": "Styling & Material UI",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q77",
+    "text": "What is the purpose of the sx prop in Material UI?",
+    "options": [
+      { "id": "a", "text": "It sets the size of the component" },
+      { "id": "b", "text": "It provides inline styling using a superset of CSS with access to the theme and shorthand properties" },
+      { "id": "c", "text": "It creates special effects" },
+      { "id": "d", "text": "It enables server-side execution" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The sx prop in MUI allows you to write styles directly on components with access to the theme. It supports all CSS properties plus shorthand like 'p' for padding, 'mt' for margin-top, and responsive values. Example: <Box sx={{ p: 2, bgcolor: 'primary.main', color: 'white' }}>.",
+    "category": "Styling & Material UI",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q78",
+    "text": "What is CSS-in-JS?",
+    "options": [
+      { "id": "a", "text": "Writing CSS in a separate file and importing it" },
+      { "id": "b", "text": "Writing CSS styles directly in JavaScript files, often as JavaScript objects or tagged template literals" },
+      { "id": "c", "text": "Converting JavaScript to CSS" },
+      { "id": "d", "text": "Using JavaScript to disable CSS" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "CSS-in-JS is a pattern where styles are written in JavaScript rather than separate CSS files. Libraries like styled-components, Emotion, and MUI's styled() API let you create components with built-in styles. Benefits include scoped styles (no conflicts), dynamic styling based on props, and theme access.",
+    "category": "Styling & Material UI",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q79",
+    "text": "What is a design system's 'theme' in the context of UI libraries like MUI?",
+    "options": [
+      { "id": "a", "text": "A dark mode toggle" },
+      { "id": "b", "text": "A centralized configuration object that defines colors, typography, spacing, and other design tokens used consistently across the app" },
+      { "id": "c", "text": "A pre-made template for the whole website" },
+      { "id": "d", "text": "A collection of background images" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "A theme is a central configuration that defines your app's visual language: color palette (primary, secondary, error), typography (font families, sizes), spacing scale, breakpoints, and more. MUI's createTheme() and ThemeProvider ensure consistent design across all components.",
+    "category": "Styling & Material UI",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q80",
+    "text": "What are Tailwind CSS utility classes?",
+    "options": [
+      { "id": "a", "text": "Pre-built component classes like 'btn' or 'card'" },
+      { "id": "b", "text": "Small, single-purpose classes like 'p-4', 'text-blue-500', 'flex' that each apply one specific CSS property" },
+      { "id": "c", "text": "Classes that generate utility bills" },
+      { "id": "d", "text": "JavaScript utility functions for styling" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Tailwind CSS uses utility-first classes where each class applies a single CSS property. Instead of writing custom CSS, you compose classes: <div className='flex items-center p-4 bg-blue-500 text-white rounded-lg'>. This approach offers rapid development and consistency without writing custom CSS.",
+    "category": "Styling & Material UI",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q81",
+    "text": "What is a REST API?",
+    "options": [
+      { "id": "a", "text": "A programming language for servers" },
+      { "id": "b", "text": "An architectural style for web services where resources are accessed via HTTP methods like GET, POST, PUT, and DELETE" },
+      { "id": "c", "text": "A React testing framework" },
+      { "id": "d", "text": "A database management system" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "REST (Representational State Transfer) is an architectural style for designing web services. Resources are identified by URLs, and you interact with them using standard HTTP methods: GET (read), POST (create), PUT (update), DELETE (remove). Most web APIs follow REST conventions.",
+    "category": "Backend & APIs",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q82",
+    "text": "What is the fetch API used for in JavaScript?",
+    "options": [
+      { "id": "a", "text": "Fetching files from the local file system" },
+      { "id": "b", "text": "Making HTTP requests to servers and APIs from the browser or Node.js" },
+      { "id": "c", "text": "Fetching React components from a library" },
+      { "id": "d", "text": "Downloading and installing npm packages" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The fetch API is a built-in JavaScript function for making HTTP requests. It returns a Promise that resolves with the Response. Common usage: const response = await fetch('/api/data'); const data = await response.json();. It's the standard way to communicate with APIs in modern JavaScript.",
+    "category": "Backend & APIs",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q83",
+    "text": "What is the difference between GET and POST HTTP methods?",
+    "options": [
+      { "id": "a", "text": "GET is faster than POST" },
+      { "id": "b", "text": "GET retrieves data and sends parameters in the URL; POST sends data in the request body, typically for creating or submitting data" },
+      { "id": "c", "text": "GET is for images, POST is for text" },
+      { "id": "d", "text": "There is no practical difference" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "GET requests retrieve data and include parameters in the URL (visible in the address bar). POST requests send data in the request body (not visible in the URL), typically for creating new resources or submitting forms. GET requests can be bookmarked and cached; POST requests cannot.",
+    "category": "Backend & APIs",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q84",
+    "text": "What is CORS and why might you encounter CORS errors?",
+    "options": [
+      { "id": "a", "text": "CORS is a styling framework" },
+      { "id": "b", "text": "CORS (Cross-Origin Resource Sharing) is a security mechanism that restricts web pages from making requests to a different domain than the one serving the page" },
+      { "id": "c", "text": "CORS is a React-specific error" },
+      { "id": "d", "text": "CORS is a database connection protocol" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "CORS is a browser security feature that blocks requests from one origin (domain) to another unless the server explicitly allows it via response headers (Access-Control-Allow-Origin). CORS errors occur when your frontend (e.g., localhost:3000) tries to call an API on a different domain that hasn't enabled CORS.",
+    "category": "Backend & APIs",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q85",
+    "text": "What are API Route Handlers in Next.js and when would you use them?",
+    "options": [
+      { "id": "a", "text": "They are used to define frontend routes" },
+      { "id": "b", "text": "They allow you to create server-side API endpoints directly within your Next.js project, eliminating the need for a separate backend server for simple APIs" },
+      { "id": "c", "text": "They manage browser routing" },
+      { "id": "d", "text": "They configure DNS routes" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Next.js API Route Handlers (route.ts files in the App Router) let you create backend API endpoints within your Next.js project. They run on the server and can handle database operations, authentication, external API calls, etc. This means you can build a full-stack application without a separate backend server.",
+    "category": "Backend & APIs",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q86",
+    "text": "What is npm?",
+    "options": [
+      { "id": "a", "text": "A programming language" },
+      { "id": "b", "text": "Node Package Manager — a tool for installing, managing, and sharing JavaScript packages and dependencies" },
+      { "id": "c", "text": "A web browser" },
+      { "id": "d", "text": "A CSS preprocessor" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "npm (Node Package Manager) is the default package manager for Node.js. It lets you install third-party libraries (like React, Next.js, Material UI), manage project dependencies in package.json, and run scripts. Common commands: npm install, npm run dev, npm run build.",
+    "category": "DevOps & Tools",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q87",
+    "text": "What is the purpose of the package.json file?",
+    "options": [
+      { "id": "a", "text": "It stores the application's user data" },
+      { "id": "b", "text": "It defines project metadata, dependencies, scripts, and configuration for a Node.js/JavaScript project" },
+      { "id": "c", "text": "It packages the application for deployment" },
+      { "id": "d", "text": "It configures the database connection" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "package.json is the manifest file for JavaScript projects. It lists the project's dependencies (libraries it needs), devDependencies (development-only tools), scripts (commands like 'dev' or 'build'), and metadata (name, version). Running 'npm install' reads this file to install all listed dependencies.",
+    "category": "DevOps & Tools",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q88",
+    "text": "What is Git used for?",
+    "options": [
+      { "id": "a", "text": "Running JavaScript code" },
+      { "id": "b", "text": "Version control — tracking changes to code, collaborating with others, and maintaining a history of the project" },
+      { "id": "c", "text": "Hosting websites" },
+      { "id": "d", "text": "Managing databases" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Git is a distributed version control system that tracks changes to files over time. It lets you save snapshots (commits), create branches for parallel development, merge changes, and collaborate with others. GitHub and GitLab are platforms that host Git repositories online for team collaboration.",
+    "category": "DevOps & Tools",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q89",
+    "text": "What does the 'npm run build' command typically do in a React/Next.js project?",
+    "options": [
+      { "id": "a", "text": "Starts the development server" },
+      { "id": "b", "text": "Creates an optimized production build by bundling, minifying, and compiling the code" },
+      { "id": "c", "text": "Installs dependencies" },
+      { "id": "d", "text": "Runs the test suite" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The build command creates a production-ready version of your app. It bundles all JavaScript files together, minifies the code (removes whitespace and shortens variable names), compiles TypeScript/JSX, optimizes images, and generates static HTML where possible. The output is what gets deployed to production.",
+    "category": "DevOps & Tools",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q90",
+    "text": "What is the difference between devDependencies and dependencies in package.json?",
+    "options": [
+      { "id": "a", "text": "There is no difference" },
+      { "id": "b", "text": "dependencies are needed in production; devDependencies are only needed during development (testing tools, linters, build tools)" },
+      { "id": "c", "text": "devDependencies are faster" },
+      { "id": "d", "text": "dependencies are free, devDependencies cost money" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "dependencies are packages your app needs to run in production (React, Next.js, Material UI). devDependencies are only needed during development and aren't included in the production bundle (TypeScript, ESLint, testing libraries, Prettier). Use npm install --save-dev to add a devDependency.",
+    "category": "DevOps & Tools",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q91",
+    "text": "Why should you keep components small and focused on a single responsibility?",
+    "options": [
+      { "id": "a", "text": "Smaller files load faster from the file system" },
+      { "id": "b", "text": "It makes components easier to understand, test, reuse, and maintain" },
+      { "id": "c", "text": "React requires components to be under 50 lines" },
+      { "id": "d", "text": "It reduces the need for CSS" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "The Single Responsibility Principle suggests each component should do one thing well. Small, focused components are easier to understand, test in isolation, reuse across the app, and maintain over time. If a component is doing too many things, split it into smaller sub-components.",
+    "category": "Best Practices",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q92",
+    "text": "What is the recommended way to handle form input values in React?",
+    "options": [
+      { "id": "a", "text": "Using document.getElementById to read the input value" },
+      { "id": "b", "text": "Using controlled components where the input value is stored in state and updated via onChange" },
+      { "id": "c", "text": "Using global variables" },
+      { "id": "d", "text": "Reading the value only when the form is submitted" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Controlled components keep form data in React state. The input's value is set by state (value={name}), and changes are handled by an onChange handler (onChange={(e) => setName(e.target.value)}). This gives React full control over the form data, making it easy to validate, transform, or submit.",
+    "category": "Best Practices",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q93",
+    "text": "Why is it important to handle loading and error states when fetching data?",
+    "options": [
+      { "id": "a", "text": "It is optional and only for advanced applications" },
+      { "id": "b", "text": "Users need feedback about what's happening, and network requests can fail — the UI should handle all possible states gracefully" },
+      { "id": "c", "text": "It makes the code look more professional" },
+      { "id": "d", "text": "The browser requires it" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Every data fetch has three states: loading, success, and error. Without handling loading, users see a blank screen and may think the app is broken. Without error handling, failures are silently ignored. Always show loading indicators, display error messages, and provide retry options for a good user experience.",
+    "category": "Best Practices",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q94",
+    "text": "What is the benefit of using TypeScript's strict mode?",
+    "options": [
+      { "id": "a", "text": "It makes the app run faster" },
+      { "id": "b", "text": "It enables the strictest type checking options, catching more potential bugs at compile time" },
+      { "id": "c", "text": "It prevents others from modifying your code" },
+      { "id": "d", "text": "It reduces the file size" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "TypeScript's strict mode (\"strict\": true in tsconfig.json) enables a set of stricter type checking rules including strictNullChecks, noImplicitAny, and more. This catches more bugs during development, such as potential null/undefined access and missing type annotations, leading to more reliable code.",
+    "category": "Best Practices",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q95",
+    "text": "What is the purpose of ESLint in a JavaScript/React project?",
+    "options": [
+      { "id": "a", "text": "To compile TypeScript" },
+      { "id": "b", "text": "To analyze code for potential errors, enforce coding standards, and catch common mistakes" },
+      { "id": "c", "text": "To minify JavaScript for production" },
+      { "id": "d", "text": "To manage npm packages" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "ESLint is a static analysis tool that examines your code for problems without running it. It catches bugs (unused variables, unreachable code), enforces consistent coding style, and can even detect React-specific issues like missing hook dependencies. It runs in your editor and CI pipeline.",
+    "category": "Best Practices",
+    "difficulty": "easy"
+  },
+  {
+    "id": "q96",
+    "text": "Why should you avoid using array index as a key in React lists?",
+    "options": [
+      { "id": "a", "text": "It causes syntax errors" },
+      { "id": "b", "text": "If items are reordered, added, or removed, the index changes and React may incorrectly reuse or misidentify components, causing bugs" },
+      { "id": "c", "text": "Array indices are too slow" },
+      { "id": "d", "text": "React does not allow numbers as keys" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Using index as key works fine for static lists, but causes bugs with dynamic lists. When items are reordered or removed, indices shift, making React think items changed identity. This can cause wrong data displayed, lost component state, or animation glitches. Use unique, stable IDs instead.",
+    "category": "Best Practices",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q97",
+    "text": "What is the principle of 'lifting state up' in React?",
+    "options": [
+      { "id": "a", "text": "Moving state to a server" },
+      { "id": "b", "text": "Moving shared state to the closest common ancestor of the components that need it" },
+      { "id": "c", "text": "Removing state from all components" },
+      { "id": "d", "text": "Moving state to the highest component in the tree regardless of need" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "When two or more sibling components need to share or synchronize data, you 'lift' the state up to their closest common parent component. The parent holds the state and passes it down as props, along with callbacks to update it. This keeps data flow predictable and avoids duplication.",
+    "category": "Best Practices",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q98",
+    "text": "What is the purpose of error boundaries in React?",
+    "options": [
+      { "id": "a", "text": "Validating form inputs" },
+      { "id": "b", "text": "Catching JavaScript errors in child components and displaying a fallback UI instead of crashing the entire app" },
+      { "id": "c", "text": "Setting boundaries on CSS properties" },
+      { "id": "d", "text": "Limiting the number of API errors" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Error boundaries are React components that catch JavaScript errors anywhere in their child component tree. Instead of the entire app crashing with a white screen, the error boundary displays a fallback UI (like an error message). They are created using class components with componentDidCatch and getDerivedStateFromError methods.",
+    "category": "Best Practices",
+    "difficulty": "hard"
+  },
+  {
+    "id": "q99",
+    "text": "What is accessibility (a11y) and why should you care about it in web development?",
+    "options": [
+      { "id": "a", "text": "It's about making websites load faster" },
+      { "id": "b", "text": "It ensures websites are usable by people with disabilities, using proper semantic HTML, ARIA attributes, and keyboard navigation" },
+      { "id": "c", "text": "It's a legal requirement only in some countries" },
+      { "id": "d", "text": "It's about making websites accessible on mobile devices" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Web accessibility (a11y) ensures that websites can be used by everyone, including people with visual, auditory, motor, or cognitive disabilities. Key practices include using semantic HTML, adding ARIA labels, ensuring keyboard navigation, maintaining sufficient color contrast, and providing alt text for images.",
+    "category": "Best Practices",
+    "difficulty": "medium"
+  },
+  {
+    "id": "q100",
+    "text": "What is the DRY principle and how does it apply to React development?",
+    "options": [
+      { "id": "a", "text": "Don't Reuse Yourself — always write fresh code" },
+      { "id": "b", "text": "Don't Repeat Yourself — extract repeated logic into reusable components, hooks, or utility functions" },
+      { "id": "c", "text": "Deploy, Run, Yield — a deployment strategy" },
+      { "id": "d", "text": "Data Retrieval Yield — a data fetching pattern" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "DRY (Don't Repeat Yourself) means avoiding code duplication. In React, if you find yourself writing the same UI pattern multiple times, extract it into a reusable component. Repeated logic can be extracted into custom hooks. Shared utilities go into helper functions. This makes code easier to maintain and update.",
+    "category": "Best Practices",
+    "difficulty": "easy"
+  }
+]

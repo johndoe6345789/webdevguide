@@ -1,0 +1,635 @@
+{
+  "title": "ESLint Guide",
+  "slug": "eslint-guide",
+  "description": "A complete beginner-friendly guide to ESLint — the tool that catches mistakes in your code before they become bugs.",
+  "icon": "Rule",
+  "order": 8,
+  "estimatedMinutes": 25,
+  "difficulty": "beginner",
+  "prerequisites": [],
+  "keyPoints": [
+    "ESLint is like a spell-checker for your code — it finds bugs, enforces best practices, and catches accessibility issues",
+    "Next.js comes with ESLint pre-configured so you can start using it immediately",
+    "Common rules like no-unused-vars, react-hooks/rules-of-hooks, and jsx-a11y/alt-text prevent real bugs",
+    "You can customize rules with three severity levels: off, warn, and error",
+    "ESLint and Prettier complement each other — ESLint handles code quality while Prettier handles formatting"
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "heading": "What is ESLint?",
+      "headingLevel": 2,
+      "body": "Think of ESLint as a spell-checker, but for your code instead of your essays."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 2,
+      "cards": [
+        {
+          "title": "A Spell-Checker for Code",
+          "body": "When you write an essay, a spell-checker underlines misspelled words so you can fix them before submitting. ESLint does the same thing for JavaScript and TypeScript code. It reads your code, spots problems, and tells you exactly what is wrong and where.",
+          "icon": "Spellcheck"
+        },
+        {
+          "title": "A Teacher Checking Your Homework",
+          "body": "Imagine handing in your homework and having a teacher point out mistakes before you submit it for a grade. ESLint catches issues like unused variables, missing accessibility attributes, and incorrect React patterns — before your code ever reaches users.",
+          "icon": "Security"
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "body": "ESLint is free, open source, and used by almost every professional JavaScript project in the world. When you set up a Next.js project, ESLint is already included and configured for you."
+    },
+    {
+      "type": "text",
+      "heading": "Why ESLint Matters",
+      "headingLevel": 2,
+      "body": "ESLint is not just nice to have. It genuinely makes you a better developer. Here is why."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 2,
+      "cards": [
+        {
+          "title": "Prevents Bugs",
+          "body": "Catches common mistakes like using a variable you never defined or calling a function that does not exist.",
+          "icon": "BugReport"
+        },
+        {
+          "title": "Enforces Consistent Style",
+          "body": "Makes sure everyone on your team writes code the same way, so the codebase stays clean and readable.",
+          "icon": "CheckCircle"
+        },
+        {
+          "title": "Catches Unused Variables",
+          "body": "Flags variables you created but never used, keeping your code tidy and free of clutter.",
+          "icon": "Warning"
+        },
+        {
+          "title": "Warns About Accessibility Issues",
+          "body": "Reminds you to add alt text to images and other things that make your site usable for everyone.",
+          "icon": "Accessibility"
+        },
+        {
+          "title": "Makes Code Reviews Easier",
+          "body": "When ESLint handles the style nitpicks, your teammates can focus on the important stuff during code reviews.",
+          "icon": "Groups"
+        },
+        {
+          "title": "Auto-Fixes Many Problems",
+          "body": "A lot of ESLint warnings come with automatic fixes. One command and the problems are gone.",
+          "icon": "AutoFix"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "How ESLint Works",
+      "headingLevel": 2,
+      "body": "Under the hood, ESLint follows three simple steps every time it checks your code."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "1. Parse",
+          "body": "ESLint reads your code and turns it into a tree-like structure called an Abstract Syntax Tree (AST). This is like diagramming a sentence — it breaks your code into parts it can understand."
+        },
+        {
+          "title": "2. Run Rules",
+          "body": "ESLint walks through the tree and checks each part against a set of rules you have configured. Each rule looks for a specific pattern — like a checklist item that says \"make sure no variable is unused.\""
+        },
+        {
+          "title": "3. Report",
+          "body": "If a rule finds a violation, ESLint reports it with the file name, line number, and a description of the problem. Many violations also come with a suggested fix."
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "body": "When does this happen? ESLint runs automatically in VS Code as you type (if you have the ESLint extension installed). You can also run it manually from the command line with npm run lint."
+    },
+    {
+      "type": "text",
+      "heading": "The .eslintrc.json Configuration",
+      "headingLevel": 2,
+      "body": "ESLint needs a configuration file to know which rules to use. Next.js creates one for you automatically."
+    },
+    {
+      "type": "text",
+      "body": "When you create a Next.js project, you will find a file called .eslintrc.json in the root of your project. Here is what it looks like:"
+    },
+    {
+      "type": "code",
+      "language": "json",
+      "filename": ".eslintrc.json",
+      "code": "{\n  \"extends\": [\"next/core-web-vitals\", \"next/typescript\"]\n}"
+    },
+    {
+      "type": "text",
+      "body": "That is it — just three lines. But those three lines give you a powerful set of rules."
+    },
+    {
+      "type": "text",
+      "heading": "What does \"extends\" mean?",
+      "headingLevel": 3,
+      "body": "The extends property tells ESLint to use a pre-made set of rules. Think of it like choosing a preset on a camera."
+    },
+    {
+      "type": "text",
+      "heading": "next/core-web-vitals",
+      "headingLevel": 4,
+      "body": "Includes ESLint recommended rules, React rules, Hooks rules, and accessibility rules (jsx-a11y). Pays extra attention to performance and user experience."
+    },
+    {
+      "type": "text",
+      "heading": "next/typescript",
+      "headingLevel": 4,
+      "body": "Adds TypeScript-specific rules to catch type-related issues."
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "body": "Good news for beginners: The default Next.js ESLint configuration is excellent. You do not need to change anything to get started."
+    },
+    {
+      "type": "text",
+      "heading": "Common ESLint Rules Explained",
+      "headingLevel": 2,
+      "body": "Let us look at the most important rules you will encounter. For each one, we show what it catches and how to fix it."
+    },
+    {
+      "type": "accordion",
+      "title": "no-unused-vars",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Flags variables that you declared but never actually used. Unused variables clutter your code and can confuse other developers (or your future self)."
+        },
+        {
+          "type": "tabs",
+          "tabs": [
+            {
+              "label": "Bad Code",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "javascript",
+                  "code": "// You created 'color' but never used it anywhere\nconst name = 'Alice';\nconst color = 'blue'; // ESLint error: 'color' is defined but never used\n\nconsole.log(name);"
+                }
+              ]
+            },
+            {
+              "label": "Good Code",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "javascript",
+                  "code": "// Only declare variables you actually use\nconst name = 'Alice';\n\nconsole.log(name);"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "no-console",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Warns you about console.log statements left in your code. These are great for debugging, but they should not ship to production because they clutter the browser console and can leak information."
+        },
+        {
+          "type": "tabs",
+          "tabs": [
+            {
+              "label": "Bad Code",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "javascript",
+                  "code": "function handleClick() {\n  console.log('button clicked'); // ESLint warning: Unexpected console statement\n  doSomething();\n}"
+                }
+              ]
+            },
+            {
+              "label": "Good Code",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "javascript",
+                  "code": "function handleClick() {\n  // Remove console.log before committing,\n  // or use a proper logging library\n  doSomething();\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "react-hooks/rules-of-hooks",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "React Hooks (useState, useEffect, etc.) must be called at the top level of your component. They cannot be inside if statements, loops, or nested functions. This rule enforces that requirement."
+        },
+        {
+          "type": "tabs",
+          "tabs": [
+            {
+              "label": "Bad Code",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "tsx",
+                  "code": "function MyComponent({ isLoggedIn }) {\n  // ESLint error: Hook called conditionally\n  if (isLoggedIn) {\n    const [name, setName] = useState('');\n  }\n\n  return <div>Hello</div>;\n}"
+                }
+              ]
+            },
+            {
+              "label": "Good Code",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "tsx",
+                  "code": "function MyComponent({ isLoggedIn }) {\n  // Hooks always at the top level\n  const [name, setName] = useState('');\n\n  // Use the condition AFTER the hook\n  if (!isLoggedIn) {\n    return <div>Please log in</div>;\n  }\n\n  return <div>Hello, {name}</div>;\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "react-hooks/exhaustive-deps",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "When you use useEffect, React needs to know which values your effect depends on. This rule makes sure you list all of them in the dependency array so your effect stays in sync."
+        },
+        {
+          "type": "tabs",
+          "tabs": [
+            {
+              "label": "Bad Code",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "tsx",
+                  "code": "function UserProfile({ userId }) {\n  const [user, setUser] = useState(null);\n\n  useEffect(() => {\n    fetchUser(userId).then(setUser);\n  }, []); // ESLint warning: 'userId' is missing from dependencies\n  // If userId changes, this effect will NOT re-run!\n\n  return <div>{user?.name}</div>;\n}"
+                }
+              ]
+            },
+            {
+              "label": "Good Code",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "tsx",
+                  "code": "function UserProfile({ userId }) {\n  const [user, setUser] = useState(null);\n\n  useEffect(() => {\n    fetchUser(userId).then(setUser);\n  }, [userId]); // Now the effect re-runs when userId changes\n\n  return <div>{user?.name}</div>;\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "@typescript-eslint/no-explicit-any",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "The 'any' type in TypeScript means 'I give up, this could be anything.' It disables all type checking for that value, which defeats the purpose of using TypeScript. This rule pushes you to use proper types."
+        },
+        {
+          "type": "tabs",
+          "tabs": [
+            {
+              "label": "Bad Code",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "typescript",
+                  "code": "// 'any' removes all type safety\nfunction processData(data: any) {\n  // TypeScript cannot help you here \u2014 no autocomplete,\n  // no error checking, nothing\n  return data.name.toUpperCase();\n}"
+                }
+              ]
+            },
+            {
+              "label": "Good Code",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "typescript",
+                  "code": "// A proper type gives you safety and autocomplete\ninterface User {\n  name: string;\n  email: string;\n}\n\nfunction processData(data: User) {\n  // TypeScript knows 'data' has a 'name' property\n  // and that it is a string\n  return data.name.toUpperCase();\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "jsx-a11y/alt-text",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Every image on the web needs an alt attribute that describes what the image shows. Screen readers use this text to describe images to people who cannot see them. This rule makes sure you never forget."
+        },
+        {
+          "type": "tabs",
+          "tabs": [
+            {
+              "label": "Bad Code",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "tsx",
+                  "code": "// ESLint error: img elements must have an alt prop\n<img src=\"/photo.jpg\" />\n\n// Also bad: an empty alt on a meaningful image\n<img src=\"/team-photo.jpg\" alt=\"\" />"
+                }
+              ]
+            },
+            {
+              "label": "Good Code",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "tsx",
+                  "code": "// Descriptive alt text helps screen reader users\n<img src=\"/photo.jpg\" alt=\"A golden retriever playing in the park\" />\n\n// For decorative images, alt=\"\" is correct\n<img src=\"/decorative-border.png\" alt=\"\" />"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "import/no-duplicates",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "If you import from the same file twice, this rule tells you to combine them into a single import statement. Duplicate imports make your code harder to read."
+        },
+        {
+          "type": "tabs",
+          "tabs": [
+            {
+              "label": "Bad Code",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "typescript",
+                  "code": "// Two imports from the same module\nimport { useState } from 'react';\nimport { useEffect } from 'react'; // ESLint error: duplicate import"
+                }
+              ]
+            },
+            {
+              "label": "Good Code",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "typescript",
+                  "code": "// Combine into a single import\nimport { useState, useEffect } from 'react';"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Setting Up ESLint",
+      "headingLevel": 2,
+      "body": "Great news: if you created your project with Next.js, ESLint is already set up and ready to go."
+    },
+    {
+      "type": "text",
+      "heading": "Running ESLint from the Command Line",
+      "headingLevel": 3,
+      "body": "Open your terminal in VS Code and run:"
+    },
+    {
+      "type": "code",
+      "language": "bash",
+      "code": "npm run lint"
+    },
+    {
+      "type": "text",
+      "body": "This scans every file in your project and prints a list of warnings and errors. If everything is clean, you will see:"
+    },
+    {
+      "type": "code",
+      "language": "bash",
+      "code": "\u2714 No ESLint warnings or errors"
+    },
+    {
+      "type": "text",
+      "body": "If there are problems, ESLint will show you the file, line number, and a description of each issue."
+    },
+    {
+      "type": "text",
+      "heading": "Seeing Errors in VS Code (Recommended)",
+      "headingLevel": 3,
+      "body": "Install the ESLint extension in VS Code:"
+    },
+    {
+      "type": "list",
+      "ordered": true,
+      "items": [
+        "Open VS Code and press Ctrl + Shift + X to open Extensions.",
+        "Search for \"ESLint\" by Microsoft.",
+        "Click Install."
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "body": "Once installed, ESLint errors will appear as red or yellow squiggly underlines directly in your code as you type."
+    },
+    {
+      "type": "text",
+      "heading": "Auto-Fixing Problems with --fix",
+      "headingLevel": 3,
+      "body": "Many ESLint issues can be fixed automatically. Run this command:"
+    },
+    {
+      "type": "code",
+      "language": "bash",
+      "code": "npx next lint --fix"
+    },
+    {
+      "type": "text",
+      "body": "ESLint will go through your files and automatically fix everything it can. Problems that require human judgment will still be reported."
+    },
+    {
+      "type": "text",
+      "heading": "Customizing Rules",
+      "headingLevel": 2,
+      "body": "The default rules are great, but sometimes you want to adjust them to fit your project."
+    },
+    {
+      "type": "text",
+      "body": "You can add a rules section to your .eslintrc.json to override individual rules. Each rule can be set to one of three levels:"
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "\"off\"",
+          "body": "Turns the rule off completely. ESLint will ignore this pattern."
+        },
+        {
+          "title": "\"warn\"",
+          "body": "Shows a yellow warning. Your code still compiles and runs, but you are reminded to fix it."
+        },
+        {
+          "title": "\"error\"",
+          "body": "Shows a red error. In many setups, this will block your build from completing."
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "body": "Here is an example of a customized configuration:"
+    },
+    {
+      "type": "code",
+      "language": "json",
+      "filename": ".eslintrc.json",
+      "code": "{\n  \"extends\": [\"next/core-web-vitals\", \"next/typescript\"],\n  \"rules\": {\n    \"no-console\": \"warn\",\n    \"no-unused-vars\": \"error\",\n    \"@typescript-eslint/no-explicit-any\": \"warn\",\n    \"prefer-const\": \"error\",\n    \"react/jsx-no-target-blank\": \"error\"\n  }\n}"
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "body": "What changed? We added a \"rules\" section with customized severity levels for several rules."
+    },
+    {
+      "type": "text",
+      "heading": "Disabling a Rule You Disagree With",
+      "headingLevel": 3,
+      "body": "If a rule keeps flagging code that you think is fine, you can turn it off:"
+    },
+    {
+      "type": "code",
+      "language": "json",
+      "filename": ".eslintrc.json",
+      "code": "{\n  \"extends\": [\"next/core-web-vitals\", \"next/typescript\"],\n  \"rules\": {\n    \"no-console\": \"off\"\n  }\n}"
+    },
+    {
+      "type": "text",
+      "body": "Now ESLint will completely ignore console.log statements. Use this sparingly — most rules exist for good reasons."
+    },
+    {
+      "type": "text",
+      "heading": "ESLint in Your Workflow",
+      "headingLevel": 2,
+      "body": "ESLint is most powerful when it runs at multiple points in your development process."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "In VS Code (As You Type)",
+          "body": "With the ESLint extension installed, errors appear as squiggly lines in your editor the moment you write them. This is the fastest feedback loop.",
+          "icon": "Settings"
+        },
+        {
+          "title": "Before Committing",
+          "body": "Run ESLint before pushing your code to make sure everything is clean. Many teams set up a \"pre-commit hook\" that runs ESLint automatically every time you try to commit.",
+          "icon": "Terminal"
+        },
+        {
+          "title": "In CI/CD (Automated)",
+          "body": "CI/CD (Continuous Integration) pipelines run ESLint on every pull request. If ESLint finds errors, the pipeline fails and the code cannot be merged until the issues are fixed.",
+          "icon": "CompareArrows"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Common npm Scripts",
+      "headingLevel": 3,
+      "body": "These scripts are typically defined in your package.json file:"
+    },
+    {
+      "type": "code",
+      "language": "json",
+      "filename": "package.json (scripts section)",
+      "code": "{\n  \"scripts\": {\n    \"dev\": \"next dev --turbopack\",\n    \"build\": \"next build\",\n    \"start\": \"next start\",\n    \"lint\": \"next lint\",\n    \"lint:fix\": \"next lint --fix\"\n  }\n}"
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "body": "Run npm run lint to check for problems. Run npm run lint:fix to check AND automatically fix what ESLint can."
+    },
+    {
+      "type": "text",
+      "heading": "ESLint vs Prettier",
+      "headingLevel": 2,
+      "body": "You will often hear ESLint and Prettier mentioned together, but they do different things."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 2,
+      "cards": [
+        {
+          "title": "ESLint \u2014 Code Quality",
+          "body": "Finds bugs and logic errors. Enforces best practices. Catches React and accessibility issues. Asks: \"Is this code correct?\""
+        },
+        {
+          "title": "Prettier \u2014 Code Formatting",
+          "body": "Handles indentation and spacing. Manages line length and wrapping. Adds or removes semicolons consistently. Asks: \"Does this code look clean?\""
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "body": "They complement each other. ESLint handles the \"what\" and Prettier handles the \"how\". Many teams use both."
+    },
+    {
+      "type": "text",
+      "heading": "Using ESLint and Prettier Together",
+      "headingLevel": 3,
+      "body": "To avoid conflicts, install eslint-config-prettier:"
+    },
+    {
+      "type": "code",
+      "language": "bash",
+      "code": "npm install --save-dev eslint-config-prettier"
+    },
+    {
+      "type": "text",
+      "body": "Then add it to your ESLint configuration:"
+    },
+    {
+      "type": "code",
+      "language": "json",
+      "filename": ".eslintrc.json",
+      "code": "{\n  \"extends\": [\n    \"next/core-web-vitals\",\n    \"next/typescript\",\n    \"prettier\"\n  ]\n}"
+    },
+    {
+      "type": "text",
+      "body": "Notice that \"prettier\" goes last in the extends array. This is important because it needs to override any conflicting rules from the other presets."
+    },
+    {
+      "type": "text",
+      "heading": "You Know ESLint!",
+      "headingLevel": 2,
+      "body": "You now understand what ESLint is, why it matters, how to read its warnings, and how to customize it. Let ESLint watch your back while you focus on building great things."
+    }
+  ]
+}

@@ -1,0 +1,410 @@
+{
+  "title": "Getting Started",
+  "slug": "getting-started",
+  "description": "Your step-by-step guide to setting up a modern web development environment and creating your very first React project — no prior experience required.",
+  "icon": "RocketLaunch",
+  "order": 1,
+  "estimatedMinutes": 45,
+  "difficulty": "beginner",
+  "prerequisites": [],
+  "keyPoints": [
+    "Installed Node.js, VS Code, and Git — the core tools every web developer uses",
+    "Created a real React project using Next.js",
+    "Made your first code change and saw it update live in the browser",
+    "Learned how to start and stop the development server"
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "heading": "What You'll Need",
+      "headingLevel": 2,
+      "body": "Before we start installing anything, let's make sure you have the basics covered."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "A Computer",
+          "body": "Windows, Mac, or Linux — any will work. It does not need to be powerful. If it can run a web browser, it can run the tools we need.",
+          "icon": "Computer"
+        },
+        {
+          "title": "An Internet Connection",
+          "body": "You will need to download a few free programs and project files. After setup, most work can be done offline.",
+          "icon": "Wifi"
+        },
+        {
+          "title": "Free Accounts (Optional)",
+          "body": "A GitHub account (github.com) will let you save your code online and collaborate with others. You can set this up later.",
+          "icon": "AccountCircle"
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "body": "Everything we use in this guide is completely free. You do not need to buy any software, subscriptions, or courses."
+    },
+    {
+      "type": "text",
+      "heading": "Installing Your Tools",
+      "headingLevel": 2,
+      "body": "Choose your operating system below and follow the steps. Each one should take about 10-15 minutes."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Windows",
+          "blocks": [
+            {
+              "type": "step",
+              "step": 1,
+              "title": "Install Node.js",
+              "body": "Node.js lets your computer run JavaScript outside of a web browser. We need it to build React projects.\n\n1. Open your web browser and go to nodejs.org.\n2. Click the big green button that says LTS (Long Term Support). This downloads an installer file.\n3. Open the downloaded file and click Next through each screen. Leave all the default options checked.\n4. When it finishes, open the Command Prompt (press the Windows key, type \"cmd\", and hit Enter) and run the verification commands below.",
+              "code": "node --version\nnpm --version",
+              "language": "bash"
+            },
+            {
+              "type": "alert",
+              "severity": "success",
+              "body": "If you see version numbers (like v20.11.0 and 10.2.0), Node.js is installed correctly."
+            },
+            {
+              "type": "step",
+              "step": 2,
+              "title": "Install VS Code",
+              "body": "Visual Studio Code (VS Code) is a free code editor. It is the most popular editor for web development and the one we will use throughout this guide.\n\n1. Go to code.visualstudio.com and click Download for Windows.\n2. Run the installer. On the \"Select Additional Tasks\" screen, check Add to PATH (it may already be checked).\n3. Finish the installation and open VS Code."
+            },
+            {
+              "type": "step",
+              "step": 3,
+              "title": "Install Git",
+              "body": "Git is a version control tool. Think of it as an \"undo history\" for your entire project. You will also need it to collaborate with other developers later.\n\n1. Go to git-scm.com and download the Windows installer.\n2. Run the installer. The defaults are fine for every screen — just keep clicking Next.\n3. Verify the installation:",
+              "code": "git --version",
+              "language": "bash"
+            },
+            {
+              "type": "step",
+              "step": 4,
+              "title": "Open the Terminal in VS Code",
+              "body": "The terminal is a text-based way to talk to your computer. VS Code has a built-in terminal so you never have to leave your editor.\n\nOpen VS Code and press Ctrl + ` (that is the backtick key, usually above the Tab key). A panel should appear at the bottom of the screen. This is your terminal."
+            },
+            {
+              "type": "alert",
+              "severity": "info",
+              "body": "From this point on, every command we ask you to run should be typed into this terminal inside VS Code."
+            }
+          ]
+        },
+        {
+          "label": "Mac",
+          "blocks": [
+            {
+              "type": "step",
+              "step": 1,
+              "title": "Open Terminal",
+              "body": "On a Mac you already have a built-in terminal. Press Cmd + Space to open Spotlight, type Terminal, and press Enter."
+            },
+            {
+              "type": "step",
+              "step": 2,
+              "title": "Install Homebrew",
+              "body": "Homebrew is a package manager for macOS. It lets you install developer tools with a single command instead of hunting for installers on the web.\n\nPaste this entire line into your Terminal and press Enter:",
+              "code": "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"",
+              "language": "bash"
+            },
+            {
+              "type": "text",
+              "body": "The script will ask for your Mac password. When you type it, nothing will appear on screen — that is normal. Just type your password and press Enter."
+            },
+            {
+              "type": "alert",
+              "severity": "warning",
+              "body": "After Homebrew finishes installing, it may print a message telling you to run two extra commands to add Homebrew to your PATH. Copy and run those commands exactly as shown."
+            },
+            {
+              "type": "step",
+              "step": 3,
+              "title": "Install Node.js and Git",
+              "body": "Now that you have Homebrew, installing Node.js and Git is simple:",
+              "code": "brew install node git",
+              "language": "bash"
+            },
+            {
+              "type": "code",
+              "description": "Verify both installed correctly:",
+              "code": "node --version\ngit --version",
+              "language": "bash"
+            },
+            {
+              "type": "step",
+              "step": 4,
+              "title": "Install VS Code",
+              "body": "You can install VS Code with Homebrew too:",
+              "code": "brew install --cask visual-studio-code",
+              "language": "bash"
+            },
+            {
+              "type": "text",
+              "body": "After it finishes, you can open VS Code from your Applications folder or by typing `code .` in the terminal."
+            },
+            {
+              "type": "step",
+              "step": 5,
+              "title": "Open the Terminal Inside VS Code",
+              "body": "Open VS Code and press Ctrl + ` (backtick key, above Tab). A terminal panel will appear at the bottom. Use this for the rest of the guide."
+            }
+          ]
+        },
+        {
+          "label": "Linux",
+          "blocks": [
+            {
+              "type": "alert",
+              "severity": "info",
+              "body": "These instructions are for Ubuntu and Debian-based distributions. If you use a different Linux distribution, the package manager commands may differ, but the overall steps are the same."
+            },
+            {
+              "type": "step",
+              "step": 1,
+              "title": "Update Your System",
+              "body": "Open a terminal (usually Ctrl + Alt + T) and make sure your package list is up to date:",
+              "code": "sudo apt update && sudo apt upgrade -y",
+              "language": "bash"
+            },
+            {
+              "type": "step",
+              "step": 2,
+              "title": "Install Node.js, npm, and Git",
+              "body": "Install everything with a single command:",
+              "code": "sudo apt install -y nodejs npm git",
+              "language": "bash"
+            },
+            {
+              "type": "code",
+              "description": "Verify:",
+              "code": "node --version\nnpm --version\ngit --version",
+              "language": "bash"
+            },
+            {
+              "type": "alert",
+              "severity": "info",
+              "body": "The version of Node.js in the Ubuntu repositories can be outdated. If you need a newer version, visit nodejs.org and follow the instructions for installing via NodeSource."
+            },
+            {
+              "type": "step",
+              "step": 3,
+              "title": "Install VS Code",
+              "body": "The easiest way on Ubuntu is with snap:",
+              "code": "sudo snap install code --classic",
+              "language": "bash"
+            },
+            {
+              "type": "text",
+              "body": "Alternatively, download the .deb package from code.visualstudio.com and install it with:"
+            },
+            {
+              "type": "code",
+              "code": "sudo apt install -y ./code_*.deb",
+              "language": "bash"
+            },
+            {
+              "type": "step",
+              "step": 4,
+              "title": "Open the Terminal Inside VS Code",
+              "body": "Launch VS Code and press Ctrl + `. Use this built-in terminal for all the commands in this guide."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Creating Your First React Project",
+      "headingLevel": 2,
+      "body": "Time to build something real. We will use Next.js, a popular React framework that makes setting up a website easy."
+    },
+    {
+      "type": "step",
+      "step": 1,
+      "title": "Run the Create Command",
+      "body": "In your VS Code terminal, type the following command and press Enter:",
+      "code": "npx create-next-app@latest my-website",
+      "language": "bash"
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "What is npx?",
+      "body": "It is a tool that comes with Node.js. It lets you run packages without permanently installing them. Here it downloads the latest Next.js project creator and runs it for you."
+    },
+    {
+      "type": "text",
+      "body": "If this is your first time, you may see the message: \"Need to install the following packages — Ok to proceed? (y)\". Type y and press Enter."
+    },
+    {
+      "type": "step",
+      "step": 2,
+      "title": "Answer the Setup Questions",
+      "body": "The tool will ask you a series of questions. Here is what to choose for your first project:"
+    },
+    {
+      "type": "table",
+      "headers": ["Question", "Answer"],
+      "rows": [
+        ["Would you like to use TypeScript?", "Yes"],
+        ["Would you like to use ESLint?", "Yes"],
+        ["Would you like to use Tailwind CSS?", "Yes"],
+        ["Would you like your code inside a `src/` directory?", "Yes"],
+        ["Would you like to use App Router?", "Yes"],
+        ["Would you like to use Turbopack for next dev?", "Yes"],
+        ["Would you like to customize the import alias?", "No"]
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "body": "Do not worry if you do not know what these options mean yet. We chose the most common defaults, and we will explain each one as we go through this guide."
+    },
+    {
+      "type": "step",
+      "step": 3,
+      "title": "Open Your Project and Start It",
+      "body": "After the setup finishes, move into your new project folder and start the development server:",
+      "code": "cd my-website\nnpm run dev",
+      "language": "bash"
+    },
+    {
+      "type": "text",
+      "body": "You should see output that includes something like:"
+    },
+    {
+      "type": "code",
+      "code": "  ▲ Next.js 15.x.x\n  - Local:   http://localhost:3000",
+      "language": "bash"
+    },
+    {
+      "type": "step",
+      "step": 4,
+      "title": "See Your Website in the Browser",
+      "body": "Open your web browser (Chrome, Firefox, Edge — any will work) and go to:",
+      "code": "http://localhost:3000",
+      "language": "text"
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "Congratulations!",
+      "body": "You are looking at a real React website running on your own computer. Every change you make to the code will show up here automatically."
+    },
+    {
+      "type": "text",
+      "heading": "Understanding What You Just Created",
+      "headingLevel": 2,
+      "body": "Let us walk through the important files and folders in your new project. You do not need to memorize this, but knowing where things live will help you feel more confident."
+    },
+    {
+      "type": "text",
+      "heading": "Project root — my-website/",
+      "headingLevel": 3,
+      "body": ""
+    },
+    {
+      "type": "table",
+      "heading": "Project Structure",
+      "headers": ["File / Folder", "Description"],
+      "rows": [
+        ["package.json", "The ID card of your project. It lists its name, the libraries it depends on, and the commands you can run (like npm run dev)."],
+        ["node_modules/", "A folder full of code other people wrote that your project depends on. You never need to edit anything in here."],
+        ["src/", "Where YOUR code lives. Almost all of your work happens inside this folder."],
+        ["src/app/", "The App Router folder. Each subfolder inside here can become a page on your website."],
+        ["src/app/layout.tsx", "The root layout. It wraps every page on your site with shared elements like fonts and metadata."],
+        ["src/app/page.tsx", "The home page of your website. This is the file you see when you visit localhost:3000."],
+        ["src/app/globals.css", "Global CSS styles that apply to every page."],
+        ["public/", "Static files like images and icons. Anything you put here is accessible directly in the browser."],
+        ["next.config.ts", "Configuration for the Next.js framework. You rarely need to touch this as a beginner."],
+        ["tsconfig.json", "Configuration for TypeScript. The defaults are fine for now."],
+        ["tailwind.config.ts", "Configuration for Tailwind CSS, the styling library. We will explore this later."]
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Making Your First Change",
+      "headingLevel": 2,
+      "body": "Nothing beats the thrill of changing code and watching the result appear instantly. Let us do that now."
+    },
+    {
+      "type": "step",
+      "step": 1,
+      "title": "Open the Home Page File",
+      "body": "In VS Code, use the file explorer on the left side to navigate to:",
+      "code": "src/app/page.tsx",
+      "language": "text"
+    },
+    {
+      "type": "text",
+      "body": "Click on it to open it in the editor."
+    },
+    {
+      "type": "step",
+      "step": 2,
+      "title": "Find the Main Heading",
+      "body": "Look for a line that contains text like \"Get started by editing\" or similar welcome text. It will be inside a <main> tag."
+    },
+    {
+      "type": "step",
+      "step": 3,
+      "title": "Replace It With Your Own Text",
+      "body": "Delete the contents inside the <main> tag and replace them with something simple:",
+      "code": "export default function Home() {\n  return (\n    <main style={{ padding: \"2rem\", fontFamily: \"sans-serif\" }}>\n      <h1>Hello! This is my first website.</h1>\n      <p>I built this with React and Next.js.</p>\n    </main>\n  );\n}",
+      "language": "tsx"
+    },
+    {
+      "type": "step",
+      "step": 4,
+      "title": "Save and Watch the Magic",
+      "body": "Press Ctrl + S (or Cmd + S on Mac) to save the file. Now look at your browser — the page updates automatically without you having to refresh. This feature is called Hot Module Replacement and it makes development much faster."
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "body": "You just wrote and deployed your first React code. Everything from here builds on exactly what you just did — editing files and watching the result in the browser."
+    },
+    {
+      "type": "text",
+      "heading": "Stopping and Starting the Dev Server",
+      "headingLevel": 2,
+      "body": "The development server is the program that turns your code into a website you can view in the browser. Here is how to control it."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 2,
+      "cards": [
+        {
+          "title": "Stopping the Server",
+          "body": "Go to the terminal in VS Code where the server is running and press Ctrl + C. This sends a \"cancel\" signal and stops the server. Your website will no longer be visible at localhost:3000 until you start it again.",
+          "icon": "Stop"
+        },
+        {
+          "title": "Starting the Server Again",
+          "body": "Make sure you are in the project folder, then run: npm run dev. If you closed the terminal and opened a new one, you may need to navigate back to the project folder first with: cd my-website && npm run dev",
+          "icon": "PlayArrow"
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Tip",
+      "body": "You only need the server running while you are actively developing. It is perfectly fine to stop it when you are done for the day and start it again later. Your files are saved on your computer regardless of whether the server is running."
+    },
+    {
+      "type": "text",
+      "heading": "You Did It!",
+      "headingLevel": 2,
+      "body": "You installed all the tools a professional web developer uses, created a real React project, made your first code change, and learned how to control the development server. You are ready to move on to the next chapter."
+    }
+  ]
+}
