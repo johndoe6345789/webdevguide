@@ -3,7 +3,7 @@
   "heading": "Production Deployment Checklist",
   "ordered": true,
   "items": [
-    "Set NEXT_PUBLIC_API_URL to your production backend URL (e.g., https://api.yourdomain.com/api)",
+    "Set NEXT_PUBLIC_API_URL as a runtime environment variable (e.g., in docker-compose.yml or `docker run -e`). The entrypoint script uses sed to inject it into the pre-built JS bundles at container start.",
     "Set CORS_ORIGINS to your production frontend URL (e.g., https://yourdomain.com)",
     "Run `docker compose up --build -d` to build and start in detached mode",
     "The backend entrypoint.py automatically seeds the database on container start",

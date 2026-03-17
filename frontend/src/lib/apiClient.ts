@@ -4,7 +4,7 @@ import type { ExamQuestion } from '@/types/exam';
 import type { GuideSection, GlossaryTerm } from '@/types/guide';
 
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || '/api',
   headers: {
     'Content-Type': 'application/json',
   },
