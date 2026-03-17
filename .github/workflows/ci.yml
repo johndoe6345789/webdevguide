@@ -118,9 +118,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Warn if NEXT_PUBLIC_API_URL is not set
-        if: matrix.image == 'webdevguide-frontend' && !vars.NEXT_PUBLIC_API_URL
+        if: matrix.image == 'webdevguide-frontend'
+        env:
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
         run: |
-          echo "::warning::vars.NEXT_PUBLIC_API_URL is not set. Falling back to '/api' (relative path). Set this variable in Settings > Variables for production builds."
+          if [ -z "$NEXT_PUBLIC_API_URL" ]; then
+            echo "::warning::vars.NEXT_PUBLIC_API_URL is not set. Falling back to '/api' (relative path). Set this variable in Settings > Variables for production builds."
+          fi
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
