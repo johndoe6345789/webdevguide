@@ -36,7 +36,7 @@
     ],
     [
       "Deploy to production",
-      "Set NEXT_PUBLIC_API_URL to your backend URL, run docker compose up --build"
+      "Set NEXT_PUBLIC_API_URL as a runtime env var (e.g., in docker-compose.yml environment), run docker compose up --build"
     ]
   ]
 }

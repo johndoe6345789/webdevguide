@@ -11818,7 +11818,7 @@
         "language": "yaml",
         "filename": ".github/workflows/deploy.yml",
         "description": "A deployment workflow that builds the frontend, packages the backend, and deploys to a server. Only runs on pushes to main after CI passes.",
-        "code": "name: Build & Deploy\n\non:\n  push:\n    branches: [main]\n\njobs:\n  # Run tests first\n  test:\n    uses: ./.github/workflows/lint-and-test.yml\n\n  # Build only if tests pass\n  build:\n    needs: test\n    runs-on: ubuntu-latest\n    outputs:\n      image_tag: ${{ steps.meta.outputs.tags }}\n\n    steps:\n      - uses: actions/checkout@v4\n\n      - name: Set up Node.js\n        uses: actions/setup-node@v4\n        with:\n          node-version: '22'\n          cache: 'npm'\n          cache-dependency-path: frontend/package-lock.json\n\n      - name: Build frontend\n        run: |\n          cd frontend\n          npm ci\n          npm run build\n        env:\n          NEXT_PUBLIC_API_URL: ${{ secrets.PRODUCTION_API_URL }}\n\n      - name: Upload build artifacts\n        uses: actions/upload-artifact@v4\n        with:\n          name: frontend-build\n          path: frontend/.next/\n          retention-days: 1\n\n  # Deploy only if build passes\n  deploy:\n    needs: build\n    runs-on: ubuntu-latest\n    environment: production     # Requires manual approval if configured\n\n    steps:\n      - uses: actions/checkout@v4\n\n      - name: Download build artifacts\n        uses: actions/download-artifact@v4\n        with:\n          name: frontend-build\n          path: frontend/.next/\n\n      - name: Deploy to server\n        run: |\n          echo \"Deploying to production...\"\n          # Example: rsync to a server\n          # rsync -avz --delete frontend/.next/ user@server:/app/frontend/.next/\n          # Or: deploy with Docker (see Docker workflow below)\n        env:\n          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}"
+        "code": "name: Build & Deploy\n\non:\n  push:\n    branches: [main]\n\njobs:\n  # Run tests first\n  test:\n    uses: ./.github/workflows/lint-and-test.yml\n\n  # Build only if tests pass\n  build:\n    needs: test\n    runs-on: ubuntu-latest\n    outputs:\n      image_tag: ${{ steps.meta.outputs.tags }}\n\n    steps:\n      - uses: actions/checkout@v4\n\n      - name: Set up Node.js\n        uses: actions/setup-node@v4\n        with:\n          node-version: '22'\n          cache: 'npm'\n          cache-dependency-path: frontend/package-lock.json\n\n      - name: Build frontend\n        run: |\n          cd frontend\n          npm ci\n          npm run build\n\n      - name: Upload build artifacts\n        uses: actions/upload-artifact@v4\n        with:\n          name: frontend-build\n          path: frontend/.next/\n          retention-days: 1\n\n  # Deploy only if build passes\n  deploy:\n    needs: build\n    runs-on: ubuntu-latest\n    environment: production     # Requires manual approval if configured\n\n    steps:\n      - uses: actions/checkout@v4\n\n      - name: Download build artifacts\n        uses: actions/download-artifact@v4\n        with:\n          name: frontend-build\n          path: frontend/.next/\n\n      - name: Deploy to server\n        run: |\n          echo \"Deploying to production...\"\n          # Example: rsync to a server\n          # rsync -avz --delete frontend/.next/ user@server:/app/frontend/.next/\n          # Or: deploy with Docker (see Docker workflow below)\n        env:\n          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}"
       },
       {
         "type": "text",
@@ -21302,14 +21302,14 @@
         "type": "text",
         "heading": "API Client",
         "headingLevel": 3,
-        "body": "The API client is a thin wrapper around Axios. It creates a single axios instance with the base URL from the `NEXT_PUBLIC_API_URL` environment variable (defaulting to `http://localhost:5000/api`). Three API objects -- `guideApi`, `examApi`, and `glossaryApi` -- provide typed methods for every endpoint."
+        "body": "The API client is a thin wrapper around Axios. It creates a single axios instance with the base URL from the `NEXT_PUBLIC_API_URL` environment variable (defaulting to `/api`). In Docker, the Dockerfile bakes a placeholder into the JS bundles at build time, and `docker-entrypoint.sh` uses `sed` to replace it with the real URL at container start -- so one image works in any environment. Three API objects -- `guideApi`, `examApi`, and `glossaryApi` -- provide typed methods for every endpoint."
       },
       {
         "type": "code",
         "language": "typescript",
         "filename": "frontend/src/lib/apiClient.ts",
         "description": "Axios client with typed API objects for guide, exam, and glossary endpoints.",
-        "code": "import axios from 'axios';\nimport type { GuideSectionContent } from '@/types/content';\nimport type { ExamQuestion } from '@/types/exam';\nimport type { GuideSection, GlossaryTerm } from '@/types/guide';\n\nconst apiClient = axios.create({\n  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',\n  headers: { 'Content-Type': 'application/json' },\n});\n\nexport interface NavItem {\n  id: string; title: string; slug: string; order: number; icon: string;\n}\n\nexport const guideApi = {\n  getSections: () => apiClient.get<GuideSection[]>('/guide/sections'),\n  getSectionBySlug: (slug: string) =>\n    apiClient.get<GuideSectionContent>(`/guide/sections/${slug}`),\n  getNavigation: () => apiClient.get<NavItem[]>('/guide/navigation'),\n};\n\nexport const examApi = {\n  getQuestions: (params?: { category?: string; difficulty?: string }) =>\n    apiClient.get<ExamQuestion[]>('/exam/questions', { params }),\n  getRandomQuestions: (count = 30) =>\n    apiClient.get<ExamQuestion[]>('/exam/questions/random', { params: { count } }),\n  getCategories: () => apiClient.get('/exam/categories'),\n};\n\nexport const glossaryApi = {\n  getTerms: (category?: string) =>\n    apiClient.get<GlossaryTerm[]>('/glossary/terms', {\n      params: category ? { category } : {},\n    }),\n  getCategories: () => apiClient.get('/glossary/categories'),\n  search: (query: string) =>\n    apiClient.get<GlossaryTerm[]>('/glossary/search', { params: { q: query } }),\n};"
+        "code": "import axios from 'axios';\nimport type { GuideSectionContent } from '@/types/content';\nimport type { ExamQuestion } from '@/types/exam';\nimport type { GuideSection, GlossaryTerm } from '@/types/guide';\n\nconst apiClient = axios.create({\n  baseURL: process.env.NEXT_PUBLIC_API_URL || '/api',\n  headers: { 'Content-Type': 'application/json' },\n});\n\nexport interface NavItem {\n  id: string; title: string; slug: string; order: number; icon: string;\n}\n\nexport const guideApi = {\n  getSections: () => apiClient.get<GuideSection[]>('/guide/sections'),\n  getSectionBySlug: (slug: string) =>\n    apiClient.get<GuideSectionContent>(`/guide/sections/${slug}`),\n  getNavigation: () => apiClient.get<NavItem[]>('/guide/navigation'),\n};\n\nexport const examApi = {\n  getQuestions: (params?: { category?: string; difficulty?: string }) =>\n    apiClient.get<ExamQuestion[]>('/exam/questions', { params }),\n  getRandomQuestions: (count = 30) =>\n    apiClient.get<ExamQuestion[]>('/exam/questions/random', { params: { count } }),\n  getCategories: () => apiClient.get('/exam/categories'),\n};\n\nexport const glossaryApi = {\n  getTerms: (category?: string) =>\n    apiClient.get<GlossaryTerm[]>('/glossary/terms', {\n      params: category ? { category } : {},\n    }),\n  getCategories: () => apiClient.get('/glossary/categories'),\n  search: (query: string) =>\n    apiClient.get<GlossaryTerm[]>('/glossary/search', { params: { q: query } }),\n};"
       },
       {
         "type": "text",
@@ -21483,7 +21483,7 @@
         "language": "yaml",
         "filename": ".github/workflows/ci.yml",
         "description": "The full CI/CD pipeline. Two jobs: lint-and-test validates code quality, docker-build verifies containers start correctly.",
-        "code": "name: CI/CD\n\non:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]\n\njobs:\n  lint-and-test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n\n      - uses: actions/setup-python@v5\n        with: { python-version: \"3.12\" }\n\n      - uses: actions/cache@v4\n        with:\n          path: ~/.cache/pip\n          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}\n\n      - run: pip install -r backend/requirements.txt\n      - run: pip install flake8 && flake8 backend/ --max-line-length=120\n\n      - uses: actions/setup-node@v4\n        with:\n          node-version: \"22\"\n          cache: npm\n          cache-dependency-path: frontend/package-lock.json\n\n      - run: npm ci\n        working-directory: frontend\n      - run: npm run lint\n        working-directory: frontend\n      - run: npx tsc --noEmit\n        working-directory: frontend\n\n      - run: FLASK_APP=app:create_app python -m flask seed-db\n        working-directory: backend\n\n      - run: npm run build\n        working-directory: frontend\n        env:\n          NEXT_PUBLIC_API_URL: http://localhost:5000/api\n\n  docker-build:\n    runs-on: ubuntu-latest\n    needs: lint-and-test\n    steps:\n      - uses: actions/checkout@v4\n      - run: docker compose build\n      - run: |\n          docker compose up -d\n          for i in $(seq 1 30); do\n            if curl -sf http://localhost:5000/api/health > /dev/null; then\n              echo \"Health check passed\"\n              exit 0\n            fi\n            sleep 2\n          done\n          echo \"Health check failed\"\n          docker compose logs\n          exit 1\n      - if: always()\n        run: docker compose down"
+        "code": "name: CI/CD\n\non:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]\n\njobs:\n  lint-and-test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n\n      - uses: actions/setup-python@v5\n        with: { python-version: \"3.12\" }\n\n      - uses: actions/cache@v4\n        with:\n          path: ~/.cache/pip\n          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}\n\n      - run: pip install -r backend/requirements.txt\n      - run: pip install flake8 && flake8 backend/ --max-line-length=120\n\n      - uses: actions/setup-node@v4\n        with:\n          node-version: \"22\"\n          cache: npm\n          cache-dependency-path: frontend/package-lock.json\n\n      - run: npm ci\n        working-directory: frontend\n      - run: npm run lint\n        working-directory: frontend\n      - run: npx tsc --noEmit\n        working-directory: frontend\n\n      - run: FLASK_APP=app:create_app python -m flask seed-db\n        working-directory: backend\n\n      - run: npm run build\n        working-directory: frontend\n\n  docker-build:\n    runs-on: ubuntu-latest\n    needs: lint-and-test\n    steps:\n      - uses: actions/checkout@v4\n      - run: docker compose build\n      - run: |\n          docker compose up -d\n          for i in $(seq 1 30); do\n            if curl -sf http://localhost:5000/api/health > /dev/null; then\n              echo \"Health check passed\"\n              exit 0\n            fi\n            sleep 2\n          done\n          echo \"Health check failed\"\n          docker compose logs\n          exit 1\n      - if: always()\n        run: docker compose down"
       },
       {
         "type": "text",
@@ -21842,7 +21842,7 @@
           ],
           [
             "Deploy to production",
-            "Set NEXT_PUBLIC_API_URL to your backend URL, run docker compose up --build"
+            "Set NEXT_PUBLIC_API_URL as a runtime env var (e.g., in docker-compose.yml environment), run docker compose up --build"
           ]
         ]
       },
@@ -21955,9 +21955,9 @@
           ],
           [
             "NEXT_PUBLIC_API_URL",
-            "http://localhost:5000/api",
-            "Frontend",
-            "Base URL for API calls from the frontend"
+            "/api",
+            "Frontend (Docker runtime)",
+            "Base URL for API calls -- injected at container start via docker-entrypoint.sh sed"
           ]
         ]
       },
@@ -21972,7 +21972,7 @@
         "heading": "Production Deployment Checklist",
         "ordered": true,
         "items": [
-          "Set NEXT_PUBLIC_API_URL to your production backend URL (e.g., https://api.yourdomain.com/api)",
+          "Set NEXT_PUBLIC_API_URL as a runtime environment variable (e.g., in docker-compose.yml or `docker run -e`). The entrypoint script uses sed to inject it into the pre-built JS bundles at container start.",
           "Set CORS_ORIGINS to your production frontend URL (e.g., https://yourdomain.com)",
           "Run `docker compose up --build -d` to build and start in detached mode",
           "The backend entrypoint.py automatically seeds the database on container start",
