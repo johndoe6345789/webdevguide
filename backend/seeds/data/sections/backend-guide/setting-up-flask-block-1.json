@@ -1,0 +1,124 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "Windows",
+      "blocks": [
+        {
+          "type": "step",
+          "step": 1,
+          "title": "Install Python",
+          "body": "Download Python from python.org and run the installer. Make sure to check \"Add Python to PATH\". Then verify:",
+          "code": "python --version\npip --version",
+          "language": "bash"
+        },
+        {
+          "type": "step",
+          "step": 2,
+          "title": "Create a Project Folder",
+          "body": "Create a new folder for your backend project.",
+          "code": "mkdir my-flask-backend\ncd my-flask-backend",
+          "language": "bash"
+        },
+        {
+          "type": "step",
+          "step": 3,
+          "title": "Create a Virtual Environment",
+          "body": "A virtual environment keeps your project's dependencies separate from other Python projects.",
+          "code": "python -m venv venv\nvenv\\Scripts\\activate",
+          "language": "bash"
+        },
+        {
+          "type": "step",
+          "step": 4,
+          "title": "Install Flask",
+          "body": "With the virtual environment activated, install Flask.",
+          "code": "pip install flask",
+          "language": "bash"
+        },
+        {
+          "type": "step",
+          "step": 5,
+          "title": "Create and Run Your App",
+          "body": "Create an app.py file with the Hello World example above, then start the server.",
+          "code": "flask run",
+          "language": "bash"
+        }
+      ]
+    },
+    {
+      "label": "Mac",
+      "blocks": [
+        {
+          "type": "step",
+          "step": 1,
+          "title": "Install Python",
+          "body": "Install Python using Homebrew, then verify the installation.",
+          "code": "brew install python\npython3 --version\npip3 --version",
+          "language": "bash"
+        },
+        {
+          "type": "step",
+          "step": 2,
+          "title": "Create a Project Folder",
+          "body": "Create a new folder for your backend project.",
+          "code": "mkdir my-flask-backend\ncd my-flask-backend",
+          "language": "bash"
+        },
+        {
+          "type": "step",
+          "step": 3,
+          "title": "Create a Virtual Environment",
+          "body": "A virtual environment keeps your project's dependencies separate.",
+          "code": "python3 -m venv venv\nsource venv/bin/activate",
+          "language": "bash"
+        },
+        {
+          "type": "step",
+          "step": 4,
+          "title": "Install Flask and Run",
+          "body": "Install Flask and start the server.",
+          "code": "pip install flask\nflask run",
+          "language": "bash"
+        }
+      ]
+    },
+    {
+      "label": "Linux",
+      "blocks": [
+        {
+          "type": "step",
+          "step": 1,
+          "title": "Install Python",
+          "body": "Check if Python is installed, or install it with apt.",
+          "code": "python3 --version\nsudo apt update\nsudo apt install -y python3 python3-pip python3-venv",
+          "language": "bash"
+        },
+        {
+          "type": "step",
+          "step": 2,
+          "title": "Create a Project Folder",
+          "body": "Create a new folder for your backend project.",
+          "code": "mkdir my-flask-backend\ncd my-flask-backend",
+          "language": "bash"
+        },
+        {
+          "type": "step",
+          "step": 3,
+          "title": "Create a Virtual Environment",
+          "body": "A virtual environment keeps your project's dependencies separate.",
+          "code": "python3 -m venv venv\nsource venv/bin/activate",
+          "language": "bash"
+        },
+        {
+          "type": "step",
+          "step": 4,
+          "title": "Install Flask and Run",
+          "body": "Install Flask and start the server.",
+          "code": "pip install flask\nflask run",
+          "language": "bash"
+        }
+      ]
+    }
+  ]
+}

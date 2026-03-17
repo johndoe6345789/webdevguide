@@ -1,0 +1,6 @@
+{
+  "type": "alert",
+  "severity": "warning",
+  "title": "Keep Pull Requests Small",
+  "body": "A 2000-line PR does not get a thorough review -- reviewers get fatigued and start rubber-stamping approvals. Keep PRs under 400 lines of changed code. If a feature is too big, break it into multiple PRs that can be reviewed and merged independently. Smaller PRs get reviewed faster, have fewer bugs, and are easier to revert if something goes wrong."
+}

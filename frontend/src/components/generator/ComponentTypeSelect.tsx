@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -12,13 +13,14 @@ interface Props {
 }
 
 export default function ComponentTypeSelect({ value, onChange }: Props) {
+  const t = useTranslations('generator');
   return (
     <FormControl fullWidth size="small">
-      <InputLabel id="type-select-label">Type</InputLabel>
+      <InputLabel id="type-select-label">{t('type')}</InputLabel>
       <Select
         labelId="type-select-label"
         value={value}
-        label="Type"
+        label={t('type')}
         onChange={(e) => onChange(e.target.value)}
       >
         {TYPE_OPTIONS.map((opt) => (

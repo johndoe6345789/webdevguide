@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "App Factory Pattern",
+  "headingLevel": 3,
+  "body": "Instead of creating the Flask app as a module-level global, a `create_app()` function builds and configures the app. This makes testing easy (create a fresh app per test), supports multiple configurations (dev, testing, prod), and avoids circular import issues. The factory initializes CORS, sets up the database, registers blueprints, defines the health endpoint, and adds the `seed-db` CLI command."
+}

@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Block Rendering Pipeline",
+  "headingLevel": 3,
+  "body": "The rendering pipeline has three components. `GuidePageLayout` renders the page header (title, difficulty chip, description, bookmark button) and passes the blocks array to `SectionRenderer`. `SectionRenderer` maps over the blocks and wraps each in a `BlockRenderer`. `BlockRenderer` is the strategy pattern dispatcher -- it switches on `block.type` and delegates to the correct specialized renderer component."
+}

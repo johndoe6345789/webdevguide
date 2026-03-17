@@ -1,0 +1,54 @@
+{
+  "type": "table",
+  "heading": "All Seven Redux Slices",
+  "headers": [
+    "Slice",
+    "Persisted",
+    "Purpose",
+    "Key State"
+  ],
+  "rows": [
+    [
+      "themeSlice",
+      "Yes",
+      "Light/dark mode toggle",
+      "mode: 'light' | 'dark'"
+    ],
+    [
+      "examSlice",
+      "Yes",
+      "Exam state, scoring, history",
+      "activeExam, result, history[], questionBank"
+    ],
+    [
+      "progressSlice",
+      "Yes",
+      "Reading progress tracking",
+      "completedSections[], readingProgress{}, chaptersVisited[]"
+    ],
+    [
+      "bookmarkSlice",
+      "Yes",
+      "User bookmarks with notes",
+      "items[{id, title, path, section, notes, addedAt}]"
+    ],
+    [
+      "guideSlice",
+      "No",
+      "Section fetching and current section",
+      "sections[], navigation[], currentSection, loading, error"
+    ],
+    [
+      "glossarySlice",
+      "No",
+      "Glossary terms and filtering",
+      "terms[], loading, error"
+    ],
+    [
+      "generatorSlice",
+      "No",
+      "Code generator configuration",
+      "config{type, componentName, useTypeScript, ...}"
+    ]
+  ]
+}

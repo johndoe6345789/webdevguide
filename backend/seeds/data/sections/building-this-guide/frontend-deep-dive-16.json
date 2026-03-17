@@ -1,0 +1,41 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "ThemeRegistry",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "frontend/src/theme/ThemeRegistry.tsx",
+          "description": "Reads the theme mode from Redux and provides MUI theme to all children. CssBaseline normalizes browser styles.",
+          "code": "'use client';\n\nimport React, { useMemo } from 'react';\nimport createCache from '@emotion/cache';\nimport { CacheProvider } from '@emotion/react';\nimport CssBaseline from '@mui/material/CssBaseline';\nimport { ThemeProvider } from '@mui/material/styles';\nimport { useAppSelector } from '@/store/hooks';\nimport { getTheme } from './theme';\n\nconst cache = createCache({ key: 'mui', prepend: true });\n\nexport default function ThemeRegistry({ children }: { children: React.ReactNode }) {\n  const mode = useAppSelector((state) => state.theme.mode);\n  const theme = useMemo(() => getTheme(mode), [mode]);\n\n  return (\n    <CacheProvider value={cache}>\n      <ThemeProvider theme={theme}>\n        <CssBaseline />\n        {children}\n      </ThemeProvider>\n    </CacheProvider>\n  );\n}"
+        }
+      ]
+    },
+    {
+      "label": "Theme Factory",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "frontend/src/theme/theme.ts",
+          "description": "Composes palette, typography, shape, and component overrides into a complete MUI theme.",
+          "code": "import { createTheme, type Theme } from '@mui/material/styles';\nimport { getComponents } from './components';\nimport { getPalette } from './palette';\nimport { typography } from './typography';\n\nexport function getTheme(mode: 'light' | 'dark'): Theme {\n  return createTheme({\n    palette: getPalette(mode),\n    typography,\n    shape: { borderRadius: 12 },\n    components: getComponents(mode),\n  });\n}"
+        }
+      ]
+    },
+    {
+      "label": "Palette",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "frontend/src/theme/palette.ts",
+          "description": "Light and dark color palettes. Uses indigo primary, cyan secondary, and Tailwind-inspired dark mode colors.",
+          "code": "import type { PaletteOptions } from '@mui/material/styles';\n\nexport function getPalette(mode: 'light' | 'dark'): PaletteOptions {\n  return {\n    mode,\n    primary: { main: '#6366f1', light: '#818cf8', dark: '#4f46e5', contrastText: '#ffffff' },\n    secondary: { main: '#06b6d4', light: '#22d3ee', dark: '#0891b2', contrastText: '#000000' },\n    success: { main: '#22c55e', light: '#4ade80', dark: '#16a34a' },\n    warning: { main: '#f59e0b', light: '#fbbf24', dark: '#d97706' },\n    error: { main: '#ef4444', light: '#f87171', dark: '#dc2626' },\n    ...(mode === 'dark'\n      ? { background: { default: '#0f172a', paper: '#1e293b' },\n          text: { primary: '#e2e8f0', secondary: '#94a3b8' } }\n      : { background: { default: '#f8fafc', paper: '#ffffff' } }),\n  };\n}"
+        }
+      ]
+    }
+  ]
+}

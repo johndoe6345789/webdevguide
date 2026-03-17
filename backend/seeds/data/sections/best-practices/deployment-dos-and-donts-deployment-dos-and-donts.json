@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Deployment Do's and Don'ts",
+  "headingLevel": 2,
+  "body": "Deploying code to production is where all your development work meets reality. A good deployment process is boring -- it is automated, repeatable, and reversible. A bad one involves SSH-ing into a server at midnight and running commands from memory."
+}

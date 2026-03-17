@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import Divider from '@mui/material/Divider';
@@ -13,11 +14,12 @@ interface Props {
 }
 
 export default function FeatureCheckboxes({ features, onToggle }: Props) {
+  const t = useTranslations('generator');
   return (
     <>
       <Divider />
       <Box>
-        <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>Features</Typography>
+        <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>{t('features')}</Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
           {FEATURE_OPTIONS.map((feat) => (
             <FormControlLabel

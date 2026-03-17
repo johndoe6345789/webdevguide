@@ -1,0 +1,241 @@
+{
+  "title": "Build a Social Media Platform",
+  "slug": "social-platform",
+  "description": "Create a full-stack social platform with user authentication, profiles, a news feed with infinite scroll, likes, comments, follows, and real-time notifications using React, Flask, and WebSockets.",
+  "icon": "Forum",
+  "order": 13,
+  "estimatedMinutes": 180,
+  "difficulty": "intermediate",
+  "prerequisites": ["react-fundamentals", "flask-basics", "sql-databases"],
+  "keyPoints": [
+    "Design a social-graph database schema with users, posts, follows, likes, and comments",
+    "Implement JWT authentication with refresh tokens",
+    "Build a news feed with infinite scroll pagination",
+    "Create a like and comment system with optimistic updates",
+    "Add follow/unfollow with follower counts",
+    "Push real-time notifications over WebSockets"
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "heading": "Architecture Overview",
+      "headingLevel": 2,
+      "body": "This project uses a React single-page app on the front end and a Flask REST API on the back end. Data lives in PostgreSQL, and real-time notifications flow through Flask-SocketIO. We will build the core features step by step: auth, profiles, posts, feed, interactions, and notifications."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        { "title": "JWT Auth", "body": "Register, login, and protected routes with access and refresh tokens.", "icon": "Lock", "chip": "Backend" },
+        { "title": "User Profiles", "body": "Avatar upload, bio, and public profile pages.", "icon": "AccountCircle", "chip": "Full-Stack" },
+        { "title": "Post Creation", "body": "Rich text posts with image attachments.", "icon": "Create", "chip": "Full-Stack" },
+        { "title": "News Feed", "body": "Chronological feed from followed users with infinite scroll.", "icon": "DynamicFeed", "chip": "Full-Stack" },
+        { "title": "Likes & Comments", "body": "Nested comment threads and like toggles with counts.", "icon": "ThumbUp", "chip": "Full-Stack" },
+        { "title": "Notifications", "body": "Real-time alerts when someone likes, comments, or follows.", "icon": "Notifications", "chip": "WebSocket" }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Database Schema",
+      "headingLevel": 2,
+      "body": "The social graph is modeled with five core tables. The follows table is a many-to-many self-join on users. Likes and comments both reference the posts table."
+    },
+    {
+      "type": "table",
+      "heading": "users",
+      "headers": ["Column", "Type", "Constraints"],
+      "rows": [
+        ["id", "SERIAL", "PRIMARY KEY"],
+        ["username", "VARCHAR(30)", "UNIQUE NOT NULL"],
+        ["email", "VARCHAR(120)", "UNIQUE NOT NULL"],
+        ["password_hash", "VARCHAR(256)", "NOT NULL"],
+        ["display_name", "VARCHAR(60)", ""],
+        ["bio", "TEXT", ""],
+        ["avatar_url", "VARCHAR(512)", ""],
+        ["created_at", "TIMESTAMP", "DEFAULT NOW()"]
+      ]
+    },
+    {
+      "type": "table",
+      "heading": "posts",
+      "headers": ["Column", "Type", "Constraints"],
+      "rows": [
+        ["id", "SERIAL", "PRIMARY KEY"],
+        ["author_id", "INTEGER", "REFERENCES users(id) ON DELETE CASCADE"],
+        ["body", "TEXT", "NOT NULL"],
+        ["image_url", "VARCHAR(512)", ""],
+        ["created_at", "TIMESTAMP", "DEFAULT NOW()"]
+      ]
+    },
+    {
+      "type": "table",
+      "heading": "follows",
+      "headers": ["Column", "Type", "Constraints"],
+      "rows": [
+        ["follower_id", "INTEGER", "REFERENCES users(id) ON DELETE CASCADE"],
+        ["following_id", "INTEGER", "REFERENCES users(id) ON DELETE CASCADE"],
+        ["created_at", "TIMESTAMP", "DEFAULT NOW()"],
+        ["", "", "PRIMARY KEY (follower_id, following_id)"]
+      ]
+    },
+    {
+      "type": "table",
+      "heading": "likes",
+      "headers": ["Column", "Type", "Constraints"],
+      "rows": [
+        ["user_id", "INTEGER", "REFERENCES users(id) ON DELETE CASCADE"],
+        ["post_id", "INTEGER", "REFERENCES posts(id) ON DELETE CASCADE"],
+        ["created_at", "TIMESTAMP", "DEFAULT NOW()"],
+        ["", "", "PRIMARY KEY (user_id, post_id)"]
+      ]
+    },
+    {
+      "type": "table",
+      "heading": "comments",
+      "headers": ["Column", "Type", "Constraints"],
+      "rows": [
+        ["id", "SERIAL", "PRIMARY KEY"],
+        ["post_id", "INTEGER", "REFERENCES posts(id) ON DELETE CASCADE"],
+        ["author_id", "INTEGER", "REFERENCES users(id) ON DELETE CASCADE"],
+        ["parent_id", "INTEGER", "REFERENCES comments(id) ON DELETE CASCADE"],
+        ["body", "TEXT", "NOT NULL"],
+        ["created_at", "TIMESTAMP", "DEFAULT NOW()"]
+      ]
+    },
+    {
+      "type": "code",
+      "language": "sql",
+      "filename": "schema.sql",
+      "description": "SQL to create all five tables with indexes for common queries.",
+      "code": "CREATE TABLE users (\n  id SERIAL PRIMARY KEY,\n  username VARCHAR(30) UNIQUE NOT NULL,\n  email VARCHAR(120) UNIQUE NOT NULL,\n  password_hash VARCHAR(256) NOT NULL,\n  display_name VARCHAR(60),\n  bio TEXT DEFAULT '',\n  avatar_url VARCHAR(512) DEFAULT '',\n  created_at TIMESTAMP DEFAULT NOW()\n);\n\nCREATE TABLE posts (\n  id SERIAL PRIMARY KEY,\n  author_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  body TEXT NOT NULL,\n  image_url VARCHAR(512),\n  created_at TIMESTAMP DEFAULT NOW()\n);\nCREATE INDEX idx_posts_author ON posts(author_id);\nCREATE INDEX idx_posts_created ON posts(created_at DESC);\n\nCREATE TABLE follows (\n  follower_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  following_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  created_at TIMESTAMP DEFAULT NOW(),\n  PRIMARY KEY (follower_id, following_id)\n);\nCREATE INDEX idx_follows_following ON follows(following_id);\n\nCREATE TABLE likes (\n  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  post_id INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,\n  created_at TIMESTAMP DEFAULT NOW(),\n  PRIMARY KEY (user_id, post_id)\n);\n\nCREATE TABLE comments (\n  id SERIAL PRIMARY KEY,\n  post_id INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,\n  author_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  parent_id INTEGER REFERENCES comments(id) ON DELETE CASCADE,\n  body TEXT NOT NULL,\n  created_at TIMESTAMP DEFAULT NOW()\n);\nCREATE INDEX idx_comments_post ON comments(post_id);"
+    },
+    {
+      "type": "text",
+      "heading": "Backend: Flask API",
+      "headingLevel": 2,
+      "body": "The API is organized into blueprints: auth, users, posts, and notifications. We use Flask-JWT-Extended for authentication and Flask-SocketIO for real-time events."
+    },
+    {
+      "type": "step",
+      "step": 1,
+      "title": "Project Setup and Dependencies",
+      "body": "Create a virtual environment and install the required packages.",
+      "code": "python -m venv venv\nsource venv/bin/activate\npip install flask flask-cors flask-jwt-extended flask-socketio psycopg2-binary werkzeug",
+      "language": "bash"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "app.py",
+      "description": "Flask application factory with JWT, CORS, and SocketIO initialization.",
+      "code": "from flask import Flask\nfrom flask_cors import CORS\nfrom flask_jwt_extended import JWTManager\nfrom flask_socketio import SocketIO\nimport os\n\nsocketio = SocketIO(cors_allowed_origins=\"*\")\njwt = JWTManager()\n\ndef create_app():\n    app = Flask(__name__)\n    app.config[\"SECRET_KEY\"] = os.getenv(\"SECRET_KEY\", \"dev-secret\")\n    app.config[\"JWT_SECRET_KEY\"] = os.getenv(\"JWT_SECRET\", \"jwt-dev-secret\")\n    app.config[\"JWT_ACCESS_TOKEN_EXPIRES\"] = 900   # 15 minutes\n    app.config[\"JWT_REFRESH_TOKEN_EXPIRES\"] = 86400 * 30  # 30 days\n\n    CORS(app)\n    jwt.init_app(app)\n    socketio.init_app(app)\n\n    from routes.auth import auth_bp\n    from routes.users import users_bp\n    from routes.posts import posts_bp\n\n    app.register_blueprint(auth_bp, url_prefix=\"/api/auth\")\n    app.register_blueprint(users_bp, url_prefix=\"/api/users\")\n    app.register_blueprint(posts_bp, url_prefix=\"/api/posts\")\n\n    return app\n\nif __name__ == \"__main__\":\n    app = create_app()\n    socketio.run(app, debug=True, port=5000)"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/auth.py",
+      "description": "Register and login endpoints that return JWT access and refresh tokens.",
+      "code": "from flask import Blueprint, request, jsonify\nfrom flask_jwt_extended import (\n    create_access_token, create_refresh_token,\n    jwt_required, get_jwt_identity\n)\nfrom werkzeug.security import generate_password_hash, check_password_hash\nfrom db import get_db\n\nauth_bp = Blueprint(\"auth\", __name__)\n\n@auth_bp.route(\"/register\", methods=[\"POST\"])\ndef register():\n    data = request.get_json()\n    username = data.get(\"username\", \"\").strip()\n    email = data.get(\"email\", \"\").strip().lower()\n    password = data.get(\"password\", \"\")\n\n    if not username or not email or len(password) < 8:\n        return jsonify(error=\"Invalid input\"), 400\n\n    pw_hash = generate_password_hash(password)\n    db = get_db()\n    cur = db.cursor()\n    try:\n        cur.execute(\n            \"INSERT INTO users (username, email, password_hash) VALUES (%s, %s, %s) RETURNING id\",\n            (username, email, pw_hash),\n        )\n        user_id = cur.fetchone()[0]\n        db.commit()\n    except Exception:\n        db.rollback()\n        return jsonify(error=\"Username or email already taken\"), 409\n\n    access = create_access_token(identity=str(user_id))\n    refresh = create_refresh_token(identity=str(user_id))\n    return jsonify(access_token=access, refresh_token=refresh, user_id=user_id), 201\n\n@auth_bp.route(\"/login\", methods=[\"POST\"])\ndef login():\n    data = request.get_json()\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"SELECT id, password_hash FROM users WHERE email = %s\", (data[\"email\"].lower(),))\n    row = cur.fetchone()\n    if not row or not check_password_hash(row[1], data[\"password\"]):\n        return jsonify(error=\"Invalid credentials\"), 401\n\n    access = create_access_token(identity=str(row[0]))\n    refresh = create_refresh_token(identity=str(row[0]))\n    return jsonify(access_token=access, refresh_token=refresh, user_id=row[0])\n\n@auth_bp.route(\"/refresh\", methods=[\"POST\"])\n@jwt_required(refresh=True)\ndef refresh():\n    identity = get_jwt_identity()\n    access = create_access_token(identity=identity)\n    return jsonify(access_token=access)"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/posts.py",
+      "description": "Post CRUD, feed endpoint with cursor-based pagination, like toggle, and comment creation.",
+      "code": "from flask import Blueprint, request, jsonify\nfrom flask_jwt_extended import jwt_required, get_jwt_identity\nfrom db import get_db\nfrom app import socketio\n\nposts_bp = Blueprint(\"posts\", __name__)\n\n@posts_bp.route(\"\", methods=[\"POST\"])\n@jwt_required()\ndef create_post():\n    user_id = int(get_jwt_identity())\n    data = request.get_json()\n    body = data.get(\"body\", \"\").strip()\n    image_url = data.get(\"image_url\")\n    if not body:\n        return jsonify(error=\"Post body required\"), 400\n\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\n        \"INSERT INTO posts (author_id, body, image_url) VALUES (%s, %s, %s) RETURNING id, created_at\",\n        (user_id, body, image_url),\n    )\n    post_id, created_at = cur.fetchone()\n    db.commit()\n    return jsonify(id=post_id, author_id=user_id, body=body, image_url=image_url,\n                   created_at=created_at.isoformat()), 201\n\n@posts_bp.route(\"/feed\", methods=[\"GET\"])\n@jwt_required()\ndef feed():\n    \"\"\"Return posts from users the current user follows, newest first.\n    Uses cursor-based pagination via ?before=<post_id>&limit=N.\"\"\"\n    user_id = int(get_jwt_identity())\n    before = request.args.get(\"before\", type=int)\n    limit = min(request.args.get(\"limit\", 20, type=int), 50)\n\n    db = get_db()\n    cur = db.cursor()\n    query = \"\"\"\n        SELECT p.id, p.author_id, u.username, u.avatar_url,\n               p.body, p.image_url, p.created_at,\n               COUNT(DISTINCT l.user_id) AS like_count,\n               COUNT(DISTINCT c.id) AS comment_count,\n               EXISTS(SELECT 1 FROM likes WHERE user_id=%s AND post_id=p.id) AS liked\n        FROM posts p\n        JOIN follows f ON f.following_id = p.author_id AND f.follower_id = %s\n        JOIN users u ON u.id = p.author_id\n        LEFT JOIN likes l ON l.post_id = p.id\n        LEFT JOIN comments c ON c.post_id = p.id\n    \"\"\"\n    params = [user_id, user_id]\n    if before:\n        query += \" WHERE p.id < %s\"\n        params.append(before)\n    query += \" GROUP BY p.id, u.username, u.avatar_url ORDER BY p.created_at DESC LIMIT %s\"\n    params.append(limit)\n\n    cur.execute(query, params)\n    columns = [d[0] for d in cur.description]\n    posts = [dict(zip(columns, row)) for row in cur.fetchall()]\n    for p in posts:\n        p[\"created_at\"] = p[\"created_at\"].isoformat()\n    return jsonify(posts=posts, has_more=len(posts) == limit)\n\n@posts_bp.route(\"/<int:post_id>/like\", methods=[\"POST\"])\n@jwt_required()\ndef toggle_like(post_id):\n    user_id = int(get_jwt_identity())\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"SELECT 1 FROM likes WHERE user_id=%s AND post_id=%s\", (user_id, post_id))\n    if cur.fetchone():\n        cur.execute(\"DELETE FROM likes WHERE user_id=%s AND post_id=%s\", (user_id, post_id))\n        liked = False\n    else:\n        cur.execute(\"INSERT INTO likes (user_id, post_id) VALUES (%s, %s)\", (user_id, post_id))\n        liked = True\n        # Notify post author\n        cur.execute(\"SELECT author_id FROM posts WHERE id=%s\", (post_id,))\n        author_id = cur.fetchone()[0]\n        if author_id != user_id:\n            socketio.emit(\"notification\", {\n                \"type\": \"like\", \"post_id\": post_id, \"from_user_id\": user_id\n            }, room=f\"user_{author_id}\")\n    db.commit()\n    cur.execute(\"SELECT COUNT(*) FROM likes WHERE post_id=%s\", (post_id,))\n    count = cur.fetchone()[0]\n    return jsonify(liked=liked, like_count=count)\n\n@posts_bp.route(\"/<int:post_id>/comments\", methods=[\"POST\"])\n@jwt_required()\ndef add_comment(post_id):\n    user_id = int(get_jwt_identity())\n    data = request.get_json()\n    body = data.get(\"body\", \"\").strip()\n    parent_id = data.get(\"parent_id\")\n    if not body:\n        return jsonify(error=\"Comment body required\"), 400\n\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\n        \"INSERT INTO comments (post_id, author_id, parent_id, body) VALUES (%s,%s,%s,%s) RETURNING id, created_at\",\n        (post_id, user_id, parent_id, body),\n    )\n    comment_id, created_at = cur.fetchone()\n    db.commit()\n    return jsonify(id=comment_id, post_id=post_id, author_id=user_id,\n                   body=body, parent_id=parent_id, created_at=created_at.isoformat()), 201"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/users.py",
+      "description": "Profile retrieval and follow/unfollow endpoint.",
+      "code": "from flask import Blueprint, jsonify\nfrom flask_jwt_extended import jwt_required, get_jwt_identity\nfrom db import get_db\n\nusers_bp = Blueprint(\"users\", __name__)\n\n@users_bp.route(\"/<username>\", methods=[\"GET\"])\ndef get_profile(username):\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT u.id, u.username, u.display_name, u.bio, u.avatar_url, u.created_at,\n               (SELECT COUNT(*) FROM follows WHERE following_id = u.id) AS followers,\n               (SELECT COUNT(*) FROM follows WHERE follower_id = u.id) AS following\n        FROM users u WHERE u.username = %s\n    \"\"\", (username,))\n    row = cur.fetchone()\n    if not row:\n        return jsonify(error=\"User not found\"), 404\n    cols = [d[0] for d in cur.description]\n    profile = dict(zip(cols, row))\n    profile[\"created_at\"] = profile[\"created_at\"].isoformat()\n    return jsonify(profile)\n\n@users_bp.route(\"/<int:target_id>/follow\", methods=[\"POST\"])\n@jwt_required()\ndef toggle_follow(target_id):\n    user_id = int(get_jwt_identity())\n    if user_id == target_id:\n        return jsonify(error=\"Cannot follow yourself\"), 400\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"SELECT 1 FROM follows WHERE follower_id=%s AND following_id=%s\", (user_id, target_id))\n    if cur.fetchone():\n        cur.execute(\"DELETE FROM follows WHERE follower_id=%s AND following_id=%s\", (user_id, target_id))\n        following = False\n    else:\n        cur.execute(\"INSERT INTO follows (follower_id, following_id) VALUES (%s, %s)\", (user_id, target_id))\n        following = True\n    db.commit()\n    cur.execute(\"SELECT COUNT(*) FROM follows WHERE following_id=%s\", (target_id,))\n    count = cur.fetchone()[0]\n    return jsonify(following=following, follower_count=count)"
+    },
+    {
+      "type": "text",
+      "heading": "Frontend: React Components",
+      "headingLevel": 2,
+      "body": "The React app uses React Router for navigation, a global auth context for JWT management, and react-query for server state. Below are the key components."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/context/AuthContext.tsx",
+      "description": "Auth context that stores tokens and provides login/logout helpers.",
+      "code": "import { createContext, useContext, useState, useCallback, ReactNode } from 'react';\n\ninterface AuthState {\n  accessToken: string | null;\n  userId: number | null;\n}\n\ninterface AuthContextType extends AuthState {\n  login: (access: string, refresh: string, uid: number) => void;\n  logout: () => void;\n}\n\nconst AuthContext = createContext<AuthContextType | null>(null);\n\nexport function AuthProvider({ children }: { children: ReactNode }) {\n  const [auth, setAuth] = useState<AuthState>(() => ({\n    accessToken: localStorage.getItem('access_token'),\n    userId: Number(localStorage.getItem('user_id')) || null,\n  }));\n\n  const login = useCallback((access: string, refresh: string, uid: number) => {\n    localStorage.setItem('access_token', access);\n    localStorage.setItem('refresh_token', refresh);\n    localStorage.setItem('user_id', String(uid));\n    setAuth({ accessToken: access, userId: uid });\n  }, []);\n\n  const logout = useCallback(() => {\n    localStorage.clear();\n    setAuth({ accessToken: null, userId: null });\n  }, []);\n\n  return (\n    <AuthContext.Provider value={{ ...auth, login, logout }}>\n      {children}\n    </AuthContext.Provider>\n  );\n}\n\nexport const useAuth = () => {\n  const ctx = useContext(AuthContext);\n  if (!ctx) throw new Error('useAuth must be used inside AuthProvider');\n  return ctx;\n};"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/components/PostCard.tsx",
+      "description": "A single post in the feed with like button, comment count, and author info.",
+      "code": "import { useState } from 'react';\nimport { api } from '../utils/api';\n\ninterface Post {\n  id: number;\n  author_id: number;\n  username: string;\n  avatar_url: string;\n  body: string;\n  image_url: string | null;\n  created_at: string;\n  like_count: number;\n  comment_count: number;\n  liked: boolean;\n}\n\nexport default function PostCard({ post }: { post: Post }) {\n  const [liked, setLiked] = useState(post.liked);\n  const [likeCount, setLikeCount] = useState(post.like_count);\n\n  const handleLike = async () => {\n    // Optimistic update\n    setLiked((prev) => !prev);\n    setLikeCount((prev) => prev + (liked ? -1 : 1));\n    try {\n      const res = await api.post(`/posts/${post.id}/like`);\n      setLiked(res.data.liked);\n      setLikeCount(res.data.like_count);\n    } catch {\n      // Revert on error\n      setLiked(post.liked);\n      setLikeCount(post.like_count);\n    }\n  };\n\n  return (\n    <article className=\"post-card\">\n      <header className=\"post-header\">\n        <img src={post.avatar_url || '/default-avatar.png'} alt=\"\" className=\"avatar\" />\n        <div>\n          <strong>{post.username}</strong>\n          <time>{new Date(post.created_at).toLocaleDateString()}</time>\n        </div>\n      </header>\n      <p className=\"post-body\">{post.body}</p>\n      {post.image_url && <img src={post.image_url} alt=\"\" className=\"post-image\" />}\n      <footer className=\"post-actions\">\n        <button onClick={handleLike} className={liked ? 'liked' : ''}>\n          {liked ? '\\u2764\\uFE0F' : '\\u2661'} {likeCount}\n        </button>\n        <button>\\uD83D\\uDCAC {post.comment_count}</button>\n      </footer>\n    </article>\n  );\n}"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/components/Feed.tsx",
+      "description": "Infinite-scroll feed using Intersection Observer and cursor-based pagination.",
+      "code": "import { useState, useEffect, useRef, useCallback } from 'react';\nimport PostCard from './PostCard';\nimport { api } from '../utils/api';\n\ninterface Post {\n  id: number;\n  author_id: number;\n  username: string;\n  avatar_url: string;\n  body: string;\n  image_url: string | null;\n  created_at: string;\n  like_count: number;\n  comment_count: number;\n  liked: boolean;\n}\n\nexport default function Feed() {\n  const [posts, setPosts] = useState<Post[]>([]);\n  const [hasMore, setHasMore] = useState(true);\n  const [loading, setLoading] = useState(false);\n  const loaderRef = useRef<HTMLDivElement>(null);\n\n  const loadMore = useCallback(async () => {\n    if (loading || !hasMore) return;\n    setLoading(true);\n    const lastId = posts.length > 0 ? posts[posts.length - 1].id : undefined;\n    const params = lastId ? `?before=${lastId}&limit=20` : '?limit=20';\n    try {\n      const res = await api.get(`/posts/feed${params}`);\n      setPosts((prev) => [...prev, ...res.data.posts]);\n      setHasMore(res.data.has_more);\n    } catch (err) {\n      console.error('Failed to load feed', err);\n    } finally {\n      setLoading(false);\n    }\n  }, [posts, loading, hasMore]);\n\n  // Intersection Observer for infinite scroll\n  useEffect(() => {\n    const el = loaderRef.current;\n    if (!el) return;\n    const observer = new IntersectionObserver(\n      (entries) => { if (entries[0].isIntersecting) loadMore(); },\n      { threshold: 0.5 }\n    );\n    observer.observe(el);\n    return () => observer.disconnect();\n  }, [loadMore]);\n\n  // Initial load\n  useEffect(() => { loadMore(); }, []);  // eslint-disable-line react-hooks/exhaustive-deps\n\n  return (\n    <div className=\"feed\">\n      {posts.map((p) => <PostCard key={p.id} post={p} />)}\n      <div ref={loaderRef} className=\"loader\">\n        {loading && <p>Loading...</p>}\n        {!hasMore && <p>You're all caught up!</p>}\n      </div>\n    </div>\n  );\n}"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/components/CommentThread.tsx",
+      "description": "Recursive comment thread supporting nested replies.",
+      "code": "import { useState } from 'react';\nimport { api } from '../utils/api';\n\ninterface Comment {\n  id: number;\n  author_id: number;\n  username: string;\n  body: string;\n  parent_id: number | null;\n  created_at: string;\n  children: Comment[];\n}\n\nfunction CommentItem({ comment, postId, onReply }: {\n  comment: Comment; postId: number; onReply: (c: Comment) => void;\n}) {\n  const [replying, setReplying] = useState(false);\n  const [text, setText] = useState('');\n\n  const submit = async () => {\n    if (!text.trim()) return;\n    const res = await api.post(`/posts/${postId}/comments`, {\n      body: text, parent_id: comment.id,\n    });\n    onReply({ ...res.data, username: 'You', children: [] });\n    setText('');\n    setReplying(false);\n  };\n\n  return (\n    <div className=\"comment\" style={{ marginLeft: comment.parent_id ? 24 : 0 }}>\n      <p><strong>{comment.username}</strong> {comment.body}</p>\n      <button onClick={() => setReplying(!replying)} className=\"reply-btn\">Reply</button>\n      {replying && (\n        <div className=\"reply-form\">\n          <input value={text} onChange={(e) => setText(e.target.value)}\n                 placeholder=\"Write a reply...\" />\n          <button onClick={submit}>Send</button>\n        </div>\n      )}\n      {comment.children.map((c) => (\n        <CommentItem key={c.id} comment={c} postId={postId} onReply={onReply} />\n      ))}\n    </div>\n  );\n}\n\nexport default function CommentThread({ comments, postId }: {\n  comments: Comment[]; postId: number;\n}) {\n  const [list, setList] = useState(comments);\n\n  const handleReply = (newComment: Comment) => {\n    setList((prev) => addReply(prev, newComment));\n  };\n\n  return (\n    <div className=\"comment-thread\">\n      {list.filter((c) => !c.parent_id).map((c) => (\n        <CommentItem key={c.id} comment={c} postId={postId} onReply={handleReply} />\n      ))}\n    </div>\n  );\n}\n\nfunction addReply(comments: Comment[], reply: Comment): Comment[] {\n  return comments.map((c) => {\n    if (c.id === reply.parent_id) {\n      return { ...c, children: [...c.children, reply] };\n    }\n    return { ...c, children: addReply(c.children, reply) };\n  });\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Real-Time Notifications",
+      "headingLevel": 2,
+      "body": "We use Flask-SocketIO on the backend and socket.io-client on the frontend. Each user joins a personal room so they only receive their own notifications."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "sockets.py",
+      "description": "WebSocket event handlers for joining rooms and emitting notifications.",
+      "code": "from flask_socketio import join_room, emit\nfrom flask_jwt_extended import decode_token\nfrom app import socketio\n\n@socketio.on(\"connect\")\ndef on_connect(auth):\n    if not auth or \"token\" not in auth:\n        return False  # reject unauthenticated\n    try:\n        payload = decode_token(auth[\"token\"])\n        user_id = payload[\"sub\"]\n        join_room(f\"user_{user_id}\")\n        emit(\"connected\", {\"user_id\": user_id})\n    except Exception:\n        return False"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/hooks/useNotifications.ts",
+      "description": "React hook that connects to the WebSocket and listens for notification events.",
+      "code": "import { useEffect, useState } from 'react';\nimport { io, Socket } from 'socket.io-client';\nimport { useAuth } from '../context/AuthContext';\n\ninterface Notification {\n  type: 'like' | 'comment' | 'follow';\n  post_id?: number;\n  from_user_id: number;\n  read: boolean;\n}\n\nexport function useNotifications() {\n  const { accessToken } = useAuth();\n  const [notifications, setNotifications] = useState<Notification[]>([]);\n  const [socket, setSocket] = useState<Socket | null>(null);\n\n  useEffect(() => {\n    if (!accessToken) return;\n    const s = io('http://localhost:5000', { auth: { token: accessToken } });\n    s.on('notification', (data: Notification) => {\n      setNotifications((prev) => [{ ...data, read: false }, ...prev]);\n    });\n    setSocket(s);\n    return () => { s.disconnect(); };\n  }, [accessToken]);\n\n  const markAllRead = () => {\n    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));\n  };\n\n  const unreadCount = notifications.filter((n) => !n.read).length;\n\n  return { notifications, unreadCount, markAllRead };\n}"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/utils/api.ts",
+      "description": "Axios instance with automatic JWT header injection and token refresh interceptor.",
+      "code": "import axios from 'axios';\n\nexport const api = axios.create({ baseURL: 'http://localhost:5000/api' });\n\napi.interceptors.request.use((config) => {\n  const token = localStorage.getItem('access_token');\n  if (token) config.headers.Authorization = `Bearer ${token}`;\n  return config;\n});\n\napi.interceptors.response.use(\n  (res) => res,\n  async (error) => {\n    const original = error.config;\n    if (error.response?.status === 401 && !original._retry) {\n      original._retry = true;\n      const refresh = localStorage.getItem('refresh_token');\n      if (refresh) {\n        const res = await axios.post('http://localhost:5000/api/auth/refresh', null, {\n          headers: { Authorization: `Bearer ${refresh}` },\n        });\n        localStorage.setItem('access_token', res.data.access_token);\n        original.headers.Authorization = `Bearer ${res.data.access_token}`;\n        return api(original);\n      }\n    }\n    return Promise.reject(error);\n  }\n);"
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "Security Considerations",
+      "body": "In production, store refresh tokens in httpOnly cookies instead of localStorage to prevent XSS attacks. Use HTTPS everywhere, rate-limit auth endpoints, and validate all user input on the server side."
+    },
+    {
+      "type": "list",
+      "heading": "Next Steps",
+      "ordered": false,
+      "items": [
+        "Add image upload with pre-signed S3 URLs for post and avatar images",
+        "Implement full-text search for users and posts using PostgreSQL tsvector",
+        "Add hashtag parsing and trending topics",
+        "Build a direct messaging feature with WebSocket rooms",
+        "Add email verification during registration",
+        "Implement content moderation and reporting"
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Summary",
+      "headingLevel": 2,
+      "body": "You have built the core of a social platform: JWT authentication, user profiles, a cursor-paginated news feed with infinite scroll, likes with optimistic UI updates, nested comments, follow/unfollow, and real-time WebSocket notifications. This architecture scales well and covers the fundamental patterns you will find in production social applications."
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+{
+  "type": "text",
+  "body": "Next steps: Try adding more features to your API. Create a users blueprint. Add search and filtering. Replace JSON storage with SQLite. Every real project is just these same patterns repeated and combined."
+}

@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Block Type Reference",
+  "headingLevel": 3,
+  "body": "The TypeScript union type `ContentBlock` defines all ten block types. Each type has required and optional fields. Here is the complete reference."
+}

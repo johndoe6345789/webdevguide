@@ -1,0 +1,75 @@
+{
+  "type": "accordion",
+  "title": "Accessibility and ARIA",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "About 15% of the world's population experiences some form of disability. **Accessible HTML** ensures your site works for everyone, including people using screen readers, keyboard-only navigation, or voice control. It also improves SEO and general usability."
+    },
+    {
+      "type": "code",
+      "language": "html",
+      "filename": "accessible-form.html",
+      "code": "<!-- Good: Labeled form with proper accessibility -->\n<form aria-labelledby=\"contact-heading\">\n  <h2 id=\"contact-heading\">Contact Us</h2>\n\n  <!-- Always associate labels with inputs -->\n  <label for=\"name\">Full Name <span aria-label=\"required\">*</span></label>\n  <input\n    type=\"text\"\n    id=\"name\"\n    name=\"name\"\n    required\n    aria-required=\"true\"\n    autocomplete=\"name\"\n  >\n\n  <label for=\"email\">Email Address</label>\n  <input\n    type=\"email\"\n    id=\"email\"\n    name=\"email\"\n    required\n    aria-required=\"true\"\n    aria-describedby=\"email-hint\"\n    autocomplete=\"email\"\n  >\n  <small id=\"email-hint\">We will never share your email.</small>\n\n  <label for=\"message\">Message</label>\n  <textarea id=\"message\" name=\"message\" rows=\"4\"></textarea>\n\n  <button type=\"submit\">Send Message</button>\n</form>"
+    },
+    {
+      "type": "list",
+      "heading": "Accessibility checklist",
+      "items": [
+        "Every `<img>` has a meaningful `alt` attribute (or `alt=\"\"` for decorative images)",
+        "All form inputs have associated `<label>` elements using `for` and `id`",
+        "Color is not the only way to convey information (add icons or text too)",
+        "Focus order is logical -- use native HTML elements instead of `<div onClick>`",
+        "Use ARIA attributes only when native HTML semantics are not sufficient",
+        "All interactive elements are reachable and usable with keyboard alone",
+        "Text has sufficient color contrast (at least 4.5:1 for normal text)"
+      ]
+    },
+    {
+      "type": "table",
+      "heading": "Common ARIA attributes",
+      "headers": [
+        "Attribute",
+        "Purpose",
+        "Example"
+      ],
+      "rows": [
+        [
+          "aria-label",
+          "Labels an element when visible text is absent",
+          "<button aria-label=\"Close dialog\">X</button>"
+        ],
+        [
+          "aria-labelledby",
+          "Points to the ID of an element that labels this one",
+          "<section aria-labelledby=\"title-1\">"
+        ],
+        [
+          "aria-describedby",
+          "Points to the ID of an element with extra description",
+          "<input aria-describedby=\"hint-1\">"
+        ],
+        [
+          "aria-hidden",
+          "Hides decorative elements from screen readers",
+          "<span aria-hidden=\"true\">★</span>"
+        ],
+        [
+          "aria-expanded",
+          "Indicates if a collapsible section is open or closed",
+          "<button aria-expanded=\"false\">Menu</button>"
+        ],
+        [
+          "aria-live",
+          "Announces dynamic content changes to screen readers",
+          "<div aria-live=\"polite\">3 results found</div>"
+        ],
+        [
+          "role",
+          "Defines the element's purpose when no semantic tag exists",
+          "<div role=\"alert\">Error occurred</div>"
+        ]
+      ]
+    }
+  ]
+}

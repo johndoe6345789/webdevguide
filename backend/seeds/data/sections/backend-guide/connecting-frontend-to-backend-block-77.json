@@ -1,0 +1,6 @@
+{
+  "type": "code",
+  "language": "python",
+  "filename": "app/__init__.py",
+  "code": "from flask_cors import CORS\n\ndef create_app():\n    app = Flask(__name__)\n\n    # Allow requests from your React development server\n    CORS(app, origins=[\"http://localhost:3000\"])"
+}

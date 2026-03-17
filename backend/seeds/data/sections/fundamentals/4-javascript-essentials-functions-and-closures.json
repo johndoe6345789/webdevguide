@@ -1,0 +1,23 @@
+{
+  "type": "accordion",
+  "title": "Functions and Closures",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "Functions are the building blocks of JavaScript programs. Understanding **closures** -- where a function remembers variables from its outer scope -- unlocks patterns used throughout React (hooks, event handlers, callbacks)."
+    },
+    {
+      "type": "code",
+      "language": "javascript",
+      "filename": "functions.js",
+      "code": "// Function declaration (hoisted -- can be called before it is defined)\nfunction add(a, b) {\n  return a + b;\n}\n\n// Arrow function (not hoisted, more concise)\nconst multiply = (a, b) => a * b;\n\n// Arrow function with body\nconst divide = (a, b) => {\n  if (b === 0) throw new Error('Cannot divide by zero');\n  return a / b;\n};\n\n// Default parameters\nfunction greet(name = 'World') {\n  return `Hello, ${name}!`;\n}\ngreet();        // 'Hello, World!'\ngreet('Alice'); // 'Hello, Alice!'\n\n// Rest parameters (collect remaining arguments into an array)\nfunction sum(...numbers) {\n  return numbers.reduce((total, n) => total + n, 0);\n}\nsum(1, 2, 3, 4); // 10\n\n// Higher-order functions (functions that take or return functions)\nfunction createMultiplier(factor) {\n  return (number) => number * factor; // This inner function is a closure\n}\n\nconst double = createMultiplier(2);\nconst triple = createMultiplier(3);\ndouble(5); // 10\ntriple(5); // 15\n\n// Closure: the inner function remembers 'factor' even after\n// createMultiplier has finished executing. This is a closure."
+    },
+    {
+      "type": "code",
+      "language": "javascript",
+      "filename": "closures-practical.js",
+      "description": "Closures in real-world patterns",
+      "code": "// Closure pattern: private state\nfunction createCounter() {\n  let count = 0; // private -- no code outside can access this directly\n\n  return {\n    increment() { count += 1; },\n    decrement() { count -= 1; },\n    getCount()  { return count; },\n  };\n}\n\nconst counter = createCounter();\ncounter.increment();\ncounter.increment();\ncounter.getCount(); // 2\n// counter.count; // undefined -- cannot access directly\n\n// Closure pattern: event handler factory\nfunction createClickHandler(buttonName) {\n  let clickCount = 0;\n  return () => {\n    clickCount += 1;\n    console.log(`${buttonName} clicked ${clickCount} times`);\n  };\n}\n\nconst handleSaveClick = createClickHandler('Save');\n// handleSaveClick() -> 'Save clicked 1 times'\n// handleSaveClick() -> 'Save clicked 2 times'"
+    }
+  ]
+}

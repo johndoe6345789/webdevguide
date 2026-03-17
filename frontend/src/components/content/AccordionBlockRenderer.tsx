@@ -8,7 +8,9 @@ import Typography from '@mui/material/Typography';
 import type { AccordionBlock } from '@/types/content';
 import SectionRenderer from './SectionRenderer';
 
-export default function AccordionBlockRenderer({ title, blocks, defaultExpanded }: AccordionBlock) {
+export default function AccordionBlockRenderer(
+  { title, blocks, defaultExpanded }: AccordionBlock,
+) {
   return (
     <Accordion defaultExpanded={defaultExpanded}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>

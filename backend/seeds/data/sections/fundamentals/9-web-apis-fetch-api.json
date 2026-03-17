@@ -1,0 +1,16 @@
+{
+  "type": "accordion",
+  "title": "Fetch API",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "The **Fetch API** is the modern way to make HTTP requests from the browser. It returns Promises and works seamlessly with async/await."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "fetch-examples.ts",
+      "code": "// GET request\nasync function getUsers(): Promise<User[]> {\n  const response = await fetch('/api/users');\n  if (!response.ok) {\n    throw new Error(`Failed to fetch: ${response.status}`);\n  }\n  return response.json();\n}\n\n// POST request with JSON body\nasync function createUser(userData: { name: string; email: string }) {\n  const response = await fetch('/api/users', {\n    method: 'POST',\n    headers: {\n      'Content-Type': 'application/json',\n      'Authorization': `Bearer ${token}`,\n    },\n    body: JSON.stringify(userData),\n  });\n\n  if (!response.ok) {\n    const error = await response.json();\n    throw new Error(error.message || 'Failed to create user');\n  }\n\n  return response.json();\n}\n\n// PUT request (full update)\nasync function updateUser(id: number, data: User) {\n  return fetch(`/api/users/${id}`, {\n    method: 'PUT',\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify(data),\n  });\n}\n\n// DELETE request\nasync function deleteUser(id: number) {\n  const response = await fetch(`/api/users/${id}`, {\n    method: 'DELETE',\n  });\n  if (!response.ok) throw new Error('Failed to delete user');\n}\n\n// Upload a file\nasync function uploadAvatar(file: File) {\n  const formData = new FormData();\n  formData.append('avatar', file);\n\n  return fetch('/api/upload', {\n    method: 'POST',\n    body: formData, // No Content-Type header needed for FormData\n  });\n}\n\n// Abort a request (useful for search-as-you-type)\nconst controller = new AbortController();\n\nfetch('/api/search?q=react', { signal: controller.signal })\n  .then((res) => res.json())\n  .catch((err) => {\n    if (err.name === 'AbortError') {\n      console.log('Request was cancelled');\n    }\n  });\n\n// Cancel after 5 seconds\nsetTimeout(() => controller.abort(), 5000);"
+    }
+  ]
+}

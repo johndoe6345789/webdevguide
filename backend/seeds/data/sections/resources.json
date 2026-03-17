@@ -1,721 +1,602 @@
 {
-  "title": "Additional Resources",
+  "title": "Learning Resources",
   "slug": "resources",
-  "description": "The things beginners do not think to learn -- but absolutely need to know. From accessibility and security to debugging, testing, and launching your career.",
+  "description": "A curated collection of the best documentation, courses, books, tools, communities, and career resources for web developers at every level.",
   "icon": "MenuBook",
   "order": 11,
-  "estimatedMinutes": 60,
-  "difficulty": "advanced",
+  "estimatedMinutes": 30,
+  "difficulty": "beginner",
+  "prerequisites": [],
+  "keyPoints": [
+    "Official documentation (MDN, React, Next.js, TypeScript) is the most reliable and up-to-date resource available",
+    "Interactive platforms like freeCodeCamp, Scrimba, and Exercism let you learn by writing real code in the browser",
+    "YouTube channels like Fireship, Traversy Media, and Web Dev Simplified provide free, high-quality video tutorials",
+    "Books like Eloquent JavaScript and You Don't Know JS offer deep conceptual understanding that tutorials cannot match",
+    "Developer tools like DevTools, Postman, and Lighthouse are essential for debugging, testing, and optimizing",
+    "Communities on Discord, Reddit, Stack Overflow, and Dev.to provide support and networking opportunities",
+    "Newsletters and podcasts keep you current with the rapidly evolving JavaScript ecosystem",
+    "Cheat sheets for CSS, Git, React hooks, and TypeScript save time when you need a quick reference",
+    "Building a portfolio, contributing to open source, and practicing interview questions are the keys to landing a developer job"
+  ],
   "blocks": [
     {
       "type": "alert",
       "severity": "info",
-      "title": "How to use this page",
-      "body": "These topics are things you will encounter as you build real projects. You do not need to master them all at once -- expand any section to learn about it when you are ready. Each section is self-contained."
+      "body": "The web development ecosystem is vast, and it is easy to feel overwhelmed. This page is a curated starting point -- not an exhaustive list. Focus on one or two resources from each category that match your current skill level and learning style."
     },
     {
-      "type": "accordion",
-      "title": "1. Accessibility (a11y)",
-      "defaultExpanded": true,
-      "blocks": [
+      "type": "text",
+      "heading": "Official Documentation",
+      "headingLevel": 2,
+      "body": "Official docs are written and maintained by the people who build the tools. They are the most accurate, most up-to-date, and most complete resources available. When in doubt, check the docs first."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 2,
+      "cards": [
         {
-          "type": "text",
-          "body": "Accessibility (often abbreviated **a11y** because there are 11 letters between the \"a\" and the \"y\") means making your website usable by *everyone*, including people who use screen readers, navigate with a keyboard, or have low vision."
+          "title": "MDN Web Docs",
+          "body": "The definitive reference for HTML, CSS, JavaScript, and Web APIs. Maintained by Mozilla with contributions from Google, Microsoft, and the community. Every web developer should bookmark this.",
+          "chip": "developer.mozilla.org"
         },
         {
-          "type": "alert",
-          "severity": "warning",
-          "title": "Legal note",
-          "body": "In many countries, public-facing websites are legally required to be accessible (ADA in the US, EAA in the EU). Ignoring accessibility can lead to lawsuits and fines -- but more importantly, it means excluding real people from using your site."
+          "title": "React Documentation",
+          "body": "The new React docs (react.dev) are interactive and beginner-friendly, with live code editors in every tutorial. Covers hooks, components, state management, and advanced patterns.",
+          "chip": "react.dev"
         },
         {
-          "type": "text",
-          "heading": "Key accessibility practices",
-          "headingLevel": 3,
-          "body": ""
+          "title": "Next.js Documentation",
+          "body": "Comprehensive guide to the Next.js framework covering the App Router, Server Components, data fetching, routing, deployment, and optimization. Includes an interactive tutorial.",
+          "chip": "nextjs.org/docs"
         },
         {
-          "type": "list",
-          "items": [
-            "**Semantic HTML:** Use <button> for buttons, <nav> for navigation, <main> for main content, <h1>-<h6> for headings. Screen readers rely on these to understand your page structure.",
-            "**Alt text on images:** Every <img> needs an alt attribute describing the image. Decorative images should use alt=\"\".",
-            "**ARIA labels:** When HTML semantics are not enough, use aria-label, aria-describedby, or role attributes to provide context to assistive technology.",
-            "**Keyboard navigation:** Users should be able to navigate your entire site using only Tab, Enter, and Escape. Never make something clickable without making it keyboard-focusable too.",
-            "**Color contrast:** Text should have a contrast ratio of at least 4.5:1 against its background. Tools like the Chrome DevTools contrast checker can verify this."
-          ]
+          "title": "TypeScript Handbook",
+          "body": "The official guide to TypeScript from basic types to advanced patterns like generics, conditional types, and mapped types. The playground lets you experiment with TypeScript in the browser.",
+          "chip": "typescriptlang.org"
         },
         {
-          "type": "text",
-          "heading": "Inaccessible vs accessible code",
-          "headingLevel": 3,
-          "body": ""
+          "title": "Node.js Documentation",
+          "body": "API reference for all built-in Node.js modules (fs, http, path, crypto, stream). Essential for backend development. Also includes guides on debugging and performance profiling.",
+          "chip": "nodejs.org/docs"
         },
         {
-          "type": "tabs",
-          "tabs": [
-            {
-              "label": "Bad -- Inaccessible",
-              "blocks": [
-                {
-                  "type": "code",
-                  "language": "tsx",
-                  "code": "{/* Div pretending to be a button */}\n<div onClick={handleClick} style={{ cursor: 'pointer' }}>\n  Click me\n</div>\n\n{/* Image with no alt text */}\n<img src=\"/logo.png\" />\n\n{/* Icon-only button with no label */}\n<button><SearchIcon /></button>"
-                }
-              ]
-            },
-            {
-              "label": "Good -- Accessible",
-              "blocks": [
-                {
-                  "type": "code",
-                  "language": "tsx",
-                  "code": "{/* Real button element */}\n<button onClick={handleClick}>\n  Click me\n</button>\n\n{/* Image with descriptive alt text */}\n<img src=\"/logo.png\" alt=\"Company logo\" />\n\n{/* Icon button with aria-label */}\n<button aria-label=\"Search\">\n  <SearchIcon />\n</button>"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "alert",
-          "severity": "success",
-          "title": "Good news",
-          "body": "Material UI components have strong accessibility built in. MUI Buttons, Dialogs, and form controls already handle focus management, ARIA attributes, and keyboard interaction. Using MUI correctly gives you a head start on a11y."
+          "title": "PostgreSQL Documentation",
+          "body": "One of the best-written technical references in existence. Covers SQL syntax, indexing, performance tuning, JSON operations, full-text search, and administration. The tutorial section is an excellent starting point.",
+          "chip": "postgresql.org/docs"
         }
       ]
     },
     {
-      "type": "accordion",
-      "title": "2. SEO (Search Engine Optimization)",
-      "blocks": [
-        {
-          "type": "text",
-          "body": "SEO is how you make your website appear in Google search results. If nobody can find your site, nobody will use it. The good news is that Next.js makes many SEO best practices easy."
-        },
-        {
-          "type": "text",
-          "heading": "The essentials",
-          "headingLevel": 3,
-          "body": ""
-        },
-        {
-          "type": "list",
-          "items": [
-            "**Title tag:** Every page needs a unique, descriptive <title>. It appears in browser tabs and search results.",
-            "**Meta description:** A short summary (under 160 characters) that shows up below the title in search results.",
-            "**Open Graph tags:** Control how your page looks when shared on social media (Twitter, Facebook, LinkedIn). Set the title, description, and preview image.",
-            "**Semantic HTML:** Search engines understand <article>, <nav>, <header>, and heading tags much better than a sea of <div> elements.",
-            "**Site speed:** Faster sites rank higher. Optimize images, minimize JavaScript, and use caching.",
-            "**Sitemaps:** An XML file that lists all your pages so search engines can discover them. Next.js can generate these automatically."
-          ]
-        },
-        {
-          "type": "text",
-          "heading": "Adding metadata in Next.js",
-          "headingLevel": 3,
-          "body": ""
-        },
-        {
-          "type": "code",
-          "language": "tsx",
-          "filename": "app/about/page.tsx",
-          "code": "import type { Metadata } from 'next';\n\n// Next.js reads this export and generates the\n// <title>, <meta>, and Open Graph tags for you.\nexport const metadata: Metadata = {\n  title: 'About Us | My Website',\n  description: 'Learn about our team and mission.',\n  openGraph: {\n    title: 'About Us | My Website',\n    description: 'Learn about our team and mission.',\n    images: ['/images/og-about.png'],\n  },\n};\n\nexport default function AboutPage() {\n  return (\n    <main>\n      <h1>About Us</h1>\n      <p>We build great things for the web.</p>\n    </main>\n  );\n}"
-        },
-        {
-          "type": "alert",
-          "severity": "info",
-          "title": "Tip",
-          "body": "Use the Next.js metadata export in Server Components (no \"use client\"). For dynamic metadata, export an async generateMetadata function instead."
-        }
+      "type": "alert",
+      "severity": "success",
+      "title": "Pro tip",
+      "body": "When searching for documentation, add \"site:developer.mozilla.org\" or \"site:react.dev\" to your search query to filter results to official docs. This avoids outdated blog posts and incorrect Stack Overflow answers."
+    },
+    {
+      "type": "text",
+      "heading": "Interactive Learning Platforms",
+      "headingLevel": 2,
+      "body": "These platforms let you write code in the browser and get instant feedback. They are the fastest way to go from zero to building real projects."
+    },
+    {
+      "type": "table",
+      "heading": "Platform comparison",
+      "headers": ["Platform", "Cost", "Best For", "Format", "Standout Feature"],
+      "rows": [
+        ["freeCodeCamp", "Free", "Beginners, full curriculum", "Interactive exercises + projects", "3,000+ hours of free content with certifications"],
+        ["Scrimba", "Free / $20/mo", "Visual learners, React", "Interactive screencasts (pause and edit)", "You can edit the instructor's code as they teach"],
+        ["Codecademy", "Free / $40/mo", "Beginners, structured paths", "Browser-based coding exercises", "Step-by-step career paths with guided projects"],
+        ["Exercism", "Free", "Language practice, mentoring", "Code challenges with mentor feedback", "Real human mentors review your solutions"],
+        ["Frontend Mentor", "Free / $8/mo", "Building portfolio projects", "Design mockups to build", "Real-world designs with assets provided"],
+        ["LeetCode", "Free / $35/mo", "Interview preparation", "Algorithm challenges", "Company-tagged problems for interview prep"],
+        ["The Odin Project", "Free", "Full-stack beginners", "Curated curriculum with readings + projects", "Open-source, community-driven, completely free"]
       ]
     },
     {
-      "type": "accordion",
-      "title": "3. Performance Optimization",
-      "blocks": [
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
         {
-          "type": "text",
-          "body": "A slow website loses visitors. Studies show most users abandon a page if it takes more than 3 seconds to load. Here are the most impactful techniques for keeping your React app fast."
+          "title": "freeCodeCamp",
+          "body": "Start here if you are brand new to coding. The curriculum takes you from HTML basics through JavaScript, React, Node.js, and databases. Everything is free, including certifications.",
+          "chip": "Free"
         },
         {
-          "type": "text",
-          "heading": "Code splitting with dynamic imports",
-          "headingLevel": 3,
-          "body": "Instead of loading your entire app at once, split it into smaller chunks. Users only download the code they actually need."
+          "title": "Scrimba",
+          "body": "Interactive screencasts where you can pause the video and edit the instructor's code directly. The React and JavaScript courses are exceptionally well-produced.",
+          "chip": "Interactive"
         },
         {
-          "type": "code",
-          "language": "tsx",
-          "filename": "app/dashboard/page.tsx",
-          "code": "import dynamic from 'next/dynamic';\n\n// The chart library is large, so only load it\n// when the component is actually rendered.\nconst HeavyChart = dynamic(() => import('@/components/HeavyChart'), {\n  loading: () => <p>Loading chart...</p>,\n});\n\nexport default function Dashboard() {\n  return (\n    <div>\n      <h1>Dashboard</h1>\n      <HeavyChart />\n    </div>\n  );\n}"
-        },
-        {
-          "type": "text",
-          "heading": "Memoization -- avoiding unnecessary work",
-          "headingLevel": 3,
-          "body": "React re-renders components whenever state changes. `useMemo` caches expensive calculations, and `useCallback` caches function references so child components do not re-render needlessly."
-        },
-        {
-          "type": "code",
-          "language": "tsx",
-          "code": "import { useMemo, useCallback } from 'react';\n\nfunction ProductList({ products, filter }: Props) {\n  // Only recalculate when products or filter change\n  const filtered = useMemo(\n    () => products.filter((p) => p.category === filter),\n    [products, filter]\n  );\n\n  // Stable function reference for child components\n  const handleSelect = useCallback((id: string) => {\n    console.log('Selected:', id);\n  }, []);\n\n  return filtered.map((p) => (\n    <ProductCard key={p.id} product={p} onSelect={handleSelect} />\n  ));\n}"
-        },
-        {
-          "type": "text",
-          "heading": "Image optimization with next/image",
-          "headingLevel": 3,
-          "body": ""
-        },
-        {
-          "type": "code",
-          "language": "tsx",
-          "code": "import Image from 'next/image';\n\n// next/image automatically:\n// - Serves modern formats (WebP, AVIF)\n// - Lazy-loads images below the fold\n// - Resizes images to the exact size needed\n<Image\n  src=\"/photos/hero.jpg\"\n  alt=\"Hero banner\"\n  width={1200}\n  height={600}\n  priority  // Load this image immediately (above the fold)\n/>"
-        },
-        {
-          "type": "alert",
-          "severity": "info",
-          "title": "Measure first",
-          "body": "Use Chrome Lighthouse (DevTools > Lighthouse tab) to get a performance score and specific recommendations. Do not optimize blindly -- measure, fix, then measure again."
-        }
-      ]
-    },
-    {
-      "type": "accordion",
-      "title": "4. Testing Your Code",
-      "blocks": [
-        {
-          "type": "text",
-          "body": "Testing means writing code that checks whether your other code works correctly. It sounds like extra work, but it saves you from shipping broken features and spending hours debugging later."
-        },
-        {
-          "type": "text",
-          "heading": "Types of tests",
-          "headingLevel": 3,
-          "body": ""
-        },
-        {
-          "type": "cardGrid",
-          "columns": 3,
-          "cards": [
-            {
-              "title": "Unit Tests",
-              "body": "Test individual functions in isolation. \"Does this function add two numbers correctly?\" Tools: Jest or Vitest."
-            },
-            {
-              "title": "Component Tests",
-              "body": "Render a component and check it displays correctly. \"Does the button show the right label?\" Tools: React Testing Library."
-            },
-            {
-              "title": "End-to-End (E2E) Tests",
-              "body": "Simulate a real user clicking through your entire app. \"Can a user sign up and create a post?\" Tools: Playwright or Cypress."
-            }
-          ]
-        },
-        {
-          "type": "text",
-          "heading": "A simple component test",
-          "headingLevel": 3,
-          "body": ""
-        },
-        {
-          "type": "code",
-          "language": "tsx",
-          "filename": "Greeting.test.tsx",
-          "code": "import { render, screen } from '@testing-library/react';\nimport Greeting from './Greeting';\n\ntest('renders the greeting message', () => {\n  render(<Greeting name=\"Alice\" />);\n\n  // Check that the text appears on screen\n  expect(screen.getByText('Hello, Alice!')).toBeInTheDocument();\n});\n\ntest('renders default greeting when no name given', () => {\n  render(<Greeting />);\n\n  expect(screen.getByText('Hello, World!')).toBeInTheDocument();\n});"
-        },
-        {
-          "type": "alert",
-          "severity": "success",
-          "title": "Real-world example",
-          "body": "The ham radio site in our Examples section has tests for every component. Check it out to see how a real project organizes its test suite."
-        }
-      ]
-    },
-    {
-      "type": "accordion",
-      "title": "5. Version Control with Git",
-      "blocks": [
-        {
-          "type": "text",
-          "body": "Git tracks every change you make to your code. Think of it as an unlimited undo/redo system for your entire project. Every professional developer uses Git -- learning it early will save you countless headaches."
-        },
-        {
-          "type": "text",
-          "heading": "Basic daily workflow",
-          "headingLevel": 3,
-          "body": ""
-        },
-        {
-          "type": "code",
-          "language": "bash",
-          "filename": "Terminal",
-          "code": "# 1. Initialize a new repository (only once per project)\ngit init\n\n# 2. Check what has changed\ngit status\n\n# 3. Stage files you want to commit\ngit add .                    # Stage everything\ngit add src/App.tsx          # Or stage specific files\n\n# 4. Commit with a descriptive message\ngit commit -m \"Add user login form\"\n\n# 5. Push to GitHub (after setting up a remote)\ngit push origin main"
-        },
-        {
-          "type": "text",
-          "heading": "Branching for features",
-          "headingLevel": 3,
-          "body": "Never work directly on `main`. Create a branch for each feature, then merge it back via a Pull Request (PR)."
-        },
-        {
-          "type": "code",
-          "language": "bash",
-          "filename": "Terminal",
-          "code": "# Create and switch to a new branch\ngit checkout -b feature/user-profile\n\n# ... make changes, commit them ...\ngit add .\ngit commit -m \"Add user profile page\"\n\n# Push the branch to GitHub\ngit push origin feature/user-profile\n\n# Then open a Pull Request on GitHub to merge into main"
-        },
-        {
-          "type": "text",
-          "heading": "Essential .gitignore",
-          "headingLevel": 3,
-          "body": ""
-        },
-        {
-          "type": "code",
-          "language": "bash",
-          "filename": ".gitignore",
-          "code": "# Dependencies (reinstalled with npm install)\nnode_modules/\n\n# Environment variables (contains secrets!)\n.env\n.env.local\n\n# Build output\n.next/\ndist/\nbuild/\n\n# OS files\n.DS_Store\nThumbs.db"
-        },
-        {
-          "type": "alert",
-          "severity": "info",
-          "title": "Commit message tips",
-          "body": "Use present tense (\"Add feature\" not \"Added feature\"), keep the first line under 72 characters, and describe what changed and why."
-        }
-      ]
-    },
-    {
-      "type": "accordion",
-      "title": "6. Package Management",
-      "blocks": [
-        {
-          "type": "text",
-          "body": "Packages (also called libraries or dependencies) are pre-written code that you install into your project instead of writing from scratch. React itself is a package! A package manager handles installing, updating, and removing them."
-        },
-        {
-          "type": "text",
-          "heading": "npm vs yarn vs pnpm",
-          "headingLevel": 3,
-          "body": ""
-        },
-        {
-          "type": "cardGrid",
-          "columns": 3,
-          "cards": [
-            {
-              "title": "npm",
-              "body": "Comes with Node.js. The default and most common package manager. If you are a beginner, just use npm -- it works great."
-            },
-            {
-              "title": "yarn",
-              "body": "Made by Facebook. Slightly faster than npm in some cases. Uses a yarn.lock file. Many older tutorials use yarn."
-            },
-            {
-              "title": "pnpm",
-              "body": "The fastest and most disk-efficient. Uses symlinks to avoid duplicate packages. Becoming very popular in modern projects."
-            }
-          ]
-        },
-        {
-          "type": "text",
-          "heading": "Understanding package.json",
-          "headingLevel": 3,
-          "body": ""
-        },
-        {
-          "type": "code",
-          "language": "json",
-          "filename": "package.json (simplified)",
-          "code": "{\n  \"name\": \"my-app\",\n  \"version\": \"1.0.0\",\n  \"dependencies\": {\n    \"react\": \"^19.0.0\",\n    \"next\": \"^15.0.0\",\n    \"@mui/material\": \"^6.4.0\"\n  },\n  \"devDependencies\": {\n    \"typescript\": \"^5.7.0\",\n    \"@testing-library/react\": \"^16.0.0\"\n  },\n  \"scripts\": {\n    \"dev\": \"next dev\",\n    \"build\": \"next build\",\n    \"test\": \"jest\"\n  }\n}"
-        },
-        {
-          "type": "text",
-          "heading": "Semantic versioning explained",
-          "headingLevel": 3,
-          "body": "Version numbers follow the format **MAJOR.MINOR.PATCH** (e.g., 19.0.2):"
-        },
-        {
-          "type": "list",
-          "items": [
-            "**^19.0.0** -- Accept any 19.x.x version (minor and patch updates). This is the default and safest choice.",
-            "**~19.0.0** -- Accept only 19.0.x versions (patch updates only).",
-            "**19.0.0** -- Exact version only. Use this when you need absolute consistency."
-          ]
-        },
-        {
-          "type": "alert",
-          "severity": "warning",
-          "title": "Lock files matter",
-          "body": "Always commit your package-lock.json (or yarn.lock / pnpm-lock.yaml). Lock files ensure every developer and your deployment server install the exact same versions. Run npm audit regularly to check for known vulnerabilities."
-        }
-      ]
-    },
-    {
-      "type": "accordion",
-      "title": "7. Debugging",
-      "blocks": [
-        {
-          "type": "text",
-          "body": "Bugs are inevitable. What separates a productive developer from a frustrated one is knowing how to find and fix them quickly. Here are the tools and techniques you should learn early."
-        },
-        {
-          "type": "text",
-          "heading": "Browser DevTools (F12)",
-          "headingLevel": 3,
-          "body": ""
-        },
-        {
-          "type": "list",
-          "items": [
-            "**Elements tab:** Inspect and modify HTML/CSS in real time. Right-click any element and select Inspect.",
-            "**Console tab:** See errors, warnings, and your console.log() output. This is your first stop when something breaks.",
-            "**Network tab:** See every HTTP request your app makes. Check if API calls succeed or fail, and inspect the response data.",
-            "**Sources tab:** Set breakpoints to pause execution and step through your code line by line."
-          ]
-        },
-        {
-          "type": "text",
-          "heading": "React DevTools & Redux DevTools",
-          "headingLevel": 3,
-          "body": "Install the **React Developer Tools** browser extension. It adds a \"Components\" tab that lets you inspect the component tree, see props and state for each component, and trigger re-renders. If you use Redux, the **Redux DevTools** extension shows every dispatched action and state change."
-        },
-        {
-          "type": "text",
-          "heading": "Common errors and what they mean",
-          "headingLevel": 3,
-          "body": ""
-        },
-        {
-          "type": "code",
-          "language": "bash",
-          "code": "# \"Cannot read properties of undefined\"\n# You are trying to access a property on something that does not exist.\n# Fix: Check that your variable is defined before accessing its properties.\n// user?.name instead of user.name\n\n# \"Objects are not valid as a React child\"\n# You are trying to render an object directly in JSX.\n# Fix: Render a specific property like {user.name} instead of {user}\n\n# \"Each child in a list should have a unique 'key' prop\"\n# You forgot to add a key prop when rendering a list.\n# Fix: Add key={item.id} to the top element in your .map()\n\n# \"Too many re-renders\"\n# You are calling setState during render, creating an infinite loop.\n# Fix: Move the setState call into an event handler or useEffect"
-        },
-        {
-          "type": "alert",
-          "severity": "info",
-          "title": "Stack traces",
-          "body": "When you see an error, read it from the top down. The first line tells you what went wrong, and the lines below show where in your code it happened. Look for file names you recognize -- those are the lines to investigate."
-        }
-      ]
-    },
-    {
-      "type": "accordion",
-      "title": "8. Security Basics",
-      "blocks": [
-        {
-          "type": "text",
-          "body": "Security is not just for backend developers. As a frontend developer, there are critical practices you need to follow to protect your users and yourself."
-        },
-        {
-          "type": "text",
-          "heading": "Never commit secrets",
-          "headingLevel": 3,
-          "body": "API keys, database passwords, and other secrets belong in `.env` files, which must be listed in your `.gitignore`. If you accidentally commit a secret to GitHub, consider it compromised and rotate it immediately."
-        },
-        {
-          "type": "code",
-          "language": "bash",
-          "filename": ".env.local",
-          "code": "# These values are only available on the server\nDATABASE_URL=postgresql://user:password@localhost:5432/mydb\nAPI_SECRET_KEY=sk_live_abc123\n\n# Prefix with NEXT_PUBLIC_ to expose to the browser\n# (only for non-sensitive values!)\nNEXT_PUBLIC_SITE_URL=https://mysite.com"
-        },
-        {
-          "type": "text",
-          "heading": "XSS (Cross-Site Scripting)",
-          "headingLevel": 3,
-          "body": "XSS attacks inject malicious JavaScript into your page. React protects you by automatically escaping text rendered in JSX. However, using `dangerouslySetInnerHTML` bypasses this protection -- avoid it unless you sanitize the content first."
-        },
-        {
-          "type": "tabs",
-          "tabs": [
-            {
-              "label": "Dangerous",
-              "blocks": [
-                {
-                  "type": "code",
-                  "language": "tsx",
-                  "code": "// NEVER do this with user input!\n<div dangerouslySetInnerHTML={{\n  __html: userComment\n}} />"
-                }
-              ]
-            },
-            {
-              "label": "Safe (React default)",
-              "blocks": [
-                {
-                  "type": "code",
-                  "language": "tsx",
-                  "code": "// React escapes this automatically\n// Even if userComment contains <script>,\n// it renders as plain text, not code.\n<div>{userComment}</div>"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "text",
-          "heading": "Other security essentials",
-          "headingLevel": 3,
-          "body": ""
-        },
-        {
-          "type": "list",
-          "items": [
-            "**CORS:** Browsers block requests to different domains by default. Your API server must explicitly allow your frontend domain. This is a feature, not a bug.",
-            "**HTTPS:** Always serve your site over HTTPS. Hosting platforms like Vercel and Netlify provide this automatically.",
-            "**Dependency auditing:** Run npm audit regularly. It checks your packages for known vulnerabilities and suggests fixes.",
-            "**Environment variables:** In Next.js, only variables prefixed with NEXT_PUBLIC_ are visible to the browser. Keep everything else server-side."
-          ]
-        }
-      ]
-    },
-    {
-      "type": "accordion",
-      "title": "9. CI/CD (Continuous Integration/Deployment)",
-      "blocks": [
-        {
-          "type": "text",
-          "body": "CI/CD automates the boring parts of development: running tests, checking code quality, and deploying to production. Instead of manually doing these steps, a service does them every time you push code."
-        },
-        {
-          "type": "text",
-          "heading": "How it works",
-          "headingLevel": 3,
-          "body": ""
-        },
-        {
-          "type": "list",
-          "items": [
-            "**Continuous Integration (CI):** Automatically run your tests and linting every time you push code or open a Pull Request. If something breaks, you find out immediately.",
-            "**Continuous Deployment (CD):** Automatically deploy your app to production when code is merged into main. Vercel does this by default for Next.js projects."
-          ]
-        },
-        {
-          "type": "text",
-          "heading": "A simple GitHub Actions workflow",
-          "headingLevel": 3,
-          "body": ""
-        },
-        {
-          "type": "code",
-          "language": "yaml",
-          "filename": ".github/workflows/ci.yml",
-          "code": "name: CI\n\non:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]\n\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n\n      - name: Setup Node.js\n        uses: actions/setup-node@v4\n        with:\n          node-version: 20\n          cache: 'npm'\n\n      - name: Install dependencies\n        run: npm ci\n\n      - name: Run linting\n        run: npm run lint\n\n      - name: Run tests\n        run: npm test\n\n      - name: Build\n        run: npm run build"
-        },
-        {
-          "type": "alert",
-          "severity": "success",
-          "title": "Free tier",
-          "body": "GitHub Actions gives you 2,000 minutes per month for free on public repositories. That is more than enough for most personal and small team projects."
-        }
-      ]
-    },
-    {
-      "type": "accordion",
-      "title": "10. Progressive Web Apps (PWA)",
-      "blocks": [
-        {
-          "type": "text",
-          "body": "A Progressive Web App is a website that can work like a native app on your phone or desktop. Users can install it to their home screen, use it offline, and receive push notifications -- all without going through an app store."
-        },
-        {
-          "type": "text",
-          "heading": "What makes a PWA",
-          "headingLevel": 3,
-          "body": ""
-        },
-        {
-          "type": "list",
-          "items": [
-            "**Service Worker:** A script that runs in the background, intercepting network requests and caching assets. This is what enables offline support.",
-            "**Web App Manifest:** A JSON file (manifest.json) that tells the browser your app's name, icons, theme colors, and how to display it when installed.",
-            "**HTTPS:** PWAs require a secure connection. All modern hosting platforms provide this."
-          ]
-        },
-        {
-          "type": "text",
-          "heading": "Basic manifest.json",
-          "headingLevel": 3,
-          "body": ""
-        },
-        {
-          "type": "code",
-          "language": "json",
-          "filename": "public/manifest.json",
-          "code": "{\n  \"name\": \"My Web App\",\n  \"short_name\": \"MyApp\",\n  \"description\": \"A great progressive web app\",\n  \"start_url\": \"/\",\n  \"display\": \"standalone\",\n  \"background_color\": \"#ffffff\",\n  \"theme_color\": \"#1976d2\",\n  \"icons\": [\n    {\n      \"src\": \"/icons/icon-192.png\",\n      \"sizes\": \"192x192\",\n      \"type\": \"image/png\"\n    },\n    {\n      \"src\": \"/icons/icon-512.png\",\n      \"sizes\": \"512x512\",\n      \"type\": \"image/png\"\n    }\n  ]\n}"
-        },
-        {
-          "type": "alert",
-          "severity": "info",
-          "title": "Next.js PWA",
-          "body": "Use the next-pwa package to add PWA support to your Next.js app with minimal configuration. It handles service worker generation and caching strategies for you."
-        }
-      ]
-    },
-    {
-      "type": "accordion",
-      "title": "11. Web APIs You Should Know",
-      "blocks": [
-        {
-          "type": "text",
-          "body": "Modern browsers come with powerful built-in APIs. You do not always need a library -- sometimes the browser already has what you need."
-        },
-        {
-          "type": "text",
-          "heading": "localStorage & sessionStorage",
-          "headingLevel": 3,
-          "body": "Store small amounts of data in the browser. `localStorage` persists even after the browser is closed; `sessionStorage` clears when the tab closes."
-        },
-        {
-          "type": "code",
-          "language": "tsx",
-          "code": "// Save data\nlocalStorage.setItem('theme', 'dark');\n\n// Read data\nconst theme = localStorage.getItem('theme'); // 'dark'\n\n// Remove data\nlocalStorage.removeItem('theme');\n\n// Store objects (must convert to/from JSON)\nlocalStorage.setItem('user', JSON.stringify({ name: 'Alice' }));\nconst user = JSON.parse(localStorage.getItem('user') || '{}');"
-        },
-        {
-          "type": "text",
-          "heading": "Fetch API",
-          "headingLevel": 3,
-          "body": "The built-in way to make HTTP requests. No library needed."
-        },
-        {
-          "type": "code",
-          "language": "tsx",
-          "code": "// GET request\nconst response = await fetch('https://api.example.com/posts');\nconst posts = await response.json();\n\n// POST request\nconst result = await fetch('https://api.example.com/posts', {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify({ title: 'New Post', content: 'Hello!' }),\n});"
-        },
-        {
-          "type": "text",
-          "heading": "Other useful APIs",
-          "headingLevel": 3,
-          "body": ""
-        },
-        {
-          "type": "cardGrid",
-          "columns": 2,
-          "cards": [
-            {
-              "title": "Geolocation",
-              "body": "Access the user's location with `navigator.geolocation.getCurrentPosition()`. Always requires user permission."
-            },
-            {
-              "title": "Clipboard API",
-              "body": "Copy and read text from the clipboard with `navigator.clipboard.writeText()` and `navigator.clipboard.readText()`."
-            },
-            {
-              "title": "Notifications",
-              "body": "Send desktop notifications with the `Notification` API. Requires user permission via `Notification.requestPermission()`."
-            },
-            {
-              "title": "Intersection Observer",
-              "body": "Detect when an element scrolls into view. Perfect for lazy loading images, infinite scroll, and scroll-triggered animations."
-            }
-          ]
-        },
-        {
-          "type": "code",
-          "language": "tsx",
-          "description": "Geolocation example",
-          "code": "navigator.geolocation.getCurrentPosition(\n  (pos) => {\n    console.log(pos.coords.latitude);\n    console.log(pos.coords.longitude);\n  },\n  (err) => console.error(err)\n);"
-        },
-        {
-          "type": "code",
-          "language": "tsx",
-          "description": "Clipboard API example",
-          "code": "// Copy text to clipboard\nawait navigator.clipboard.writeText(\n  'Copied!'\n);\n\n// Read from clipboard\nconst text =\n  await navigator.clipboard.readText();"
-        },
-        {
-          "type": "code",
-          "language": "tsx",
-          "description": "Notifications example",
-          "code": "// Request permission first\nconst perm =\n  await Notification.requestPermission();\n\nif (perm === 'granted') {\n  new Notification('Hello!', {\n    body: 'This is a notification.',\n  });\n}"
-        },
-        {
-          "type": "code",
-          "language": "tsx",
-          "description": "Intersection Observer example",
-          "code": "// Detect when an element scrolls\n// into view (lazy loading, animations)\nconst observer = new IntersectionObserver(\n  (entries) => {\n    entries.forEach((e) => {\n      if (e.isIntersecting) loadMore();\n    });\n  }\n);\nobserver.observe(targetElement);"
-        }
-      ]
-    },
-    {
-      "type": "accordion",
-      "title": "12. Career & Next Steps",
-      "blocks": [
-        {
-          "type": "text",
-          "body": "You have learned the technical skills -- now what? Here is practical advice for turning your knowledge into a career or meaningful projects."
-        },
-        {
-          "type": "text",
-          "heading": "Build a portfolio",
-          "headingLevel": 3,
-          "body": "Your portfolio is more important than any resume. Build 3-5 real projects that demonstrate different skills. Deploy them, put the code on GitHub, and write a brief description of what each project does and what you learned."
-        },
-        {
-          "type": "text",
-          "heading": "Contribute to open source",
-          "headingLevel": 3,
-          "body": "You do not need to be an expert. Start by fixing typos in documentation, adding tests, or tackling issues labeled \"good first issue\" on GitHub. It builds real experience and shows employers you can collaborate with others."
-        },
-        {
-          "type": "text",
-          "heading": "Suggested learning path",
-          "headingLevel": 3,
-          "body": ""
-        },
-        {
-          "type": "list",
-          "ordered": true,
-          "items": [
-            "HTML, CSS, JavaScript fundamentals -- The foundation everything else is built on.",
-            "React + TypeScript -- The most popular frontend framework with type safety.",
-            "Next.js -- Full-stack React framework with routing, SSR, and API routes.",
-            "State management (Redux Toolkit, Zustand) -- Managing complex application state.",
-            "Testing (Jest, React Testing Library, Playwright) -- Writing reliable, tested code.",
-            "Backend basics (APIs, databases, authentication) -- Understand the full stack, even as a frontend developer."
-          ]
-        },
-        {
-          "type": "text",
-          "heading": "Job market tips",
-          "headingLevel": 3,
-          "body": ""
-        },
-        {
-          "type": "list",
-          "items": [
-            "**Freelancing:** Platforms like Upwork and Fiverr can help you get your first paid projects. Start with small gigs to build reviews and confidence.",
-            "**Networking:** Join developer communities on Discord, attend local meetups, and engage on platforms like Dev.to and Twitter/X. Many jobs come through connections, not job boards.",
-            "**Keep building:** The best way to learn is to build real things. Every project you complete teaches you more than any tutorial."
-          ]
-        },
-        {
-          "type": "alert",
-          "severity": "success",
-          "title": "Remember",
-          "body": "Every senior developer was once a beginner who did not quit. The learning never stops, and that is what makes this field exciting. You are already on the right path by being here."
+          "title": "The Odin Project",
+          "body": "A full-stack curriculum that teaches you to build real projects from scratch. It does not hand-hold -- it teaches you to find answers in documentation, which is a critical professional skill.",
+          "chip": "Full Stack"
         }
       ]
     },
     {
       "type": "text",
-      "heading": "You Are Ready to Build",
+      "heading": "YouTube Channels",
       "headingLevel": 2,
-      "body": "You now know about accessibility, SEO, performance, testing, Git, package management, debugging, security, CI/CD, PWAs, browser APIs, and career paths. These are the skills that separate a beginner from a confident, professional developer."
+      "body": "YouTube is one of the best free resources for web development education. These channels are consistently recommended by the developer community for their quality and clarity."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 2,
+      "cards": [
+        {
+          "title": "Fireship",
+          "body": "Short, fast-paced videos (often under 10 minutes) that explain complex topics with animations and humor. The \"100 seconds\" series is perfect for getting a quick overview of any technology.",
+          "chip": "Quick Overviews"
+        },
+        {
+          "title": "Traversy Media",
+          "body": "Comprehensive tutorials and crash courses. Brad Traversy covers everything from HTML/CSS basics to full-stack projects with React, Node, and databases. Great for building complete projects.",
+          "chip": "Project Tutorials"
+        },
+        {
+          "title": "Web Dev Simplified",
+          "body": "Clear, beginner-friendly explanations of JavaScript, React, CSS, and web development concepts. Kyle Cook excels at breaking down complicated topics into simple, digestible pieces.",
+          "chip": "Beginner Friendly"
+        },
+        {
+          "title": "The Net Ninja",
+          "body": "Well-organized tutorial series with consistent quality. Shaun Pelling covers React, Next.js, Node, MongoDB, Firebase, and more. Each series is broken into short, focused lessons.",
+          "chip": "Series Format"
+        },
+        {
+          "title": "Theo (t3.gg)",
+          "body": "Opinions and deep dives into the TypeScript and Next.js ecosystem. Covers tRPC, Prisma, Tailwind, deployment, and modern full-stack architecture. Great for intermediate developers.",
+          "chip": "TypeScript / Next.js"
+        },
+        {
+          "title": "Jack Herrington",
+          "body": "Advanced React patterns, microfrontends, and JavaScript architecture. Aimed at developers who already know the basics and want to level up their code quality and design patterns.",
+          "chip": "Advanced React"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Books",
+      "headingLevel": 2,
+      "body": "Books provide the deep, structured understanding that short tutorials cannot. They are the best resource for truly mastering a subject rather than just learning the surface syntax."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "JavaScript",
+          "blocks": [
+            {
+              "type": "list",
+              "items": [
+                "**Eloquent JavaScript** (Marijn Haverbeke) -- Free online. The best introduction to JavaScript and programming concepts. Interactive exercises in every chapter. Read this if you are just starting out.",
+                "**You Don't Know JS** (Kyle Simpson) -- Free on GitHub. A six-book series that digs deep into JavaScript mechanics: scope, closures, prototypes, async, and types. Read this when you want to truly understand how JavaScript works.",
+                "**JavaScript: The Good Parts** (Douglas Crockford) -- A short, opinionated guide to writing clean JavaScript. Older but the core ideas about avoiding bad patterns still apply.",
+                "**JavaScript Patterns** (Stoyan Stefanov) -- Design patterns and best practices for structuring JavaScript applications. Useful once you are comfortable with the language."
+              ]
+            }
+          ]
+        },
+        {
+          "label": "React & Frontend",
+          "blocks": [
+            {
+              "type": "list",
+              "items": [
+                "**Learning React** (Eve Porcello & Alex Banks) -- A practical guide to modern React with hooks, context, and data fetching. Good for developers transitioning from vanilla JavaScript to React.",
+                "**Refactoring UI** (Adam Wathan & Steve Schoger) -- Not a coding book but essential reading. Teaches visual design principles for developers who need to make their UIs look professional without a designer.",
+                "**Don't Make Me Think** (Steve Krug) -- The classic book on web usability and user experience. Short, practical, and relevant to every web developer."
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Software Engineering",
+          "blocks": [
+            {
+              "type": "list",
+              "items": [
+                "**Clean Code** (Robert C. Martin) -- Principles for writing readable, maintainable code: naming conventions, function design, error handling, and testing. Every developer should read this early in their career.",
+                "**The Pragmatic Programmer** (David Thomas & Andrew Hunt) -- Timeless advice on software craftsmanship: DRY principle, orthogonality, automation, and professional development.",
+                "**Designing Data-Intensive Applications** (Martin Kleppmann) -- The definitive guide to distributed systems, databases, and data architecture. Essential reading for backend and full-stack developers.",
+                "**A Philosophy of Software Design** (John Ousterhout) -- A concise book on managing complexity in software. Shorter and more focused than Clean Code, covering strategic vs tactical programming."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Podcasts",
+      "headingLevel": 2,
+      "body": "Podcasts let you learn while commuting, exercising, or doing chores. These shows feature industry experts discussing tools, frameworks, career advice, and the latest developments in web development."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "Syntax",
+          "body": "Hosted by Wes Bos and Scott Tolinski. Covers frontend and full-stack development with a fun, accessible style. Topics range from CSS tips to serverless architecture. Released multiple times per week.",
+          "chip": "Full Stack"
+        },
+        {
+          "title": "JavaScript Jabber",
+          "body": "Weekly panel discussions on JavaScript, frameworks, tooling, and software engineering. Features interviews with library authors and community leaders.",
+          "chip": "JavaScript"
+        },
+        {
+          "title": "React Round Up",
+          "body": "A weekly podcast focused on React development: hooks, state management, testing, performance, and the React ecosystem. Great for staying current with the React community.",
+          "chip": "React"
+        },
+        {
+          "title": "Frontend Happy Hour",
+          "body": "Engineers from Netflix, LinkedIn, Twitch, and other tech companies discuss frontend development over drinks. A relaxed format with practical industry insights.",
+          "chip": "Industry"
+        },
+        {
+          "title": "ShopTalk Show",
+          "body": "Hosted by Dave Rupert and Chris Coyier (creator of CSS-Tricks). Covers HTML, CSS, JavaScript, and the web platform. Great for staying connected to web standards.",
+          "chip": "Web Standards"
+        },
+        {
+          "title": "Changelog",
+          "body": "Interviews with open-source maintainers and developers building developer tools. Broader than just web dev -- covers DevOps, databases, languages, and the open-source ecosystem.",
+          "chip": "Open Source"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Tools and Utilities",
+      "headingLevel": 2,
+      "body": "These tools are part of the daily workflow for professional web developers. Learning to use them well will save you hours of debugging and guesswork."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Browser DevTools",
+          "blocks": [
+            {
+              "type": "list",
+              "items": [
+                "**Elements Panel** -- Inspect and edit HTML/CSS live. Right-click any element and select Inspect. Change styles in real time to prototype design changes.",
+                "**Console Panel** -- Run JavaScript, view errors and warnings, debug with console.log(), console.table(), and console.dir(). Filter by log level.",
+                "**Network Panel** -- Monitor all HTTP requests, inspect headers and response bodies, throttle network speed, and identify slow API calls.",
+                "**Performance Panel** -- Record and analyze runtime performance. Identify long tasks, layout thrashing, and JavaScript bottlenecks.",
+                "**Application Panel** -- Inspect localStorage, sessionStorage, cookies, service workers, and IndexedDB. Essential for debugging client-side storage.",
+                "**Lighthouse** -- Built-in audit tool that scores your page on Performance, Accessibility, Best Practices, and SEO. Provides actionable recommendations."
+              ]
+            }
+          ]
+        },
+        {
+          "label": "API & Testing Tools",
+          "blocks": [
+            {
+              "type": "cardGrid",
+              "columns": 2,
+              "cards": [
+                {
+                  "title": "Postman",
+                  "body": "The most popular API development tool. Create, test, and document API requests with a visual interface. Supports collections, environments, and automated testing.",
+                  "chip": "API Testing"
+                },
+                {
+                  "title": "Thunder Client",
+                  "body": "A lightweight REST API client built into VS Code. No separate application needed. Great for quick API testing without leaving your editor.",
+                  "chip": "VS Code Extension"
+                },
+                {
+                  "title": "Playwright",
+                  "body": "Microsoft's end-to-end testing framework. Write tests in TypeScript that run in real browsers (Chrome, Firefox, Safari). Supports auto-waiting, screenshots, and video recording.",
+                  "chip": "E2E Testing"
+                },
+                {
+                  "title": "Vitest",
+                  "body": "A fast unit testing framework powered by Vite. Drop-in replacement for Jest with native TypeScript and ESM support. Significantly faster test execution.",
+                  "chip": "Unit Testing"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Design & Productivity",
+          "blocks": [
+            {
+              "type": "cardGrid",
+              "columns": 2,
+              "cards": [
+                {
+                  "title": "Figma",
+                  "body": "The industry-standard design tool. Developers use it to inspect designs, extract CSS values, and export assets. The Dev Mode shows spacing, colors, and component properties.",
+                  "chip": "Design"
+                },
+                {
+                  "title": "Can I Use",
+                  "body": "Check browser compatibility for any HTML, CSS, or JavaScript feature. Shows support tables for every major browser and version. Essential before using newer web features.",
+                  "chip": "Compatibility"
+                },
+                {
+                  "title": "Warp / Alacritty",
+                  "body": "Modern terminal emulators built for developers. Warp adds AI assistance and team collaboration. Alacritty is GPU-accelerated and blazingly fast. Both replace the default terminal.",
+                  "chip": "Terminal"
+                },
+                {
+                  "title": "GitHub Copilot",
+                  "body": "AI-powered code completion in your editor. Suggests entire functions, generates tests, and explains existing code. Free for students and open-source maintainers.",
+                  "chip": "AI Assistant"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Communities",
+      "headingLevel": 2,
+      "body": "Learning alone is harder than learning with a community. These platforms provide support when you are stuck, expose you to new ideas, and connect you with other developers."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 2,
+      "cards": [
+        {
+          "title": "Stack Overflow",
+          "body": "The largest Q&A site for programmers. Search before asking -- most beginner questions have already been answered. When you do ask, include a minimal reproducible example.",
+          "chip": "Q&A"
+        },
+        {
+          "title": "Discord Servers",
+          "body": "Real-time chat communities for nearly every framework and tool. The Reactiflux server (React), Next.js Discord, and TypeScript Community are the most active. Great for getting quick help.",
+          "chip": "Real-Time Chat"
+        },
+        {
+          "title": "Reddit",
+          "body": "Subreddits like r/webdev, r/reactjs, r/javascript, r/typescript, and r/node have active communities sharing articles, asking questions, and discussing trends.",
+          "chip": "Discussion"
+        },
+        {
+          "title": "Dev.to",
+          "body": "A blogging platform for developers. Read articles from the community, write your own tutorials, and engage in discussions. A welcoming place for beginners to start writing about what they learn.",
+          "chip": "Blogging"
+        },
+        {
+          "title": "GitHub Discussions",
+          "body": "Many open-source projects host their community Q&A in GitHub Discussions. You can ask questions directly to library maintainers and see how others solve common problems.",
+          "chip": "Open Source"
+        },
+        {
+          "title": "Hacker News",
+          "body": "A tech news aggregator run by Y Combinator. The comments section often contains insightful discussions from experienced engineers. Follow the front page for major industry news.",
+          "chip": "Industry News"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Newsletters",
+      "headingLevel": 2,
+      "body": "A curated weekly newsletter is the most efficient way to stay current without doomscrolling social media. Subscribe to two or three and read them over coffee."
+    },
+    {
+      "type": "table",
+      "heading": "Recommended newsletters",
+      "headers": ["Newsletter", "Focus", "Frequency", "Why Subscribe"],
+      "rows": [
+        ["JavaScript Weekly", "JavaScript ecosystem", "Weekly", "The most comprehensive roundup of JS news, articles, and releases"],
+        ["React Status", "React ecosystem", "Weekly", "Curated React news, tutorials, and library releases"],
+        ["Node Weekly", "Node.js ecosystem", "Weekly", "Backend JavaScript news, updates, and best practices"],
+        ["CSS Weekly", "CSS and design", "Weekly", "CSS tricks, new features, and layout techniques"],
+        ["TLDR", "Tech industry", "Daily", "A 5-minute summary of the most important tech news each day"],
+        ["Bytes", "JavaScript", "Twice weekly", "JavaScript news delivered with humor. Short and fun to read"],
+        ["This Week in React", "React and React Native", "Weekly", "Deep coverage of the React ecosystem with context and analysis"],
+        ["Frontend Focus", "Frontend development", "Weekly", "Browser updates, web standards, performance, and accessibility"]
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Cheat Sheets",
+      "headingLevel": 2,
+      "body": "Cheat sheets are quick-reference guides that summarize the most commonly used syntax and commands. Keep them bookmarked for when you need a fast reminder."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "CSS Flexbox & Grid",
+          "blocks": [
+            {
+              "type": "table",
+              "headers": ["Property", "Values", "What It Does"],
+              "rows": [
+                ["display", "flex | grid", "Enables flex or grid layout on the container"],
+                ["justify-content", "flex-start | center | space-between | space-around | space-evenly", "Distributes items along the main axis"],
+                ["align-items", "flex-start | center | stretch | baseline", "Aligns items along the cross axis"],
+                ["flex-direction", "row | column | row-reverse | column-reverse", "Sets the direction of flex items"],
+                ["flex-wrap", "nowrap | wrap | wrap-reverse", "Controls whether items wrap to new lines"],
+                ["gap", "10px | 1rem", "Sets spacing between flex/grid items"],
+                ["grid-template-columns", "repeat(3, 1fr) | 200px auto 1fr", "Defines column sizes in a grid"],
+                ["grid-template-rows", "auto | 100px 1fr 2fr", "Defines row sizes in a grid"],
+                ["place-items", "center | start end", "Shorthand for align-items + justify-items (grid)"]
+              ]
+            },
+            {
+              "type": "code",
+              "language": "css",
+              "filename": "Common layout patterns",
+              "code": "/* Centered content */\n.centered {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-height: 100vh;\n}\n\n/* Responsive card grid */\n.card-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));\n  gap: 1.5rem;\n}\n\n/* Sticky footer layout */\n.page {\n  display: flex;\n  flex-direction: column;\n  min-height: 100vh;\n}\n.main { flex: 1; }\n\n/* Holy grail layout */\n.layout {\n  display: grid;\n  grid-template: \"header header header\" auto\n                 \"nav    main   aside\"  1fr\n                 \"footer footer footer\" auto\n                 / 200px 1fr    200px;\n}"
+            }
+          ]
+        },
+        {
+          "label": "Git Commands",
+          "blocks": [
+            {
+              "type": "table",
+              "headers": ["Command", "What It Does"],
+              "rows": [
+                ["git init", "Initialize a new repository"],
+                ["git clone <url>", "Copy a remote repository to your machine"],
+                ["git status", "Show changed, staged, and untracked files"],
+                ["git add <file>", "Stage a file for commit (use . for all files)"],
+                ["git commit -m \"message\"", "Create a commit with staged changes"],
+                ["git push origin <branch>", "Push commits to the remote repository"],
+                ["git pull origin <branch>", "Fetch and merge remote changes"],
+                ["git checkout -b <branch>", "Create and switch to a new branch"],
+                ["git merge <branch>", "Merge a branch into the current branch"],
+                ["git log --oneline", "Show compact commit history"],
+                ["git diff", "Show unstaged changes"],
+                ["git stash / git stash pop", "Temporarily save and restore uncommitted changes"],
+                ["git reset --soft HEAD~1", "Undo the last commit but keep changes staged"],
+                ["git rebase main", "Replay your branch commits on top of main"]
+              ]
+            }
+          ]
+        },
+        {
+          "label": "React Hooks",
+          "blocks": [
+            {
+              "type": "table",
+              "headers": ["Hook", "Purpose", "Common Usage"],
+              "rows": [
+                ["useState", "Local component state", "const [count, setCount] = useState(0)"],
+                ["useEffect", "Side effects (fetch, subscribe, DOM)", "useEffect(() => { fetchData() }, [dep])"],
+                ["useContext", "Access context values", "const theme = useContext(ThemeContext)"],
+                ["useRef", "Mutable ref that persists across renders", "const inputRef = useRef<HTMLInputElement>(null)"],
+                ["useMemo", "Memoize expensive calculations", "const filtered = useMemo(() => filter(list), [list])"],
+                ["useCallback", "Memoize function references", "const handler = useCallback(() => {}, [dep])"],
+                ["useReducer", "Complex state with actions", "const [state, dispatch] = useReducer(reducer, init)"],
+                ["useId", "Generate unique IDs for accessibility", "const id = useId()"],
+                ["useTransition", "Mark non-urgent state updates", "const [isPending, startTransition] = useTransition()"],
+                ["use (React 19)", "Read resources in render (promises, context)", "const data = use(fetchPromise)"]
+              ]
+            }
+          ]
+        },
+        {
+          "label": "TypeScript",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "typescript",
+              "filename": "TypeScript quick reference",
+              "code": "// Basic types\nlet name: string = 'Alice';\nlet age: number = 30;\nlet active: boolean = true;\nlet items: string[] = ['a', 'b'];\nlet tuple: [string, number] = ['hello', 42];\n\n// Object types and interfaces\ninterface User {\n  id: number;\n  name: string;\n  email?: string;        // optional\n  readonly role: string; // cannot be reassigned\n}\n\n// Union and intersection types\ntype Status = 'loading' | 'success' | 'error';\ntype AdminUser = User & { permissions: string[] };\n\n// Generics\nfunction first<T>(arr: T[]): T | undefined {\n  return arr[0];\n}\n\n// Utility types\ntype PartialUser = Partial<User>;     // all fields optional\ntype RequiredUser = Required<User>;   // all fields required\ntype ReadonlyUser = Readonly<User>;   // all fields readonly\ntype UserName = Pick<User, 'name' | 'email'>;\ntype UserWithoutId = Omit<User, 'id'>;\ntype RecordMap = Record<string, User>;\n\n// Type narrowing\nfunction process(value: string | number) {\n  if (typeof value === 'string') {\n    return value.toUpperCase(); // TypeScript knows it is a string\n  }\n  return value.toFixed(2); // TypeScript knows it is a number\n}\n\n// Discriminated unions\ntype Result =\n  | { status: 'ok'; data: User }\n  | { status: 'error'; message: string };\n\nfunction handle(result: Result) {\n  if (result.status === 'ok') {\n    console.log(result.data.name); // TypeScript narrows to the ok branch\n  } else {\n    console.log(result.message); // TypeScript narrows to the error branch\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Career Resources",
+      "headingLevel": 2,
+      "body": "Technical skills get you in the door, but building a portfolio, networking, and preparing for interviews is what lands you the job. These resources cover the career side of web development."
+    },
+    {
+      "type": "text",
+      "heading": "Building Your Portfolio",
+      "headingLevel": 3,
+      "body": "Your portfolio is more important than your resume. Hiring managers want to see what you have built, not just what you claim to know."
+    },
+    {
+      "type": "list",
+      "heading": "Portfolio checklist",
+      "items": [
+        "**3-5 deployed projects** that demonstrate different skills (CRUD app, API integration, real-time feature, responsive design)",
+        "**Clean GitHub repositories** with README files, clear commit history, and documented setup instructions",
+        "**A personal website** that showcases your projects, has your contact information, and reflects your personality as a developer",
+        "**Live demos** for every project. A deployed link is worth 10x more than a screenshot. Use Vercel, Netlify, or Railway for free hosting",
+        "**Write about what you learn.** Blog posts on Dev.to or your personal site show depth of understanding and communication skills"
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Interview Preparation",
+      "headingLevel": 3,
+      "body": "Web development interviews typically combine coding challenges, system design questions, and behavioral questions."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 2,
+      "cards": [
+        {
+          "title": "GreatFrontEnd",
+          "body": "Practice frontend-specific interview questions: build UI components, implement JavaScript utilities, and answer quiz questions. Created by ex-Meta engineers who designed frontend interviews.",
+          "chip": "Frontend Interviews"
+        },
+        {
+          "title": "NeetCode",
+          "body": "A curated roadmap of 150 LeetCode problems organized by pattern (arrays, trees, graphs, dynamic programming). The video explanations make algorithms accessible to self-taught developers.",
+          "chip": "Algorithm Prep"
+        },
+        {
+          "title": "System Design Primer",
+          "body": "A free GitHub repository with everything you need for system design interviews: load balancing, caching, databases, CDNs, and message queues. Over 250,000 stars on GitHub.",
+          "chip": "System Design"
+        },
+        {
+          "title": "Pramp",
+          "body": "Free peer-to-peer mock interviews. You interview someone, then they interview you. Real practice with a real person is the best way to prepare for the pressure of a live interview.",
+          "chip": "Mock Interviews"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Open Source Contribution",
+      "headingLevel": 3,
+      "body": "Contributing to open source builds real experience, grows your network, and shows employers you can collaborate on production codebases."
+    },
+    {
+      "type": "list",
+      "ordered": true,
+      "heading": "Getting started with open source",
+      "items": [
+        "**Find beginner-friendly issues.** Search GitHub for labels like \"good first issue\", \"help wanted\", or \"beginner-friendly\". The website goodfirstissue.dev curates these across popular projects.",
+        "**Start with documentation.** Fixing typos, improving examples, and adding missing docs are valuable contributions that do not require deep codebase knowledge.",
+        "**Read the CONTRIBUTING.md file.** Every well-maintained project has a guide explaining how to set up the project, run tests, and submit a pull request.",
+        "**Fork, branch, and open a PR.** Fork the repository, create a feature branch, make your changes, push, and open a pull request with a clear description.",
+        "**Be patient and professional.** Maintainers are volunteers. Respond to code review feedback constructively. Even rejected PRs are learning opportunities."
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Job Platforms",
+      "headingLevel": 3,
+      "body": ""
+    },
+    {
+      "type": "table",
+      "headers": ["Platform", "Type", "Best For"],
+      "rows": [
+        ["LinkedIn", "General job board + networking", "Full-time positions, networking with recruiters"],
+        ["Wellfound (AngelList)", "Startup job board", "Early-stage startup roles, often with equity"],
+        ["Upwork / Fiverr", "Freelance marketplaces", "First paid projects, building client reviews"],
+        ["Remote.co / We Work Remotely", "Remote job boards", "Remote-first and distributed companies"],
+        ["Hacker News (monthly thread)", "Community job postings", "Startup roles posted directly by founders"],
+        ["GitHub Jobs / Stack Overflow Jobs", "Developer-focused job boards", "Companies that specifically want technical talent"]
+      ]
     },
     {
       "type": "alert",
       "severity": "success",
-      "title": "What to do next",
-      "body": "Pick one topic that caught your interest and apply it to a project you are building. The best way to learn is by doing -- not by reading one more tutorial."
+      "title": "The most important career advice",
+      "body": "Build real projects, write about what you learn, and contribute to the community. These three habits compound over time and create opportunities that no amount of resume tweaking can match. Every senior developer started as a beginner who kept going."
+    },
+    {
+      "type": "text",
+      "heading": "What to Do Next",
+      "headingLevel": 2,
+      "body": "Do not try to consume every resource on this page. Pick one interactive platform to practice coding, one YouTube channel to watch, and one community to join. Build a project using what you learn, then come back for more resources when you are ready for the next challenge."
     }
-  ],
-  "keyPoints": [
-    "Accessibility (a11y) means making your website usable by everyone, including screen reader users and keyboard navigators",
-    "SEO best practices like metadata, semantic HTML, and sitemaps help users find your site through search engines",
-    "Performance optimization through code splitting, memoization, and image optimization keeps your app fast",
-    "Testing with unit tests, component tests, and E2E tests catches bugs before they reach users",
-    "Git version control tracks every code change and enables team collaboration through branches and pull requests",
-    "Package managers (npm, yarn, pnpm) handle installing and managing third-party libraries",
-    "Browser DevTools and React DevTools are essential for finding and fixing bugs quickly",
-    "Frontend security includes avoiding XSS, never committing secrets, and using HTTPS",
-    "CI/CD automates testing and deployment every time you push code",
-    "Progressive Web Apps can work offline and be installed like native apps",
-    "Built-in browser APIs like Fetch, localStorage, and Intersection Observer reduce the need for external libraries",
-    "Building a portfolio and contributing to open source are key steps toward a development career"
   ]
 }

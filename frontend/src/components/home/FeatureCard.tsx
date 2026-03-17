@@ -1,17 +1,19 @@
 'use client';
 
-import type { SvgIconComponent } from '@mui/icons-material/SvgIcon';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import type { SvgIconProps } from '@mui/material/SvgIcon';
 import Typography from '@mui/material/Typography';
 
 interface FeatureCardProps {
-  icon: SvgIconComponent;
+  icon: React.ComponentType<SvgIconProps>;
   title: string;
   description: string;
 }
 
-export default function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
+export default function FeatureCard(
+  { icon: Icon, title, description }: FeatureCardProps,
+) {
   return (
     <Card sx={{ height: '100%', textAlign: 'center', transition: 'transform 0.2s', '&:hover': { transform: 'translateY(-4px)' } }}>
       <CardContent sx={{ p: 4 }}>

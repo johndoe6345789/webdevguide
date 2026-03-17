@@ -1,0 +1,6 @@
+{
+  "type": "step",
+  "step": 4,
+  "title": "Understanding CORS",
+  "body": "CORS (Cross-Origin Resource Sharing) is a security feature. By default, a website on one address is not allowed to make requests to a different address. To fix this:"
+}

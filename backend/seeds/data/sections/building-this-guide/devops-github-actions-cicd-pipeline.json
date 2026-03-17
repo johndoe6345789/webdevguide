@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "GitHub Actions CI/CD Pipeline",
+  "headingLevel": 3,
+  "body": "The CI/CD pipeline has two jobs. The `lint-and-test` job runs all quality checks in sequence: installs Python and Node.js dependencies, runs flake8 on the backend, runs ESLint on the frontend, performs TypeScript type checking with `tsc --noEmit`, seeds the database to validate JSON data integrity, and builds the Next.js frontend. The `docker-build` job (which depends on lint-and-test) builds Docker images, starts the containers, and polls the health endpoint for up to 60 seconds to verify everything works."
+}

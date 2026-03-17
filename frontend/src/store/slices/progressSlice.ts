@@ -23,7 +23,12 @@ const progressSlice = createSlice({
         state.completedSections.push(action.payload);
       }
     },
-    updateReadingProgress(state, action: PayloadAction<{ sectionId: string; progress: number }>) {
+    updateReadingProgress(
+      state,
+      action: PayloadAction<{
+        sectionId: string; progress: number;
+      }>,
+    ) {
       state.readingProgress[action.payload.sectionId] = Math.max(
         state.readingProgress[action.payload.sectionId] || 0,
         action.payload.progress

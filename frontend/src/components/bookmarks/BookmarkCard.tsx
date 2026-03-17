@@ -22,7 +22,10 @@ interface BookmarkCardProps {
   notes: string;
 }
 
-export default function BookmarkCard({ id, title, path, section, addedAt, notes }: BookmarkCardProps) {
+export default function BookmarkCard(
+  { id, title, path, section, addedAt, notes }:
+  BookmarkCardProps,
+) {
   const card = useBookmarkCard(id, notes);
   const formattedDate = new Date(addedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 

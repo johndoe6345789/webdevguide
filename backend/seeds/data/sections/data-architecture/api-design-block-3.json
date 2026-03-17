@@ -1,0 +1,21 @@
+{
+  "type": "cardGrid",
+  "columns": 3,
+  "cards": [
+    {
+      "title": "URL Versioning",
+      "body": "/api/v1/posts and /api/v2/posts. Simple, explicit, and the most common approach. Easy to deprecate old versions.",
+      "chip": "Most Common"
+    },
+    {
+      "title": "Header Versioning",
+      "body": "Accept: application/vnd.api+json;version=2. Keeps URLs clean but is harder to discover and test in a browser.",
+      "chip": "Clean URLs"
+    },
+    {
+      "title": "Query Param",
+      "body": "/api/posts?version=2. Easy to test but mixes versioning with query parameters. Least recommended.",
+      "chip": "Easy Testing"
+    }
+  ]
+}

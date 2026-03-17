@@ -3,7 +3,10 @@ import Typography from '@mui/material/Typography';
 import CodeBlock from '@/components/common/CodeBlock';
 import type { CodeBlock as CodeBlockType } from '@/types/content';
 
-export default function CodeBlockRenderer({ code, language, filename, description }: CodeBlockType) {
+export default function CodeBlockRenderer(
+  { code, language, filename, description }:
+  CodeBlockType,
+) {
   return (
     <Box>
       {description && (

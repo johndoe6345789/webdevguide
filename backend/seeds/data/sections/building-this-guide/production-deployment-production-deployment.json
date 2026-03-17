@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Production Deployment",
+  "headingLevel": 2,
+  "body": "To deploy the guide to a production server, you need Docker and a way to expose ports 3000 and 5000 (or a reverse proxy). The production docker-compose file handles building optimized images and starting the containers."
+}

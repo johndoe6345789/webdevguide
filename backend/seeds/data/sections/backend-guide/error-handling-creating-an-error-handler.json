@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Creating an Error Handler",
+  "headingLevel": 3,
+  "body": "Flask lets you define global error handlers:"
+}

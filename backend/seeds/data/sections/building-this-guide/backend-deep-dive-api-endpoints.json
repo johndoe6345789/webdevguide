@@ -1,0 +1,72 @@
+{
+  "type": "table",
+  "heading": "API Endpoints",
+  "headers": [
+    "Blueprint",
+    "Endpoint",
+    "Method",
+    "Description"
+  ],
+  "rows": [
+    [
+      "guide",
+      "/api/guide/sections",
+      "GET",
+      "List all sections (summary without blocks)"
+    ],
+    [
+      "guide",
+      "/api/guide/sections/<slug>",
+      "GET",
+      "Full section content including all blocks"
+    ],
+    [
+      "guide",
+      "/api/guide/navigation",
+      "GET",
+      "Lightweight nav list (id, title, slug, order, icon)"
+    ],
+    [
+      "exam",
+      "/api/exam/questions",
+      "GET",
+      "All questions (optionally filtered by ?category= or ?difficulty=)"
+    ],
+    [
+      "exam",
+      "/api/exam/questions/random",
+      "GET",
+      "Random sample of questions (?count=30)"
+    ],
+    [
+      "exam",
+      "/api/exam/categories",
+      "GET",
+      "List of categories with question counts"
+    ],
+    [
+      "glossary",
+      "/api/glossary/terms",
+      "GET",
+      "All terms (optionally filtered by ?category=)"
+    ],
+    [
+      "glossary",
+      "/api/glossary/categories",
+      "GET",
+      "List of term categories"
+    ],
+    [
+      "glossary",
+      "/api/glossary/search",
+      "GET",
+      "Search terms by name and definition (?q=query)"
+    ],
+    [
+      "(root)",
+      "/api/health",
+      "GET",
+      "Health check returning {\"status\": \"healthy\"}"
+    ]
+  ]
+}

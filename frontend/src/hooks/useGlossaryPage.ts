@@ -6,7 +6,10 @@ import { useGlossary } from '@/hooks/useGlossary';
 export function useGlossaryPage() {
   const [searchText, setSearchText] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
-  const { terms, categories: rawCategories, loading, error, search } = useGlossary();
+  const {
+    terms, categories: rawCategories,
+    loading, error, search,
+  } = useGlossary();
 
   const categories = useMemo(() => ['All', ...rawCategories], [rawCategories]);
 

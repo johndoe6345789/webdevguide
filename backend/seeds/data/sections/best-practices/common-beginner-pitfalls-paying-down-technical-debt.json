@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Paying Down Technical Debt",
+  "headingLevel": 3,
+  "body": "Technical debt does not fix itself -- it grows. Here is a step-by-step approach to paying it down without stopping feature development."
+}

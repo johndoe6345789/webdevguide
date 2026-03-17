@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 1,
+  "title": "Install pytest",
+  "body": "Install the Python testing framework.",
+  "code": "pip install pytest",
+  "language": "bash"
+}

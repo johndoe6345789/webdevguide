@@ -1,0 +1,29 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "DON'T: Huge Images",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "html",
+          "filename": "index.html",
+          "description": "A 5 MB unoptimized PNG served at full resolution on all devices. This single image can take 10 seconds to load on a mobile connection.",
+          "code": "<!-- SLOW: 5MB unoptimized image, same file for all screen sizes -->\n<img src=\"/images/hero-photo.png\" />"
+        }
+      ]
+    },
+    {
+      "label": "DO: Optimized Images",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "html",
+          "filename": "index.html",
+          "description": "Modern formats, responsive sizes, lazy loading, and explicit dimensions to prevent layout shift.",
+          "code": "<!-- FAST: modern format, responsive, lazy loaded -->\n<picture>\n  <source\n    type=\"image/webp\"\n    srcset=\"\n      /images/hero-400w.webp 400w,\n      /images/hero-800w.webp 800w,\n      /images/hero-1200w.webp 1200w\n    \"\n    sizes=\"(max-width: 600px) 100vw, (max-width: 1200px) 50vw, 1200px\"\n  />\n  <img\n    src=\"/images/hero-800w.jpg\"\n    alt=\"A descriptive alt text for the hero image\"\n    loading=\"lazy\"\n    decoding=\"async\"\n    width=\"1200\"\n    height=\"675\"\n  />\n</picture>"
+        }
+      ]
+    }
+  ]
+}

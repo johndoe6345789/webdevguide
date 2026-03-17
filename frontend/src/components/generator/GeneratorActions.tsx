@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export default function GeneratorActions({ onReset }: Props) {
+  const t = useTranslations('generator');
   return (
     <>
       <Divider />
@@ -19,7 +21,7 @@ export default function GeneratorActions({ onReset }: Props) {
         onClick={onReset}
         fullWidth
       >
-        Reset
+        {t('reset')}
       </Button>
     </>
   );

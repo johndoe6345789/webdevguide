@@ -1,0 +1,22 @@
+{
+  "type": "cardGrid",
+  "columns": 2,
+  "cards": [
+    {
+      "title": "Test the happy path",
+      "body": "Does it work when you give it correct data? If you create an item with a valid name, does it come back with an ID?"
+    },
+    {
+      "title": "Test the sad path",
+      "body": "Does it fail gracefully with bad data? If you create an item without a name, does it return a 400 error instead of crashing?"
+    },
+    {
+      "title": "Test edge cases",
+      "body": "What about unusual inputs? An empty string? An extremely long name? A number where a string is expected?"
+    },
+    {
+      "title": "Keep tests independent",
+      "body": "Each test should work on its own. It should not depend on another test running first or leaving data behind."
+    }
+  ]
+}

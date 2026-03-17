@@ -1,0 +1,41 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "GuidePageLayout",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "frontend/src/components/content/GuidePageLayout.tsx",
+          "description": "Handles loading state, error state, page header with title/description/difficulty chip, and renders blocks via SectionRenderer. KeyPointsList appears at the bottom.",
+          "code": "'use client';\n\nimport Box from '@mui/material/Box';\nimport Chip from '@mui/material/Chip';\nimport Container from '@mui/material/Container';\nimport Typography from '@mui/material/Typography';\nimport BookmarkButton from '@/components/common/BookmarkButton';\nimport LoadingSpinner from '@/components/common/LoadingSpinner';\nimport type { GuideSectionContent } from '@/types/content';\nimport KeyPointsList from './KeyPointsList';\nimport SectionRenderer from './SectionRenderer';\n\ninterface GuidePageLayoutProps {\n  section: GuideSectionContent | null;\n  loading: boolean;\n  error: string | null;\n}\n\nexport default function GuidePageLayout({ section, loading, error }: GuidePageLayoutProps) {\n  if (loading) return <LoadingSpinner message=\"Loading section...\" />;\n  if (error || !section) return (\n    <Container maxWidth=\"lg\" sx={{ py: 4 }}>\n      <Typography color=\"error\">{error ?? 'Section not found'}</Typography>\n    </Container>\n  );\n\n  return (\n    <Container maxWidth=\"lg\" sx={{ py: 4 }}>\n      <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 1 }}>\n        <Box>\n          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>\n            <Typography variant=\"h3\" component=\"h1\" fontWeight={700}>\n              {section.title}\n            </Typography>\n            <Chip label={section.difficulty} size=\"small\" color=\"primary\" />\n          </Box>\n          <Typography variant=\"body1\" color=\"text.secondary\" sx={{ mb: 3, maxWidth: 700 }}>\n            {section.description}\n          </Typography>\n        </Box>\n        <BookmarkButton title={section.title} path={`/${section.slug}`} section=\"Guide\" />\n      </Box>\n\n      <SectionRenderer blocks={section.blocks} />\n\n      {section.keyPoints && section.keyPoints.length > 0 && (\n        <Box sx={{ mt: 4 }}>\n          <KeyPointsList points={section.keyPoints} />\n        </Box>\n      )}\n    </Container>\n  );\n}"
+        }
+      ]
+    },
+    {
+      "label": "SectionRenderer",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "frontend/src/components/content/SectionRenderer.tsx",
+          "description": "Maps over the blocks array and wraps each one in a BlockRenderer. Uses a vertical flexbox with gap for spacing.",
+          "code": "'use client';\n\nimport Box from '@mui/material/Box';\nimport type { ContentBlock } from '@/types/content';\nimport BlockRenderer from './BlockRenderer';\n\nexport default function SectionRenderer({ blocks }: { blocks: ContentBlock[] }) {\n  return (\n    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>\n      {blocks.map((block, i) => (\n        <BlockRenderer key={i} block={block} />\n      ))}\n    </Box>\n  );\n}"
+        }
+      ]
+    },
+    {
+      "label": "BlockRenderer",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "frontend/src/components/content/BlockRenderer.tsx",
+          "description": "The strategy pattern dispatcher. Switches on block.type and delegates to the correct renderer.",
+          "code": "'use client';\n\nimport type { ContentBlock } from '@/types/content';\nimport AccordionBlockRenderer from './AccordionBlockRenderer';\nimport AlertBlockRenderer from './AlertBlockRenderer';\nimport CardGridBlockRenderer from './CardGridBlockRenderer';\nimport CodeBlockRenderer from './CodeBlockRenderer';\nimport ListBlockRenderer from './ListBlockRenderer';\nimport StepBlockRenderer from './StepBlockRenderer';\nimport TableBlockRenderer from './TableBlockRenderer';\nimport TabsBlockRenderer from './TabsBlockRenderer';\nimport TextBlockRenderer from './TextBlockRenderer';\n\nexport default function BlockRenderer({ block }: { block: ContentBlock }) {\n  switch (block.type) {\n    case 'text':      return <TextBlockRenderer {...block} />;\n    case 'code':      return <CodeBlockRenderer {...block} />;\n    case 'list':      return <ListBlockRenderer {...block} />;\n    case 'alert':     return <AlertBlockRenderer {...block} />;\n    case 'step':      return <StepBlockRenderer {...block} />;\n    case 'tabs':      return <TabsBlockRenderer {...block} />;\n    case 'accordion': return <AccordionBlockRenderer {...block} />;\n    case 'table':     return <TableBlockRenderer {...block} />;\n    case 'cardGrid':  return <CardGridBlockRenderer {...block} />;\n    default:          return null;\n  }\n}"
+        }
+      ]
+    }
+  ]
+}

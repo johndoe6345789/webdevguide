@@ -1,0 +1,6 @@
+{
+  "type": "code",
+  "language": "typescript",
+  "filename": "HTTP cache headers in Express",
+  "code": "// Static assets -- cache for 1 year (immutable content-hashed files)\napp.use('/assets', express.static('public', {\n  maxAge: '1y',\n  immutable: true,\n}));\n\n// API responses -- stale-while-revalidate pattern\nrouter.get('/api/posts', async (req, res) => {\n  const posts = await getPublishedPosts();\n\n  res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');\n  // Browser uses cached response for 60s\n  // After 60s, serves stale while fetching fresh data in background\n  // After 300s, must wait for fresh response\n\n  res.json({ data: posts });\n});\n\n// Private data -- never cache\nrouter.get('/api/me', authMiddleware, async (req, res) => {\n  res.set('Cache-Control', 'private, no-store');\n  res.json({ data: req.user });\n});"
+}

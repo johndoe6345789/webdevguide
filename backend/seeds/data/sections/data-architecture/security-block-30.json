@@ -1,0 +1,6 @@
+{
+  "type": "code",
+  "language": "typescript",
+  "filename": "Access control middleware",
+  "code": "// Middleware: ensure user can only access their own resources\nfunction ownershipCheck(resourceType: string) {\n  return async (req: Request, res: Response, next: NextFunction) => {\n    const resourceId = parseInt(req.params.id);\n    const userId = req.user.id;\n\n    let resource;\n    switch (resourceType) {\n      case 'post':\n        resource = await prisma.post.findUnique({ where: { id: resourceId } });\n        if (resource?.authorId !== userId && req.user.role !== 'ADMIN') {\n          return res.status(403).json({ error: 'Access denied' });\n        }\n        break;\n    }\n\n    next();\n  };\n}\n\n// Usage\nrouter.put('/posts/:id', authMiddleware, ownershipCheck('post'), updatePostHandler);\nrouter.delete('/posts/:id', authMiddleware, ownershipCheck('post'), deletePostHandler);"
+}

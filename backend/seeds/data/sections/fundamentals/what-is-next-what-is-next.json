@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "What is Next",
+  "headingLevel": 2,
+  "body": "You have now covered the full foundation of modern web development: how the web works under the hood, HTML structure and accessibility, CSS layout and styling, JavaScript and TypeScript, React components and hooks, tooling and package management, browser APIs, and design patterns. These concepts form the backbone of every web application."
+}

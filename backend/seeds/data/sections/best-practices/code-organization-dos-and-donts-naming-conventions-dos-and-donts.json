@@ -1,0 +1,60 @@
+{
+  "type": "table",
+  "heading": "Naming Conventions: Do's and Don'ts",
+  "headers": [
+    "Category",
+    "DON'T",
+    "DO",
+    "Why"
+  ],
+  "rows": [
+    [
+      "Variables",
+      "d, temp, data2, x",
+      "daysUntilExpiry, userData, cartTotal",
+      "Names should reveal intent without reading surrounding code"
+    ],
+    [
+      "Booleans",
+      "open, status, admin",
+      "isOpen, hasError, isAdmin",
+      "Prefix with is, has, can, should -- reads like English"
+    ],
+    [
+      "Functions",
+      "doStuff(), handle(), process()",
+      "validateEmail(), calculateShipping()",
+      "Use verb + noun describing exactly what it does"
+    ],
+    [
+      "Event handlers",
+      "click(), submit()",
+      "handleLoginSubmit(), onCartUpdate()",
+      "Prefix with handle or on to signal it is an event callback"
+    ],
+    [
+      "Components",
+      "Comp1.tsx, MyComponent.tsx",
+      "ProductCard.tsx, CheckoutForm.tsx",
+      "PascalCase, descriptive of what it renders"
+    ],
+    [
+      "Files (utils)",
+      "helpers.js, utils.js, misc.js",
+      "formatCurrency.ts, validateEmail.ts",
+      "One purpose per file, named after its export"
+    ],
+    [
+      "Constants",
+      "max, size, val",
+      "MAX_RETRY_ATTEMPTS, PAGE_SIZE",
+      "SCREAMING_SNAKE_CASE, descriptive of what the value represents"
+    ],
+    [
+      "CSS classes",
+      ".blue-text, .big, .style1",
+      ".error-message, .nav-link--active",
+      "BEM or descriptive names tied to purpose, not appearance"
+    ]
+  ]
+}

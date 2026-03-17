@@ -1,0 +1,6 @@
+{
+  "type": "alert",
+  "severity": "info",
+  "title": "Why not do everything in the frontend?",
+  "body": "Some things must happen on a server. You cannot safely store passwords in the browser (anyone could see them). You cannot let the browser directly edit a database (anyone could delete everything). The backend is your secure, trusted layer that controls what is allowed."
+}

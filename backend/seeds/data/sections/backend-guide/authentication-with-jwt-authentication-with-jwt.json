@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Authentication with JWT",
+  "headingLevel": 2,
+  "body": "Authentication is how your backend knows who is making a request. We will use JWT tokens, which work like wristbands at a concert."
+}

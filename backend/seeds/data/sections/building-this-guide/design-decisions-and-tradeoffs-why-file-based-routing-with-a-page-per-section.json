@@ -1,0 +1,11 @@
+{
+  "type": "accordion",
+  "title": "Why file-based routing with a page per section?",
+  "defaultExpanded": false,
+  "blocks": [
+    {
+      "type": "text",
+      "body": "Each section could be served by a single dynamic `[slug]/page.tsx` route, but having a file per section gives full control over per-page metadata and loading behavior. It also makes the project structure self-documenting -- you can see every section by listing the directories under `app/[locale]/`. The small amount of boilerplate per page (six lines that are identical except for the slug) is an acceptable tradeoff for this clarity."
+    }
+  ]
+}

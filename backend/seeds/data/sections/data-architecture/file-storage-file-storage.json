@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "File Storage",
+  "headingLevel": 2,
+  "body": "User uploads, images, documents, and media files need a different storage strategy than database records. The database stores metadata (filename, size, URL) while the actual files live in object storage or on the filesystem."
+}

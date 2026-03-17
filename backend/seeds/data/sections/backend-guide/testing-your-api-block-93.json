@@ -1,0 +1,8 @@
+{
+  "type": "list",
+  "ordered": false,
+  "items": [
+    "@pytest.fixture — A fixture is something that gets set up before each test runs. Think of it as setting the table before a meal.",
+    "app.test_client() — This creates a fake \"browser\" that can make requests to your app without actually starting a server. This makes tests fast."
+  ]
+}

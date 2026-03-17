@@ -1,0 +1,26 @@
+{
+  "type": "accordion",
+  "title": "The Client-Server Model",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "The web follows a **client-server architecture**. The **client** (your browser) requests resources. The **server** (a computer running software like Flask, Express, or Nginx) processes those requests and sends back responses. This separation lets millions of clients connect to the same server."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 2,
+      "cards": [
+        {
+          "title": "Client (Frontend)",
+          "body": "Runs in the browser\nRenders HTML, CSS, and JavaScript\nSends HTTP requests\nHandles user interactions\nManages local state",
+          "icon": "Computer"
+        },
+        {
+          "title": "Server (Backend)",
+          "body": "Runs on a remote machine\nProcesses business logic\nAccesses the database\nAuthentication and authorization\nReturns HTML, JSON, or files",
+          "icon": "Dns"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "type": "table",
+  "heading": "Real-time transport comparison",
+  "headers": [
+    "Transport",
+    "Direction",
+    "Connection",
+    "Use Case",
+    "Complexity"
+  ],
+  "rows": [
+    [
+      "Polling",
+      "Client -> Server",
+      "New HTTP request every N seconds",
+      "Simple dashboards, low-frequency updates",
+      "Low"
+    ],
+    [
+      "Long Polling",
+      "Client -> Server",
+      "Held open until server has data",
+      "Chat (legacy), notification feeds",
+      "Low-Medium"
+    ],
+    [
+      "Server-Sent Events (SSE)",
+      "Server -> Client only",
+      "Persistent HTTP connection",
+      "Live feeds, stock tickers, log streaming",
+      "Low"
+    ],
+    [
+      "WebSockets",
+      "Bidirectional",
+      "Persistent TCP connection",
+      "Chat, multiplayer games, collaborative editing",
+      "Medium"
+    ],
+    [
+      "WebRTC",
+      "Peer-to-Peer",
+      "Direct between clients",
+      "Video calls, screen sharing, P2P file transfer",
+      "High"
+    ]
+  ]
+}

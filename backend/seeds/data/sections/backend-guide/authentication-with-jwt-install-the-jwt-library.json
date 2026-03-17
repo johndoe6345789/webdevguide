@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 1,
+  "title": "Install the JWT Library",
+  "body": "Install flask-jwt-extended:",
+  "code": "pip install flask-jwt-extended",
+  "language": "bash"
+}

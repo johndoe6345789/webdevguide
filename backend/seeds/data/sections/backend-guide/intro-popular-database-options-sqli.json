@@ -1,0 +1,5 @@
+{
+  "type": "alert",
+  "severity": "info",
+  "body": "Popular database options: SQLite (simplest), PostgreSQL (production), and MongoDB (JSON-like documents)."
+}

@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 4,
+  "title": "Add navigation entry and translation",
+  "body": "Add an entry to the appropriate group in `frontend/src/hooks/useHeader.ts` (MORE_GROUPS array). Then add the label key to `frontend/src/messages/en.json` under the `nav` object.",
+  "code": "// In useHeader.ts, add to the appropriate MORE_GROUPS group:\n{ labelKey: 'myNewSection', href: '/my-new-section' }\n\n// In en.json, add under \"nav\":\n\"myNewSection\": \"My New Section\"",
+  "language": "typescript"
+}

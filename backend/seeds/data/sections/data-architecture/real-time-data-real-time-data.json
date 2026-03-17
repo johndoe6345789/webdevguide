@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Real-Time Data",
+  "headingLevel": 2,
+  "body": "Many modern applications need data that updates live without the user refreshing the page: chat messages, notifications, live dashboards, collaborative editing, and multiplayer games."
+}

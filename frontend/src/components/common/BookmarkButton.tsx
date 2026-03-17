@@ -13,7 +13,9 @@ interface BookmarkButtonProps {
   section: string;
 }
 
-export default function BookmarkButton({ title, path, section }: BookmarkButtonProps) {
+export default function BookmarkButton(
+  { title, path, section }: BookmarkButtonProps,
+) {
   const dispatch = useAppDispatch();
   const bookmarks = useAppSelector((state) => state.bookmarks.items);
   const existing = bookmarks.find((b) => b.path === path);

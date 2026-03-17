@@ -1,0 +1,94 @@
+{
+  "type": "accordion",
+  "title": "HTTP Request/Response Cycle",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "**HTTP (HyperText Transfer Protocol)** is the language browsers and servers use to communicate. Every interaction follows the same pattern: the client sends a **request**, and the server sends back a **response**."
+    },
+    {
+      "type": "code",
+      "language": "text",
+      "filename": "HTTP Request",
+      "code": "GET /api/users HTTP/1.1\nHost: example.com\nAccept: application/json\nAuthorization: Bearer eyJhbGciOiJIUzI1NiIs...\nUser-Agent: Mozilla/5.0"
+    },
+    {
+      "type": "code",
+      "language": "text",
+      "filename": "HTTP Response",
+      "code": "HTTP/1.1 200 OK\nContent-Type: application/json\nCache-Control: max-age=3600\n\n[\n  { \"id\": 1, \"name\": \"Alice\" },\n  { \"id\": 2, \"name\": \"Bob\" }\n]"
+    },
+    {
+      "type": "table",
+      "heading": "Common HTTP methods",
+      "headers": [
+        "Method",
+        "Purpose",
+        "Has body?"
+      ],
+      "rows": [
+        [
+          "GET",
+          "Retrieve data (load a page, fetch an API)",
+          "No"
+        ],
+        [
+          "POST",
+          "Send data to create something (submit a form, create a user)",
+          "Yes"
+        ],
+        [
+          "PUT",
+          "Replace an entire resource with new data",
+          "Yes"
+        ],
+        [
+          "PATCH",
+          "Update part of a resource",
+          "Yes"
+        ],
+        [
+          "DELETE",
+          "Remove a resource",
+          "Usually no"
+        ]
+      ]
+    },
+    {
+      "type": "table",
+      "heading": "HTTP status codes",
+      "headers": [
+        "Range",
+        "Category",
+        "Common examples"
+      ],
+      "rows": [
+        [
+          "1xx",
+          "Informational",
+          "100 Continue, 101 Switching Protocols"
+        ],
+        [
+          "2xx",
+          "Success",
+          "200 OK, 201 Created, 204 No Content"
+        ],
+        [
+          "3xx",
+          "Redirection",
+          "301 Moved Permanently, 304 Not Modified"
+        ],
+        [
+          "4xx",
+          "Client error",
+          "400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found"
+        ],
+        [
+          "5xx",
+          "Server error",
+          "500 Internal Server Error, 502 Bad Gateway, 503 Service Unavailable"
+        ]
+      ]
+    }
+  ]
+}

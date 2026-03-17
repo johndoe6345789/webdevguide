@@ -1,0 +1,29 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "DON'T: Magic Numbers",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "src/features/search/SearchResults.tsx",
+          "description": "Hardcoded values scattered throughout the code. What does 5000 mean? What about 3? Nobody knows without reading surrounding code.",
+          "code": "async function fetchResults(query: string) {\n  const controller = new AbortController();\n  setTimeout(() => controller.abort(), 5000);\n\n  const res = await fetch(\n    `https://api.example.com/v2/search?q=${query}&limit=20`,\n    { signal: controller.signal }\n  );\n  return res.json();\n}\n\nfunction SearchResults({ query }: { query: string }) {\n  const [retries, setRetries] = useState(0);\n\n  useEffect(() => {\n    if (retries < 3) {\n      fetchResults(query).catch(() => {\n        setTimeout(() => setRetries((r) => r + 1), 1000);\n      });\n    }\n  }, [query, retries]);\n\n  return <div style={{ maxWidth: 960, padding: 24 }}>{/* ... */}</div>;\n}"
+        }
+      ]
+    },
+    {
+      "label": "DO: Named Constants",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "src/config/constants.ts",
+          "description": "Every value has a name that explains its purpose. Changing a value means updating one line in one file.",
+          "code": "// --- config/constants.ts ---\nexport const API_BASE_URL = \"https://api.example.com/v2\";\nexport const SEARCH_RESULTS_LIMIT = 20;\nexport const REQUEST_TIMEOUT_MS = 5000;\nexport const MAX_RETRY_ATTEMPTS = 3;\nexport const RETRY_DELAY_MS = 1000;\nexport const CONTENT_MAX_WIDTH = 960;\nexport const CONTENT_PADDING = 24;\n\n// --- features/search/SearchResults.tsx ---\nimport {\n  API_BASE_URL,\n  SEARCH_RESULTS_LIMIT,\n  REQUEST_TIMEOUT_MS,\n  MAX_RETRY_ATTEMPTS,\n  RETRY_DELAY_MS,\n} from \"@/config/constants\";\n\nasync function fetchResults(query: string) {\n  const controller = new AbortController();\n  setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);\n\n  const url = `${API_BASE_URL}/search?q=${query}&limit=${SEARCH_RESULTS_LIMIT}`;\n  const res = await fetch(url, { signal: controller.signal });\n  return res.json();\n}"
+        }
+      ]
+    }
+  ]
+}

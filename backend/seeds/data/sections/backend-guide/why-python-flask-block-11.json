@@ -1,0 +1,11 @@
+{
+  "type": "list",
+  "ordered": true,
+  "items": [
+    "from flask import Flask — This loads the Flask library into your file so you can use it.",
+    "app = Flask(__name__) — This creates your application. Think of it as opening your restaurant for business.",
+    "@app.route(\"/\") — This is a decorator. It tells Flask: \"When someone visits the home page (/), run the function below.\"",
+    "def hello(): — This defines a function called \"hello\". A function is a reusable block of code.",
+    "return \"Hello, World!\" — This is what gets sent back to whoever made the request. The browser will display this text."
+  ]
+}

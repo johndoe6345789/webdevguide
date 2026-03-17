@@ -2,6 +2,7 @@
   "extends": ["next/core-web-vitals", "next/typescript"],
   "plugins": ["import", "@typescript-eslint"],
   "rules": {
+    "max-len": ["warn", { "code": 80, "ignoreUrls": true, "ignoreStrings": true, "ignoreTemplateLiterals": true, "ignoreRegExpLiterals": true }],
     "max-lines": ["warn", { "max": 50, "skipBlankLines": true, "skipComments": true }],
     "no-unreachable": "error",
     "no-constant-condition": "warn",
@@ -71,7 +72,7 @@
   },
   "overrides": [
     {
-      "files": ["src/store/slices/*.ts", "src/types/*.ts", "src/lib/codeTemplates.ts"],
+      "files": ["src/store/slices/*.ts", "src/types/*.ts", "src/lib/codeTemplates.ts", "src/lib/scaffolder/**/*.ts"],
       "rules": { "max-lines": "off" }
     },
     {

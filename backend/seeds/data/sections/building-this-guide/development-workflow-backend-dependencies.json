@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Backend Dependencies",
+  "headingLevel": 3,
+  "body": "The backend has a deliberately minimal dependency footprint. Only four packages are required."
+}

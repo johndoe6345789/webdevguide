@@ -1,0 +1,29 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "DON'T: Re-render Everything",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "src/components/ExpensiveList.tsx",
+          "description": "Every keystroke in the search field re-renders the entire list of 10,000 items, causing visible lag.",
+          "code": "function Searchablelist({ items }: { items: Item[] }) {\n  const [query, setQuery] = useState(\"\");\n\n  // BAD: filters and sorts on EVERY render, even when items have not changed\n  const filtered = items\n    .filter((item) => item.name.toLowerCase().includes(query.toLowerCase()))\n    .sort((a, b) => a.name.localeCompare(b.name));\n\n  return (\n    <div>\n      <input value={query} onChange={(e) => setQuery(e.target.value)} />\n      {/* BAD: renders all 10,000 items even if only 50 are visible */}\n      {filtered.map((item) => (\n        <ExpensiveCard key={item.id} item={item} />\n      ))}\n    </div>\n  );\n}"
+        }
+      ]
+    },
+    {
+      "label": "DO: Memoize & Virtualize",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "src/components/ExpensiveList.tsx",
+          "description": "useMemo prevents recalculating when unrelated state changes. React.memo prevents child re-renders. Virtualization only renders visible rows.",
+          "code": "import { useMemo, memo } from \"react\";\nimport { useVirtualizer } from \"@tanstack/react-virtual\";\n\nconst MemoizedCard = memo(function ExpensiveCard({ item }: { item: Item }) {\n  return <div className=\"card\">{/* expensive rendering */}</div>;\n});\n\nfunction SearchableList({ items }: { items: Item[] }) {\n  const [query, setQuery] = useState(\"\");\n  const parentRef = useRef<HTMLDivElement>(null);\n\n  // GOOD: only recalculates when items or query actually change\n  const filtered = useMemo(\n    () =>\n      items\n        .filter((item) => item.name.toLowerCase().includes(query.toLowerCase()))\n        .sort((a, b) => a.name.localeCompare(b.name)),\n    [items, query]\n  );\n\n  // GOOD: only renders the ~20 items visible in the viewport\n  const virtualizer = useVirtualizer({\n    count: filtered.length,\n    getScrollElement: () => parentRef.current,\n    estimateSize: () => 80,\n  });\n\n  return (\n    <div>\n      <input value={query} onChange={(e) => setQuery(e.target.value)} />\n      <div ref={parentRef} style={{ height: 600, overflow: \"auto\" }}>\n        <div style={{ height: virtualizer.getTotalSize() }}>\n          {virtualizer.getVirtualItems().map((row) => (\n            <MemoizedCard key={filtered[row.index].id} item={filtered[row.index]} />\n          ))}\n        </div>\n      </div>\n    </div>\n  );\n}"
+        }
+      ]
+    }
+  ]
+}

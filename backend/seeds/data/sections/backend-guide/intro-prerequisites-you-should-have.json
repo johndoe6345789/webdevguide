@@ -1,0 +1,5 @@
+{
+  "type": "alert",
+  "severity": "info",
+  "body": "Prerequisites: You should have completed the Getting Started guide so you have a React frontend already running. This guide teaches you how to build the backend that powers it. No Python experience is needed."
+}

@@ -1,0 +1,50 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "Zod",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Zod is the most popular TypeScript-first validation library. It infers TypeScript types from your schemas, eliminating the need to write types and validation separately."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "Zod validation schemas",
+          "code": "import { z } from 'zod';\n\n// Define a schema\nconst CreatePostSchema = z.object({\n  title: z.string()\n    .min(1, 'Title is required')\n    .max(200, 'Title must be under 200 characters'),\n  body: z.string()\n    .min(10, 'Body must be at least 10 characters'),\n  tags: z.array(z.string()).max(10, 'Maximum 10 tags').optional(),\n  published: z.boolean().default(false),\n});\n\n// Infer the TypeScript type from the schema\ntype CreatePostInput = z.infer<typeof CreatePostSchema>;\n// Result: { title: string; body: string; tags?: string[]; published: boolean }\n\n// Validate input (throws ZodError if invalid)\nconst validated = CreatePostSchema.parse(req.body);\n\n// Safe parse (returns success/error object instead of throwing)\nconst result = CreatePostSchema.safeParse(req.body);\nif (!result.success) {\n  return res.status(400).json({ errors: result.error.flatten().fieldErrors });\n}\nconst data = result.data; // fully typed\n\n// Compose schemas for reuse\nconst UpdatePostSchema = CreatePostSchema.partial(); // all fields optional\nconst PostIdSchema = z.object({ id: z.coerce.number().int().positive() });"
+        }
+      ]
+    },
+    {
+      "label": "Yup",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Yup was the dominant validation library before Zod. It is still widely used, especially with Formik for React form validation."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "Yup validation schemas",
+          "code": "import * as yup from 'yup';\n\nconst createPostSchema = yup.object({\n  title: yup.string()\n    .required('Title is required')\n    .max(200, 'Title must be under 200 characters'),\n  body: yup.string()\n    .required('Body is required')\n    .min(10, 'Body must be at least 10 characters'),\n  tags: yup.array().of(yup.string()).max(10),\n  published: yup.boolean().default(false),\n});\n\n// Validate\ntry {\n  const validated = await createPostSchema.validate(req.body, {\n    abortEarly: false, // collect all errors, not just the first\n    stripUnknown: true, // remove fields not in the schema\n  });\n} catch (err) {\n  if (err instanceof yup.ValidationError) {\n    return res.status(400).json({ errors: err.errors });\n  }\n}"
+        }
+      ]
+    },
+    {
+      "label": "JSON Schema",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "JSON Schema is a language-agnostic standard for describing the structure of JSON data. It is used by OpenAPI/Swagger, AJV (the fastest JSON validator for Node), and many API documentation tools."
+        },
+        {
+          "type": "code",
+          "language": "json",
+          "filename": "JSON Schema for a post object",
+          "code": "{\n  \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n  \"type\": \"object\",\n  \"required\": [\"title\", \"body\"],\n  \"properties\": {\n    \"title\": {\n      \"type\": \"string\",\n      \"minLength\": 1,\n      \"maxLength\": 200\n    },\n    \"body\": {\n      \"type\": \"string\",\n      \"minLength\": 10\n    },\n    \"tags\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" },\n      \"maxItems\": 10\n    },\n    \"published\": {\n      \"type\": \"boolean\",\n      \"default\": false\n    }\n  },\n  \"additionalProperties\": false\n}"
+        }
+      ]
+    }
+  ]
+}

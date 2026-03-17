@@ -1,0 +1,6 @@
+{
+  "type": "alert",
+  "severity": "warning",
+  "title": "Always seed before committing",
+  "body": "Running `flask seed-db` is the single best validation you can do before committing content changes. It verifies that all JSON files parse correctly, all $ref pointers resolve to existing files, and the data structure matches what the API expects. If seeding succeeds, the CI pipeline will pass."
+}

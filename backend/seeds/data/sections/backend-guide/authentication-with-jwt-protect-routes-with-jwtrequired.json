@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 4,
+  "title": "Protect Routes with @jwt_required",
+  "body": "Make certain endpoints accessible only to logged-in users:",
+  "code": "from flask_jwt_extended import jwt_required, get_jwt_identity\n\n# This endpoint is PUBLIC - anyone can read items\n@items_bp.route(\"/items\", methods=[\"GET\"])\ndef get_all_items():\n    items = read_items()\n    return jsonify(items), 200\n\n\n# This endpoint is PROTECTED - only logged-in users can create items\n@items_bp.route(\"/items\", methods=[\"POST\"])\n@jwt_required()\ndef create_item():\n    # You can find out who is making the request:\n    current_user = get_jwt_identity()\n    print(f\"Item created by: {current_user}\")\n\n    data = request.get_json()\n    # ... rest of the create logic ...",
+  "language": "python"
+}

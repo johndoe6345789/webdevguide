@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -11,23 +12,27 @@ interface ClearAllButtonProps {
   onClear: () => void;
 }
 
-export default function ClearAllButton({ showConfirm, setShowConfirm, onClear }: ClearAllButtonProps) {
+export default function ClearAllButton(
+  { showConfirm, setShowConfirm, onClear }:
+  ClearAllButtonProps,
+) {
+  const t = useTranslations('bookmarks');
   if (showConfirm) {
     return (
       <Alert severity="warning" action={
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button size="small" color="error" onClick={onClear}>Yes, Clear All</Button>
-          <Button size="small" onClick={() => setShowConfirm(false)}>Cancel</Button>
+          <Button size="small" color="error" onClick={onClear}>{t('yesClearAll')}</Button>
+          <Button size="small" onClick={() => setShowConfirm(false)}>{t('cancel')}</Button>
         </Box>
       }>
-        Are you sure you want to remove all bookmarks?
+        {t('clearConfirm')}
       </Alert>
     );
   }
 
   return (
     <Button startIcon={<DeleteSweepIcon />} color="error" size="small" onClick={() => setShowConfirm(true)}>
-      Clear All Bookmarks
+      {t('clearAll')}
     </Button>
   );
 }

@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 1,
+  "title": "Clone and install backend",
+  "body": "Clone the repository, create a Python virtual environment, and install Flask and its dependencies.",
+  "code": "git clone https://github.com/your-username/webdevguide.git\ncd webdevguide\npython -m venv venv\nsource venv/bin/activate  # On Windows: venv\\Scripts\\activate\npip install -r backend/requirements.txt",
+  "language": "bash"
+}

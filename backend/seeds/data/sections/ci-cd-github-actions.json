@@ -1,0 +1,288 @@
+{
+  "title": "CI/CD with GitHub Actions",
+  "slug": "ci-cd-github-actions",
+  "description": "Automate your entire development pipeline -- from linting and testing to building Docker images and deploying to production -- using GitHub Actions workflows.",
+  "icon": "RocketLaunch",
+  "order": 19,
+  "estimatedMinutes": 55,
+  "difficulty": "intermediate",
+  "prerequisites": ["docker-guide", "testing-qa"],
+  "keyPoints": [
+    "CI (Continuous Integration) automatically runs linters and tests on every push so broken code never reaches the main branch",
+    "CD (Continuous Deployment) automatically deploys your application when code is merged to main",
+    "Workflow files live in .github/workflows/ and use YAML syntax to define triggers, jobs, and steps",
+    "Matrix builds test your code across multiple versions of Node.js or Python simultaneously",
+    "Caching dependencies (node_modules, pip) can reduce CI run times by 50% or more",
+    "Branch protection rules enforce that CI must pass before a pull request can be merged"
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "heading": "What is CI/CD?",
+      "headingLevel": 2,
+      "body": "Imagine you are working on a team building a house. Without a system, every contractor just does their own thing -- the plumber installs pipes that do not align with the electrician's wiring, and nobody notices until the walls are sealed. CI/CD is like having an inspector check every contractor's work before it goes into the house."
+    },
+    {
+      "type": "text",
+      "body": "**Continuous Integration (CI)** means every time a developer pushes code, an automated system immediately runs linters, tests, and builds to verify the code works. If anything fails, the developer gets feedback in minutes, not days."
+    },
+    {
+      "type": "text",
+      "body": "**Continuous Deployment (CD)** takes it one step further. Once the code passes all checks, it is automatically deployed to production. No manual steps, no waiting for someone to press a button on a Friday afternoon."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "Catch Bugs Early",
+          "body": "Tests run on every push. A bug introduced in a morning commit is caught before lunch, not discovered in production next week.",
+          "icon": "BugReport"
+        },
+        {
+          "title": "Consistent Quality",
+          "body": "Every pull request goes through the same checks. No more \"it works on my machine\" because CI runs in a clean environment.",
+          "icon": "VerifiedUser"
+        },
+        {
+          "title": "Ship Faster",
+          "body": "Automated deployments mean code goes from merge to production in minutes. No more release day anxiety.",
+          "icon": "Speed"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Workflow File Anatomy",
+      "headingLevel": 2,
+      "body": "A GitHub Actions workflow is a YAML file that lives in the `.github/workflows/` directory. Every workflow has three main sections: a **name**, **triggers** (when it runs), and **jobs** (what it does). Let us break down each piece."
+    },
+    {
+      "type": "code",
+      "language": "yaml",
+      "filename": ".github/workflows/ci.yml",
+      "description": "A minimal workflow that shows the basic structure. This runs on every push to main and every pull request.",
+      "code": "# Every workflow starts with a name\nname: CI\n\n# Triggers: when should this workflow run?\non:\n  push:\n    branches: [main]          # Run when code is pushed to main\n  pull_request:\n    branches: [main]          # Run when a PR targets main\n\n# Jobs: what should the workflow do?\njobs:\n  build:\n    runs-on: ubuntu-latest    # Use a fresh Ubuntu VM\n\n    steps:\n      # Step 1: Check out the code\n      - name: Checkout code\n        uses: actions/checkout@v4\n\n      # Step 2: Set up the runtime\n      - name: Set up Node.js\n        uses: actions/setup-node@v4\n        with:\n          node-version: '22'\n\n      # Step 3: Install dependencies\n      - name: Install dependencies\n        run: npm ci\n\n      # Step 4: Run your checks\n      - name: Lint\n        run: npm run lint\n\n      - name: Test\n        run: npm test\n\n      - name: Build\n        run: npm run build"
+    },
+    {
+      "type": "table",
+      "heading": "Workflow YAML Keywords",
+      "headers": ["Keyword", "Purpose", "Example"],
+      "rows": [
+        ["name", "Display name for the workflow in GitHub UI", "name: CI/CD Pipeline"],
+        ["on", "Defines what events trigger the workflow", "on: push, pull_request, schedule"],
+        ["jobs", "Groups of steps that run on a fresh VM", "jobs: lint:, test:, deploy:"],
+        ["runs-on", "Operating system for the job's VM", "runs-on: ubuntu-latest"],
+        ["steps", "Individual commands or actions within a job", "steps: - run: npm test"],
+        ["uses", "Reference a reusable action from the marketplace", "uses: actions/checkout@v4"],
+        ["with", "Pass inputs to a reusable action", "with: node-version: '22'"],
+        ["run", "Execute a shell command", "run: npm ci"],
+        ["env", "Set environment variables", "env: NODE_ENV: production"],
+        ["needs", "Declare job dependencies (run after another job)", "needs: lint-and-test"],
+        ["if", "Conditional execution of a step or job", "if: github.ref == 'refs/heads/main'"]
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Trigger Types",
+      "headingLevel": 2,
+      "body": "GitHub Actions supports many trigger types beyond push and pull_request. Here are the most useful ones for a typical project."
+    },
+    {
+      "type": "code",
+      "language": "yaml",
+      "filename": ".github/workflows/triggers-example.yml",
+      "description": "Examples of different trigger configurations -- pick the ones that match your workflow.",
+      "code": "# Run on push to specific branches\non:\n  push:\n    branches: [main, develop]\n    paths:                       # Only run when these files change\n      - 'frontend/**'\n      - 'package.json'\n\n---\n# Run on pull request events\non:\n  pull_request:\n    types: [opened, synchronize, reopened]\n    branches: [main]\n\n---\n# Run on a schedule (cron syntax, UTC time)\non:\n  schedule:\n    - cron: '0 9 * * 1'          # Every Monday at 9 AM UTC\n\n---\n# Manual trigger with inputs\non:\n  workflow_dispatch:\n    inputs:\n      environment:\n        description: 'Deploy target'\n        required: true\n        default: 'staging'\n        type: choice\n        options:\n          - staging\n          - production"
+    },
+    {
+      "type": "text",
+      "heading": "Environment Variables and Secrets",
+      "headingLevel": 2,
+      "body": "Workflows often need sensitive values like API keys, database passwords, or deploy tokens. Never put these in your YAML file. Instead, store them as GitHub Secrets (Settings > Secrets and variables > Actions) and reference them with the `secrets` context."
+    },
+    {
+      "type": "code",
+      "language": "yaml",
+      "filename": ".github/workflows/env-example.yml",
+      "description": "How to use environment variables and secrets in your workflow steps.",
+      "code": "jobs:\n  deploy:\n    runs-on: ubuntu-latest\n\n    # Job-level environment variables (available to all steps)\n    env:\n      NODE_ENV: production\n      NEXT_PUBLIC_API_URL: https://api.example.com\n\n    steps:\n      - uses: actions/checkout@v4\n\n      - name: Build with env vars\n        run: npm run build\n        env:\n          # Step-level env var (overrides job-level)\n          BUILD_ID: ${{ github.sha }}\n\n      - name: Deploy to server\n        run: |\n          echo \"Deploying commit ${{ github.sha }}\"\n          ./deploy.sh\n        env:\n          # Secrets are masked in logs (shown as ***)\n          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}\n          DATABASE_URL: ${{ secrets.DATABASE_URL }}"
+    },
+    {
+      "type": "alert",
+      "severity": "error",
+      "title": "Never hardcode secrets in YAML files",
+      "body": "Your workflow files are committed to git and visible to anyone with repo access. Always use GitHub Secrets for passwords, tokens, and API keys. Secrets are encrypted at rest and masked in log output."
+    },
+    {
+      "type": "text",
+      "heading": "Matrix Builds",
+      "headingLevel": 2,
+      "body": "Matrix builds let you run the same job across multiple configurations simultaneously. This is how you test that your code works on Node 18, 20, and 22, or on both Ubuntu and macOS, without writing separate jobs."
+    },
+    {
+      "type": "code",
+      "language": "yaml",
+      "filename": ".github/workflows/matrix.yml",
+      "description": "A matrix build that tests across multiple Node.js and Python versions in parallel.",
+      "code": "name: Matrix Test\n\non: [push, pull_request]\n\njobs:\n  test:\n    runs-on: ubuntu-latest\n\n    strategy:\n      matrix:\n        node-version: [18, 20, 22]\n        python-version: ['3.10', '3.11', '3.12']\n      fail-fast: false       # Continue other matrix jobs even if one fails\n\n    steps:\n      - uses: actions/checkout@v4\n\n      - name: Set up Node.js ${{ matrix.node-version }}\n        uses: actions/setup-node@v4\n        with:\n          node-version: ${{ matrix.node-version }}\n\n      - name: Set up Python ${{ matrix.python-version }}\n        uses: actions/setup-python@v5\n        with:\n          python-version: ${{ matrix.python-version }}\n\n      - name: Install and test frontend\n        run: cd frontend && npm ci && npm test\n\n      - name: Install and test backend\n        run: cd backend && pip install -r requirements.txt && pytest"
+    },
+    {
+      "type": "text",
+      "heading": "Caching Dependencies",
+      "headingLevel": 2,
+      "body": "Installing dependencies from scratch on every CI run wastes time and bandwidth. Caching stores your node_modules or pip packages between runs so they only need to be downloaded when package.json or requirements.txt changes."
+    },
+    {
+      "type": "code",
+      "language": "yaml",
+      "filename": ".github/workflows/cache-example.yml",
+      "description": "Caching both npm and pip dependencies to dramatically speed up CI runs.",
+      "code": "jobs:\n  build:\n    runs-on: ubuntu-latest\n\n    steps:\n      - uses: actions/checkout@v4\n\n      # Node.js with built-in cache support\n      - uses: actions/setup-node@v4\n        with:\n          node-version: '22'\n          cache: 'npm'                               # Built-in npm cache\n          cache-dependency-path: frontend/package-lock.json\n\n      # Python with manual cache configuration\n      - uses: actions/setup-python@v5\n        with:\n          python-version: '3.12'\n\n      - name: Cache pip dependencies\n        uses: actions/cache@v4\n        with:\n          path: ~/.cache/pip\n          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}\n          restore-keys: |\n            ${{ runner.os }}-pip-\n\n      - name: Install frontend\n        run: cd frontend && npm ci            # Cache hit = ~5s instead of ~30s\n\n      - name: Install backend\n        run: cd backend && pip install -r requirements.txt"
+    },
+    {
+      "type": "text",
+      "heading": "Complete Lint and Test Workflow",
+      "headingLevel": 2,
+      "body": "Here is a production-ready workflow that lints and tests both the frontend and backend. This is the workflow that runs on every pull request to prevent broken code from being merged."
+    },
+    {
+      "type": "code",
+      "language": "yaml",
+      "filename": ".github/workflows/lint-and-test.yml",
+      "description": "A complete lint-and-test workflow for a full-stack project with both frontend (Next.js) and backend (Flask).",
+      "code": "name: Lint & Test\n\non:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]\n\njobs:\n  frontend:\n    name: Frontend Checks\n    runs-on: ubuntu-latest\n\n    steps:\n      - name: Checkout code\n        uses: actions/checkout@v4\n\n      - name: Set up Node.js\n        uses: actions/setup-node@v4\n        with:\n          node-version: '22'\n          cache: 'npm'\n          cache-dependency-path: frontend/package-lock.json\n\n      - name: Install dependencies\n        run: npm ci\n        working-directory: frontend\n\n      - name: Run ESLint\n        run: npm run lint\n        working-directory: frontend\n\n      - name: Run TypeScript type check\n        run: npx tsc --noEmit\n        working-directory: frontend\n\n      - name: Run Jest tests with coverage\n        run: npm test -- --coverage --ci\n        working-directory: frontend\n\n      - name: Upload coverage report\n        uses: actions/upload-artifact@v4\n        with:\n          name: frontend-coverage\n          path: frontend/coverage/\n          retention-days: 7\n\n  backend:\n    name: Backend Checks\n    runs-on: ubuntu-latest\n\n    steps:\n      - name: Checkout code\n        uses: actions/checkout@v4\n\n      - name: Set up Python\n        uses: actions/setup-python@v5\n        with:\n          python-version: '3.12'\n\n      - name: Cache pip\n        uses: actions/cache@v4\n        with:\n          path: ~/.cache/pip\n          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}\n\n      - name: Install dependencies\n        run: pip install -r requirements.txt\n        working-directory: backend\n\n      - name: Run flake8 linting\n        run: |\n          pip install flake8\n          flake8 . --max-line-length=120 --exclude=__pycache__\n        working-directory: backend\n\n      - name: Run pytest\n        run: |\n          pip install pytest\n          pytest -v --tb=short\n        working-directory: backend\n\n      - name: Seed database (verify seed data is valid)\n        run: |\n          FLASK_APP=app:create_app python -m flask seed-db\n        working-directory: backend"
+    },
+    {
+      "type": "text",
+      "heading": "Build and Deploy Workflow",
+      "headingLevel": 2,
+      "body": "This workflow runs after the lint-and-test workflow passes. It builds the production application and deploys it. The `needs` keyword ensures it only runs if CI succeeds."
+    },
+    {
+      "type": "code",
+      "language": "yaml",
+      "filename": ".github/workflows/deploy.yml",
+      "description": "A deployment workflow that builds the frontend, packages the backend, and deploys to a server. Only runs on pushes to main after CI passes.",
+      "code": "name: Build & Deploy\n\non:\n  push:\n    branches: [main]\n\njobs:\n  # Run tests first\n  test:\n    uses: ./.github/workflows/lint-and-test.yml\n\n  # Build only if tests pass\n  build:\n    needs: test\n    runs-on: ubuntu-latest\n    outputs:\n      image_tag: ${{ steps.meta.outputs.tags }}\n\n    steps:\n      - uses: actions/checkout@v4\n\n      - name: Set up Node.js\n        uses: actions/setup-node@v4\n        with:\n          node-version: '22'\n          cache: 'npm'\n          cache-dependency-path: frontend/package-lock.json\n\n      - name: Build frontend\n        run: |\n          cd frontend\n          npm ci\n          npm run build\n        env:\n          NEXT_PUBLIC_API_URL: ${{ secrets.PRODUCTION_API_URL }}\n\n      - name: Upload build artifacts\n        uses: actions/upload-artifact@v4\n        with:\n          name: frontend-build\n          path: frontend/.next/\n          retention-days: 1\n\n  # Deploy only if build passes\n  deploy:\n    needs: build\n    runs-on: ubuntu-latest\n    environment: production     # Requires manual approval if configured\n\n    steps:\n      - uses: actions/checkout@v4\n\n      - name: Download build artifacts\n        uses: actions/download-artifact@v4\n        with:\n          name: frontend-build\n          path: frontend/.next/\n\n      - name: Deploy to server\n        run: |\n          echo \"Deploying to production...\"\n          # Example: rsync to a server\n          # rsync -avz --delete frontend/.next/ user@server:/app/frontend/.next/\n          # Or: deploy with Docker (see Docker workflow below)\n        env:\n          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}"
+    },
+    {
+      "type": "text",
+      "heading": "Docker Build and Publish Workflow",
+      "headingLevel": 2,
+      "body": "If your application runs in Docker containers, you need a workflow that builds the Docker images, tags them, and pushes them to a container registry like Docker Hub or GitHub Container Registry."
+    },
+    {
+      "type": "code",
+      "language": "yaml",
+      "filename": ".github/workflows/docker-publish.yml",
+      "description": "A complete Docker workflow that builds multi-platform images and pushes to GitHub Container Registry.",
+      "code": "name: Docker Build & Publish\n\non:\n  push:\n    branches: [main]\n    tags: ['v*']               # Also run on version tags like v1.0.0\n\nenv:\n  REGISTRY: ghcr.io\n  IMAGE_NAME: ${{ github.repository }}\n\njobs:\n  docker:\n    runs-on: ubuntu-latest\n    permissions:\n      contents: read\n      packages: write          # Required to push to GHCR\n\n    steps:\n      - name: Checkout code\n        uses: actions/checkout@v4\n\n      - name: Set up Docker Buildx\n        uses: docker/setup-buildx-action@v3\n\n      - name: Log in to GitHub Container Registry\n        uses: docker/login-action@v3\n        with:\n          registry: ${{ env.REGISTRY }}\n          username: ${{ github.actor }}\n          password: ${{ secrets.GITHUB_TOKEN }}\n\n      - name: Extract metadata (tags, labels)\n        id: meta\n        uses: docker/metadata-action@v5\n        with:\n          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}\n          tags: |\n            type=sha,prefix=\n            type=ref,event=branch\n            type=semver,pattern={{version}}\n            type=raw,value=latest,enable={{is_default_branch}}\n\n      - name: Build and push backend image\n        uses: docker/build-push-action@v5\n        with:\n          context: ./backend\n          push: true\n          tags: ${{ steps.meta.outputs.tags }}\n          labels: ${{ steps.meta.outputs.labels }}\n          cache-from: type=gha\n          cache-to: type=gha,mode=max\n\n      - name: Build and push frontend image\n        uses: docker/build-push-action@v5\n        with:\n          context: ./frontend\n          push: true\n          tags: ${{ steps.meta.outputs.tags }}\n          labels: ${{ steps.meta.outputs.labels }}\n          cache-from: type=gha\n          cache-to: type=gha,mode=max\n\n      - name: Verify containers start\n        run: |\n          docker compose up -d\n          for i in $(seq 1 30); do\n            if curl -sf http://localhost:5000/api/health > /dev/null 2>&1; then\n              echo \"Health check passed\"\n              exit 0\n            fi\n            sleep 2\n          done\n          echo \"Health check failed\"\n          docker compose logs\n          exit 1\n\n      - name: Tear down\n        if: always()\n        run: docker compose down"
+    },
+    {
+      "type": "text",
+      "heading": "Branch Protection Rules",
+      "headingLevel": 2,
+      "body": "Workflows are only useful if they are enforced. Branch protection rules prevent anyone from pushing directly to main or merging a pull request until all CI checks pass."
+    },
+    {
+      "type": "list",
+      "heading": "Setting Up Branch Protection",
+      "ordered": true,
+      "items": [
+        "Go to your repository on GitHub and click Settings",
+        "Click Branches in the left sidebar",
+        "Click Add branch protection rule",
+        "Enter main as the branch name pattern",
+        "Enable Require a pull request before merging",
+        "Enable Require status checks to pass before merging",
+        "Search for and select your CI job names (e.g., Frontend Checks, Backend Checks)",
+        "Enable Require branches to be up to date before merging",
+        "Click Create to save the rule"
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Why require up-to-date branches?",
+      "body": "Without this setting, a PR could pass CI, then another PR gets merged to main, and the first PR's code might conflict with the new changes. Requiring up-to-date branches ensures CI runs against the latest main before merging."
+    },
+    {
+      "type": "text",
+      "heading": "Reusable Workflows",
+      "headingLevel": 2,
+      "body": "As your project grows, you will have similar CI logic across multiple workflows. Reusable workflows let you define a workflow once and call it from other workflows, just like functions in code."
+    },
+    {
+      "type": "code",
+      "language": "yaml",
+      "filename": ".github/workflows/reusable-node-test.yml",
+      "description": "A reusable workflow that any other workflow can call to set up Node.js and run tests.",
+      "code": "# This workflow can be called by other workflows\nname: Reusable Node.js Test\n\non:\n  workflow_call:                 # This makes it callable\n    inputs:\n      node-version:\n        required: false\n        type: string\n        default: '22'\n      working-directory:\n        required: false\n        type: string\n        default: 'frontend'\n\njobs:\n  test:\n    runs-on: ubuntu-latest\n\n    steps:\n      - uses: actions/checkout@v4\n\n      - uses: actions/setup-node@v4\n        with:\n          node-version: ${{ inputs.node-version }}\n          cache: 'npm'\n          cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json\n\n      - run: npm ci\n        working-directory: ${{ inputs.working-directory }}\n\n      - run: npm run lint\n        working-directory: ${{ inputs.working-directory }}\n\n      - run: npm test -- --ci\n        working-directory: ${{ inputs.working-directory }}"
+    },
+    {
+      "type": "code",
+      "language": "yaml",
+      "filename": ".github/workflows/main.yml",
+      "description": "A workflow that calls the reusable workflow above, keeping the main workflow file clean and simple.",
+      "code": "name: Main Pipeline\n\non:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]\n\njobs:\n  frontend-test:\n    uses: ./.github/workflows/reusable-node-test.yml\n    with:\n      node-version: '22'\n      working-directory: 'frontend'\n\n  deploy:\n    needs: frontend-test\n    if: github.ref == 'refs/heads/main'\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - run: echo \"Deploying to production...\""
+    },
+    {
+      "type": "text",
+      "heading": "Artifact Uploads",
+      "headingLevel": 2,
+      "body": "Sometimes you need to save files from a CI run -- coverage reports, build outputs, test screenshots. Artifacts let you upload files during a workflow and download them later from the GitHub UI or in subsequent jobs."
+    },
+    {
+      "type": "code",
+      "language": "yaml",
+      "filename": ".github/workflows/artifacts-example.yml",
+      "description": "Uploading test results and build artifacts so they can be downloaded from the GitHub Actions UI.",
+      "code": "jobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: '22'\n\n      - run: npm ci && npm test -- --coverage\n        working-directory: frontend\n\n      # Upload coverage report (always, even if tests fail)\n      - name: Upload coverage\n        uses: actions/upload-artifact@v4\n        if: always()\n        with:\n          name: coverage-report\n          path: frontend/coverage/\n          retention-days: 14\n\n      # Upload Playwright screenshots on failure\n      - name: Upload test screenshots\n        uses: actions/upload-artifact@v4\n        if: failure()\n        with:\n          name: test-screenshots\n          path: frontend/test-results/\n          retention-days: 7"
+    },
+    {
+      "type": "accordion",
+      "title": "Debugging Failed Workflows",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "list",
+          "heading": "Common issues and how to fix them",
+          "ordered": false,
+          "items": [
+            "Permission denied: Add the required permissions block to your job (e.g., packages: write for GHCR)",
+            "Cache miss every time: Make sure your cache key includes the hash of the lockfile, not the requirements file content",
+            "Tests pass locally but fail in CI: CI uses a clean environment -- check for missing environment variables or files",
+            "Workflow not triggering: Verify the branch name in your 'on' triggers matches exactly (main vs master)",
+            "npm ci fails: Ensure package-lock.json is committed to git and matches package.json",
+            "Docker build fails: Check that the Dockerfile path in context is correct relative to the repo root",
+            "Secrets not available: Secrets are not passed to workflows triggered by pull requests from forks (security measure)"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "heading": "GitHub Actions Cheat Sheet",
+      "headers": ["Task", "Syntax"],
+      "rows": [
+        ["Run only on main branch", "if: github.ref == 'refs/heads/main'"],
+        ["Run only on pull requests", "on: pull_request"],
+        ["Access repo name", "${{ github.repository }}"],
+        ["Access commit SHA", "${{ github.sha }}"],
+        ["Access a secret", "${{ secrets.MY_SECRET }}"],
+        ["Run a step only on failure", "if: failure()"],
+        ["Run a step always", "if: always()"],
+        ["Set output from a step", "echo \"key=value\" >> $GITHUB_OUTPUT"],
+        ["Use output from another step", "${{ steps.step_id.outputs.key }}"],
+        ["Run steps in a specific directory", "working-directory: frontend"]
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "Your CI/CD pipeline is ready",
+      "body": "You now have everything you need to set up automated linting, testing, building, and deployment with GitHub Actions. Start with the lint-and-test workflow on your next project, then add deployment workflows as your project matures. Remember: the best CI pipeline is one that your team actually trusts and uses."
+    }
+  ]
+}

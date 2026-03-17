@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Normalization vs Denormalization",
+  "headingLevel": 3,
+  "body": "Normalization means splitting data into separate tables to eliminate duplication. Denormalization means combining data into fewer tables for faster reads. Production databases use a mix of both."
+}

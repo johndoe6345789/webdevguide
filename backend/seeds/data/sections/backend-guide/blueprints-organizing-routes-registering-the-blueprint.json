@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Registering the Blueprint",
+  "headingLevel": 3,
+  "body": "Creating a blueprint does not do anything by itself. You need to tell your app about it:"
+}

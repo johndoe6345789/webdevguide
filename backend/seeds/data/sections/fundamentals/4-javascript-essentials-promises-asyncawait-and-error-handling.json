@@ -1,0 +1,22 @@
+{
+  "type": "accordion",
+  "title": "Promises, Async/Await, and Error Handling",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "JavaScript is **single-threaded** -- it can only do one thing at a time. But web apps need to fetch data, read files, and wait for user actions without freezing the screen. **Asynchronous programming** with Promises and async/await solves this."
+    },
+    {
+      "type": "code",
+      "language": "javascript",
+      "filename": "promises.js",
+      "code": "// A Promise represents a value that will arrive in the future\nconst promise = new Promise((resolve, reject) => {\n  const success = true;\n  if (success) {\n    resolve('Data loaded!');    // Fulfilled\n  } else {\n    reject(new Error('Failed')); // Rejected\n  }\n});\n\n// .then() / .catch() chain (older style)\npromise\n  .then((data) => console.log(data))     // 'Data loaded!'\n  .catch((err) => console.error(err));   // Only runs if rejected\n\n// async/await (modern, cleaner style)\nasync function fetchUsers() {\n  try {\n    const response = await fetch('/api/users');\n\n    if (!response.ok) {\n      throw new Error(`HTTP ${response.status}: ${response.statusText}`);\n    }\n\n    const users = await response.json();\n    return users;\n  } catch (error) {\n    console.error('Failed to fetch users:', error.message);\n    return []; // Return a fallback value\n  }\n}\n\n// Running async operations in parallel\nasync function loadDashboard() {\n  // Bad: sequential (slow) -- each waits for the previous one\n  // const users = await fetchUsers();\n  // const posts = await fetchPosts();\n  // const stats = await fetchStats();\n\n  // Good: parallel (fast) -- all three start at the same time\n  const [users, posts, stats] = await Promise.all([\n    fetchUsers(),\n    fetchPosts(),\n    fetchStats(),\n  ]);\n\n  return { users, posts, stats };\n}\n\n// Promise.allSettled: wait for all, even if some fail\nasync function loadWithPartialFailure() {\n  const results = await Promise.allSettled([\n    fetchUsers(),\n    fetchPosts(),\n  ]);\n\n  results.forEach((result) => {\n    if (result.status === 'fulfilled') {\n      console.log('Success:', result.value);\n    } else {\n      console.error('Failed:', result.reason);\n    }\n  });\n}"
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "Always handle errors",
+      "body": "Unhandled promise rejections will crash your Node.js process and show confusing errors in the browser. Always wrap `await` calls in `try/catch` blocks, or chain `.catch()` on every promise."
+    }
+  ]
+}

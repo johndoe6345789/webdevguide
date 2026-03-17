@@ -1,0 +1,26 @@
+{
+  "type": "table",
+  "heading": "Error Codes",
+  "headers": [
+    "Status Code",
+    "Description"
+  ],
+  "rows": [
+    [
+      "400 Bad Request",
+      "The request was malformed or missing data."
+    ],
+    [
+      "401 Unauthorized",
+      "Not logged in or invalid token."
+    ],
+    [
+      "404 Not Found",
+      "The requested item does not exist."
+    ],
+    [
+      "500 Server Error",
+      "Something broke on the backend."
+    ]
+  ]
+}

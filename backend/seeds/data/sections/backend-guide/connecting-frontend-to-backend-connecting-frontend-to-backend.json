@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Connecting Frontend to Backend",
+  "headingLevel": 2,
+  "body": "Now let us make your React frontend actually talk to your Flask backend."
+}

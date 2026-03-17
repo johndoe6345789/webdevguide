@@ -1,0 +1,54 @@
+{
+  "type": "table",
+  "heading": "Types of Technical Debt",
+  "headers": [
+    "Type",
+    "Example",
+    "Impact",
+    "Fix"
+  ],
+  "rows": [
+    [
+      "Deliberate shortcuts",
+      "Skipping input validation to hit a launch date",
+      "Security vulnerabilities, data corruption",
+      "Add validation and write tests before next sprint"
+    ],
+    [
+      "Outdated dependencies",
+      "Running React 16 when React 19 is stable",
+      "Missing security patches, incompatible ecosystem",
+      "Schedule quarterly dependency updates with npm audit"
+    ],
+    [
+      "Copy-paste code",
+      "Same API fetch logic duplicated in 12 components",
+      "Bug fixes must be applied in 12 places",
+      "Extract into a shared hook or utility function"
+    ],
+    [
+      "Missing tests",
+      "Zero test coverage on payment processing code",
+      "Every deploy is a gamble, regressions go unnoticed",
+      "Write tests for critical paths first, expand coverage over time"
+    ],
+    [
+      "Poor naming",
+      "Variables named d, temp2, handleClick3",
+      "New developers cannot understand the code",
+      "Rename with descriptive names during code review"
+    ],
+    [
+      "Hardcoded values",
+      "API URLs, color codes, and timeouts scattered in source",
+      "Changing one value requires searching the entire codebase",
+      "Extract to constants, config files, or environment variables"
+    ],
+    [
+      "No documentation",
+      "Complex business logic with zero comments or READMEs",
+      "Only the original author understands the code",
+      "Document the why, not the what -- add comments and architecture docs"
+    ]
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 1,
+  "title": "Install Axios in Your React Project",
+  "body": "Axios is a popular library for making HTTP requests from JavaScript.",
+  "code": "npm install axios",
+  "language": "bash"
+}

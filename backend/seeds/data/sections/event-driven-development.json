@@ -1,0 +1,682 @@
+{
+  "title": "Event-Driven Web Development",
+  "slug": "event-driven-development",
+  "description": "Build reactive, decoupled systems with events -- pub/sub patterns, message queues, webhooks, WebSockets, Server-Sent Events, and event sourcing",
+  "icon": "Bolt",
+  "order": 32,
+  "estimatedMinutes": 40,
+  "difficulty": "advanced",
+  "prerequisites": ["fundamentals", "backend-guide"],
+  "keyPoints": [
+    "Event-driven architecture decouples producers from consumers, letting systems scale and evolve independently",
+    "Pub/sub and message queues buffer work and guarantee delivery even when consumers crash or lag behind",
+    "WebSockets provide full-duplex real-time communication while Server-Sent Events offer simpler one-way push",
+    "Webhooks let external services notify your app of events via HTTP callbacks with signature verification",
+    "Event sourcing stores every state change as an immutable event, enabling audit trails and time-travel debugging"
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "heading": "What is Event-Driven Architecture?",
+      "headingLevel": 2,
+      "body": "In traditional request/response architecture, component A calls component B directly. A knows about B, waits for B to respond, and fails if B is down. In event-driven architecture, A emits an event -- 'something happened' -- and any interested component listens and reacts independently. A does not know or care who is listening. This creates loose coupling, better scalability, and systems that are easier to extend."
+    },
+    {
+      "type": "text",
+      "body": "Think of it like a radio broadcast. The radio station (producer) transmits a signal. It does not know how many radios are tuned in, or what people do when they hear the news. Listeners (consumers) independently decide to react -- maybe one person checks the weather forecast, another changes the channel. The station and listeners are completely decoupled."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 2,
+      "cards": [
+        {
+          "title": "Request / Response",
+          "body": "Synchronous and tightly coupled. Component A calls B directly, waits for a response, and fails if B is unavailable. Simple to reason about but creates hard dependencies.",
+          "icon": "SwapHoriz",
+          "chip": "Synchronous"
+        },
+        {
+          "title": "Event-Driven",
+          "body": "Asynchronous and loosely coupled. A emits an event, any number of listeners react independently. A does not wait and does not know who is listening. Easy to extend.",
+          "icon": "Bolt",
+          "chip": "Async"
+        },
+        {
+          "title": "Message Queue",
+          "body": "Buffered and guaranteed delivery. Messages sit in a queue until a consumer processes them. If the consumer crashes, the message stays queued. Enables reliable background work.",
+          "icon": "Queue",
+          "chip": "Buffered"
+        },
+        {
+          "title": "Stream Processing",
+          "body": "Ordered and replayable. Events are appended to a log. Consumers can read from any point. Ideal for analytics pipelines, IoT data, and audit trails. Think Kafka.",
+          "icon": "Stream",
+          "chip": "Ordered"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "heading": "When to Use Event-Driven vs Request/Response",
+      "headers": ["Scenario", "Pattern", "Why"],
+      "rows": [
+        ["Fetching a user profile for display", "Request/Response", "You need the data right now to render the page. Synchronous is simpler."],
+        ["Sending a welcome email after signup", "Event-Driven", "The signup response should not wait for the email to send. Fire and forget."],
+        ["Processing uploaded images (resize, thumbnail)", "Message Queue", "CPU-intensive work should not block the upload response. Queue it for a worker."],
+        ["Live chat between users", "WebSocket (Event-Driven)", "Both sides need to send messages at any time. Persistent bidirectional connection."],
+        ["Dashboard showing live order counts", "SSE (Event-Driven)", "Server pushes updates. Client only needs to listen. SSE is simpler than WebSocket."],
+        ["Stripe notifying you of a payment", "Webhook (Event-Driven)", "External service POSTs to your endpoint when an event occurs. You react."],
+        ["Audit trail for financial transactions", "Event Sourcing", "You need a complete history of every change, not just the current state."]
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Frontend Events -- The Browser Event System",
+      "headingLevel": 2,
+      "body": "The browser is already event-driven. Every click, keypress, scroll, and network response is an event. The DOM event system -- addEventListener, event bubbling, capturing -- is the foundation that all frontend event patterns build on. Understanding it deeply is essential before building custom event systems."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "dom-events.ts",
+      "description": "DOM event handling -- addEventListener, event delegation, custom events, and EventTarget for custom classes",
+      "code": "// --- Basic event listener with cleanup ---\nconst button = document.querySelector<HTMLButtonElement>('#submit-btn')!;\n\nfunction handleClick(event: MouseEvent): void {\n  console.log('Clicked at', event.clientX, event.clientY);\n  console.log('Target:', event.target);\n  console.log('CurrentTarget:', event.currentTarget);\n}\n\nbutton.addEventListener('click', handleClick);\n// Always clean up to prevent memory leaks:\n// button.removeEventListener('click', handleClick);\n\n// --- Event delegation: one listener on parent handles all children ---\nconst list = document.querySelector<HTMLUListElement>('#todo-list')!;\n\nlist.addEventListener('click', (event: Event) => {\n  const target = event.target as HTMLElement;\n\n  // Check which child element was clicked\n  if (target.matches('.delete-btn')) {\n    const todoId = target.closest('li')?.dataset.id;\n    console.log('Delete todo:', todoId);\n  } else if (target.matches('.toggle-btn')) {\n    const todoId = target.closest('li')?.dataset.id;\n    console.log('Toggle todo:', todoId);\n  }\n});\n\n// --- Custom events with data ---\ninterface CartEventDetail {\n  productId: string;\n  quantity: number;\n  price: number;\n}\n\nconst cartEvent = new CustomEvent<CartEventDetail>('cart:item-added', {\n  detail: { productId: 'sku-123', quantity: 2, price: 29.99 },\n  bubbles: true,    // Event bubbles up the DOM tree\n  composed: true,   // Event crosses shadow DOM boundaries\n});\n\n// Dispatch from any element -- it bubbles up to document\nbutton.dispatchEvent(cartEvent);\n\n// Listen at document level to catch all cart events\ndocument.addEventListener('cart:item-added', ((event: CustomEvent<CartEventDetail>) => {\n  console.log('Item added:', event.detail.productId);\n  console.log('Quantity:', event.detail.quantity);\n}) as EventListener);\n\n// --- EventTarget for custom classes (no DOM needed) ---\nclass DataStore extends EventTarget {\n  private data: Map<string, unknown> = new Map();\n\n  set(key: string, value: unknown): void {\n    const oldValue = this.data.get(key);\n    this.data.set(key, value);\n\n    this.dispatchEvent(new CustomEvent('change', {\n      detail: { key, value, oldValue },\n    }));\n  }\n\n  get(key: string): unknown {\n    return this.data.get(key);\n  }\n}\n\nconst store = new DataStore();\nstore.addEventListener('change', ((e: CustomEvent) => {\n  console.log(`${e.detail.key} changed:`, e.detail.oldValue, '->', e.detail.value);\n}) as EventListener);\n\nstore.set('theme', 'dark');  // Logs: \"theme changed: undefined -> dark\""
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "EventEmitter.ts",
+      "description": "Custom typed EventEmitter class with subscribe, unsubscribe, and emit using TypeScript generics",
+      "code": "// Typed EventEmitter -- type-safe events with autocomplete\ntype EventHandler<T = unknown> = (data: T) => void;\n\ninterface EventMap {\n  [event: string]: unknown;\n}\n\nclass EventEmitter<Events extends EventMap> {\n  private listeners = new Map<keyof Events, Set<EventHandler<any>>>();\n\n  /**\n   * Subscribe to an event. Returns an unsubscribe function.\n   */\n  on<K extends keyof Events>(event: K, handler: EventHandler<Events[K]>): () => void {\n    if (!this.listeners.has(event)) {\n      this.listeners.set(event, new Set());\n    }\n    this.listeners.get(event)!.add(handler);\n\n    // Return unsubscribe function for easy cleanup\n    return () => this.off(event, handler);\n  }\n\n  /**\n   * Subscribe to an event, but only fire once.\n   */\n  once<K extends keyof Events>(event: K, handler: EventHandler<Events[K]>): () => void {\n    const wrapper: EventHandler<Events[K]> = (data) => {\n      this.off(event, wrapper);\n      handler(data);\n    };\n    return this.on(event, wrapper);\n  }\n\n  /**\n   * Unsubscribe from an event.\n   */\n  off<K extends keyof Events>(event: K, handler: EventHandler<Events[K]>): void {\n    this.listeners.get(event)?.delete(handler);\n  }\n\n  /**\n   * Emit an event with data. All subscribers are notified.\n   */\n  emit<K extends keyof Events>(event: K, data: Events[K]): void {\n    this.listeners.get(event)?.forEach((handler) => {\n      try {\n        handler(data);\n      } catch (error) {\n        console.error(`Error in event handler for \"${String(event)}\":`, error);\n      }\n    });\n  }\n\n  /**\n   * Remove all listeners for an event, or all listeners entirely.\n   */\n  removeAll(event?: keyof Events): void {\n    if (event) {\n      this.listeners.delete(event);\n    } else {\n      this.listeners.clear();\n    }\n  }\n}\n\n// --- Usage with typed events ---\ninterface AppEvents {\n  'user:login': { userId: string; email: string };\n  'user:logout': { userId: string };\n  'cart:item-added': { productId: string; quantity: number };\n  'cart:cleared': undefined;\n  'notification': { message: string; level: 'info' | 'warn' | 'error' };\n}\n\nconst emitter = new EventEmitter<AppEvents>();\n\n// TypeScript enforces correct event names and data types\nconst unsub = emitter.on('user:login', (data) => {\n  // data is typed as { userId: string; email: string }\n  console.log(`Welcome back, ${data.email}`);\n});\n\nemitter.emit('user:login', { userId: '42', email: 'alice@example.com' });\n\n// Clean up when done\nunsub();"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "ReactEvents.tsx",
+      "description": "Using events in React -- synthetic events, handlers, bubbling, and useEffect cleanup for global events",
+      "code": "import React, { useEffect, useCallback, useRef } from 'react';\n\n// --- Synthetic events and handlers ---\nfunction SearchForm() {\n  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {\n    event.preventDefault(); // Prevent page reload\n    const formData = new FormData(event.currentTarget);\n    const query = formData.get('query') as string;\n    console.log('Searching for:', query);\n  };\n\n  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {\n    if (event.key === 'Escape') {\n      (event.target as HTMLInputElement).blur();\n    }\n  };\n\n  return (\n    <form onSubmit={handleSubmit}>\n      <input\n        name=\"query\"\n        type=\"text\"\n        onKeyDown={handleKeyDown}\n        placeholder=\"Search...\"\n      />\n      <button type=\"submit\">Search</button>\n    </form>\n  );\n}\n\n// --- Global event listeners with useEffect cleanup ---\nfunction useKeyboardShortcut(key: string, callback: () => void) {\n  const callbackRef = useRef(callback);\n  callbackRef.current = callback;\n\n  useEffect(() => {\n    function handleKeyDown(event: KeyboardEvent) {\n      if (event.key === key && (event.metaKey || event.ctrlKey)) {\n        event.preventDefault();\n        callbackRef.current();\n      }\n    }\n\n    // Add listener to window (global)\n    window.addEventListener('keydown', handleKeyDown);\n\n    // CRITICAL: Clean up on unmount to prevent memory leaks\n    return () => {\n      window.removeEventListener('keydown', handleKeyDown);\n    };\n  }, [key]); // Only re-run if the key changes\n}\n\n// --- Event bubbling in React ---\nfunction ParentComponent() {\n  const handleClick = (event: React.MouseEvent) => {\n    // This fires for clicks on ANY child element (bubbling)\n    const target = event.target as HTMLElement;\n    if (target.dataset.action === 'delete') {\n      const id = target.dataset.id;\n      console.log('Delete item:', id);\n    }\n  };\n\n  return (\n    <div onClick={handleClick}>\n      <button data-action=\"delete\" data-id=\"1\">Delete Item 1</button>\n      <button data-action=\"delete\" data-id=\"2\">Delete Item 2</button>\n      <button data-action=\"delete\" data-id=\"3\">Delete Item 3</button>\n    </div>\n  );\n}\n\nexport { SearchForm, useKeyboardShortcut, ParentComponent };"
+    },
+    {
+      "type": "accordion",
+      "title": "Event Delegation Pattern -- Why One Listener Beats a Thousand",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Imagine a todo list with 1,000 items, each with a delete button. You could attach 1,000 click handlers -- one per button. Every time you add or remove a todo, you must attach or detach a handler. This is wasteful and error-prone."
+        },
+        {
+          "type": "text",
+          "body": "With event delegation, you attach **one** click handler to the parent `<ul>`. When any child button is clicked, the event bubbles up to the parent. You inspect `event.target` to determine which button was clicked. This uses less memory, handles dynamically added items automatically, and is simpler to manage."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "event-delegation.ts",
+          "description": "Event delegation with one parent listener",
+          "code": "// BAD: 1000 listeners\ndocument.querySelectorAll('.delete-btn').forEach((btn) => {\n  btn.addEventListener('click', () => { /* ... */ });\n});\n\n// GOOD: 1 listener with delegation\ndocument.querySelector('#todo-list')!.addEventListener('click', (e) => {\n  const target = (e.target as HTMLElement).closest<HTMLElement>('[data-action]');\n  if (!target) return;\n\n  const action = target.dataset.action;\n  const id = target.dataset.id;\n\n  switch (action) {\n    case 'delete':\n      deleteTodo(id!);\n      break;\n    case 'toggle':\n      toggleTodo(id!);\n      break;\n  }\n});"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "In-App Event Bus (Frontend)",
+      "headingLevel": 2,
+      "body": "An event bus decouples React components that do not share a parent. Instead of drilling props through five layers or wiring up context for one-off communication, Component A emits 'cart:updated' and Component B (the header cart badge) reacts -- without either knowing the other exists."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "eventBus.ts",
+      "description": "Typed EventBus singleton -- shared instance for cross-component communication",
+      "code": "// Define all events your app can emit\nexport interface AppEventMap {\n  'cart:item-added': { productId: string; name: string; price: number; quantity: number };\n  'cart:item-removed': { productId: string };\n  'cart:cleared': undefined;\n  'auth:login': { userId: string; email: string; role: string };\n  'auth:logout': undefined;\n  'notification:show': { message: string; type: 'success' | 'error' | 'info' };\n  'theme:changed': { theme: 'light' | 'dark' };\n}\n\ntype Handler<T = unknown> = (data: T) => void;\n\nclass EventBus<Events extends Record<string, unknown>> {\n  private handlers = new Map<keyof Events, Set<Handler<any>>>();\n\n  on<K extends keyof Events>(event: K, handler: Handler<Events[K]>): () => void {\n    if (!this.handlers.has(event)) {\n      this.handlers.set(event, new Set());\n    }\n    this.handlers.get(event)!.add(handler);\n    return () => this.handlers.get(event)?.delete(handler);\n  }\n\n  emit<K extends keyof Events>(event: K, ...[data]: Events[K] extends undefined ? [] : [Events[K]]): void {\n    this.handlers.get(event)?.forEach((fn) => {\n      try {\n        fn(data);\n      } catch (err) {\n        console.error(`EventBus error in \"${String(event)}\":`, err);\n      }\n    });\n  }\n\n  off<K extends keyof Events>(event: K, handler: Handler<Events[K]>): void {\n    this.handlers.get(event)?.delete(handler);\n  }\n}\n\n// Singleton instance -- import this everywhere\nexport const bus = new EventBus<AppEventMap>();"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "useEventBus.ts",
+      "description": "useEventBus hook -- subscribe in useEffect with auto-cleanup, emit from any component",
+      "code": "import { useEffect, useCallback } from 'react';\nimport { bus, type AppEventMap } from './eventBus';\n\n/**\n * Subscribe to an event bus event. Automatically cleans up on unmount.\n */\nexport function useEventBus<K extends keyof AppEventMap>(\n  event: K,\n  handler: (data: AppEventMap[K]) => void\n): void {\n  useEffect(() => {\n    const unsubscribe = bus.on(event, handler);\n    return unsubscribe; // Cleanup on unmount\n  }, [event, handler]);\n}\n\n/**\n * Get a stable emit function for an event.\n */\nexport function useEmit<K extends keyof AppEventMap>(event: K) {\n  return useCallback(\n    (...args: AppEventMap[K] extends undefined ? [] : [AppEventMap[K]]) => {\n      bus.emit(event, ...args);\n    },\n    [event]\n  );\n}"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "CartEventFlow.tsx",
+      "description": "Real example -- Shopping cart event flow: AddToCartButton emits, CartBadge, CartDrawer, and Analytics all react independently",
+      "code": "import React, { useState, useCallback } from 'react';\nimport { bus } from './eventBus';\nimport { useEventBus } from './useEventBus';\n\n// --- Producer: AddToCartButton ---\nfunction AddToCartButton({ product }: { product: { id: string; name: string; price: number } }) {\n  const handleClick = () => {\n    // Emit event -- does not know or care who listens\n    bus.emit('cart:item-added', {\n      productId: product.id,\n      name: product.name,\n      price: product.price,\n      quantity: 1,\n    });\n    bus.emit('notification:show', {\n      message: `${product.name} added to cart`,\n      type: 'success',\n    });\n  };\n\n  return <button onClick={handleClick}>Add to Cart</button>;\n}\n\n// --- Consumer 1: CartBadge in header (shows item count) ---\nfunction CartBadge() {\n  const [count, setCount] = useState(0);\n\n  useEventBus('cart:item-added', useCallback(() => {\n    setCount((prev) => prev + 1);\n  }, []));\n\n  useEventBus('cart:item-removed', useCallback(() => {\n    setCount((prev) => Math.max(0, prev - 1));\n  }, []));\n\n  useEventBus('cart:cleared', useCallback(() => {\n    setCount(0);\n  }, []));\n\n  return <span className=\"cart-badge\">{count > 0 && count}</span>;\n}\n\n// --- Consumer 2: CartDrawer (slide-out panel) ---\nfunction CartDrawer() {\n  const [items, setItems] = useState<Array<{ productId: string; name: string; price: number }>>([]);\n  const [isOpen, setIsOpen] = useState(false);\n\n  useEventBus('cart:item-added', useCallback((data) => {\n    setItems((prev) => [...prev, { productId: data.productId, name: data.name, price: data.price }]);\n    setIsOpen(true); // Auto-open drawer when item added\n  }, []));\n\n  useEventBus('cart:cleared', useCallback(() => {\n    setItems([]);\n  }, []));\n\n  if (!isOpen) return null;\n\n  return (\n    <aside className=\"cart-drawer\">\n      <h3>Your Cart ({items.length} items)</h3>\n      {items.map((item, i) => (\n        <div key={i}>{item.name} -- ${item.price.toFixed(2)}</div>\n      ))}\n      <p>Total: ${items.reduce((sum, i) => sum + i.price, 0).toFixed(2)}</p>\n      <button onClick={() => setIsOpen(false)}>Close</button>\n    </aside>\n  );\n}\n\n// --- Consumer 3: Analytics (logs events silently) ---\nfunction AnalyticsTracker() {\n  useEventBus('cart:item-added', useCallback((data) => {\n    // Send to analytics service\n    console.log('[Analytics] Item added:', data.productId, '$' + data.price);\n    // In production: fetch('/api/analytics', { method: 'POST', body: ... })\n  }, []));\n\n  return null; // Renders nothing -- pure side effect\n}\n\nexport { AddToCartButton, CartBadge, CartDrawer, AnalyticsTracker };"
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "Do Not Overuse the Event Bus",
+      "body": "Event buses can become 'invisible spaghetti' if overused. When any component can emit anything and any component can listen to anything, the flow of data becomes very hard to trace and debug. Use the event bus for truly cross-cutting concerns (analytics, notifications, auth state). For most component communication, prefer props, React context, or a state manager like Redux or Zustand."
+    },
+    {
+      "type": "text",
+      "heading": "Backend Event System (Python)",
+      "headingLevel": 2,
+      "body": "Server-side events decouple business logic in the same way. When a user registers, you do not want the registration endpoint to also send emails, create profiles, award XP, and log analytics all inline. That creates a monolithic function that grows without bound. Instead, emit a 'user.registered' event and let independent handlers react."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "event_dispatcher.py",
+      "description": "Simple synchronous event dispatcher class with on() and emit()",
+      "code": "from typing import Callable, Any\nfrom collections import defaultdict\nimport logging\n\nlogger = logging.getLogger(__name__)\n\n\nclass EventDispatcher:\n    \"\"\"Simple synchronous event dispatcher.\"\"\"\n\n    def __init__(self) -> None:\n        self._handlers: dict[str, list[Callable]] = defaultdict(list)\n\n    def on(self, event: str, handler: Callable) -> Callable:\n        \"\"\"Register a handler for an event. Returns the handler for chaining.\"\"\"\n        self._handlers[event].append(handler)\n        return handler\n\n    def off(self, event: str, handler: Callable) -> None:\n        \"\"\"Remove a handler from an event.\"\"\"\n        self._handlers[event].remove(handler)\n\n    def emit(self, event: str, **data: Any) -> list[Any]:\n        \"\"\"Emit an event. All registered handlers are called synchronously.\"\"\"\n        results = []\n        for handler in self._handlers.get(event, []):\n            try:\n                result = handler(**data)\n                results.append(result)\n            except Exception as e:\n                logger.error(f\"Error in handler for '{event}': {e}\", exc_info=True)\n        return results\n\n    def handler_count(self, event: str) -> int:\n        return len(self._handlers.get(event, []))\n\n\n# Singleton instance\ndispatcher = EventDispatcher()"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "app_events.py",
+      "description": "Flask integration -- event-driven user registration with independent listeners",
+      "code": "from flask import Flask, request, jsonify\nfrom event_dispatcher import dispatcher\nimport logging\n\nlogger = logging.getLogger(__name__)\napp = Flask(__name__)\n\n\n# --- Register event handlers independently ---\n\ndef send_welcome_email(user_id: str, email: str, **kwargs):\n    \"\"\"Send welcome email. Does not block registration if it fails.\"\"\"\n    logger.info(f\"Sending welcome email to {email}\")\n    # In production: use an email service like SendGrid\n    # requests.post(\"https://api.sendgrid.com/v3/mail/send\", ...)\n\n\ndef create_user_profile(user_id: str, email: str, **kwargs):\n    \"\"\"Create a default profile for the new user.\"\"\"\n    logger.info(f\"Creating profile for user {user_id}\")\n    # db.session.add(UserProfile(user_id=user_id, display_name=email.split('@')[0]))\n    # db.session.commit()\n\n\ndef award_signup_xp(user_id: str, **kwargs):\n    \"\"\"Award XP points for signing up.\"\"\"\n    logger.info(f\"Awarding 100 XP to user {user_id}\")\n    # xp_service.award(user_id, points=100, reason=\"signup\")\n\n\ndef log_registration_analytics(user_id: str, email: str, **kwargs):\n    \"\"\"Track registration in analytics.\"\"\"\n    logger.info(f\"Analytics: user.registered user_id={user_id}\")\n    # analytics.track(\"user.registered\", {\"user_id\": user_id})\n\n\n# Wire up handlers -- each is independent\ndispatcher.on(\"user.registered\", send_welcome_email)\ndispatcher.on(\"user.registered\", create_user_profile)\ndispatcher.on(\"user.registered\", award_signup_xp)\ndispatcher.on(\"user.registered\", log_registration_analytics)\n\n\n@app.post(\"/api/register\")\ndef register():\n    data = request.get_json()\n    email = data[\"email\"]\n    password = data[\"password\"]\n\n    # Core registration logic\n    user_id = create_user_in_db(email, password)  # Your DB logic\n\n    # Emit event -- all handlers react independently\n    dispatcher.emit(\"user.registered\", user_id=user_id, email=email)\n\n    return jsonify({\"user_id\": user_id}), 201"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "event_decorators.py",
+      "description": "Decorator pattern for registering event handlers cleanly",
+      "code": "from functools import wraps\nfrom event_dispatcher import dispatcher\n\n\ndef on_event(event_name: str):\n    \"\"\"Decorator to register a function as an event handler.\n\n    Usage:\n        @on_event(\"user.registered\")\n        def handle_registration(user_id: str, email: str, **kwargs):\n            send_welcome_email(email)\n    \"\"\"\n    def decorator(func):\n        dispatcher.on(event_name, func)\n\n        @wraps(func)\n        def wrapper(*args, **kwargs):\n            return func(*args, **kwargs)\n        return wrapper\n    return decorator\n\n\n# --- Clean handler registration with decorators ---\n\n@on_event(\"user.registered\")\ndef handle_welcome_email(user_id: str, email: str, **kwargs):\n    print(f\"Sending welcome email to {email}\")\n\n\n@on_event(\"user.registered\")\ndef handle_xp_award(user_id: str, **kwargs):\n    print(f\"Awarding 100 XP to user {user_id}\")\n\n\n@on_event(\"order.placed\")\ndef handle_order_confirmation(order_id: str, user_email: str, **kwargs):\n    print(f\"Sending order confirmation {order_id} to {user_email}\")\n\n\n@on_event(\"order.placed\")\ndef handle_inventory_update(order_id: str, items: list, **kwargs):\n    for item in items:\n        print(f\"Reducing inventory for {item['sku']} by {item['quantity']}\")"
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Synchronous Events",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "python",
+              "filename": "sync_events.py",
+              "description": "Synchronous event dispatch -- handlers run inline in the same request",
+              "code": "from event_dispatcher import dispatcher\n\n# Handlers run in the same thread, same request.\n# The HTTP response waits until ALL handlers finish.\n\n@app.post(\"/api/register\")\ndef register():\n    user_id = create_user(request.json)\n\n    # These all run synchronously, one after another.\n    # If send_email takes 3 seconds, the response is delayed 3 seconds.\n    dispatcher.emit(\"user.registered\", user_id=user_id, email=request.json[\"email\"])\n\n    return jsonify({\"user_id\": user_id}), 201\n\n# Pros: Simple, easy to debug, errors are visible immediately.\n# Cons: Slow handlers block the response. One failing handler\n#        can break the request if not caught."
+            }
+          ]
+        },
+        {
+          "label": "Async Events (Threading)",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "python",
+              "filename": "async_events.py",
+              "description": "Fire-and-forget with threads -- non-blocking but limited reliability",
+              "code": "import threading\nfrom collections import defaultdict\nfrom typing import Callable, Any\nimport logging\n\nlogger = logging.getLogger(__name__)\n\n\nclass AsyncEventDispatcher:\n    \"\"\"Dispatches events in background threads.\"\"\"\n\n    def __init__(self) -> None:\n        self._handlers: dict[str, list[Callable]] = defaultdict(list)\n\n    def on(self, event: str, handler: Callable) -> None:\n        self._handlers[event].append(handler)\n\n    def emit(self, event: str, **data: Any) -> None:\n        \"\"\"Fire all handlers in separate threads. Non-blocking.\"\"\"\n        for handler in self._handlers.get(event, []):\n            thread = threading.Thread(\n                target=self._safe_call,\n                args=(handler, event),\n                kwargs=data,\n                daemon=True,\n            )\n            thread.start()\n\n    def _safe_call(self, handler: Callable, event: str, **data):\n        try:\n            handler(**data)\n        except Exception as e:\n            logger.error(f\"Async handler error for '{event}': {e}\")\n\n\nasync_dispatcher = AsyncEventDispatcher()\n\n# Pros: Handlers don't block the response. Fast response times.\n# Cons: No retry if handler fails. No guarantee of completion.\n#        Threads lost if the process restarts. Hard to debug."
+            }
+          ]
+        },
+        {
+          "label": "Background Tasks (Celery)",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "python",
+              "filename": "celery_events.py",
+              "description": "Celery task queue -- reliable background processing with retries",
+              "code": "from celery import Celery\n\ncelery_app = Celery(\"myapp\", broker=\"redis://localhost:6379/0\")\n\n\n@celery_app.task(bind=True, max_retries=3, default_retry_delay=60)\ndef send_welcome_email(self, user_id: str, email: str):\n    \"\"\"Runs in a Celery worker process, not in the web server.\"\"\"\n    try:\n        # Call email API\n        response = email_client.send(\n            to=email,\n            template=\"welcome\",\n            data={\"user_id\": user_id},\n        )\n        return {\"status\": \"sent\", \"message_id\": response.id}\n    except Exception as exc:\n        # Retry with exponential backoff\n        raise self.retry(exc=exc, countdown=2 ** self.request.retries * 60)\n\n\n@celery_app.task(max_retries=3)\ndef award_signup_xp(user_id: str):\n    xp_service.award(user_id, points=100, reason=\"signup\")\n\n\n# In your Flask route:\n@app.post(\"/api/register\")\ndef register():\n    user_id = create_user(request.json)\n\n    # Enqueue tasks -- returns immediately. Workers process later.\n    send_welcome_email.delay(user_id, request.json[\"email\"])\n    award_signup_xp.delay(user_id)\n\n    return jsonify({\"user_id\": user_id}), 201\n\n# Pros: Reliable (Redis persists tasks). Retries on failure.\n#        Scales horizontally (add more workers). Visibility (Flower UI).\n# Cons: Requires Redis + Celery worker processes. More infrastructure."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "WebSockets -- Bidirectional Real-Time",
+      "headingLevel": 2,
+      "body": "WebSockets maintain a persistent connection between browser and server. Unlike HTTP, where the client must ask for data each time, WebSockets let both sides send messages at any time. This makes them ideal for chat apps, live updates, collaborative editing, multiplayer games, and any scenario where both client and server need to push data."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "websocket_server.py",
+      "description": "Flask-SocketIO server with namespaces, rooms, broadcast, and authentication",
+      "code": "from flask import Flask, request\nfrom flask_socketio import SocketIO, emit, join_room, leave_room, disconnect\nimport jwt\n\napp = Flask(__name__)\napp.config[\"SECRET_KEY\"] = \"your-secret-key\"\nsocketio = SocketIO(app, cors_allowed_origins=\"*\")\n\n# Track connected users\nonline_users: dict[str, dict] = {}  # sid -> user info\n\n\n@socketio.on(\"connect\")\ndef handle_connect(auth: dict | None = None):\n    \"\"\"Authenticate on connect using a JWT token.\"\"\"\n    token = auth.get(\"token\") if auth else None\n    if not token:\n        disconnect()\n        return\n\n    try:\n        payload = jwt.decode(token, app.config[\"SECRET_KEY\"], algorithms=[\"HS256\"])\n        user_id = payload[\"user_id\"]\n        username = payload[\"username\"]\n    except jwt.InvalidTokenError:\n        disconnect()\n        return\n\n    # Store user info for this session\n    online_users[request.sid] = {\"user_id\": user_id, \"username\": username}\n    print(f\"{username} connected (sid: {request.sid})\")\n\n\n@socketio.on(\"disconnect\")\ndef handle_disconnect():\n    user = online_users.pop(request.sid, None)\n    if user:\n        # Notify all rooms this user was in\n        emit(\"user:left\", {\"username\": user[\"username\"]}, broadcast=True)\n        print(f\"{user['username']} disconnected\")\n\n\n@socketio.on(\"room:join\")\ndef handle_join_room(data: dict):\n    \"\"\"Join a chat room.\"\"\"\n    room = data[\"room\"]\n    user = online_users.get(request.sid)\n    if not user:\n        return\n\n    join_room(room)\n\n    # Notify the room that someone joined\n    emit(\"room:user-joined\", {\n        \"username\": user[\"username\"],\n        \"room\": room,\n    }, to=room)\n\n    # Send the user the current list of online users in the room\n    room_users = [\n        u[\"username\"] for sid, u in online_users.items()\n        if room in socketio.server.rooms(sid, \"/\")\n    ]\n    emit(\"room:users\", {\"room\": room, \"users\": room_users})\n\n\n@socketio.on(\"room:leave\")\ndef handle_leave_room(data: dict):\n    room = data[\"room\"]\n    user = online_users.get(request.sid)\n    leave_room(room)\n    if user:\n        emit(\"room:user-left\", {\"username\": user[\"username\"]}, to=room)\n\n\n@socketio.on(\"chat:message\")\ndef handle_message(data: dict):\n    \"\"\"Broadcast a chat message to a room.\"\"\"\n    user = online_users.get(request.sid)\n    if not user:\n        return\n\n    emit(\"chat:message\", {\n        \"username\": user[\"username\"],\n        \"message\": data[\"message\"],\n        \"room\": data[\"room\"],\n        \"timestamp\": data.get(\"timestamp\"),\n    }, to=data[\"room\"])\n\n\n@socketio.on(\"chat:typing\")\ndef handle_typing(data: dict):\n    \"\"\"Notify room that a user is typing.\"\"\"\n    user = online_users.get(request.sid)\n    if user:\n        emit(\"chat:typing\", {\n            \"username\": user[\"username\"],\n            \"isTyping\": data[\"isTyping\"],\n        }, to=data[\"room\"], include_self=False)\n\n\n@socketio.on_error_default\ndef default_error_handler(e: Exception):\n    print(f\"SocketIO error: {e}\")\n\n\nif __name__ == \"__main__\":\n    socketio.run(app, host=\"0.0.0.0\", port=5000)"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "useWebSocket.ts",
+      "description": "React WebSocket hook with auto-reconnect, heartbeat, connection status, and typed messages",
+      "code": "import { useEffect, useRef, useState, useCallback } from 'react';\nimport { io, Socket } from 'socket.io-client';\n\ntype ConnectionStatus = 'connecting' | 'connected' | 'disconnected' | 'error';\n\ninterface UseWebSocketOptions {\n  url: string;\n  token: string;\n  autoReconnect?: boolean;\n  maxRetries?: number;\n}\n\ninterface UseWebSocketReturn {\n  status: ConnectionStatus;\n  emit: (event: string, data: unknown) => void;\n  on: (event: string, handler: (data: any) => void) => () => void;\n  disconnect: () => void;\n}\n\nexport function useWebSocket({\n  url,\n  token,\n  autoReconnect = true,\n  maxRetries = 5,\n}: UseWebSocketOptions): UseWebSocketReturn {\n  const socketRef = useRef<Socket | null>(null);\n  const [status, setStatus] = useState<ConnectionStatus>('disconnected');\n\n  useEffect(() => {\n    setStatus('connecting');\n\n    const socket = io(url, {\n      auth: { token },\n      reconnection: autoReconnect,\n      reconnectionAttempts: maxRetries,\n      reconnectionDelay: 1000,\n      reconnectionDelayMax: 30000,\n      timeout: 10000,\n    });\n\n    socket.on('connect', () => {\n      setStatus('connected');\n      console.log('WebSocket connected');\n    });\n\n    socket.on('disconnect', (reason) => {\n      setStatus('disconnected');\n      console.log('WebSocket disconnected:', reason);\n    });\n\n    socket.on('connect_error', (error) => {\n      setStatus('error');\n      console.error('WebSocket connection error:', error.message);\n    });\n\n    socketRef.current = socket;\n\n    return () => {\n      socket.disconnect();\n      socketRef.current = null;\n    };\n  }, [url, token, autoReconnect, maxRetries]);\n\n  const emit = useCallback((event: string, data: unknown) => {\n    socketRef.current?.emit(event, data);\n  }, []);\n\n  const on = useCallback((event: string, handler: (data: any) => void) => {\n    socketRef.current?.on(event, handler);\n    return () => {\n      socketRef.current?.off(event, handler);\n    };\n  }, []);\n\n  const disconnect = useCallback(() => {\n    socketRef.current?.disconnect();\n  }, []);\n\n  return { status, emit, on, disconnect };\n}"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "ChatRoom.tsx",
+      "description": "Full working chat room -- React client with rooms, messages, typing indicator, and online users",
+      "code": "import React, { useState, useEffect, useRef, useCallback } from 'react';\nimport { useWebSocket } from './useWebSocket';\n\ninterface ChatMessage {\n  username: string;\n  message: string;\n  room: string;\n  timestamp: string;\n}\n\nfunction ChatRoom({ room, token }: { room: string; token: string }) {\n  const { status, emit, on } = useWebSocket({\n    url: 'http://localhost:5000',\n    token,\n  });\n\n  const [messages, setMessages] = useState<ChatMessage[]>([]);\n  const [input, setInput] = useState('');\n  const [typingUsers, setTypingUsers] = useState<string[]>([]);\n  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);\n  const messagesEndRef = useRef<HTMLDivElement>(null);\n  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);\n\n  // Join room on connect\n  useEffect(() => {\n    if (status === 'connected') {\n      emit('room:join', { room });\n    }\n  }, [status, room, emit]);\n\n  // Listen for events\n  useEffect(() => {\n    const unsubs = [\n      on('chat:message', (data: ChatMessage) => {\n        setMessages((prev) => [...prev, data]);\n      }),\n      on('chat:typing', (data: { username: string; isTyping: boolean }) => {\n        setTypingUsers((prev) =>\n          data.isTyping\n            ? [...prev.filter((u) => u !== data.username), data.username]\n            : prev.filter((u) => u !== data.username)\n        );\n      }),\n      on('room:users', (data: { users: string[] }) => {\n        setOnlineUsers(data.users);\n      }),\n      on('room:user-joined', (data: { username: string }) => {\n        setOnlineUsers((prev) => [...new Set([...prev, data.username])]);\n      }),\n      on('room:user-left', (data: { username: string }) => {\n        setOnlineUsers((prev) => prev.filter((u) => u !== data.username));\n      }),\n    ];\n\n    return () => unsubs.forEach((unsub) => unsub());\n  }, [on]);\n\n  // Auto-scroll to latest message\n  useEffect(() => {\n    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });\n  }, [messages]);\n\n  const sendMessage = () => {\n    if (!input.trim()) return;\n    emit('chat:message', { message: input, room, timestamp: new Date().toISOString() });\n    setInput('');\n    emit('chat:typing', { room, isTyping: false });\n  };\n\n  const handleInputChange = (value: string) => {\n    setInput(value);\n    emit('chat:typing', { room, isTyping: true });\n\n    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);\n    typingTimeoutRef.current = setTimeout(() => {\n      emit('chat:typing', { room, isTyping: false });\n    }, 2000);\n  };\n\n  return (\n    <div className=\"chat-room\">\n      <div className=\"chat-header\">\n        <h3>#{room}</h3>\n        <span className={`status-dot status-${status}`} />\n        <span>{onlineUsers.length} online</span>\n      </div>\n\n      <div className=\"online-users\">\n        {onlineUsers.map((user) => (\n          <span key={user} className=\"user-chip\">{user}</span>\n        ))}\n      </div>\n\n      <div className=\"messages\">\n        {messages.map((msg, i) => (\n          <div key={i} className=\"message\">\n            <strong>{msg.username}:</strong> {msg.message}\n            <time>{new Date(msg.timestamp).toLocaleTimeString()}</time>\n          </div>\n        ))}\n        <div ref={messagesEndRef} />\n      </div>\n\n      {typingUsers.length > 0 && (\n        <div className=\"typing-indicator\">\n          {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing...\n        </div>\n      )}\n\n      <div className=\"chat-input\">\n        <input\n          value={input}\n          onChange={(e) => handleInputChange(e.target.value)}\n          onKeyDown={(e) => e.key === 'Enter' && sendMessage()}\n          placeholder=\"Type a message...\"\n          disabled={status !== 'connected'}\n        />\n        <button onClick={sendMessage} disabled={status !== 'connected'}>\n          Send\n        </button>\n      </div>\n    </div>\n  );\n}\n\nexport default ChatRoom;"
+    },
+    {
+      "type": "table",
+      "heading": "WebSocket Events Lifecycle",
+      "headers": ["Event", "Direction", "When It Fires", "Typical Action"],
+      "rows": [
+        ["connect", "Server -> Client", "Connection established and authenticated", "Update UI to 'connected', join rooms, fetch initial data"],
+        ["message", "Bidirectional", "Either side sends a message", "Display in UI (client) or broadcast to room (server)"],
+        ["disconnect", "Server -> Client", "Connection lost (network, server restart, timeout)", "Show 'disconnected' banner, attempt reconnect"],
+        ["connect_error", "Client", "Connection attempt fails (bad auth, server down)", "Show error message, retry with backoff"],
+        ["reconnect", "Client", "Successfully reconnected after disconnect", "Re-join rooms, sync missed messages"]
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Server-Sent Events (SSE) -- One-Way Push",
+      "headingLevel": 2,
+      "body": "Server-Sent Events are simpler than WebSockets when you only need server-to-client push. SSE is built on top of HTTP, automatically reconnects if the connection drops, works through proxies and load balancers, and uses a simple text-based protocol. It is ideal for live dashboards, notification feeds, progress bars, and any scenario where the server pushes updates but the client does not need to send data back over the same connection."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "sse_server.py",
+      "description": "Flask SSE endpoint with streaming response, event types, and retry intervals",
+      "code": "import json\nimport time\nimport queue\nimport threading\nfrom flask import Flask, Response, request\n\napp = Flask(__name__)\n\n# Each connected client gets a queue\nclients: list[queue.Queue] = []\n\n\ndef format_sse(data: dict, event: str | None = None, retry: int | None = None) -> str:\n    \"\"\"Format data as an SSE message.\"\"\"\n    lines = []\n    if event:\n        lines.append(f\"event: {event}\")\n    if retry:\n        lines.append(f\"retry: {retry}\")\n    lines.append(f\"data: {json.dumps(data)}\")\n    return \"\\n\".join(lines) + \"\\n\\n\"\n\n\ndef event_stream(client_queue: queue.Queue):\n    \"\"\"Generator that yields SSE messages from the client's queue.\"\"\"\n    try:\n        while True:\n            # Block until a message is available (timeout prevents zombie connections)\n            try:\n                message = client_queue.get(timeout=30)\n                yield message\n            except queue.Empty:\n                # Send a keep-alive comment to prevent connection timeout\n                yield \": heartbeat\\n\\n\"\n    finally:\n        # Clean up when client disconnects\n        clients.remove(client_queue)\n\n\n@app.get(\"/api/events\")\ndef sse_endpoint():\n    \"\"\"SSE endpoint -- clients connect here to receive real-time events.\"\"\"\n    client_queue: queue.Queue = queue.Queue()\n    clients.append(client_queue)\n\n    # Send initial connection event\n    client_queue.put(format_sse(\n        {\"message\": \"Connected to event stream\"},\n        event=\"connected\",\n        retry=5000,  # Client retries in 5 seconds if disconnected\n    ))\n\n    return Response(\n        event_stream(client_queue),\n        mimetype=\"text/event-stream\",\n        headers={\n            \"Cache-Control\": \"no-cache\",\n            \"X-Accel-Buffering\": \"no\",  # Disable Nginx buffering\n        },\n    )\n\n\ndef broadcast(data: dict, event: str | None = None):\n    \"\"\"Send an event to all connected clients.\"\"\"\n    message = format_sse(data, event=event)\n    for client_queue in clients:\n        client_queue.put(message)\n\n\n# Example: broadcast order updates\n@app.post(\"/api/orders\")\ndef create_order():\n    order = request.get_json()\n    # ... save order to database ...\n\n    # Push update to all connected dashboard clients\n    broadcast(\n        {\"order_id\": order[\"id\"], \"total\": order[\"total\"], \"status\": \"new\"},\n        event=\"order:created\",\n    )\n    return {\"status\": \"created\"}, 201"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "useSSE.ts",
+      "description": "EventSource hook with auto-reconnect, event type filtering, and error handling",
+      "code": "import { useEffect, useRef, useState, useCallback } from 'react';\n\ninterface UseSSEOptions {\n  url: string;\n  events?: string[];  // Specific event types to listen for\n  withCredentials?: boolean;\n}\n\ninterface SSEMessage<T = unknown> {\n  event: string;\n  data: T;\n  lastEventId: string;\n}\n\nexport function useSSE<T = unknown>({\n  url,\n  events = [],\n  withCredentials = false,\n}: UseSSEOptions) {\n  const [lastMessage, setLastMessage] = useState<SSEMessage<T> | null>(null);\n  const [status, setStatus] = useState<'connecting' | 'open' | 'closed'>('connecting');\n  const eventSourceRef = useRef<EventSource | null>(null);\n\n  useEffect(() => {\n    const es = new EventSource(url, { withCredentials });\n    eventSourceRef.current = es;\n\n    es.onopen = () => setStatus('open');\n    es.onerror = () => {\n      setStatus('closed');\n      // EventSource automatically reconnects -- the browser handles retry\n    };\n\n    // Generic message handler (events without a type)\n    es.onmessage = (event: MessageEvent) => {\n      setLastMessage({\n        event: 'message',\n        data: JSON.parse(event.data),\n        lastEventId: event.lastEventId,\n      });\n    };\n\n    // Named event handlers\n    for (const eventName of events) {\n      es.addEventListener(eventName, (event: MessageEvent) => {\n        setLastMessage({\n          event: eventName,\n          data: JSON.parse(event.data),\n          lastEventId: event.lastEventId,\n        });\n      });\n    }\n\n    return () => {\n      es.close();\n      eventSourceRef.current = null;\n      setStatus('closed');\n    };\n  }, [url, withCredentials, ...events]);\n\n  const close = useCallback(() => {\n    eventSourceRef.current?.close();\n    setStatus('closed');\n  }, []);\n\n  return { lastMessage, status, close };\n}\n\n// --- Usage: Live Order Dashboard ---\n// function OrderDashboard() {\n//   const { lastMessage, status } = useSSE<{ order_id: string; total: number }>({\n//     url: '/api/events',\n//     events: ['order:created', 'order:updated', 'order:completed'],\n//   });\n//\n//   useEffect(() => {\n//     if (lastMessage?.event === 'order:created') {\n//       // Add new order to dashboard\n//     }\n//   }, [lastMessage]);\n// }"
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "WebSocket",
+          "blocks": [
+            {
+              "type": "table",
+              "headers": ["Aspect", "Detail"],
+              "rows": [
+                ["Direction", "Bidirectional -- both client and server can send at any time"],
+                ["Protocol", "ws:// or wss:// -- upgrades from HTTP to a persistent TCP connection"],
+                ["Reconnect", "Must be implemented manually or with a library (socket.io handles it)"],
+                ["Proxy support", "Can be tricky -- some proxies and firewalls block WebSocket upgrades"],
+                ["Use when", "Chat, games, collaborative editing -- both sides send frequently"],
+                ["Complexity", "Higher -- requires WebSocket server, connection management, heartbeats"]
+              ]
+            }
+          ]
+        },
+        {
+          "label": "SSE",
+          "blocks": [
+            {
+              "type": "table",
+              "headers": ["Aspect", "Detail"],
+              "rows": [
+                ["Direction", "One-way -- server pushes to client only. Client uses regular HTTP for requests."],
+                ["Protocol", "Standard HTTP with text/event-stream content type"],
+                ["Reconnect", "Built-in -- the browser automatically reconnects with Last-Event-ID header"],
+                ["Proxy support", "Excellent -- works through any HTTP proxy, CDN, or load balancer"],
+                ["Use when", "Live dashboards, notifications, progress updates -- server pushes, client listens"],
+                ["Complexity", "Low -- just a streaming HTTP response on the server, EventSource API on the client"]
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Long Polling",
+          "blocks": [
+            {
+              "type": "table",
+              "headers": ["Aspect", "Detail"],
+              "rows": [
+                ["Direction", "Simulated push -- client makes repeated requests, server holds the response until data is available"],
+                ["Protocol", "Standard HTTP -- no special protocol or API needed"],
+                ["Reconnect", "Built into the pattern -- client immediately sends a new request after each response"],
+                ["Proxy support", "Universal -- plain HTTP requests work everywhere"],
+                ["Use when", "Fallback when SSE or WebSocket is not available. Legacy browser support."],
+                ["Complexity", "Medium -- simple concept but wastes server resources holding connections open"]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Message Queues -- Guaranteed Delivery",
+      "headingLevel": 2,
+      "body": "Message queues (Redis, RabbitMQ, SQS) sit between producers and consumers to guarantee delivery. If a consumer crashes, the message stays in the queue and is redelivered. If the producer sends messages faster than the consumer can handle, the queue buffers them. This is essential for any background work that must not be lost -- email sending, image processing, payment handling."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "redis_pubsub.py",
+      "description": "Redis pub/sub -- publisher and subscriber with redis-py",
+      "code": "import redis\nimport json\nimport threading\n\nr = redis.Redis(host=\"localhost\", port=6379, decode_responses=True)\n\n\n# --- Publisher ---\ndef publish_event(channel: str, data: dict) -> int:\n    \"\"\"Publish an event to a Redis channel. Returns number of subscribers who received it.\"\"\"\n    message = json.dumps(data)\n    num_receivers = r.publish(channel, message)\n    print(f\"Published to '{channel}': {data} ({num_receivers} receivers)\")\n    return num_receivers\n\n\n# --- Subscriber ---\ndef subscribe_to_events(channels: list[str], handler):\n    \"\"\"Subscribe to Redis channels and call handler for each message.\"\"\"\n    pubsub = r.pubsub()\n    pubsub.subscribe(*channels)\n\n    print(f\"Listening on channels: {channels}\")\n    for message in pubsub.listen():\n        if message[\"type\"] == \"message\":\n            channel = message[\"channel\"]\n            data = json.loads(message[\"data\"])\n            handler(channel, data)\n\n\n# --- Usage ---\ndef handle_event(channel: str, data: dict):\n    print(f\"Received on '{channel}': {data}\")\n\n\n# Run subscriber in a background thread\nsubscriber_thread = threading.Thread(\n    target=subscribe_to_events,\n    args=([\"orders\", \"payments\"], handle_event),\n    daemon=True,\n)\nsubscriber_thread.start()\n\n# Publish events\npublish_event(\"orders\", {\"order_id\": \"ORD-001\", \"action\": \"created\", \"total\": 99.99})\npublish_event(\"payments\", {\"order_id\": \"ORD-001\", \"status\": \"completed\"})\n\n# NOTE: Redis pub/sub does NOT persist messages. If no subscriber is\n# listening when a message is published, it is lost. For guaranteed\n# delivery, use Redis Streams, Celery, or a proper message broker."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "celery_tasks.py",
+      "description": "Celery task queue with Redis -- define tasks, send async, handle results, retry on failure",
+      "code": "from celery import Celery, chain, group\n\ncelery_app = Celery(\n    \"worker\",\n    broker=\"redis://localhost:6379/0\",\n    backend=\"redis://localhost:6379/1\",  # Store results\n)\n\ncelery_app.conf.update(\n    task_serializer=\"json\",\n    result_serializer=\"json\",\n    accept_content=[\"json\"],\n    timezone=\"UTC\",\n    task_track_started=True,\n    task_acks_late=True,       # Acknowledge only after task completes\n    worker_prefetch_multiplier=1,  # Fair dispatch\n)\n\n\n@celery_app.task(bind=True, max_retries=3)\ndef resize_image(self, image_path: str, sizes: list[tuple[int, int]]):\n    \"\"\"Resize an image to multiple sizes.\"\"\"\n    try:\n        from PIL import Image\n        img = Image.open(image_path)\n        results = []\n        for width, height in sizes:\n            resized = img.resize((width, height))\n            output_path = f\"{image_path}_{width}x{height}.jpg\"\n            resized.save(output_path)\n            results.append(output_path)\n        return results\n    except Exception as exc:\n        raise self.retry(exc=exc, countdown=2 ** self.request.retries * 10)\n\n\n@celery_app.task\ndef generate_thumbnail(image_path: str) -> str:\n    \"\"\"Generate a thumbnail for an image.\"\"\"\n    from PIL import Image\n    img = Image.open(image_path)\n    img.thumbnail((200, 200))\n    thumb_path = f\"{image_path}_thumb.jpg\"\n    img.save(thumb_path)\n    return thumb_path\n\n\n@celery_app.task\ndef update_database(image_id: str, paths: list[str]) -> dict:\n    \"\"\"Update the database with processed image paths.\"\"\"\n    # db.execute(\"UPDATE images SET processed_paths = ? WHERE id = ?\", ...)\n    return {\"image_id\": image_id, \"paths\": paths, \"status\": \"complete\"}\n\n\n# --- Sending tasks ---\n# Simple async call:\nresult = resize_image.delay(\"/uploads/photo.jpg\", [(800, 600), (400, 300)])\nprint(result.id)         # Task ID\nprint(result.status)     # PENDING -> STARTED -> SUCCESS\nprint(result.get(timeout=30))  # Wait for result (blocking)\n\n# Chain tasks (pipeline):\npipeline = chain(\n    resize_image.s(\"/uploads/photo.jpg\", [(800, 600)]),\n    generate_thumbnail.s(),  # Receives output of previous task\n)\npipeline.apply_async()\n\n# Run tasks in parallel:\nbatch = group(\n    resize_image.s(\"/uploads/photo1.jpg\", [(800, 600)]),\n    resize_image.s(\"/uploads/photo2.jpg\", [(800, 600)]),\n    resize_image.s(\"/uploads/photo3.jpg\", [(800, 600)]),\n)\nresults = batch.apply_async()"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "image_pipeline.py",
+      "description": "Real example -- Image upload pipeline: API enqueues task, Celery worker processes, emits completion event",
+      "code": "from flask import Flask, request, jsonify\nfrom celery import chain\nfrom celery_tasks import celery_app, resize_image, generate_thumbnail, update_database\nfrom event_dispatcher import dispatcher\nimport uuid\nimport os\n\napp = Flask(__name__)\nUPLOAD_DIR = \"/var/uploads\"\n\n\n@celery_app.task\ndef emit_image_processed(result: dict, image_id: str):\n    \"\"\"Final task in the chain -- emits an event when processing is complete.\"\"\"\n    dispatcher.emit(\"image.processed\", image_id=image_id, paths=result[\"paths\"])\n    return result\n\n\n@app.post(\"/api/images/upload\")\ndef upload_image():\n    \"\"\"Accept an image upload and enqueue processing.\"\"\"\n    file = request.files[\"image\"]\n    image_id = str(uuid.uuid4())\n    file_path = os.path.join(UPLOAD_DIR, f\"{image_id}.jpg\")\n    file.save(file_path)\n\n    # Build a processing pipeline:\n    # 1. Resize to standard sizes\n    # 2. Generate thumbnail\n    # 3. Update database\n    # 4. Emit completion event\n    pipeline = chain(\n        resize_image.s(file_path, [(1200, 900), (800, 600), (400, 300)]),\n        generate_thumbnail.s(),\n        update_database.s(image_id),\n        emit_image_processed.s(image_id),\n    )\n\n    # Enqueue -- returns immediately. Worker processes in background.\n    task_result = pipeline.apply_async()\n\n    return jsonify({\n        \"image_id\": image_id,\n        \"task_id\": task_result.id,\n        \"status\": \"processing\",\n        \"status_url\": f\"/api/images/{image_id}/status\",\n    }), 202  # 202 Accepted -- processing is not yet complete\n\n\n@app.get(\"/api/images/<image_id>/status\")\ndef image_status(image_id: str):\n    \"\"\"Check the processing status of an uploaded image.\"\"\"\n    # In production, query the database for the image status\n    return jsonify({\"image_id\": image_id, \"status\": \"processing\"})"
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "Redis Pub/Sub",
+          "body": "Simple, fast, no persistence. Messages are lost if no subscriber is listening. Best for real-time notifications where missing a message is acceptable.",
+          "icon": "Speed",
+          "chip": "Simple"
+        },
+        {
+          "title": "Celery + Redis",
+          "body": "Python task queue with retries, result tracking, scheduling, and chaining. The go-to for Flask and Django background jobs.",
+          "icon": "AccountTree",
+          "chip": "Task Queue"
+        },
+        {
+          "title": "RabbitMQ",
+          "body": "Enterprise message broker with routing, exchanges, dead letter queues, and AMQP protocol. More complex but more powerful than Redis.",
+          "icon": "Hub",
+          "chip": "Enterprise"
+        },
+        {
+          "title": "AWS SQS",
+          "body": "Fully managed cloud queue. No infrastructure to maintain. Pay per message. Great for serverless architectures and Lambda functions.",
+          "icon": "Cloud",
+          "chip": "Cloud-Native"
+        },
+        {
+          "title": "Apache Kafka",
+          "body": "Distributed event streaming platform. Ordered, persistent, replayable logs. Built for high-throughput analytics, IoT, and event sourcing at scale.",
+          "icon": "Stream",
+          "chip": "Streaming"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Webhooks -- Events Between Services",
+      "headingLevel": 2,
+      "body": "Webhooks are HTTP callbacks. When something happens in Service A (a payment succeeds on Stripe, a push is made on GitHub, a message is sent on Slack), it POSTs a JSON payload to a URL you registered. Your server receives the POST, verifies it is authentic, and processes the event. This is how most third-party APIs notify your application of events without requiring you to poll."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "webhook_receiver.py",
+      "description": "Flask webhook receiver with HMAC signature verification for security",
+      "code": "import hmac\nimport hashlib\nimport json\nimport time\nfrom flask import Flask, request, jsonify, abort\nimport logging\n\nlogger = logging.getLogger(__name__)\napp = Flask(__name__)\n\nWEBHOOK_SECRET = \"whsec_your_webhook_signing_secret\"\n\n\ndef verify_signature(payload: bytes, signature: str, secret: str) -> bool:\n    \"\"\"Verify HMAC-SHA256 signature of webhook payload.\"\"\"\n    expected = hmac.new(\n        secret.encode(\"utf-8\"),\n        payload,\n        hashlib.sha256,\n    ).hexdigest()\n    # Use constant-time comparison to prevent timing attacks\n    return hmac.compare_digest(f\"sha256={expected}\", signature)\n\n\ndef verify_timestamp(timestamp: str, tolerance_seconds: int = 300) -> bool:\n    \"\"\"Reject webhooks older than tolerance (prevent replay attacks).\"\"\"\n    webhook_time = int(timestamp)\n    current_time = int(time.time())\n    return abs(current_time - webhook_time) <= tolerance_seconds\n\n\n@app.post(\"/webhooks/provider\")\ndef receive_webhook():\n    \"\"\"Generic webhook receiver with signature and timestamp verification.\"\"\"\n    payload = request.get_data()\n    signature = request.headers.get(\"X-Webhook-Signature\", \"\")\n    timestamp = request.headers.get(\"X-Webhook-Timestamp\", \"0\")\n\n    # Step 1: Verify timestamp (prevent replay attacks)\n    if not verify_timestamp(timestamp):\n        logger.warning(\"Webhook rejected: timestamp too old\")\n        abort(401, \"Timestamp too old\")\n\n    # Step 2: Verify signature (ensure it came from the real provider)\n    if not verify_signature(payload, signature, WEBHOOK_SECRET):\n        logger.warning(\"Webhook rejected: invalid signature\")\n        abort(401, \"Invalid signature\")\n\n    # Step 3: Parse the event\n    event = json.loads(payload)\n    event_type = event.get(\"type\")\n    logger.info(f\"Webhook received: {event_type}\")\n\n    # Step 4: Handle the event\n    handlers = {\n        \"order.created\": handle_order_created,\n        \"order.completed\": handle_order_completed,\n        \"payment.failed\": handle_payment_failed,\n    }\n\n    handler = handlers.get(event_type)\n    if handler:\n        handler(event[\"data\"])\n    else:\n        logger.info(f\"Unhandled webhook event type: {event_type}\")\n\n    # Step 5: Return 200 quickly. Process async if needed.\n    return jsonify({\"received\": True}), 200\n\n\ndef handle_order_created(data: dict):\n    logger.info(f\"Order created: {data['order_id']}\")\n\ndef handle_order_completed(data: dict):\n    logger.info(f\"Order completed: {data['order_id']}\")\n\ndef handle_payment_failed(data: dict):\n    logger.info(f\"Payment failed for order: {data['order_id']}\")"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "webhook_sender.py",
+      "description": "Webhook sender -- register URLs, queue deliveries, retry with exponential backoff",
+      "code": "import hmac\nimport hashlib\nimport json\nimport time\nimport requests\nimport logging\nfrom dataclasses import dataclass, field\n\nlogger = logging.getLogger(__name__)\n\n\n@dataclass\nclass WebhookSubscription:\n    url: str\n    secret: str\n    events: list[str]  # Event types this subscription cares about\n    active: bool = True\n    failure_count: int = 0\n    max_failures: int = 10  # Disable after 10 consecutive failures\n\n\n@dataclass\nclass WebhookDelivery:\n    subscription: WebhookSubscription\n    event_type: str\n    payload: dict\n    attempt: int = 0\n    max_attempts: int = 5\n    created_at: float = field(default_factory=time.time)\n\n\nclass WebhookSender:\n    def __init__(self):\n        self.subscriptions: list[WebhookSubscription] = []\n\n    def register(self, url: str, secret: str, events: list[str]) -> WebhookSubscription:\n        sub = WebhookSubscription(url=url, secret=secret, events=events)\n        self.subscriptions.append(sub)\n        return sub\n\n    def send(self, event_type: str, data: dict):\n        \"\"\"Send an event to all subscribed webhooks.\"\"\"\n        for sub in self.subscriptions:\n            if not sub.active or event_type not in sub.events:\n                continue\n            delivery = WebhookDelivery(\n                subscription=sub, event_type=event_type, payload=data,\n            )\n            self._deliver(delivery)\n\n    def _deliver(self, delivery: WebhookDelivery):\n        sub = delivery.subscription\n        payload = json.dumps({\n            \"type\": delivery.event_type,\n            \"data\": delivery.payload,\n            \"timestamp\": int(time.time()),\n        })\n\n        # Sign the payload\n        signature = \"sha256=\" + hmac.new(\n            sub.secret.encode(), payload.encode(), hashlib.sha256,\n        ).hexdigest()\n\n        try:\n            response = requests.post(\n                sub.url,\n                data=payload,\n                headers={\n                    \"Content-Type\": \"application/json\",\n                    \"X-Webhook-Signature\": signature,\n                    \"X-Webhook-Timestamp\": str(int(time.time())),\n                },\n                timeout=10,\n            )\n            response.raise_for_status()\n            sub.failure_count = 0  # Reset on success\n            logger.info(f\"Webhook delivered to {sub.url}\")\n\n        except requests.RequestException as e:\n            delivery.attempt += 1\n            sub.failure_count += 1\n            logger.warning(f\"Webhook delivery failed ({delivery.attempt}/{delivery.max_attempts}): {e}\")\n\n            if sub.failure_count >= sub.max_failures:\n                sub.active = False\n                logger.error(f\"Webhook disabled after {sub.max_failures} failures: {sub.url}\")\n            elif delivery.attempt < delivery.max_attempts:\n                # Exponential backoff: 2s, 4s, 8s, 16s, 32s\n                delay = 2 ** delivery.attempt\n                logger.info(f\"Retrying webhook in {delay}s\")\n                # In production, use Celery: deliver_webhook.apply_async(countdown=delay)\n\n\n# --- Usage ---\nsender = WebhookSender()\nsender.register(\n    url=\"https://myapp.com/webhooks/orders\",\n    secret=\"whsec_abc123\",\n    events=[\"order.created\", \"order.completed\"],\n)\nsender.send(\"order.created\", {\"order_id\": \"ORD-42\", \"total\": 99.99})"
+    },
+    {
+      "type": "step",
+      "step": 1,
+      "title": "Register Webhook Endpoint URL",
+      "body": "In your Stripe dashboard, go to Developers > Webhooks and add your endpoint URL (e.g., https://yourapp.com/webhooks/stripe). Select the event types you want to receive (payment_intent.succeeded, customer.subscription.created, etc.). Copy the webhook signing secret.",
+      "code": "# Your endpoint URL must be HTTPS in production.\n# For local development, use a tunnel:\n# ngrok http 5000\n# Then use the ngrok URL: https://abc123.ngrok.io/webhooks/stripe",
+      "language": "bash"
+    },
+    {
+      "type": "step",
+      "step": 2,
+      "title": "Create Flask Route to Receive POST",
+      "body": "Create an endpoint that accepts POST requests from Stripe. The raw request body is needed for signature verification, so read it before parsing JSON.",
+      "code": "@app.post(\"/webhooks/stripe\")\ndef stripe_webhook():\n    payload = request.get_data()  # Raw bytes -- needed for signature check\n    sig_header = request.headers.get(\"Stripe-Signature\")\n    # ... verification and handling below",
+      "language": "python"
+    },
+    {
+      "type": "step",
+      "step": 3,
+      "title": "Verify Stripe Signature",
+      "body": "Stripe signs every webhook with your endpoint secret. Always verify this signature before trusting the payload. This prevents attackers from sending fake events to your endpoint.",
+      "code": "import stripe\n\nstripe.api_key = \"sk_test_...\"\nendpoint_secret = \"whsec_...\"  # From Stripe dashboard\n\ntry:\n    event = stripe.Webhook.construct_event(\n        payload, sig_header, endpoint_secret\n    )\nexcept ValueError:\n    abort(400)  # Invalid payload\nexcept stripe.error.SignatureVerificationError:\n    abort(401)  # Invalid signature",
+      "language": "python"
+    },
+    {
+      "type": "step",
+      "step": 4,
+      "title": "Parse Event Type and Route to Handler",
+      "body": "Stripe sends many event types. Parse the type and route to the appropriate handler function.",
+      "code": "event_type = event[\"type\"]\ndata = event[\"data\"][\"object\"]\n\nhandlers = {\n    \"payment_intent.succeeded\": handle_payment_success,\n    \"payment_intent.payment_failed\": handle_payment_failure,\n    \"customer.subscription.created\": handle_new_subscription,\n    \"customer.subscription.deleted\": handle_cancelled_subscription,\n    \"invoice.payment_failed\": handle_invoice_failure,\n}",
+      "language": "python"
+    },
+    {
+      "type": "step",
+      "step": 5,
+      "title": "Handle Each Event Type",
+      "body": "Implement handler functions for each event type your app cares about. Each handler should be idempotent -- safe to call multiple times with the same event.",
+      "code": "def handle_payment_success(data: dict):\n    payment_intent_id = data[\"id\"]\n    amount = data[\"amount\"] / 100  # Stripe amounts are in cents\n    customer_id = data[\"customer\"]\n    # Update order status, send receipt, unlock access, etc.\n    logger.info(f\"Payment succeeded: {payment_intent_id} (${amount})\")\n\ndef handle_new_subscription(data: dict):\n    subscription_id = data[\"id\"]\n    customer_id = data[\"customer\"]\n    plan_id = data[\"items\"][\"data\"][0][\"price\"][\"id\"]\n    # Activate the subscription in your database\n    logger.info(f\"New subscription: {subscription_id} plan={plan_id}\")",
+      "language": "python"
+    },
+    {
+      "type": "step",
+      "step": 6,
+      "title": "Return 200 Quickly",
+      "body": "Stripe expects a 200 response within 20 seconds. If your processing takes longer, return 200 immediately and process asynchronously (e.g., with Celery). Stripe will retry failed deliveries with exponential backoff.",
+      "code": "handler = handlers.get(event_type)\nif handler:\n    try:\n        handler(data)\n    except Exception as e:\n        logger.error(f\"Webhook handler error: {e}\")\n        # Still return 200 -- we received it. Handle the error separately.\n\nreturn jsonify({\"received\": True}), 200",
+      "language": "python"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "stripe_webhook_complete.py",
+      "description": "Complete Stripe webhook handler with signature verification, event routing, and idempotency",
+      "code": "import stripe\nimport logging\nfrom flask import Flask, request, jsonify, abort\nfrom functools import wraps\n\nlogger = logging.getLogger(__name__)\napp = Flask(__name__)\n\nstripe.api_key = \"sk_test_your_key_here\"\nENDPOINT_SECRET = \"whsec_your_webhook_secret\"\n\n# Track processed events for idempotency\nprocessed_events: set[str] = set()  # In production, use a database table\n\n\n@app.post(\"/webhooks/stripe\")\ndef stripe_webhook():\n    payload = request.get_data()\n    sig_header = request.headers.get(\"Stripe-Signature\")\n\n    # Verify signature\n    try:\n        event = stripe.Webhook.construct_event(payload, sig_header, ENDPOINT_SECRET)\n    except ValueError:\n        logger.warning(\"Invalid webhook payload\")\n        abort(400)\n    except stripe.error.SignatureVerificationError:\n        logger.warning(\"Invalid webhook signature\")\n        abort(401)\n\n    # Idempotency check -- skip if we already processed this event\n    event_id = event[\"id\"]\n    if event_id in processed_events:\n        logger.info(f\"Skipping duplicate event: {event_id}\")\n        return jsonify({\"received\": True, \"duplicate\": True}), 200\n\n    # Route to handler\n    event_type = event[\"type\"]\n    data = event[\"data\"][\"object\"]\n\n    handlers = {\n        \"payment_intent.succeeded\": handle_payment_success,\n        \"payment_intent.payment_failed\": handle_payment_failure,\n        \"customer.subscription.created\": handle_new_subscription,\n        \"customer.subscription.deleted\": handle_cancelled_subscription,\n        \"invoice.payment_failed\": handle_invoice_failure,\n    }\n\n    handler = handlers.get(event_type)\n    if handler:\n        try:\n            handler(data)\n            processed_events.add(event_id)  # Mark as processed\n        except Exception as e:\n            logger.error(f\"Error handling {event_type}: {e}\", exc_info=True)\n            # Return 200 anyway -- we received it. Fix the bug and replay.\n    else:\n        logger.info(f\"Unhandled event type: {event_type}\")\n\n    return jsonify({\"received\": True}), 200\n\n\ndef handle_payment_success(data: dict):\n    payment_id = data[\"id\"]\n    amount = data[\"amount\"] / 100\n    customer = data.get(\"customer\")\n    logger.info(f\"Payment succeeded: {payment_id} ${amount} customer={customer}\")\n    # Update order: db.orders.update({\"payment_intent\": payment_id}, {\"status\": \"paid\"})\n    # Send receipt email: send_receipt.delay(payment_id)\n\n\ndef handle_payment_failure(data: dict):\n    payment_id = data[\"id\"]\n    error = data.get(\"last_payment_error\", {}).get(\"message\", \"Unknown error\")\n    logger.warning(f\"Payment failed: {payment_id} - {error}\")\n    # Notify customer: send_payment_failed_email.delay(payment_id, error)\n\n\ndef handle_new_subscription(data: dict):\n    sub_id = data[\"id\"]\n    customer = data[\"customer\"]\n    price_id = data[\"items\"][\"data\"][0][\"price\"][\"id\"]\n    logger.info(f\"New subscription: {sub_id} customer={customer} price={price_id}\")\n    # Activate: db.subscriptions.insert({\"stripe_id\": sub_id, ...})\n\n\ndef handle_cancelled_subscription(data: dict):\n    sub_id = data[\"id\"]\n    logger.info(f\"Subscription cancelled: {sub_id}\")\n    # Deactivate: db.subscriptions.update({\"stripe_id\": sub_id}, {\"active\": False})\n\n\ndef handle_invoice_failure(data: dict):\n    invoice_id = data[\"id\"]\n    customer = data[\"customer\"]\n    logger.warning(f\"Invoice payment failed: {invoice_id} customer={customer}\")\n    # Alert: send_invoice_failed_notification.delay(customer, invoice_id)"
+    },
+    {
+      "type": "alert",
+      "severity": "error",
+      "title": "Always Verify Webhook Signatures",
+      "body": "Without signature verification, anyone can POST fake events to your webhook endpoint. An attacker could send a fake 'payment_intent.succeeded' event to grant themselves access to paid features. Always verify the HMAC-SHA256 signature using the provider's webhook secret. This is not optional -- it is a critical security requirement."
+    },
+    {
+      "type": "accordion",
+      "title": "Webhook Security Checklist",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "list",
+          "ordered": true,
+          "items": [
+            "**Signature Verification**: Always verify HMAC-SHA256 signatures using the provider's webhook secret. Use constant-time comparison (hmac.compare_digest) to prevent timing attacks.",
+            "**Idempotency Keys**: Track processed event IDs in a database. Webhooks can be delivered more than once. Your handler must be safe to call multiple times with the same event.",
+            "**Replay Protection**: Check the webhook timestamp. Reject events older than 5 minutes to prevent replay attacks where an attacker resends a captured webhook.",
+            "**IP Allowlisting**: If the provider publishes a list of IP addresses their webhooks come from, configure your firewall or reverse proxy to only accept traffic from those IPs.",
+            "**HTTPS Only**: Never expose a webhook endpoint over plain HTTP. TLS encrypts the payload in transit and prevents man-in-the-middle interception.",
+            "**Return 200 Quickly**: Providers typically retry if they do not receive a 200 within a few seconds. If processing takes time, return 200 immediately and process asynchronously.",
+            "**Log Everything**: Log the event type, event ID, and processing result for every webhook received. You will need this for debugging and reconciliation."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Event Sourcing",
+      "headingLevel": 2,
+      "body": "Traditional databases store current state. You update a row, and the previous value is gone. Event sourcing takes a different approach: instead of storing current state, you store every event that changed the state. The current state is derived by replaying events from the beginning. This gives you a complete audit trail, the ability to time-travel to any point in history, and the option to replay events to build new projections."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "event_store.py",
+      "description": "Simple event store -- append events, retrieve by stream, rebuild state by replaying",
+      "code": "import json\nimport uuid\nfrom datetime import datetime, timezone\nfrom dataclasses import dataclass, field, asdict\nfrom typing import Any\n\n\n@dataclass\nclass Event:\n    stream_id: str\n    event_type: str\n    data: dict[str, Any]\n    event_id: str = field(default_factory=lambda: str(uuid.uuid4()))\n    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())\n    version: int = 0  # Position in the stream\n\n\nclass EventStore:\n    \"\"\"In-memory event store. In production, use PostgreSQL or EventStoreDB.\"\"\"\n\n    def __init__(self):\n        self._events: list[Event] = []\n\n    def append(self, stream_id: str, event_type: str, data: dict) -> Event:\n        \"\"\"Append a new event to a stream.\"\"\"\n        # Calculate version (position in this stream)\n        stream_events = [e for e in self._events if e.stream_id == stream_id]\n        version = len(stream_events) + 1\n\n        event = Event(\n            stream_id=stream_id,\n            event_type=event_type,\n            data=data,\n            version=version,\n        )\n        self._events.append(event)\n        return event\n\n    def get_events(self, stream_id: str, after_version: int = 0) -> list[Event]:\n        \"\"\"Get all events for a stream, optionally after a specific version.\"\"\"\n        return [\n            e for e in self._events\n            if e.stream_id == stream_id and e.version > after_version\n        ]\n\n    def get_all_events(self, event_type: str | None = None) -> list[Event]:\n        \"\"\"Get all events across all streams, optionally filtered by type.\"\"\"\n        if event_type:\n            return [e for e in self._events if e.event_type == event_type]\n        return list(self._events)\n\n\ndef rebuild_state(store: EventStore, stream_id: str, reducers: dict) -> dict:\n    \"\"\"Rebuild current state by replaying events through reducer functions.\"\"\"\n    state: dict[str, Any] = {}\n    events = store.get_events(stream_id)\n\n    for event in events:\n        reducer = reducers.get(event.event_type)\n        if reducer:\n            state = reducer(state, event.data)\n\n    return state"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "cart_event_sourcing.py",
+      "description": "Shopping cart as an event stream -- replay events to rebuild current state",
+      "code": "from event_store import EventStore, rebuild_state\nfrom copy import deepcopy\n\nstore = EventStore()\n\n# --- Define reducers for each event type ---\n\ndef cart_created(state: dict, data: dict) -> dict:\n    return {\"cart_id\": data[\"cart_id\"], \"items\": [], \"status\": \"active\"}\n\ndef item_added(state: dict, data: dict) -> dict:\n    state = deepcopy(state)\n    # Check if item already exists, update quantity\n    for item in state[\"items\"]:\n        if item[\"sku\"] == data[\"sku\"]:\n            item[\"quantity\"] += data[\"quantity\"]\n            return state\n    state[\"items\"].append({\n        \"sku\": data[\"sku\"],\n        \"name\": data[\"name\"],\n        \"price\": data[\"price\"],\n        \"quantity\": data[\"quantity\"],\n    })\n    return state\n\ndef item_removed(state: dict, data: dict) -> dict:\n    state = deepcopy(state)\n    state[\"items\"] = [i for i in state[\"items\"] if i[\"sku\"] != data[\"sku\"]]\n    return state\n\ndef checkout_started(state: dict, data: dict) -> dict:\n    state = deepcopy(state)\n    state[\"status\"] = \"checkout\"\n    return state\n\ndef order_placed(state: dict, data: dict) -> dict:\n    state = deepcopy(state)\n    state[\"status\"] = \"ordered\"\n    state[\"order_id\"] = data[\"order_id\"]\n    return state\n\nreducers = {\n    \"CartCreated\": cart_created,\n    \"ItemAdded\": item_added,\n    \"ItemRemoved\": item_removed,\n    \"CheckoutStarted\": checkout_started,\n    \"OrderPlaced\": order_placed,\n}\n\n# --- Record events as they happen ---\ncart_id = \"cart-001\"\n\nstore.append(cart_id, \"CartCreated\", {\"cart_id\": cart_id})\nstore.append(cart_id, \"ItemAdded\", {\"sku\": \"SHIRT-M\", \"name\": \"T-Shirt (M)\", \"price\": 25.00, \"quantity\": 2})\nstore.append(cart_id, \"ItemAdded\", {\"sku\": \"JEANS-32\", \"name\": \"Jeans (32)\", \"price\": 59.99, \"quantity\": 1})\nstore.append(cart_id, \"ItemRemoved\", {\"sku\": \"JEANS-32\"})\nstore.append(cart_id, \"ItemAdded\", {\"sku\": \"JEANS-34\", \"name\": \"Jeans (34)\", \"price\": 59.99, \"quantity\": 1})\nstore.append(cart_id, \"CheckoutStarted\", {})\nstore.append(cart_id, \"OrderPlaced\", {\"order_id\": \"ORD-789\"})\n\n# --- Rebuild current state by replaying all events ---\ncurrent_state = rebuild_state(store, cart_id, reducers)\nprint(current_state)\n# {\n#   'cart_id': 'cart-001',\n#   'items': [\n#     {'sku': 'SHIRT-M', 'name': 'T-Shirt (M)', 'price': 25.0, 'quantity': 2},\n#     {'sku': 'JEANS-34', 'name': 'Jeans (34)', 'price': 59.99, 'quantity': 1}\n#   ],\n#   'status': 'ordered',\n#   'order_id': 'ORD-789'\n# }\n\n# --- Time travel: rebuild state at any point in history ---\nevents = store.get_events(cart_id)\nfor i, event in enumerate(events, 1):\n    partial_state = rebuild_state(store, cart_id, reducers)\n    print(f\"After event {i} ({event.event_type}): {len(partial_state.get('items', []))} items\")"
+    },
+    {
+      "type": "table",
+      "heading": "Event Sourcing: Pros and Cons",
+      "headers": ["Pros", "Cons"],
+      "rows": [
+        ["Complete audit trail -- every change is recorded permanently", "Increased complexity -- requires different mental model than CRUD"],
+        ["Time travel -- rebuild state at any point in history", "Eventual consistency -- read models may lag behind writes"],
+        ["Event replay -- build new projections from existing events", "Storage growth -- events accumulate forever (snapshotting helps)"],
+        ["Debugging -- trace exactly what happened and when", "Schema evolution -- changing event schemas requires careful migration"],
+        ["Undo/redo -- reverse events to undo actions", "Querying -- cannot easily query current state without projections"]
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Start Simple, Introduce Event Sourcing Selectively",
+      "body": "Event sourcing is powerful but complex. Most applications do fine with traditional CRUD. Introduce event sourcing only for domains that genuinely need audit trails, temporal queries, or the ability to replay history -- financial transactions, compliance-sensitive data, collaborative editing, or undo/redo functionality."
+    },
+    {
+      "type": "text",
+      "heading": "CQRS (Command Query Responsibility Segregation)",
+      "headingLevel": 2,
+      "body": "CQRS separates the write side (commands) from the read side (queries). Commands go through validation, business logic, and event processing. Queries hit read-optimized views (projections) that are pre-built from events. This lets you optimize reads and writes independently -- writes can use normalized relational data while reads use denormalized views tuned for specific queries."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "cqrs_example.py",
+      "description": "CQRS example -- command handler writes events, event handler updates projections, query handler reads projections",
+      "code": "from dataclasses import dataclass\nfrom event_store import EventStore\nfrom event_dispatcher import dispatcher\n\nstore = EventStore()\n\n# --- Read-optimized projections (denormalized views) ---\n# In production, these would be database tables or Redis hashes\norder_summary_projection: dict[str, dict] = {}  # order_id -> summary\ncustomer_orders_projection: dict[str, list] = {}  # customer_id -> [order summaries]\n\n\n# === COMMAND SIDE (Writes) ===\n\n@dataclass\nclass PlaceOrderCommand:\n    customer_id: str\n    items: list[dict]  # [{\"sku\": \"...\", \"quantity\": N, \"price\": N}]\n\n\ndef handle_place_order(cmd: PlaceOrderCommand) -> str:\n    \"\"\"Command handler: validate, write events, return order ID.\"\"\"\n    # Validate\n    if not cmd.items:\n        raise ValueError(\"Order must have at least one item\")\n\n    total = sum(item[\"price\"] * item[\"quantity\"] for item in cmd.items)\n    order_id = f\"ORD-{len(store.get_all_events()) + 1:04d}\"\n\n    # Write event (single source of truth)\n    store.append(order_id, \"OrderPlaced\", {\n        \"order_id\": order_id,\n        \"customer_id\": cmd.customer_id,\n        \"items\": cmd.items,\n        \"total\": total,\n    })\n\n    # Emit for async projection update\n    dispatcher.emit(\"OrderPlaced\",\n        order_id=order_id,\n        customer_id=cmd.customer_id,\n        items=cmd.items,\n        total=total,\n    )\n\n    return order_id\n\n\n# === EVENT HANDLERS (Update Projections) ===\n\n@dispatcher.on(\"OrderPlaced\", lambda **kwargs: update_order_summary(**kwargs))\ndef update_order_summary(order_id: str, customer_id: str, items: list, total: float, **kw):\n    \"\"\"Update the order summary projection (optimized for order detail page).\"\"\"\n    order_summary_projection[order_id] = {\n        \"order_id\": order_id,\n        \"customer_id\": customer_id,\n        \"item_count\": sum(i[\"quantity\"] for i in items),\n        \"total\": total,\n        \"status\": \"placed\",\n    }\n\n\n@dispatcher.on(\"OrderPlaced\", lambda **kwargs: update_customer_orders(**kwargs))\ndef update_customer_orders(order_id: str, customer_id: str, total: float, **kw):\n    \"\"\"Update the customer orders projection (optimized for 'my orders' page).\"\"\"\n    if customer_id not in customer_orders_projection:\n        customer_orders_projection[customer_id] = []\n    customer_orders_projection[customer_id].append({\n        \"order_id\": order_id,\n        \"total\": total,\n        \"status\": \"placed\",\n    })\n\n\n# === QUERY SIDE (Reads) ===\n\ndef get_order_summary(order_id: str) -> dict | None:\n    \"\"\"Query handler: read from projection (fast, denormalized).\"\"\"\n    return order_summary_projection.get(order_id)\n\n\ndef get_customer_orders(customer_id: str) -> list[dict]:\n    \"\"\"Query handler: get all orders for a customer.\"\"\"\n    return customer_orders_projection.get(customer_id, [])\n\n\n# --- Usage ---\norder_id = handle_place_order(PlaceOrderCommand(\n    customer_id=\"CUST-42\",\n    items=[\n        {\"sku\": \"WIDGET-A\", \"quantity\": 3, \"price\": 9.99},\n        {\"sku\": \"GADGET-B\", \"quantity\": 1, \"price\": 49.99},\n    ],\n))\n\n# Read from optimized projection\nprint(get_order_summary(order_id))\nprint(get_customer_orders(\"CUST-42\"))"
+    },
+    {
+      "type": "accordion",
+      "title": "When CQRS is Overkill",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Most CRUD applications do not need CQRS. If your read and write patterns are similar -- you write a row and read the same row back -- a single model is simpler and perfectly adequate. CQRS adds complexity: you have separate models, eventual consistency between them, and more code to maintain."
+        },
+        {
+          "type": "text",
+          "body": "Consider CQRS when read and write patterns differ significantly. For example: you write normalized order data (order table, line_items table, customer table) but your dashboard needs a single denormalized view with customer name, order total, item count, and last order date all in one row. Building a read-optimized projection avoids expensive JOINs on every dashboard load."
+        },
+        {
+          "type": "list",
+          "heading": "Signs You Might Need CQRS",
+          "ordered": false,
+          "items": [
+            "Your read queries involve many JOINs or aggregations that are slow",
+            "Your write model is heavily normalized but your UI needs denormalized data",
+            "Read and write loads differ dramatically (100x more reads than writes)",
+            "You need different authorization rules for reading vs writing",
+            "You are already using event sourcing and need materialized views"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Real-World Event-Driven Patterns",
+      "headingLevel": 2,
+      "body": "Production event-driven systems use established patterns to handle failures, ensure reliability, and manage complexity. These patterns have been battle-tested in large-scale distributed systems at companies like Netflix, Uber, and Amazon."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "Saga / Orchestration",
+          "body": "Coordinate multi-step workflows across services. If step 3 fails, compensate (undo) steps 1 and 2. Like a booking that reserves flight, hotel, and car -- if the car fails, cancel the rest.",
+          "icon": "AccountTree",
+          "chip": "Workflow"
+        },
+        {
+          "title": "Outbox Pattern",
+          "body": "Write events to a database outbox table in the same transaction as your data change. A separate process reads the outbox and publishes events. Guarantees no events are lost.",
+          "icon": "Outbox",
+          "chip": "Reliability"
+        },
+        {
+          "title": "Dead Letter Queue",
+          "body": "Messages that fail processing after max retries go to a dead letter queue instead of being discarded. Engineers can inspect, fix, and replay them.",
+          "icon": "ErrorOutline",
+          "chip": "Error Handling"
+        },
+        {
+          "title": "Circuit Breaker",
+          "body": "When a downstream service fails repeatedly, stop sending requests for a cooldown period. Prevents cascading failures across an event chain.",
+          "icon": "PowerOff",
+          "chip": "Resilience"
+        },
+        {
+          "title": "Idempotent Consumer",
+          "body": "Handle duplicate events safely by tracking processed event IDs. At-least-once delivery means you WILL receive duplicates. Your handlers must be safe to run twice.",
+          "icon": "Replay",
+          "chip": "Safety"
+        }
+      ]
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "idempotent_handler.py",
+      "description": "Idempotent event handler -- using a processed_events table to track and skip duplicates",
+      "code": "import sqlite3\nimport logging\nfrom functools import wraps\n\nlogger = logging.getLogger(__name__)\n\n# In production, use your main database (PostgreSQL, etc.)\ndb = sqlite3.connect(\":memory:\", check_same_thread=False)\ndb.execute(\"\"\"\n    CREATE TABLE IF NOT EXISTS processed_events (\n        event_id TEXT PRIMARY KEY,\n        event_type TEXT NOT NULL,\n        processed_at TEXT DEFAULT (datetime('now')),\n        result TEXT\n    )\n\"\"\")\n\n\ndef idempotent(func):\n    \"\"\"Decorator that makes an event handler idempotent.\n    \n    If the event_id has already been processed, skip it.\n    Otherwise, process it and record the event_id.\n    \"\"\"\n    @wraps(func)\n    def wrapper(event_id: str, event_type: str, **data):\n        # Check if already processed\n        row = db.execute(\n            \"SELECT 1 FROM processed_events WHERE event_id = ?\",\n            (event_id,),\n        ).fetchone()\n\n        if row:\n            logger.info(f\"Skipping duplicate event: {event_id} ({event_type})\")\n            return None\n\n        # Process the event\n        try:\n            result = func(event_id=event_id, event_type=event_type, **data)\n\n            # Record as processed\n            db.execute(\n                \"INSERT INTO processed_events (event_id, event_type, result) VALUES (?, ?, ?)\",\n                (event_id, event_type, str(result)),\n            )\n            db.commit()\n\n            return result\n        except Exception as e:\n            logger.error(f\"Failed to process event {event_id}: {e}\")\n            raise  # Do NOT mark as processed -- it should be retried\n\n    return wrapper\n\n\n@idempotent\ndef handle_payment_received(event_id: str, event_type: str, order_id: str, amount: float, **kwargs):\n    \"\"\"Process a payment -- safe to call multiple times with the same event_id.\"\"\"\n    logger.info(f\"Processing payment for order {order_id}: ${amount}\")\n    # Update order status, send receipt, etc.\n    return {\"order_id\": order_id, \"status\": \"paid\"}\n\n\n# First call: processes the event\nhandle_payment_received(\n    event_id=\"evt_001\", event_type=\"payment.received\",\n    order_id=\"ORD-42\", amount=99.99,\n)\n# Output: Processing payment for order ORD-42: $99.99\n\n# Second call with same event_id: skipped\nhandle_payment_received(\n    event_id=\"evt_001\", event_type=\"payment.received\",\n    order_id=\"ORD-42\", amount=99.99,\n)\n# Output: Skipping duplicate event: evt_001 (payment.received)"
+    },
+    {
+      "type": "text",
+      "heading": "Debugging Event-Driven Systems",
+      "headingLevel": 2,
+      "body": "Event-driven systems are harder to debug because the flow is not linear. In request/response, you can follow the call stack from endpoint to service to database. In event-driven systems, the producer does not know who handles the event, events may be processed out of order, and failures can happen silently in background workers. You need observability."
+    },
+    {
+      "type": "list",
+      "heading": "Essential Debugging Tools",
+      "ordered": false,
+      "items": [
+        "**Structured logging with correlation IDs** -- Attach a unique ID to every event in a chain. When user action X triggers events A, B, and C, all three log entries share the same correlation ID so you can trace the full flow.",
+        "**Distributed tracing (OpenTelemetry)** -- Traces follow events across service boundaries. Visualize the entire event chain as a single trace with timing for each step.",
+        "**Event replay** -- Store events and replay them against fixed handlers to reproduce bugs. Event sourcing makes this natural.",
+        "**Dead letter queue monitoring** -- Set up alerts when events land in the DLQ. These are events that failed all retry attempts and need manual investigation.",
+        "**Event schema validation** -- Validate event payloads against a schema before processing. Catch malformed events early instead of getting cryptic errors downstream.",
+        "**Event catalog / registry** -- Document every event type, its schema, its producers, and its consumers. Without this, nobody knows what events exist or who listens to them."
+      ]
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "correlation_id.py",
+      "description": "Correlation ID middleware -- attach a unique ID to every event for end-to-end tracing",
+      "code": "import uuid\nimport logging\nfrom contextvars import ContextVar\nfrom flask import Flask, request, g\nfrom functools import wraps\n\n# Context variable for correlation ID (thread-safe)\ncorrelation_id_var: ContextVar[str] = ContextVar(\"correlation_id\", default=\"\")\n\n\nclass CorrelationFilter(logging.Filter):\n    \"\"\"Inject correlation_id into every log record.\"\"\"\n    def filter(self, record):\n        record.correlation_id = correlation_id_var.get(\"no-correlation-id\")\n        return True\n\n\n# Configure logging with correlation ID\nhandler = logging.StreamHandler()\nhandler.setFormatter(logging.Formatter(\n    \"%(asctime)s [%(correlation_id)s] %(levelname)s %(name)s: %(message)s\"\n))\nhandler.addFilter(CorrelationFilter())\n\nlogger = logging.getLogger(\"app\")\nlogger.addHandler(handler)\nlogger.setLevel(logging.INFO)\n\n\n# --- Flask middleware ---\napp = Flask(__name__)\n\n@app.before_request\ndef set_correlation_id():\n    \"\"\"Extract correlation ID from header or generate a new one.\"\"\"\n    cid = request.headers.get(\"X-Correlation-ID\", str(uuid.uuid4()))\n    correlation_id_var.set(cid)\n    g.correlation_id = cid\n\n\n@app.after_request\ndef add_correlation_header(response):\n    \"\"\"Include correlation ID in the response for client-side tracing.\"\"\"\n    response.headers[\"X-Correlation-ID\"] = g.get(\"correlation_id\", \"\")\n    return response\n\n\n# --- Use in event handlers ---\ndef with_correlation(func):\n    \"\"\"Decorator to pass correlation ID through event chains.\"\"\"\n    @wraps(func)\n    def wrapper(*args, **kwargs):\n        # If a correlation ID is passed in the event data, use it\n        cid = kwargs.pop(\"correlation_id\", None) or str(uuid.uuid4())\n        correlation_id_var.set(cid)\n        return func(*args, **kwargs)\n    return wrapper\n\n\n@with_correlation\ndef handle_order_placed(order_id: str, **kwargs):\n    logger.info(f\"Processing order: {order_id}\")\n    # When emitting downstream events, include the correlation ID:\n    # dispatcher.emit(\"order.confirmed\", order_id=order_id,\n    #                 correlation_id=correlation_id_var.get())\n\n\n# Example log output with correlation IDs:\n# 2025-01-15 10:30:01 [a1b2c3d4-...] INFO app: Processing order: ORD-42\n# 2025-01-15 10:30:01 [a1b2c3d4-...] INFO app: Sending confirmation email\n# 2025-01-15 10:30:02 [a1b2c3d4-...] INFO app: Updating inventory\n# All three lines share the same correlation ID for easy tracing."
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "Invest in Observability Early",
+      "body": "The biggest challenge with event-driven systems is understanding what happened and in what order. When a customer reports 'my order is stuck', you need to trace the event chain from order placement through payment processing to fulfillment. Without correlation IDs, structured logging, and distributed tracing, this is nearly impossible. Set up observability before you need it, not after a production incident."
+    },
+    {
+      "type": "text",
+      "heading": "Choosing the Right Pattern",
+      "headingLevel": 2,
+      "body": "There is no single best event pattern. Each solves a different problem. Use this decision matrix to pick the right approach for your specific scenario."
+    },
+    {
+      "type": "table",
+      "heading": "Event Pattern Decision Matrix",
+      "headers": ["Scenario", "Recommended Pattern", "Why"],
+      "rows": [
+        ["Real-time chat between users", "WebSocket", "Both client and server need to send messages at any time. Bidirectional, persistent connection."],
+        ["Live dashboard showing metrics", "Server-Sent Events (SSE)", "Server pushes updates, client only listens. Simpler than WebSocket, auto-reconnects."],
+        ["Background image processing", "Celery task queue", "CPU-intensive work must not block the web request. Queue with retries ensures completion."],
+        ["Payment notification from Stripe", "Webhook receiver", "External service POSTs events to your endpoint. Verify signature and process."],
+        ["Audit trail requirement", "Event sourcing", "Need complete history of every change, time travel, and replay capability."],
+        ["Cross-component UI updates", "Event bus or state manager", "Decouple React components that do not share a parent. Use Redux/Zustand for complex state."],
+        ["Microservice communication", "Message queue (RabbitMQ/Redis)", "Decouple services, buffer messages, guarantee delivery even if consumer is temporarily down."],
+        ["IoT sensor data ingestion", "Stream processing (Kafka)", "High throughput, ordered, durable log. Process millions of events per second."]
+      ]
+    }
+  ]
+}

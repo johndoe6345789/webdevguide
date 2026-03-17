@@ -1,0 +1,7 @@
+{
+  "type": "code",
+  "language": "bash",
+  "filename": "terminal",
+  "description": "All quality check commands available in the project.",
+  "code": "# Backend linting\npip install flake8\nflake8 backend/ --max-line-length=120\n\n# Frontend linting\ncd frontend && npm run lint\n\n# TypeScript type checking\ncd frontend && npx tsc --noEmit\n\n# Unit tests with Jest\ncd frontend && npm test\n\n# Unit tests with coverage report\ncd frontend && npm run test:coverage\n\n# End-to-end tests with Playwright\ncd frontend && npm run test:e2e\n\n# Dead code detection with Knip\ncd frontend && npm run dead-code\n\n# Validate JSON data by seeding\ncd backend && FLASK_APP=app:create_app flask seed-db"
+}

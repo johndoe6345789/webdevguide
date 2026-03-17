@@ -1,0 +1,85 @@
+{
+  "type": "accordion",
+  "title": "npm, yarn, and pnpm",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "All three tools do the same core job -- install packages from the npm registry. They differ in speed, disk usage, and some workflow details. npm comes with Node.js. yarn and pnpm are installed separately and offer performance improvements."
+    },
+    {
+      "type": "table",
+      "heading": "Common commands across package managers",
+      "headers": [
+        "Task",
+        "npm",
+        "yarn",
+        "pnpm"
+      ],
+      "rows": [
+        [
+          "Install all deps",
+          "npm install",
+          "yarn",
+          "pnpm install"
+        ],
+        [
+          "Add a dependency",
+          "npm install react",
+          "yarn add react",
+          "pnpm add react"
+        ],
+        [
+          "Add a dev dependency",
+          "npm install -D eslint",
+          "yarn add -D eslint",
+          "pnpm add -D eslint"
+        ],
+        [
+          "Remove a dependency",
+          "npm uninstall react",
+          "yarn remove react",
+          "pnpm remove react"
+        ],
+        [
+          "Run a script",
+          "npm run dev",
+          "yarn dev",
+          "pnpm dev"
+        ],
+        [
+          "Update packages",
+          "npm update",
+          "yarn upgrade",
+          "pnpm update"
+        ],
+        [
+          "Create a project",
+          "npm init",
+          "yarn init",
+          "pnpm init"
+        ]
+      ]
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "npm",
+          "body": "Ships with Node.js\nLargest ecosystem\nSlower than alternatives\nUses node_modules",
+          "icon": "Inventory"
+        },
+        {
+          "title": "yarn",
+          "body": "Faster than npm\nPlug'n'Play (no node_modules)\nWorkspaces for monorepos\nDeterministic installs",
+          "icon": "Speed"
+        },
+        {
+          "title": "pnpm",
+          "body": "Fastest install times\nSaves disk space (hardlinks)\nStrict dependency isolation\nBest for monorepos",
+          "icon": "Bolt"
+        }
+      ]
+    }
+  ]
+}

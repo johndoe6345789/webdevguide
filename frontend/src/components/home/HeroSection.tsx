@@ -1,37 +1,44 @@
 'use client';
 
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
 import Container from '@mui/material/Container';
+import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import { Link } from '@/i18n/navigation';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import AnimatedCodeBlock from './AnimatedCodeBlock';
+import HeroBackground from './HeroBackground';
+import HeroButtons from './HeroButtons';
+import HeroDecorations from './HeroDecorations';
 
 interface HeroSectionProps {
-  title: string;
-  subtitle: string;
-  getStartedLabel: string;
-  learnMoreLabel: string;
+  title: string; subtitle: string;
+  getStartedLabel: string; learnMoreLabel: string;
+  badgeLabel: string;
 }
 
-export default function HeroSection({ title, subtitle, getStartedLabel, learnMoreLabel }: HeroSectionProps) {
+const chipSx = { mb: 3, bgcolor: 'rgba(255,255,255,0.15)', color: 'white', fontWeight: 600, fontSize: '0.85rem', height: 36, backdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.2)' } as const;
+const titleSx = { fontSize: { xs: '2.2rem', sm: '2.8rem', md: '3.5rem' }, mb: 2, lineHeight: 1.15, letterSpacing: '-0.02em' } as const;
+const subtitleSx = { mb: 5, opacity: 0.85, maxWidth: 640, mx: 'auto', fontWeight: 400, lineHeight: 1.6, fontSize: { xs: '1rem', md: '1.15rem' } } as const;
+
+export default function HeroSection(
+  { title, subtitle, getStartedLabel,
+    learnMoreLabel, badgeLabel }: HeroSectionProps,
+) {
+  const theme = useTheme();
+  const isMd = useMediaQuery(theme.breakpoints.up('md'));
   return (
-    <Box sx={{ background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #3730a3 100%)', color: 'white', py: { xs: 8, md: 12 }, textAlign: 'center' }}>
-      <Container maxWidth="md">
-        <Typography variant="h2" component="h1" fontWeight={700} gutterBottom sx={{ fontSize: { xs: '2rem', md: '3rem' } }}>
-          {title}
-        </Typography>
-        <Typography variant="h6" component="p" sx={{ mb: 4, opacity: 0.9, maxWidth: 600, mx: 'auto' }}>
-          {subtitle}
-        </Typography>
-        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Button component={Link} href="/getting-started" variant="contained" size="large" sx={{ bgcolor: 'white', color: 'primary.dark', '&:hover': { bgcolor: 'grey.100' }, px: 4, py: 1.5 }}>
-            {getStartedLabel}
-          </Button>
-          <Button component={Link} href="/fundamentals" variant="outlined" size="large" sx={{ borderColor: 'white', color: 'white', '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' }, px: 4, py: 1.5 }}>
-            {learnMoreLabel}
-          </Button>
-        </Box>
+    <HeroBackground>
+      <HeroDecorations />
+      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+        <Chip label={badgeLabel} sx={chipSx} />
+        <Typography variant="h2" component="h1" fontWeight={800} sx={titleSx}>{title}</Typography>
+        <Typography variant="h6" component="p" sx={subtitleSx}>{subtitle}</Typography>
+        <HeroButtons
+          getStartedLabel={getStartedLabel}
+          learnMoreLabel={learnMoreLabel}
+        />
+        {isMd && <AnimatedCodeBlock />}
       </Container>
-    </Box>
+    </HeroBackground>
   );
 }

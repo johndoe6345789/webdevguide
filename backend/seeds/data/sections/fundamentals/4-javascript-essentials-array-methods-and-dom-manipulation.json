@@ -1,0 +1,28 @@
+{
+  "type": "accordion",
+  "title": "Array Methods and DOM Manipulation",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "JavaScript array methods like `map`, `filter`, `reduce`, and `find` are essential for transforming data. While React abstracts away direct DOM manipulation, understanding how it works under the hood helps you debug and appreciate what React does for you."
+    },
+    {
+      "type": "code",
+      "language": "javascript",
+      "filename": "array-methods.js",
+      "code": "const users = [\n  { id: 1, name: 'Alice', age: 30, active: true },\n  { id: 2, name: 'Bob', age: 25, active: false },\n  { id: 3, name: 'Carol', age: 35, active: true },\n  { id: 4, name: 'Dave', age: 28, active: true },\n];\n\n// map: transform each item into something new\nconst names = users.map(user => user.name);\n// ['Alice', 'Bob', 'Carol', 'Dave']\n\n// filter: keep only items that match a condition\nconst activeUsers = users.filter(user => user.active);\n// [Alice, Carol, Dave]\n\n// find: get the first item that matches\nconst bob = users.find(user => user.name === 'Bob');\n// { id: 2, name: 'Bob', ... }\n\n// some / every: check if any / all items match\nconst hasInactive = users.some(user => !user.active);  // true\nconst allActive = users.every(user => user.active);     // false\n\n// reduce: combine all items into a single value\nconst totalAge = users.reduce((sum, user) => sum + user.age, 0);\n// 118\n\n// Chaining: filter active users, get their names, sort alphabetically\nconst sortedActiveNames = users\n  .filter(user => user.active)\n  .map(user => user.name)\n  .sort();\n// ['Alice', 'Carol', 'Dave']\n\n// flatMap: map + flatten in one step\nconst sentences = ['hello world', 'foo bar'];\nconst words = sentences.flatMap(s => s.split(' '));\n// ['hello', 'world', 'foo', 'bar']"
+    },
+    {
+      "type": "code",
+      "language": "javascript",
+      "filename": "dom-basics.js",
+      "description": "Direct DOM manipulation (how things work under the hood)",
+      "code": "// Selecting elements\nconst heading = document.querySelector('h1');\nconst allButtons = document.querySelectorAll('button');\nconst byId = document.getElementById('my-element');\n\n// Modifying elements\nheading.textContent = 'New Title';         // Change text\nheading.style.color = 'blue';              // Change inline style\nheading.classList.add('highlighted');       // Add a CSS class\nheading.classList.toggle('visible');        // Toggle a class\nheading.setAttribute('data-id', '123');    // Set an attribute\n\n// Creating elements\nconst newParagraph = document.createElement('p');\nnewParagraph.textContent = 'I was created with JavaScript!';\ndocument.body.appendChild(newParagraph);\n\n// Event listeners\nconst button = document.querySelector('#my-button');\nbutton.addEventListener('click', (event) => {\n  console.log('Button clicked!', event.target);\n});\n\n// Remove event listener (must pass the same function reference)\nfunction handleClick(event) {\n  console.log('Clicked!');\n}\nbutton.addEventListener('click', handleClick);\nbutton.removeEventListener('click', handleClick);"
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "body": "In React, you almost never manipulate the DOM directly. React manages the DOM for you through its virtual DOM and reconciliation process. But understanding `querySelector`, `addEventListener`, and `createElement` helps you debug issues and work with third-party libraries that interact with the real DOM."
+    }
+  ]
+}

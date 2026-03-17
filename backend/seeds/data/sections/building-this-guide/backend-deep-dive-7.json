@@ -1,0 +1,41 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "guide.py",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "python",
+          "filename": "backend/app/api/guide.py",
+          "description": "The guide blueprint. The list endpoint strips out the blocks array to keep the response lightweight. The detail endpoint returns the full section.",
+          "code": "from flask import Blueprint, jsonify\nfrom ..services.guide_service import (\n    get_all_sections, get_section_by_slug, get_navigation\n)\n\nguide_bp = Blueprint(\"guide\", __name__, url_prefix=\"/api/guide\")\n\n@guide_bp.route(\"/sections\")\ndef list_sections():\n    sections = get_all_sections()\n    summary = [\n        {\n            \"id\": s[\"id\"], \"title\": s[\"title\"], \"slug\": s[\"slug\"],\n            \"description\": s.get(\"description\", \"\"),\n            \"icon\": s.get(\"icon\", \"\"),\n            \"order\": s.get(\"order\", 0),\n            \"estimatedMinutes\": s.get(\"estimatedMinutes\", 0),\n            \"difficulty\": s.get(\"difficulty\", \"beginner\"),\n        }\n        for s in sections\n    ]\n    return jsonify(summary)\n\n@guide_bp.route(\"/sections/<slug>\")\ndef get_section(slug):\n    section = get_section_by_slug(slug)\n    if section is None:\n        return jsonify({\"error\": \"Section not found\"}), 404\n    return jsonify(section)\n\n@guide_bp.route(\"/navigation\")\ndef navigation():\n    return jsonify(get_navigation())"
+        }
+      ]
+    },
+    {
+      "label": "exam.py",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "python",
+          "filename": "backend/app/api/exam.py",
+          "description": "The exam blueprint. Supports query parameter filtering and random sampling.",
+          "code": "from flask import Blueprint, jsonify, request\nfrom ..services.exam_service import (\n    get_all_questions, get_random_questions,\n    get_categories, filter_questions\n)\n\nexam_bp = Blueprint(\"exam\", __name__, url_prefix=\"/api/exam\")\n\n@exam_bp.route(\"/questions\")\ndef list_questions():\n    category = request.args.get(\"category\")\n    difficulty = request.args.get(\"difficulty\")\n    if category or difficulty:\n        questions = filter_questions(category=category, difficulty=difficulty)\n    else:\n        questions = get_all_questions()\n    return jsonify(questions)\n\n@exam_bp.route(\"/questions/random\")\ndef random_questions():\n    count = request.args.get(\"count\", 30, type=int)\n    return jsonify(get_random_questions(count))\n\n@exam_bp.route(\"/categories\")\ndef list_categories():\n    return jsonify(get_categories())"
+        }
+      ]
+    },
+    {
+      "label": "glossary.py",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "python",
+          "filename": "backend/app/api/glossary.py",
+          "description": "The glossary blueprint. Search is case-insensitive and matches both term names and definitions.",
+          "code": "from flask import Blueprint, jsonify, request\nfrom ..services.glossary_service import (\n    get_all_terms, get_categories, search_terms\n)\n\nglossary_bp = Blueprint(\"glossary\", __name__, url_prefix=\"/api/glossary\")\n\n@glossary_bp.route(\"/terms\")\ndef list_terms():\n    category = request.args.get(\"category\")\n    if category:\n        terms = [t for t in get_all_terms() if t.get(\"category\") == category]\n    else:\n        terms = get_all_terms()\n    return jsonify(terms)\n\n@glossary_bp.route(\"/categories\")\ndef list_categories():\n    return jsonify(get_categories())\n\n@glossary_bp.route(\"/search\")\ndef search():\n    query = request.args.get(\"q\", \"\")\n    if not query:\n        return jsonify([])\n    return jsonify(search_terms(query))"
+        }
+      ]
+    }
+  ]
+}

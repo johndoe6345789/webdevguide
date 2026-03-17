@@ -1,0 +1,32 @@
+{
+  "type": "accordion",
+  "title": "The Rewrite Trap: Why Full Rewrites Almost Always Fail",
+  "defaultExpanded": false,
+  "blocks": [
+    {
+      "type": "text",
+      "body": "When a codebase gets messy enough, it is tempting to throw it all away and start fresh. 'This time we will do it right.' This is almost always a mistake, and here is why."
+    },
+    {
+      "type": "list",
+      "ordered": true,
+      "items": [
+        "You lose all the bug fixes and edge case handling that accumulated over years. That weird if-statement you want to delete? It handles a payment edge case that took three days to debug in 2022.",
+        "The rewrite takes 2-3 times longer than estimated. Always. You are not just building new code -- you are re-discovering every requirement the old code handled.",
+        "Business does not stop. While you rewrite, competitors ship features. Your users get frustrated waiting for the 'new version' that was supposed to take 3 months but is now at month 9.",
+        "The new codebase will accumulate its own technical debt. In two years, someone will want to rewrite the rewrite.",
+        "You split your team between maintaining the old system and building the new one. Neither gets enough attention."
+      ]
+    },
+    {
+      "type": "text",
+      "body": "The alternative is the Strangler Fig pattern: gradually replace pieces of the old system with new code, one module at a time. Put a proxy or API gateway in front of the old system. Route one endpoint at a time to the new service. The old and new systems coexist until the old one is fully replaced. This approach is slower per feature but dramatically lower risk, and you ship value the entire time."
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "When a Rewrite IS Justified",
+      "body": "Rewrites make sense in a few rare cases: the technology is genuinely end-of-life (e.g., Flash), the codebase is so small a rewrite takes less than 2 weeks, or the architecture fundamentally cannot support a critical new requirement (e.g., the monolith needs to become multi-tenant). Even then, rewrite the smallest possible piece, not the entire system."
+    }
+  ]
+}

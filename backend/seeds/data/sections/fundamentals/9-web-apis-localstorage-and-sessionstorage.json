@@ -1,0 +1,21 @@
+{
+  "type": "accordion",
+  "title": "LocalStorage and SessionStorage",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "Web Storage lets you save key-value data in the browser. **localStorage** persists forever (until cleared). **sessionStorage** is cleared when the tab closes. Both store strings only -- use `JSON.stringify` and `JSON.parse` for objects."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "storage-examples.ts",
+      "code": "// Store and retrieve simple values\nlocalStorage.setItem('theme', 'dark');\nconst theme = localStorage.getItem('theme'); // 'dark'\n\n// Store objects (must serialize to JSON)\nconst user = { name: 'Alice', preferences: { lang: 'en' } };\nlocalStorage.setItem('user', JSON.stringify(user));\n\n// Retrieve objects (must parse from JSON)\nconst stored = localStorage.getItem('user');\nconst parsedUser = stored ? JSON.parse(stored) : null;\n\n// Remove a specific item\nlocalStorage.removeItem('theme');\n\n// Clear everything\nlocalStorage.clear();\n\n// Safe wrapper function (handles errors and missing values)\nfunction getStoredValue<T>(key: string, fallback: T): T {\n  try {\n    const item = localStorage.getItem(key);\n    return item ? (JSON.parse(item) as T) : fallback;\n  } catch {\n    return fallback;\n  }\n}\n\nconst savedTheme = getStoredValue('theme', 'light');"
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "body": "Never store sensitive data (passwords, tokens, personal info) in localStorage. It is accessible to any JavaScript on the page, including third-party scripts and XSS attacks. Use HTTP-only cookies for authentication tokens."
+    }
+  ]
+}

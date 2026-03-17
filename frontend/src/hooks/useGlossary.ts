@@ -4,7 +4,10 @@ import { fetchGlossaryTerms, fetchGlossaryCategories, searchGlossary, clearSearc
 
 export function useGlossary(category?: string) {
   const dispatch = useAppDispatch();
-  const { terms, categories, searchResults, loading, error } = useAppSelector((s) => s.glossary);
+  const {
+    terms, categories, searchResults,
+    loading, error,
+  } = useAppSelector((s) => s.glossary);
 
   useEffect(() => {
     dispatch(fetchGlossaryTerms(category));

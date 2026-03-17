@@ -1,0 +1,233 @@
+[
+  {
+    "id": "1",
+    "title": "Getting Started",
+    "slug": "getting-started",
+    "order": 1,
+    "icon": "RocketLaunch"
+  },
+  {
+    "id": "2",
+    "title": "Web Development Fundamentals",
+    "slug": "fundamentals",
+    "order": 2,
+    "icon": "School"
+  },
+  {
+    "id": "3",
+    "title": "Website Examples",
+    "slug": "examples",
+    "order": 3,
+    "icon": "WebAsset"
+  },
+  {
+    "id": "4",
+    "title": "Core Features",
+    "slug": "features",
+    "order": 4,
+    "icon": "Extension"
+  },
+  {
+    "id": "5",
+    "title": "AI-Powered Development",
+    "slug": "ai-development",
+    "order": 5,
+    "icon": "SmartToy"
+  },
+  {
+    "id": "6",
+    "title": "Lua Scripting Engine",
+    "slug": "lua-engine",
+    "order": 6,
+    "icon": "Code"
+  },
+  {
+    "id": "7",
+    "title": "Data Architecture",
+    "slug": "data-architecture",
+    "order": 7,
+    "icon": "Storage"
+  },
+  {
+    "id": "8",
+    "title": "ESLint Guide",
+    "slug": "eslint-guide",
+    "order": 8,
+    "icon": "Rule"
+  },
+  {
+    "id": "9",
+    "title": "Flask Backend",
+    "slug": "backend-guide",
+    "order": 9,
+    "icon": "Dns"
+  },
+  {
+    "id": "10",
+    "title": "Docker Guide",
+    "slug": "docker-guide",
+    "order": 10,
+    "icon": "Inventory2"
+  },
+  {
+    "id": "33",
+    "title": "Learning Resources",
+    "slug": "resources",
+    "order": 11,
+    "icon": "MenuBook"
+  },
+  {
+    "id": "11",
+    "title": "Build Your Personal Homepage",
+    "slug": "personal-homepage",
+    "order": 12,
+    "icon": "Person"
+  },
+  {
+    "id": "12",
+    "title": "Build a Social Media Platform",
+    "slug": "social-platform",
+    "order": 13,
+    "icon": "Forum"
+  },
+  {
+    "id": "13",
+    "title": "Build a Media & Content Platform",
+    "slug": "media-site",
+    "order": 14,
+    "icon": "Article"
+  },
+  {
+    "id": "14",
+    "title": "Build an E-Commerce Store",
+    "slug": "ecommerce",
+    "order": 15,
+    "icon": "ShoppingCart"
+  },
+  {
+    "id": "15",
+    "title": "Build a Developer Portfolio with Blog",
+    "slug": "portfolio-blog",
+    "order": 16,
+    "icon": "Code"
+  },
+  {
+    "id": "16",
+    "title": "SaaS Admin Dashboard",
+    "slug": "saas-dashboard",
+    "order": 17,
+    "icon": "Dashboard"
+  },
+  {
+    "id": "17",
+    "title": "Testing Web Applications",
+    "slug": "testing-qa",
+    "order": 18,
+    "icon": "BugReport"
+  },
+  {
+    "id": "18",
+    "title": "CI/CD with GitHub Actions",
+    "slug": "ci-cd-github-actions",
+    "order": 19,
+    "icon": "RocketLaunch"
+  },
+  {
+    "id": "32",
+    "title": "Building This Guide",
+    "slug": "building-this-guide",
+    "order": 20,
+    "icon": "AutoStories"
+  },
+  {
+    "id": "19",
+    "title": "Building a Video Platform",
+    "slug": "video-platform",
+    "order": 21,
+    "icon": "VideoLibrary"
+  },
+  {
+    "id": "20",
+    "title": "Building a Music Platform",
+    "slug": "music-platform",
+    "order": 22,
+    "icon": "MusicNote"
+  },
+  {
+    "id": "21",
+    "title": "Building an Online Radio Station",
+    "slug": "online-radio",
+    "order": 23,
+    "icon": "Radio"
+  },
+  {
+    "id": "22",
+    "title": "Building an Online IPTV Station",
+    "slug": "iptv-station",
+    "order": 24,
+    "icon": "LiveTv"
+  },
+  {
+    "id": "23",
+    "title": "Building a Gaming Website",
+    "slug": "gaming-website",
+    "order": 25,
+    "icon": "SportsEsports"
+  },
+  {
+    "id": "24",
+    "title": "Best Practices, Pitfalls & Technical Debt",
+    "slug": "best-practices",
+    "order": 26,
+    "icon": "Checklist"
+  },
+  {
+    "id": "25",
+    "title": "Writing Great Documentation",
+    "slug": "writing-documentation",
+    "order": 27,
+    "icon": "Description"
+  },
+  {
+    "id": "26",
+    "title": "Authentication & Authorization",
+    "slug": "authentication-authorization",
+    "order": 28,
+    "icon": "Security"
+  },
+  {
+    "id": "27",
+    "title": "User Engagement & Interaction",
+    "slug": "user-engagement",
+    "order": 29,
+    "icon": "ThumbsUpDown"
+  },
+  {
+    "id": "28",
+    "title": "Gamification",
+    "slug": "gamification",
+    "order": 30,
+    "icon": "EmojiEvents"
+  },
+  {
+    "id": "29",
+    "title": "Notification & Alert Bell Systems",
+    "slug": "notification-systems",
+    "order": 31,
+    "icon": "Notifications"
+  },
+  {
+    "id": "30",
+    "title": "Event-Driven Web Development",
+    "slug": "event-driven-development",
+    "order": 32,
+    "icon": "Bolt"
+  },
+  {
+    "id": "31",
+    "title": "Rapid Development -- Ship Fast, Iterate Fast",
+    "slug": "rapid-development",
+    "order": 35,
+    "icon": "RocketLaunch"
+  }
+]

@@ -5,7 +5,9 @@ import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import type { CardGridBlock } from '@/types/content';
 
-export default function CardGridBlockRenderer({ cards, columns = 3 }: CardGridBlock) {
+export default function CardGridBlockRenderer(
+  { cards, columns = 3 }: CardGridBlock,
+) {
   const colSize = Math.round(12 / columns);
 
   return (

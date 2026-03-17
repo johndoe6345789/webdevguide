@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Your First API Endpoint",
+  "headingLevel": 2,
+  "body": "An endpoint is a specific URL that your backend listens on. When someone visits that URL, your code runs and sends back a response."
+}

@@ -1,0 +1,6 @@
+{
+  "type": "code",
+  "language": "python",
+  "filename": "app/__init__.py (add to create_app)",
+  "code": "from app.utils.error_handlers import register_error_handlers\n\ndef create_app():\n    app = Flask(__name__)\n    # ... other setup ...\n\n    register_error_handlers(app)\n\n    return app"
+}

@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 1,
+  "title": "Create the JSON section file",
+  "body": "Create a new file in `backend/seeds/data/sections/` with the full section structure. Include all metadata fields and an array of content blocks.",
+  "code": "{\n  \"title\": \"My New Section\",\n  \"slug\": \"my-new-section\",\n  \"description\": \"What this section covers in one sentence.\",\n  \"icon\": \"School\",\n  \"order\": 15,\n  \"estimatedMinutes\": 30,\n  \"difficulty\": \"beginner\",\n  \"prerequisites\": [\"getting-started\"],\n  \"keyPoints\": [\n    \"First key takeaway\",\n    \"Second key takeaway\"\n  ],\n  \"blocks\": [\n    {\n      \"type\": \"text\",\n      \"heading\": \"Introduction\",\n      \"headingLevel\": 2,\n      \"body\": \"Welcome to the new section.\"\n    },\n    {\n      \"type\": \"code\",\n      \"language\": \"python\",\n      \"filename\": \"example.py\",\n      \"description\": \"A quick example.\",\n      \"code\": \"print('hello')\"\n    }\n  ]\n}",
+  "language": "json"
+}

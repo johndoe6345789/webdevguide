@@ -1,0 +1,29 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "DON'T: SQL Injection",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "python",
+          "filename": "app/routes/users.py",
+          "description": "String concatenation in SQL queries. An attacker can type ' OR '1'='1 as the username to bypass authentication or extract your entire database.",
+          "code": "from flask import Flask, request, g\nimport sqlite3\n\n@app.route(\"/api/user\")\ndef get_user():\n    username = request.args.get(\"username\")\n    # VULNERABLE: user input is injected directly into the query\n    query = f\"SELECT * FROM users WHERE username = '{username}'\"\n    cursor = g.db.execute(query)\n    return cursor.fetchone()"
+        }
+      ]
+    },
+    {
+      "label": "DO: Parameterized Queries",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "python",
+          "filename": "app/routes/users.py",
+          "description": "Parameterized queries separate the SQL structure from the data. The database driver handles escaping, making injection impossible.",
+          "code": "from flask import Flask, request, g\nimport sqlite3\n\n@app.route(\"/api/user\")\ndef get_user():\n    username = request.args.get(\"username\")\n    # SAFE: the ? placeholder is filled by the database driver\n    cursor = g.db.execute(\n        \"SELECT * FROM users WHERE username = ?\",\n        (username,)\n    )\n    return cursor.fetchone()\n\n# With SQLAlchemy ORM -- also safe because the ORM parameterizes for you\n@app.route(\"/api/user\")\ndef get_user_orm():\n    username = request.args.get(\"username\")\n    user = User.query.filter_by(username=username).first()\n    if not user:\n        abort(404)\n    return user.to_dict()"
+        }
+      ]
+    }
+  ]
+}

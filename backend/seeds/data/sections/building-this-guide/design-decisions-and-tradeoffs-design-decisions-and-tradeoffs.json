@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Design Decisions and Tradeoffs",
+  "headingLevel": 2,
+  "body": "Every architecture involves tradeoffs. Here are the key decisions made in this project and why."
+}

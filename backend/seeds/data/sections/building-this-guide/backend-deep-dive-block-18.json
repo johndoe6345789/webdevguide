@@ -1,0 +1,7 @@
+{
+  "type": "code",
+  "language": "python",
+  "filename": "backend/app/__init__.py (resolve_ref function)",
+  "description": "The recursive $ref resolver. Note how it computes ref_dir relative to the referenced file, enabling nested $ref chains across directories.",
+  "code": "def resolve_ref(base_dir, value):\n    \"\"\"Recursively resolve $ref pointers to their JSON content.\"\"\"\n    if isinstance(value, dict):\n        if \"$ref\" in value:\n            ref_path = os.path.join(base_dir, value[\"$ref\"])\n            ref_dir = os.path.dirname(ref_path)\n            with open(ref_path, \"r\", encoding=\"utf-8\") as f:\n                resolved = json.load(f)\n            return resolve_ref(ref_dir, resolved)\n        return {k: resolve_ref(base_dir, v) for k, v in value.items()}\n    if isinstance(value, list):\n        return [resolve_ref(base_dir, item) for item in value]\n    return value"
+}

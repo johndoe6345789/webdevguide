@@ -1,0 +1,29 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "DON'T: Fetch Every Render",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "src/features/products/ProductList.tsx",
+          "description": "Fetching the same data on every mount with no caching. If a user navigates away and back, they wait for the fetch again.",
+          "code": "function ProductList() {\n  const [products, setProducts] = useState([]);\n  const [loading, setLoading] = useState(true);\n\n  useEffect(() => {\n    // BAD: refetches every time the component mounts\n    // No caching, no deduplication, no stale-while-revalidate\n    fetch(\"/api/products\")\n      .then((r) => r.json())\n      .then(setProducts)\n      .finally(() => setLoading(false));\n  }, []);\n\n  if (loading) return <Spinner />;\n  return <ul>{products.map((p) => <li key={p.id}>{p.name}</li>)}</ul>;\n}"
+        }
+      ]
+    },
+    {
+      "label": "DO: Cache with React Query",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "src/features/products/ProductList.tsx",
+          "description": "React Query caches the response, deduplicates simultaneous requests, and shows stale data while revalidating in the background.",
+          "code": "import { useQuery } from \"@tanstack/react-query\";\n\nfunction ProductList() {\n  const { data: products, isLoading, error } = useQuery({\n    queryKey: [\"products\"],\n    queryFn: () => fetch(\"/api/products\").then((r) => r.json()),\n    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes\n  });\n\n  if (isLoading) return <Spinner />;\n  if (error) return <ErrorMessage error={error} />;\n  return <ul>{products.map((p) => <li key={p.id}>{p.name}</li>)}</ul>;\n}\n\n// Benefits:\n// - Cached: navigating away and back shows data instantly\n// - Deduplicated: 10 components requesting the same key = 1 fetch\n// - Background refresh: stale data is shown while fresh data loads\n// - Automatic retries on failure\n// - Garbage collected when no components are subscribed"
+        }
+      ]
+    }
+  ]
+}

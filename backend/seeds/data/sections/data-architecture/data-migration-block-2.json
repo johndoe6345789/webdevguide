@@ -1,0 +1,37 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "Prisma Migrate",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "bash",
+          "filename": "Prisma migration workflow",
+          "code": "# 1. Edit your prisma/schema.prisma file\n\n# 2. Generate a new migration\nnpx prisma migrate dev --name add_comments_table\n# Creates: prisma/migrations/20260315_add_comments_table/migration.sql\n\n# 3. Apply migrations to production\nnpx prisma migrate deploy\n\n# 4. Reset database (development only -- destroys all data)\nnpx prisma migrate reset\n\n# 5. Generate Prisma Client after schema changes\nnpx prisma generate"
+        },
+        {
+          "type": "code",
+          "language": "sql",
+          "filename": "Generated migration SQL",
+          "code": "-- prisma/migrations/20260315_add_comments_table/migration.sql\nCREATE TABLE \"comments\" (\n  \"id\" SERIAL NOT NULL,\n  \"body\" TEXT NOT NULL,\n  \"postId\" INTEGER NOT NULL,\n  \"authorId\" INTEGER NOT NULL,\n  \"createdAt\" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  CONSTRAINT \"comments_pkey\" PRIMARY KEY (\"id\")\n);\n\nALTER TABLE \"comments\"\n  ADD CONSTRAINT \"comments_postId_fkey\"\n  FOREIGN KEY (\"postId\") REFERENCES \"posts\"(\"id\") ON DELETE CASCADE;\n\nALTER TABLE \"comments\"\n  ADD CONSTRAINT \"comments_authorId_fkey\"\n  FOREIGN KEY (\"authorId\") REFERENCES \"users\"(\"id\") ON DELETE CASCADE;\n\nCREATE INDEX \"comments_postId_idx\" ON \"comments\"(\"postId\");"
+        }
+      ]
+    },
+    {
+      "label": "Seed Data",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Seed data populates your database with initial or test data. It ensures every developer starts with the same baseline and makes it easy to reset a development database."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "prisma/seed.ts",
+          "code": "import { PrismaClient } from '@prisma/client';\nimport bcrypt from 'bcrypt';\n\nconst prisma = new PrismaClient();\n\nasync function main() {\n  // Upsert to make the seed idempotent (safe to run multiple times)\n  const admin = await prisma.user.upsert({\n    where: { email: 'admin@example.com' },\n    update: {},\n    create: {\n      email: 'admin@example.com',\n      username: 'admin',\n      password: await bcrypt.hash('admin123', 12),\n      role: 'ADMIN',\n      profile: {\n        create: { bio: 'Site administrator' },\n      },\n    },\n  });\n\n  // Seed tags\n  const tags = ['javascript', 'react', 'typescript', 'node', 'css'];\n  for (const name of tags) {\n    await prisma.tag.upsert({\n      where: { name },\n      update: {},\n      create: { name },\n    });\n  }\n\n  console.log('Database seeded successfully');\n}\n\nmain()\n  .catch(console.error)\n  .finally(() => prisma.$disconnect());"
+        }
+      ]
+    }
+  ]
+}

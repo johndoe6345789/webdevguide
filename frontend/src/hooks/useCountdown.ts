@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 
-export default function useCountdown(initialSeconds: number, onTimeUp: () => void) {
+export default function useCountdown(
+  initialSeconds: number, onTimeUp: () => void,
+) {
   const [secondsLeft, setSecondsLeft] = useState(initialSeconds);
   const onTimeUpRef = useRef(onTimeUp);
   onTimeUpRef.current = onTimeUp;

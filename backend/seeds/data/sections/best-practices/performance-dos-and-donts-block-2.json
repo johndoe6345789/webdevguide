@@ -1,0 +1,29 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "DON'T: Import Everything",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "src/utils/dateHelpers.ts",
+          "description": "Importing the entire moment.js library adds 300KB+ to your bundle just to format one date.",
+          "code": "// BAD: moment.js is 300KB+ and not tree-shakeable\nimport moment from \"moment\";\n\nfunction formatDate(date: string): string {\n  return moment(date).format(\"MMM D, YYYY\");\n}\n\n// BAD: importing the entire lodash library for one function\nimport _ from \"lodash\";\n\nfunction getUnique(items: string[]): string[] {\n  return _.uniq(items);\n}"
+        }
+      ]
+    },
+    {
+      "label": "DO: Tree-Shake & Split",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "src/utils/dateHelpers.ts",
+          "description": "Import only what you need from tree-shakeable libraries. Use dynamic imports for code that is not needed on initial load.",
+          "code": "// GOOD: date-fns is tree-shakeable -- only the format function is bundled\nimport { format } from \"date-fns\";\n\nfunction formatDate(date: string): string {\n  return format(new Date(date), \"MMM d, yyyy\");\n}\n\n// GOOD: import only the specific lodash function (3KB vs 70KB)\nimport uniq from \"lodash/uniq\";\n\nfunction getUnique(items: string[]): string[] {\n  return uniq(items);\n}\n\n// GOOD: dynamic import for a heavy component only loaded when needed\nconst PdfViewer = lazy(() => import(\"./PdfViewer\"));\n\nfunction DocumentPage() {\n  return (\n    <Suspense fallback={<Spinner />}>\n      <PdfViewer />\n    </Suspense>\n  );\n}"
+        }
+      ]
+    }
+  ]
+}

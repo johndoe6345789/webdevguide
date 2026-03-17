@@ -1,0 +1,54 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "Prisma",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "prisma",
+          "filename": "prisma/schema.prisma",
+          "code": "generator client {\n  provider = \"prisma-client-js\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id        Int       @id @default(autoincrement())\n  email     String    @unique\n  username  String    @unique\n  password  String\n  role      Role      @default(USER)\n  profile   Profile?\n  posts     Post[]\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n\n  @@index([email])\n}\n\nmodel Profile {\n  id     Int     @id @default(autoincrement())\n  bio    String?\n  avatar String?\n  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n  userId Int     @unique\n}\n\nmodel Post {\n  id        Int       @id @default(autoincrement())\n  title     String\n  slug      String    @unique\n  body      String\n  published Boolean   @default(false)\n  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)\n  authorId  Int\n  tags      Tag[]\n  createdAt DateTime  @default(now())\n\n  @@index([authorId, createdAt(sort: Desc)])\n}\n\nmodel Tag {\n  id    Int    @id @default(autoincrement())\n  name  String @unique\n  posts Post[]\n}\n\nenum Role {\n  USER\n  ADMIN\n  MODERATOR\n}"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "Using Prisma Client (fully typed)",
+          "code": "import { PrismaClient } from '@prisma/client';\n\nconst prisma = new PrismaClient();\n\n// Create a user with a profile (nested write)\nconst user = await prisma.user.create({\n  data: {\n    email: 'alice@example.com',\n    username: 'alice',\n    password: hashedPassword,\n    profile: {\n      create: { bio: 'Full-stack developer' }\n    }\n  },\n  include: { profile: true }\n});\n\n// Find published posts with author info (type-safe)\nconst posts = await prisma.post.findMany({\n  where: { published: true },\n  include: {\n    author: { select: { username: true, email: true } },\n    tags: true\n  },\n  orderBy: { createdAt: 'desc' },\n  take: 20\n});\n\n// Transaction: transfer credits between users\nawait prisma.$transaction([\n  prisma.user.update({ where: { id: 1 }, data: { credits: { decrement: 50 } } }),\n  prisma.user.update({ where: { id: 2 }, data: { credits: { increment: 50 } } })\n]);"
+        }
+      ]
+    },
+    {
+      "label": "Drizzle",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "drizzle/schema.ts",
+          "code": "import { pgTable, serial, text, varchar, boolean, timestamp, integer, pgEnum } from 'drizzle-orm/pg-core';\nimport { relations } from 'drizzle-orm';\n\nexport const roleEnum = pgEnum('role', ['user', 'admin', 'moderator']);\n\nexport const users = pgTable('users', {\n  id: serial('id').primaryKey(),\n  email: varchar('email', { length: 255 }).unique().notNull(),\n  username: varchar('username', { length: 50 }).unique().notNull(),\n  password: varchar('password', { length: 255 }).notNull(),\n  role: roleEnum('role').default('user'),\n  createdAt: timestamp('created_at').defaultNow(),\n});\n\nexport const posts = pgTable('posts', {\n  id: serial('id').primaryKey(),\n  title: varchar('title', { length: 200 }).notNull(),\n  slug: varchar('slug', { length: 200 }).unique().notNull(),\n  body: text('body').notNull(),\n  published: boolean('published').default(false),\n  authorId: integer('author_id').notNull().references(() => users.id, { onDelete: 'cascade' }),\n  createdAt: timestamp('created_at').defaultNow(),\n});\n\nexport const usersRelations = relations(users, ({ many }) => ({\n  posts: many(posts),\n}));\n\nexport const postsRelations = relations(posts, ({ one }) => ({\n  author: one(users, { fields: [posts.authorId], references: [users.id] }),\n}));"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "Querying with Drizzle (SQL-like, fully typed)",
+          "code": "import { drizzle } from 'drizzle-orm/node-postgres';\nimport { eq, desc, and } from 'drizzle-orm';\nimport * as schema from './schema';\n\nconst db = drizzle(pool, { schema });\n\n// Select with join\nconst publishedPosts = await db\n  .select({\n    title: schema.posts.title,\n    author: schema.users.username,\n    createdAt: schema.posts.createdAt,\n  })\n  .from(schema.posts)\n  .innerJoin(schema.users, eq(schema.posts.authorId, schema.users.id))\n  .where(eq(schema.posts.published, true))\n  .orderBy(desc(schema.posts.createdAt))\n  .limit(20);\n\n// Insert\nawait db.insert(schema.posts).values({\n  title: 'Getting Started with Drizzle',\n  slug: 'getting-started-drizzle',\n  body: 'Drizzle ORM provides a SQL-like API...',\n  authorId: 1,\n});"
+        }
+      ]
+    },
+    {
+      "label": "Raw SQL",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Understanding raw SQL is essential even when using an ORM. ORMs generate SQL under the hood, and you will need raw SQL for complex queries, performance debugging, and database migrations."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "Raw SQL with parameterized queries (safe)",
+          "code": "import { Pool } from 'pg';\n\nconst pool = new Pool({ connectionString: process.env.DATABASE_URL });\n\n// ALWAYS use parameterized queries to prevent SQL injection\n// The $1, $2 placeholders are filled by the values array\nconst result = await pool.query(\n  `SELECT p.title, p.body, u.username AS author\n   FROM posts p\n   JOIN users u ON p.author_id = u.id\n   WHERE p.published = TRUE\n     AND p.created_at > $1\n   ORDER BY p.created_at DESC\n   LIMIT $2`,\n  [thirtyDaysAgo, 20]\n);\n\nconst posts = result.rows;\n\n// NEVER do this -- vulnerable to SQL injection:\n// const result = await pool.query(\n//   `SELECT * FROM users WHERE email = '${userInput}'`  // DANGEROUS\n// );"
+        }
+      ]
+    }
+  ]
+}

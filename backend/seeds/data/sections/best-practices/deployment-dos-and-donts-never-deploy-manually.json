@@ -1,0 +1,6 @@
+{
+  "type": "alert",
+  "severity": "error",
+  "title": "Never Deploy Manually",
+  "body": "If your deployment process involves SSH-ing into a server and running commands, you will eventually make a mistake at 2 AM. Automate everything through a CI/CD pipeline (GitHub Actions, GitLab CI, etc.). The deployment should be triggered by merging a PR, not by a human typing commands."
+}

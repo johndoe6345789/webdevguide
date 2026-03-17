@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Frontend Dependencies",
+  "headingLevel": 3,
+  "body": "The frontend uses Next.js 15 with React 19, Material UI 6 for components and theming, Redux Toolkit with redux-persist for state management, Axios for API calls, and next-intl for internationalization. Dev dependencies include TypeScript, ESLint, Jest for unit testing, and Playwright for end-to-end testing."
+}

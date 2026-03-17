@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "1. How the Web Works",
+  "headingLevel": 2,
+  "body": "Before writing a single line of code, you need to understand what happens when someone types a URL into a browser and presses Enter. Every web application you will ever build sits on top of these foundational concepts."
+}

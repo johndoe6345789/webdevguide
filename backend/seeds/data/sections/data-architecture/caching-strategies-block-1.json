@@ -1,0 +1,26 @@
+{
+  "type": "cardGrid",
+  "columns": 2,
+  "cards": [
+    {
+      "title": "CDN Caching",
+      "body": "Static assets (images, CSS, JS) are cached at edge servers around the world. Users load them from the nearest server. Providers: Cloudflare, Vercel Edge, AWS CloudFront.",
+      "chip": "Global"
+    },
+    {
+      "title": "HTTP Cache Headers",
+      "body": "Cache-Control headers tell browsers and CDNs how long to cache a response. Use max-age for static content and stale-while-revalidate for dynamic content that can be briefly stale.",
+      "chip": "Browser"
+    },
+    {
+      "title": "Application Cache (Redis)",
+      "body": "Store frequently accessed data (user sessions, API responses, computed results) in Redis. Sub-millisecond reads versus 5-50ms for a database query.",
+      "chip": "Server"
+    },
+    {
+      "title": "In-Memory Cache",
+      "body": "For single-server deployments, cache data in process memory using a Map or a library like node-cache. Fastest option but lost on restart and not shared across instances.",
+      "chip": "Process"
+    }
+  ]
+}

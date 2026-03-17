@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Working with JSON Data",
+  "headingLevel": 2,
+  "body": "Instead of a database, we will store data in JSON files. This is simpler to set up and perfect for learning."
+}

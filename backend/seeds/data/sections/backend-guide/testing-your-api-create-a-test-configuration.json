@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 2,
+  "title": "Create a Test Configuration",
+  "body": "Set up test fixtures that create a test version of your app.",
+  "code": "import pytest\nfrom app import create_app\n\n@pytest.fixture\ndef app():\n    \"\"\"Create a test version of the application.\"\"\"\n    app = create_app()\n    app.config[\"TESTING\"] = True\n    return app\n\n@pytest.fixture\ndef client(app):\n    \"\"\"Create a test client that can make requests to the app.\"\"\"\n    return app.test_client()",
+  "language": "python"
+}

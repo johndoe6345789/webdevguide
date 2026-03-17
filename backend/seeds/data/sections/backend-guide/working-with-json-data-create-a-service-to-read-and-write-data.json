@@ -1,0 +1,6 @@
+{
+  "type": "step",
+  "step": 2,
+  "title": "Create a Service to Read and Write Data",
+  "body": "Services contain the actual logic for working with data. We keep this separate from the routes so the code stays organized."
+}

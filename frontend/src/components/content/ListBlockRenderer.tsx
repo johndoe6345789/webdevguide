@@ -2,7 +2,9 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import type { ListBlock } from '@/types/content';
 
-export default function ListBlockRenderer({ items, ordered, heading }: ListBlock) {
+export default function ListBlockRenderer(
+  { items, ordered, heading }: ListBlock,
+) {
   const Tag = ordered ? 'ol' : 'ul';
 
   return (

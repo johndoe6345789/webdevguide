@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Redux Store with Persistence",
+  "headingLevel": 3,
+  "body": "The Redux store uses seven slices combined with `combineReducers`. Four slices are persisted to localStorage via redux-persist (theme, exam, progress, bookmarks), meaning they survive page reloads. Three slices are transient (guide, glossary, generator) and are fetched fresh from the API each time. The `makeStore` function creates both the store and the persistor."
+}

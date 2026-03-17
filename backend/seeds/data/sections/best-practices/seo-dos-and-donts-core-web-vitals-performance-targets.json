@@ -1,0 +1,34 @@
+{
+  "type": "table",
+  "heading": "Core Web Vitals: Performance Targets",
+  "headers": [
+    "Metric",
+    "What It Measures",
+    "Good",
+    "Needs Improvement",
+    "What Affects It"
+  ],
+  "rows": [
+    [
+      "LCP (Largest Contentful Paint)",
+      "When the biggest visible element finishes loading",
+      "Under 2.5s",
+      "2.5s - 4.0s",
+      "Hero images, web fonts, server response time, render-blocking CSS/JS"
+    ],
+    [
+      "INP (Interaction to Next Paint)",
+      "Delay between user interaction and visual response",
+      "Under 200ms",
+      "200ms - 500ms",
+      "Heavy JavaScript, long tasks on main thread, large DOM size"
+    ],
+    [
+      "CLS (Cumulative Layout Shift)",
+      "How much the page layout shifts during loading",
+      "Under 0.1",
+      "0.1 - 0.25",
+      "Images without dimensions, dynamically injected content, web fonts loading late"
+    ]
+  ]
+}

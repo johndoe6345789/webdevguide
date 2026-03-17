@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 1,
+  "title": "Define the TypeScript interface",
+  "body": "Add a new interface to `frontend/src/types/content.ts` and add it to the `ContentBlock` union type.",
+  "code": "// In content.ts\nexport interface VideoBlock {\n  type: 'video';\n  src: string;\n  title: string;\n  caption?: string;\n}\n\n// Add to the union:\nexport type ContentBlock =\n  | TextBlock | CodeBlock | ... | VideoBlock;",
+  "language": "typescript"
+}

@@ -1,0 +1,16 @@
+{
+  "type": "accordion",
+  "title": "ES6+ Features You Will Use Daily",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "Modern JavaScript (ES6 and beyond) introduced many features that make code shorter and more expressive. These are used extensively in React codebases."
+    },
+    {
+      "type": "code",
+      "language": "javascript",
+      "filename": "modern-js.js",
+      "code": "// 1. Destructuring -- unpack values from objects and arrays\nconst { name, age, ...rest } = { name: 'Alice', age: 30, role: 'dev', active: true };\n// name = 'Alice', age = 30, rest = { role: 'dev', active: true }\n\nconst [first, , third] = [10, 20, 30];\n// first = 10, third = 30 (skipped second)\n\n// 2. Spread operator -- copy and merge\nconst defaults = { theme: 'light', lang: 'en' };\nconst userPrefs = { theme: 'dark' };\nconst settings = { ...defaults, ...userPrefs };\n// { theme: 'dark', lang: 'en' } -- later spreads override\n\n// 3. Optional chaining -- safely access nested properties\nconst city = user?.address?.city; // undefined if any part is null/undefined\nconst firstFriend = user?.friends?.[0];\nconst result = user?.getName?.();\n\n// 4. Nullish coalescing -- default only for null/undefined\nconst port = process.env.PORT ?? 3000;\n// '' ?? 3000 -> '' (empty string is NOT nullish)\n// 0  ?? 3000 -> 0  (zero is NOT nullish)\n// null ?? 3000 -> 3000\n\n// 5. Object shorthand\nconst x = 10, y = 20;\nconst point = { x, y }; // same as { x: x, y: y }\n\n// 6. Computed property names\nconst field = 'email';\nconst formData = { [field]: 'alice@example.com' };\n// { email: 'alice@example.com' }\n\n// 7. for...of loop (iterates over values, not indices)\nfor (const fruit of ['apple', 'banana', 'cherry']) {\n  console.log(fruit);\n}\n\n// 8. Map and Set\nconst uniqueTags = new Set(['react', 'js', 'react', 'css']);\n// Set { 'react', 'js', 'css' } -- duplicates removed\n\nconst cache = new Map();\ncache.set('user:1', { name: 'Alice' });\ncache.get('user:1'); // { name: 'Alice' }\ncache.has('user:1'); // true"
+    }
+  ]
+}

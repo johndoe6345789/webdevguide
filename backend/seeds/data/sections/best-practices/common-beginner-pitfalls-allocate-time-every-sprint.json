@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 3,
+  "title": "Allocate time every sprint",
+  "body": "Reserve 15-20% of each sprint for technical debt. This is not negotiable. If you only build features, debt will eventually slow you to a crawl. Frame it to stakeholders as 'maintaining development velocity' rather than 'cleaning up code.'",
+  "code": "",
+  "language": "text"
+}

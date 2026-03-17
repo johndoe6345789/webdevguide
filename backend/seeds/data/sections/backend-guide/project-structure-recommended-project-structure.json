@@ -1,0 +1,17 @@
+{
+  "type": "list",
+  "heading": "Recommended Project Structure",
+  "ordered": false,
+  "items": [
+    "my-flask-backend/ — Your project root folder.",
+    "app/ — All of your application code lives here.",
+    "app/__init__.py — The app factory. This file creates and configures your Flask app. Python uses this file to recognize the folder as a package.",
+    "app/api/ — Your route blueprints (endpoints). Each file handles a group of related URLs.",
+    "app/services/ — Business logic. Functions that do the actual work (reading files, calculating things, processing data).",
+    "app/utils/ — Helper functions that are used across multiple parts of your app.",
+    "data/ — JSON files or other data storage. This is where you keep your application data.",
+    "venv/ — Your virtual environment (created automatically, never edit this).",
+    "requirements.txt — A list of all the Python libraries your project needs. Like package.json for Python.",
+    "run.py — The entry point that starts your application."
+  ]
+}

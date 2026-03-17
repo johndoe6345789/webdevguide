@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "CRUD Operations",
+  "headingLevel": 2,
+  "body": "CRUD stands for Create, Read, Update, Delete. These are the four basic things you can do with data."
+}

@@ -17,7 +17,11 @@ interface StatsGridProps {
   timeMinutes: number;
 }
 
-export default function StatsGrid({ sectionsCompleted, totalSections, chaptersVisited, examsTaken, bestExam, avgExam, timeMinutes }: StatsGridProps) {
+export default function StatsGrid(
+  { sectionsCompleted, totalSections,
+    chaptersVisited, examsTaken,
+    bestExam, avgExam, timeMinutes }: StatsGridProps,
+) {
   return (
     <Grid container spacing={3} sx={{ mb: 4 }}>
       <Grid size={{ xs: 6, sm: 4, md: 2 }}><StatCard icon={<CheckCircleIcon sx={{ fontSize: 36 }} />} label="Sections Done" value={`${sectionsCompleted}/${totalSections}`} /></Grid>

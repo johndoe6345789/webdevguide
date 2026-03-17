@@ -1,0 +1,22 @@
+{
+  "type": "accordion",
+  "title": "Variables, Types, and Operators",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "JavaScript has three ways to declare variables: `const` (cannot be reassigned), `let` (can be reassigned), and `var` (old, avoid it). Always prefer `const` unless you need to reassign."
+    },
+    {
+      "type": "code",
+      "language": "javascript",
+      "filename": "variables.js",
+      "code": "// const: cannot be reassigned (use this by default)\nconst API_URL = 'https://api.example.com';\nconst MAX_RETRIES = 3;\n\n// let: can be reassigned (use when the value will change)\nlet currentUser = null;\nlet retryCount = 0;\ncurrentUser = { name: 'Alice' }; // reassignment is fine\nretryCount += 1;\n\n// var: function-scoped, hoisted -- avoid in modern code\n// var oldSchool = 'dont use this';\n\n// Primitive types\nconst name = 'Alice';          // string\nconst age = 30;                // number\nconst isActive = true;         // boolean\nconst nothing = null;          // null (intentional absence)\nlet something;                 // undefined (not yet assigned)\nconst uniqueId = Symbol('id'); // symbol\nconst huge = 9007199254740991n; // bigint\n\n// Reference types\nconst fruits = ['apple', 'banana', 'cherry']; // array\nconst user = { name: 'Alice', age: 30 };      // object\nconst greet = (name) => `Hello, ${name}!`;     // function\n\n// Template literals (backtick strings with interpolation)\nconst greeting = `Hello, ${name}! You are ${age} years old.`;\nconst multiLine = `\n  This string\n  spans multiple\n  lines.\n`;\n\n// Destructuring\nconst { name: userName, age: userAge } = user;\nconst [first, second, ...rest] = fruits;\n\n// Spread operator\nconst moreFruits = [...fruits, 'date', 'elderberry'];\nconst updatedUser = { ...user, age: 31 };\n\n// Nullish coalescing and optional chaining\nconst displayName = user.nickname ?? 'Anonymous'; // ?? returns right side only for null/undefined\nconst city = user.address?.city; // ?. returns undefined instead of throwing if address is null"
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "== vs ===",
+      "body": "Always use `===` (strict equality) instead of `==` (loose equality). Loose equality does type coercion, which leads to surprises: `0 == ''` is `true`, `null == undefined` is `true`, and `'' == false` is `true`. Strict equality checks both value and type."
+    }
+  ]
+}

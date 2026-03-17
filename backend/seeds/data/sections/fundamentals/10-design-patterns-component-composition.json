@@ -1,0 +1,16 @@
+{
+  "type": "accordion",
+  "title": "Component Composition",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "**Composition** means building complex UIs by combining simple components. Instead of creating one monolithic component with dozens of props, break it into smaller parts that snap together. This is the most fundamental pattern in React."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "composition-example.tsx",
+      "code": "// Instead of one massive component with many props:\n// <Card title=\"...\" subtitle=\"...\" image=\"...\" actions={} footer={} ... />\n\n// Build composable parts:\nfunction Card({ children }: { children: React.ReactNode }) {\n  return <div className=\"card\">{children}</div>;\n}\n\nfunction CardHeader({ children }: { children: React.ReactNode }) {\n  return <div className=\"card__header\">{children}</div>;\n}\n\nfunction CardBody({ children }: { children: React.ReactNode }) {\n  return <div className=\"card__body\">{children}</div>;\n}\n\nfunction CardFooter({ children }: { children: React.ReactNode }) {\n  return <div className=\"card__footer\">{children}</div>;\n}\n\n// Compose them however you need:\nfunction ProductCard({ product }: { product: Product }) {\n  return (\n    <Card>\n      <CardHeader>\n        <h3>{product.name}</h3>\n        <span>${product.price}</span>\n      </CardHeader>\n      <CardBody>\n        <p>{product.description}</p>\n      </CardBody>\n      <CardFooter>\n        <button>Add to Cart</button>\n      </CardFooter>\n    </Card>\n  );\n}\n\n// Or a simpler variant:\nfunction AlertCard({ message }: { message: string }) {\n  return (\n    <Card>\n      <CardBody>\n        <p>{message}</p>\n      </CardBody>\n    </Card>\n  );\n}"
+    }
+  ]
+}

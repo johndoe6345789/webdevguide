@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Security",
+  "headingLevel": 2,
+  "body": "Data security is not optional. A single vulnerability can expose your entire user database. These practices must be built into your application from the start, not added later."
+}

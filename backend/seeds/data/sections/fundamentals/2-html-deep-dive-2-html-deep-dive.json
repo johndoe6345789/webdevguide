@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "2. HTML Deep Dive",
+  "headingLevel": 2,
+  "body": "HTML (HyperText Markup Language) is the skeleton of every web page. It defines the structure and meaning of content. Writing good HTML means writing **semantic** HTML -- using the right element for the right job."
+}

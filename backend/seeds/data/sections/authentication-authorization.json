@@ -1,0 +1,750 @@
+{
+  "title": "Authentication & Authorization",
+  "slug": "authentication-authorization",
+  "description": "Every approach to auth explained — sessions, JWTs, OAuth, API keys, RBAC, and more — with security best practices and real implementations",
+  "icon": "Security",
+  "order": 28,
+  "estimatedMinutes": 40,
+  "difficulty": "intermediate",
+  "prerequisites": ["fundamentals", "backend-guide"],
+  "keyPoints": [
+    "Authentication vs Authorization",
+    "Session-based vs Token-based auth",
+    "OAuth 2.0 and social login",
+    "Role-based and attribute-based access control",
+    "Security best practices"
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "heading": "Authentication vs Authorization",
+      "headingLevel": 2,
+      "body": "These two terms sound similar but solve completely different problems. Authentication answers the question 'Who are you?' while authorization answers 'What are you allowed to do?' Every secure application needs both, and confusing them is one of the most common mistakes developers make."
+    },
+    {
+      "type": "text",
+      "body": "Think of a restaurant. Authentication is the bouncer at the door checking your ID to confirm you are who you claim to be. Authorization is the host deciding whether you get a regular table or access to the VIP lounge. The bouncer does not care if you are a VIP -- he just needs to verify your identity. The host does not re-check your ID -- she just needs to know your access level. Same principle applies to web applications: first prove who you are, then the system decides what you can do."
+    },
+    {
+      "type": "table",
+      "heading": "Authentication vs Authorization",
+      "headers": ["Aspect", "Authentication (AuthN)", "Authorization (AuthZ)"],
+      "rows": [
+        ["Question answered", "Who are you?", "What can you do?"],
+        ["When it happens", "First -- before anything else", "Second -- after identity is confirmed"],
+        ["What it checks", "Credentials (password, biometrics, token)", "Permissions, roles, policies"],
+        ["Failure response", "401 Unauthorized", "403 Forbidden"],
+        ["User visible?", "Yes -- login forms, OAuth prompts", "Usually invisible -- happens behind the scenes"],
+        ["Can change?", "Rarely -- your identity stays the same", "Often -- permissions change with roles"],
+        ["Example", "Entering your password to log in", "Only admins can delete user accounts"],
+        ["Restaurant analogy", "Bouncer checks your ID at the door", "Host seats you at regular table or VIP"]
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Auth Approaches Overview",
+      "headingLevel": 2,
+      "body": "There is no single correct way to handle authentication. Each approach has trade-offs in security, complexity, and user experience. The right choice depends on your application type, user base, and security requirements."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "Session-Based",
+          "body": "Server stores session state, client gets a cookie. The traditional approach used by most server-rendered apps.",
+          "icon": "Cookie",
+          "chip": "Traditional"
+        },
+        {
+          "title": "JWT Tokens",
+          "body": "Stateless tokens containing encoded user data. Popular for SPAs and mobile apps that talk to APIs.",
+          "icon": "Token",
+          "chip": "Popular"
+        },
+        {
+          "title": "OAuth 2.0",
+          "body": "Delegated authorization -- let users log in with Google, GitHub, etc. without sharing passwords.",
+          "icon": "AccountCircle",
+          "chip": "Social Login"
+        },
+        {
+          "title": "API Keys",
+          "body": "Simple tokens for server-to-server communication and public API access. Easy but limited.",
+          "icon": "Key",
+          "chip": "APIs"
+        },
+        {
+          "title": "Basic Auth",
+          "body": "Base64-encoded username and password sent with every request. Simple but only safe over HTTPS.",
+          "icon": "Lock",
+          "chip": "Simple"
+        },
+        {
+          "title": "Digest Auth",
+          "body": "Challenge-response protocol that hashes credentials. More secure than Basic but rarely used today.",
+          "icon": "EnhancedEncryption",
+          "chip": "Legacy"
+        },
+        {
+          "title": "SAML",
+          "body": "XML-based SSO protocol common in enterprise environments. Complex but powerful for corporate identity.",
+          "icon": "Business",
+          "chip": "Enterprise"
+        },
+        {
+          "title": "OpenID Connect",
+          "body": "Identity layer on top of OAuth 2.0. Adds standardized user info and ID tokens to OAuth flows.",
+          "icon": "VerifiedUser",
+          "chip": "Standard"
+        },
+        {
+          "title": "Passkeys / WebAuthn",
+          "body": "Passwordless authentication using biometrics or hardware keys. The future of auth.",
+          "icon": "Fingerprint",
+          "chip": "Modern"
+        },
+        {
+          "title": "Magic Links",
+          "body": "Passwordless login via email. Send a unique time-limited link -- click it and you are in.",
+          "icon": "Email",
+          "chip": "Passwordless"
+        },
+        {
+          "title": "Multi-Factor Auth",
+          "body": "Combine multiple factors -- something you know, have, and are -- for stronger security.",
+          "icon": "SecurityUpdate",
+          "chip": "Essential"
+        },
+        {
+          "title": "Certificate-Based",
+          "body": "Mutual TLS using client certificates. Common in IoT, banking, and government systems.",
+          "icon": "CardMembership",
+          "chip": "Advanced"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Session-Based Authentication",
+      "headingLevel": 2,
+      "body": "Session-based auth is the oldest and most straightforward approach. When a user logs in, the server creates a session record (stored in memory, a database, or Redis), generates a unique session ID, and sends it back to the browser as a cookie. On every subsequent request, the browser automatically includes that cookie, and the server looks up the session to identify the user."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "app.py",
+      "description": "Flask session-based authentication with login, session check, and logout",
+      "code": "from flask import Flask, request, session, jsonify\nfrom werkzeug.security import generate_password_hash, check_password_hash\nfrom functools import wraps\nimport os\n\napp = Flask(__name__)\napp.secret_key = os.environ.get('SECRET_KEY', os.urandom(32))\napp.config['SESSION_COOKIE_HTTPONLY'] = True\napp.config['SESSION_COOKIE_SECURE'] = True\napp.config['SESSION_COOKIE_SAMESITE'] = 'Lax'\napp.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour\n\n# In production, use a real database\nusers_db = {}\n\n\ndef login_required(f):\n    @wraps(f)\n    def decorated(*args, **kwargs):\n        if 'user_id' not in session:\n            return jsonify({'error': 'Authentication required'}), 401\n        return f(*args, **kwargs)\n    return decorated\n\n\n@app.route('/api/register', methods=['POST'])\ndef register():\n    data = request.get_json()\n    email = data.get('email', '').strip().lower()\n    password = data.get('password', '')\n\n    if not email or not password:\n        return jsonify({'error': 'Email and password required'}), 400\n\n    if email in users_db:\n        return jsonify({'error': 'Email already registered'}), 409\n\n    if len(password) < 8:\n        return jsonify({'error': 'Password must be at least 8 characters'}), 400\n\n    users_db[email] = {\n        'id': len(users_db) + 1,\n        'email': email,\n        'password_hash': generate_password_hash(password),\n        'role': 'viewer'\n    }\n    return jsonify({'message': 'Registration successful'}), 201\n\n\n@app.route('/api/login', methods=['POST'])\ndef login():\n    data = request.get_json()\n    email = data.get('email', '').strip().lower()\n    password = data.get('password', '')\n\n    user = users_db.get(email)\n    if not user or not check_password_hash(user['password_hash'], password):\n        return jsonify({'error': 'Invalid email or password'}), 401\n\n    session.permanent = True\n    session['user_id'] = user['id']\n    session['email'] = user['email']\n    session['role'] = user['role']\n\n    return jsonify({\n        'message': 'Login successful',\n        'user': {'id': user['id'], 'email': user['email'], 'role': user['role']}\n    })\n\n\n@app.route('/api/me', methods=['GET'])\n@login_required\ndef get_current_user():\n    return jsonify({\n        'user_id': session['user_id'],\n        'email': session['email'],\n        'role': session['role']\n    })\n\n\n@app.route('/api/logout', methods=['POST'])\ndef logout():\n    session.clear()\n    return jsonify({'message': 'Logged out successfully'})"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "LoginForm.tsx",
+      "description": "React login form that works with session cookies",
+      "code": "import { useState, FormEvent } from 'react';\n\ninterface LoginFormProps {\n  onSuccess: (user: { id: number; email: string; role: string }) => void;\n}\n\nexport default function LoginForm({ onSuccess }: LoginFormProps) {\n  const [email, setEmail] = useState('');\n  const [password, setPassword] = useState('');\n  const [error, setError] = useState('');\n  const [loading, setLoading] = useState(false);\n\n  const handleSubmit = async (e: FormEvent) => {\n    e.preventDefault();\n    setError('');\n    setLoading(true);\n\n    try {\n      const res = await fetch('/api/login', {\n        method: 'POST',\n        headers: { 'Content-Type': 'application/json' },\n        credentials: 'include',  // Required for cookies\n        body: JSON.stringify({ email, password }),\n      });\n\n      const data = await res.json();\n\n      if (!res.ok) {\n        setError(data.error || 'Login failed');\n        return;\n      }\n\n      onSuccess(data.user);\n    } catch {\n      setError('Network error. Please try again.');\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  return (\n    <form onSubmit={handleSubmit}>\n      {error && <div className=\"error-message\">{error}</div>}\n      <label htmlFor=\"email\">Email</label>\n      <input\n        id=\"email\"\n        type=\"email\"\n        value={email}\n        onChange={(e) => setEmail(e.target.value)}\n        required\n      />\n      <label htmlFor=\"password\">Password</label>\n      <input\n        id=\"password\"\n        type=\"password\"\n        value={password}\n        onChange={(e) => setPassword(e.target.value)}\n        required\n        minLength={8}\n      />\n      <button type=\"submit\" disabled={loading}>\n        {loading ? 'Signing in...' : 'Sign In'}\n      </button>\n    </form>\n  );\n}"
+    },
+    {
+      "type": "table",
+      "heading": "Session-Based Auth: Pros and Cons",
+      "headers": ["Pros", "Cons"],
+      "rows": [
+        ["Simple to implement and understand", "Server must store session data (stateful)"],
+        ["Easy to revoke -- just delete the session", "Hard to scale horizontally without shared session store"],
+        ["Browser handles cookies automatically", "Vulnerable to CSRF attacks without protection"],
+        ["No token management on the client", "Not ideal for mobile apps or third-party APIs"],
+        ["Built-in support in every web framework", "Cookie size limits and cross-domain complexity"]
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Scaling Sessions",
+      "body": "Sessions are stateful -- the server must store session data. This makes horizontal scaling harder without sticky sessions or a shared session store like Redis. If you have multiple server instances behind a load balancer, a user's session created on Server A will not exist on Server B unless you share session storage."
+    },
+    {
+      "type": "text",
+      "heading": "JWT (JSON Web Tokens)",
+      "headingLevel": 2,
+      "body": "JWTs are self-contained tokens that encode user information directly into the token itself. A JWT has three parts separated by dots: a header (algorithm and type), a payload (user data and claims), and a signature (cryptographic proof the token was not tampered with). Because all the information lives in the token, the server does not need to store session state -- it just verifies the signature."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "jwt_auth.py",
+      "description": "Flask JWT implementation with token generation, verification middleware, and protected routes",
+      "code": "from flask import Flask, request, jsonify, g\nfrom werkzeug.security import generate_password_hash, check_password_hash\nfrom functools import wraps\nfrom datetime import datetime, timezone, timedelta\nimport jwt\nimport os\n\napp = Flask(__name__)\nJWT_SECRET = os.environ.get('JWT_SECRET', 'change-me-in-production')\nJWT_ALGORITHM = 'HS256'\nACCESS_TOKEN_EXPIRES = timedelta(minutes=15)\nREFRESH_TOKEN_EXPIRES = timedelta(days=7)\n\nusers_db = {}\nrevoked_tokens = set()  # In production, use Redis\n\n\ndef generate_access_token(user):\n    payload = {\n        'sub': user['id'],\n        'email': user['email'],\n        'role': user['role'],\n        'iat': datetime.now(timezone.utc),\n        'exp': datetime.now(timezone.utc) + ACCESS_TOKEN_EXPIRES,\n        'type': 'access'\n    }\n    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)\n\n\ndef generate_refresh_token(user):\n    payload = {\n        'sub': user['id'],\n        'iat': datetime.now(timezone.utc),\n        'exp': datetime.now(timezone.utc) + REFRESH_TOKEN_EXPIRES,\n        'type': 'refresh'\n    }\n    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)\n\n\ndef jwt_required(f):\n    @wraps(f)\n    def decorated(*args, **kwargs):\n        auth_header = request.headers.get('Authorization', '')\n        if not auth_header.startswith('Bearer '):\n            return jsonify({'error': 'Missing or invalid Authorization header'}), 401\n\n        token = auth_header.split(' ', 1)[1]\n\n        if token in revoked_tokens:\n            return jsonify({'error': 'Token has been revoked'}), 401\n\n        try:\n            payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])\n        except jwt.ExpiredSignatureError:\n            return jsonify({'error': 'Token has expired'}), 401\n        except jwt.InvalidTokenError:\n            return jsonify({'error': 'Invalid token'}), 401\n\n        if payload.get('type') != 'access':\n            return jsonify({'error': 'Invalid token type'}), 401\n\n        g.current_user = payload\n        return f(*args, **kwargs)\n    return decorated\n\n\n@app.route('/api/login', methods=['POST'])\ndef login():\n    data = request.get_json()\n    email = data.get('email', '').strip().lower()\n    password = data.get('password', '')\n\n    user = users_db.get(email)\n    if not user or not check_password_hash(user['password_hash'], password):\n        return jsonify({'error': 'Invalid credentials'}), 401\n\n    access_token = generate_access_token(user)\n    refresh_token = generate_refresh_token(user)\n\n    response = jsonify({\n        'access_token': access_token,\n        'user': {'id': user['id'], 'email': user['email'], 'role': user['role']}\n    })\n    response.set_cookie(\n        'refresh_token', refresh_token,\n        httponly=True, secure=True, samesite='Lax',\n        max_age=int(REFRESH_TOKEN_EXPIRES.total_seconds())\n    )\n    return response\n\n\n@app.route('/api/refresh', methods=['POST'])\ndef refresh():\n    refresh_token = request.cookies.get('refresh_token')\n    if not refresh_token:\n        return jsonify({'error': 'No refresh token'}), 401\n\n    try:\n        payload = jwt.decode(refresh_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])\n    except jwt.InvalidTokenError:\n        return jsonify({'error': 'Invalid refresh token'}), 401\n\n    if payload.get('type') != 'refresh':\n        return jsonify({'error': 'Invalid token type'}), 401\n\n    user_id = payload['sub']\n    user = next((u for u in users_db.values() if u['id'] == user_id), None)\n    if not user:\n        return jsonify({'error': 'User not found'}), 401\n\n    new_access_token = generate_access_token(user)\n    return jsonify({'access_token': new_access_token})\n\n\n@app.route('/api/me', methods=['GET'])\n@jwt_required\ndef get_profile():\n    return jsonify(g.current_user)\n\n\n@app.route('/api/logout', methods=['POST'])\n@jwt_required\ndef logout_jwt():\n    auth_header = request.headers.get('Authorization', '')\n    token = auth_header.split(' ', 1)[1]\n    revoked_tokens.add(token)\n\n    response = jsonify({'message': 'Logged out'})\n    response.delete_cookie('refresh_token')\n    return response"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "api.ts",
+      "description": "Axios interceptor that attaches JWT to every request and auto-refreshes expired tokens",
+      "code": "import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';\n\nconst api = axios.create({\n  baseURL: '/api',\n  withCredentials: true,  // Send cookies (for refresh token)\n});\n\nlet accessToken: string | null = null;\n\nexport function setAccessToken(token: string | null) {\n  accessToken = token;\n}\n\n// Attach access token to every request\napi.interceptors.request.use((config: InternalAxiosRequestConfig) => {\n  if (accessToken) {\n    config.headers.Authorization = `Bearer ${accessToken}`;\n  }\n  return config;\n});\n\n// Auto-refresh on 401\nlet isRefreshing = false;\nlet failedQueue: Array<{\n  resolve: (token: string) => void;\n  reject: (error: unknown) => void;\n}> = [];\n\nfunction processQueue(error: unknown, token: string | null) {\n  failedQueue.forEach(({ resolve, reject }) => {\n    if (error) reject(error);\n    else if (token) resolve(token);\n  });\n  failedQueue = [];\n}\n\napi.interceptors.response.use(\n  (response) => response,\n  async (error: AxiosError) => {\n    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };\n\n    if (error.response?.status !== 401 || originalRequest._retry) {\n      return Promise.reject(error);\n    }\n\n    if (isRefreshing) {\n      return new Promise((resolve, reject) => {\n        failedQueue.push({\n          resolve: (token: string) => {\n            originalRequest.headers.Authorization = `Bearer ${token}`;\n            resolve(api(originalRequest));\n          },\n          reject,\n        });\n      });\n    }\n\n    originalRequest._retry = true;\n    isRefreshing = true;\n\n    try {\n      const { data } = await axios.post('/api/refresh', null, {\n        withCredentials: true,\n      });\n      const newToken = data.access_token;\n      setAccessToken(newToken);\n      processQueue(null, newToken);\n      originalRequest.headers.Authorization = `Bearer ${newToken}`;\n      return api(originalRequest);\n    } catch (refreshError) {\n      processQueue(refreshError, null);\n      setAccessToken(null);\n      window.location.href = '/login';\n      return Promise.reject(refreshError);\n    } finally {\n      isRefreshing = false;\n    }\n  }\n);\n\nexport default api;"
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Access Token Only",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "The simplest JWT approach: issue a single access token on login and include it in every request. When it expires, the user must log in again. This works for short-lived sessions or internal tools where re-authentication is acceptable."
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "filename": "simple_jwt.py",
+              "description": "Single access token pattern -- simple but requires re-login on expiry",
+              "code": "from datetime import datetime, timezone, timedelta\nimport jwt\n\nJWT_SECRET = 'your-secret-key'\n\ndef create_token(user_id: int, email: str) -> str:\n    payload = {\n        'sub': user_id,\n        'email': email,\n        'exp': datetime.now(timezone.utc) + timedelta(hours=1),\n        'iat': datetime.now(timezone.utc),\n    }\n    return jwt.encode(payload, JWT_SECRET, algorithm='HS256')\n\n\ndef verify_token(token: str) -> dict:\n    \"\"\"Returns payload or raises jwt.InvalidTokenError.\"\"\"\n    return jwt.decode(token, JWT_SECRET, algorithms=['HS256'])"
+            }
+          ]
+        },
+        {
+          "label": "Access + Refresh Tokens",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "The production pattern: a short-lived access token (15 minutes) for API requests, plus a long-lived refresh token (7 days) stored in an httpOnly cookie. When the access token expires, the client silently gets a new one using the refresh token. The user stays logged in without re-entering credentials."
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "filename": "refresh_jwt.py",
+              "description": "Access plus refresh token pattern with token rotation for security",
+              "code": "from datetime import datetime, timezone, timedelta\nimport jwt\nimport secrets\n\nJWT_SECRET = 'your-secret-key'\nrefresh_token_store = {}  # In production, use Redis or a database\n\n\ndef create_token_pair(user_id: int, email: str) -> dict:\n    access_payload = {\n        'sub': user_id,\n        'email': email,\n        'exp': datetime.now(timezone.utc) + timedelta(minutes=15),\n        'iat': datetime.now(timezone.utc),\n        'type': 'access',\n    }\n    access_token = jwt.encode(access_payload, JWT_SECRET, algorithm='HS256')\n\n    refresh_id = secrets.token_urlsafe(32)\n    refresh_payload = {\n        'sub': user_id,\n        'jti': refresh_id,\n        'exp': datetime.now(timezone.utc) + timedelta(days=7),\n        'iat': datetime.now(timezone.utc),\n        'type': 'refresh',\n    }\n    refresh_token = jwt.encode(refresh_payload, JWT_SECRET, algorithm='HS256')\n\n    # Store refresh token ID for revocation\n    refresh_token_store[refresh_id] = {\n        'user_id': user_id,\n        'expires': datetime.now(timezone.utc) + timedelta(days=7),\n    }\n\n    return {'access_token': access_token, 'refresh_token': refresh_token}\n\n\ndef rotate_refresh_token(old_refresh_token: str) -> dict:\n    \"\"\"Verify old refresh token, revoke it, issue new pair.\"\"\"\n    payload = jwt.decode(old_refresh_token, JWT_SECRET, algorithms=['HS256'])\n\n    if payload.get('type') != 'refresh':\n        raise ValueError('Not a refresh token')\n\n    jti = payload['jti']\n    if jti not in refresh_token_store:\n        raise ValueError('Refresh token revoked or unknown')\n\n    # Revoke old token (rotation)\n    del refresh_token_store[jti]\n\n    # Issue new pair\n    return create_token_pair(payload['sub'], '')"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "heading": "JWT Pros and Cons",
+      "headers": ["Pros", "Cons"],
+      "rows": [
+        ["Stateless -- no server-side session storage needed", "Cannot be revoked without extra infrastructure (blocklist)"],
+        ["Works across domains and services", "Larger than session cookies (especially with many claims)"],
+        ["Self-contained -- payload carries user info", "Vulnerable to XSS if stored in localStorage"],
+        ["Great for microservices and APIs", "Token expiry requires refresh token logic"],
+        ["Easy to pass to mobile apps and third-party clients", "Sensitive data in payload is only encoded, not encrypted"]
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "JWT Storage Security",
+      "body": "NEVER store JWTs in localStorage for sensitive applications -- it is vulnerable to XSS attacks. Any JavaScript running on your page (including malicious scripts from a supply-chain attack) can read localStorage. Instead, store access tokens in memory (a JavaScript variable) and refresh tokens in httpOnly cookies that JavaScript cannot access."
+    },
+    {
+      "type": "accordion",
+      "title": "JWT Claims Deep Dive",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "table",
+          "heading": "Standard JWT Claims (RFC 7519)",
+          "headers": ["Claim", "Full Name", "Purpose", "Example"],
+          "rows": [
+            ["iss", "Issuer", "Who created and signed the token", "\"https://auth.myapp.com\""],
+            ["sub", "Subject", "Who the token is about (usually user ID)", "\"user_12345\""],
+            ["aud", "Audience", "Who the token is intended for", "\"https://api.myapp.com\""],
+            ["exp", "Expiration Time", "When the token expires (Unix timestamp)", "1700000000"],
+            ["iat", "Issued At", "When the token was created", "1699999100"],
+            ["nbf", "Not Before", "Token is not valid before this time", "1699999100"],
+            ["jti", "JWT ID", "Unique identifier to prevent replay attacks", "\"a1b2c3d4-e5f6\""]
+          ]
+        },
+        {
+          "type": "text",
+          "body": "You can also add custom claims like 'role', 'email', or 'permissions'. Keep the payload small -- every claim increases the token size, and the token is sent with every request. Never put sensitive data (passwords, credit card numbers) in JWT claims because the payload is only base64-encoded, not encrypted."
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "OAuth 2.0 and Social Login",
+      "headingLevel": 2,
+      "body": "OAuth 2.0 is a delegated authorization framework. Instead of your app collecting and storing user passwords, you let a trusted provider (Google, GitHub, etc.) handle authentication. The user grants your app limited access to their data on that provider. OAuth 2.0 does not authenticate users directly -- that is what OpenID Connect adds on top."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 2,
+      "cards": [
+        {
+          "title": "Authorization Code",
+          "body": "The standard flow for web apps with a backend. Exchanges a short-lived code for tokens server-side. Most secure for traditional web apps.",
+          "icon": "Web",
+          "chip": "Web Apps"
+        },
+        {
+          "title": "Authorization Code + PKCE",
+          "body": "Same as Authorization Code but with an extra proof key. Required for SPAs and mobile apps that cannot safely store a client secret.",
+          "icon": "PhoneIphone",
+          "chip": "SPAs / Mobile"
+        },
+        {
+          "title": "Client Credentials",
+          "body": "Machine-to-machine auth. No user involved. The client authenticates directly with its own credentials to access its own resources.",
+          "icon": "Dns",
+          "chip": "Server-to-Server"
+        },
+        {
+          "title": "Device Code",
+          "body": "For devices with limited input (smart TVs, CLI tools). User authorizes on a separate device by entering a short code.",
+          "icon": "Tv",
+          "chip": "TVs / CLIs"
+        }
+      ]
+    },
+    {
+      "type": "step",
+      "step": 1,
+      "title": "Redirect to Provider",
+      "body": "Your app redirects the user to the OAuth provider's authorization endpoint with your client_id, redirect_uri, scope, and a random state parameter for CSRF protection."
+    },
+    {
+      "type": "step",
+      "step": 2,
+      "title": "User Approves",
+      "body": "The user logs into the provider (if not already) and sees a consent screen listing what permissions your app is requesting. They click 'Allow' to grant access."
+    },
+    {
+      "type": "step",
+      "step": 3,
+      "title": "Provider Redirects with Code",
+      "body": "The provider redirects the user back to your redirect_uri with a short-lived authorization code and the state parameter. You verify the state matches to prevent CSRF."
+    },
+    {
+      "type": "step",
+      "step": 4,
+      "title": "Exchange Code for Token",
+      "body": "Your backend sends the authorization code plus your client_secret to the provider's token endpoint. The provider returns an access token (and optionally a refresh token and ID token)."
+    },
+    {
+      "type": "step",
+      "step": 5,
+      "title": "Use Token to Get User Info",
+      "body": "Your backend uses the access token to call the provider's user info endpoint. You get the user's profile data (email, name, avatar) and either create a new account or log in an existing one."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "oauth_google.py",
+      "description": "Flask OAuth 2.0 with Google -- redirect and callback endpoints",
+      "code": "from flask import Flask, redirect, request, session, jsonify, url_for\nimport requests\nimport os\nimport secrets\n\napp = Flask(__name__)\napp.secret_key = os.environ.get('SECRET_KEY', os.urandom(32))\n\nGOOGLE_CLIENT_ID = os.environ['GOOGLE_CLIENT_ID']\nGOOGLE_CLIENT_SECRET = os.environ['GOOGLE_CLIENT_SECRET']\nGOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth'\nGOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token'\nGOOGLE_USERINFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo'\n\n\n@app.route('/api/auth/google')\ndef google_login():\n    state = secrets.token_urlsafe(32)\n    session['oauth_state'] = state\n\n    params = {\n        'client_id': GOOGLE_CLIENT_ID,\n        'redirect_uri': url_for('google_callback', _external=True),\n        'response_type': 'code',\n        'scope': 'openid email profile',\n        'state': state,\n        'access_type': 'offline',\n        'prompt': 'consent',\n    }\n    auth_url = f\"{GOOGLE_AUTH_URL}?{'&'.join(f'{k}={v}' for k, v in params.items())}\"\n    return redirect(auth_url)\n\n\n@app.route('/api/auth/google/callback')\ndef google_callback():\n    # Verify state to prevent CSRF\n    if request.args.get('state') != session.pop('oauth_state', None):\n        return jsonify({'error': 'Invalid state parameter'}), 400\n\n    if 'error' in request.args:\n        return jsonify({'error': request.args['error']}), 400\n\n    code = request.args.get('code')\n\n    # Exchange code for tokens\n    token_response = requests.post(GOOGLE_TOKEN_URL, data={\n        'client_id': GOOGLE_CLIENT_ID,\n        'client_secret': GOOGLE_CLIENT_SECRET,\n        'code': code,\n        'grant_type': 'authorization_code',\n        'redirect_uri': url_for('google_callback', _external=True),\n    })\n    tokens = token_response.json()\n\n    if 'error' in tokens:\n        return jsonify({'error': 'Failed to exchange code'}), 400\n\n    # Get user info\n    headers = {'Authorization': f\"Bearer {tokens['access_token']}\"}\n    user_response = requests.get(GOOGLE_USERINFO_URL, headers=headers)\n    user_info = user_response.json()\n\n    # Create or update user in your database\n    user = find_or_create_user(\n        provider='google',\n        provider_id=user_info['id'],\n        email=user_info['email'],\n        name=user_info.get('name', ''),\n        avatar=user_info.get('picture', ''),\n    )\n\n    session['user_id'] = user['id']\n    session['email'] = user['email']\n\n    return redirect('/dashboard')\n\n\ndef find_or_create_user(provider, provider_id, email, name, avatar):\n    \"\"\"Look up user by provider ID or email. Create if not found.\"\"\"\n    # In production, query your database here\n    return {\n        'id': 1,\n        'email': email,\n        'name': name,\n        'avatar': avatar,\n        'provider': provider,\n    }"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "GoogleSignIn.tsx",
+      "description": "React component for Google sign-in button",
+      "code": "export default function GoogleSignIn() {\n  const handleGoogleLogin = () => {\n    // Redirect to your Flask OAuth endpoint\n    window.location.href = '/api/auth/google';\n  };\n\n  return (\n    <button\n      onClick={handleGoogleLogin}\n      className=\"google-signin-btn\"\n      type=\"button\"\n    >\n      <svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" aria-hidden=\"true\">\n        <path\n          fill=\"#4285F4\"\n          d=\"M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z\"\n        />\n        <path\n          fill=\"#34A853\"\n          d=\"M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z\"\n        />\n        <path\n          fill=\"#FBBC05\"\n          d=\"M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z\"\n        />\n        <path\n          fill=\"#EA4335\"\n          d=\"M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z\"\n        />\n      </svg>\n      Sign in with Google\n    </button>\n  );\n}"
+    },
+    {
+      "type": "accordion",
+      "title": "Adding GitHub, Discord, and Other Providers",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "body": "The OAuth 2.0 flow is the same for every provider -- only the URLs and scopes change. Create a reusable pattern by extracting provider configuration into a dictionary."
+        },
+        {
+          "type": "code",
+          "language": "python",
+          "filename": "oauth_providers.py",
+          "description": "Multi-provider OAuth configuration -- add new providers by adding entries",
+          "code": "OAUTH_PROVIDERS = {\n    'google': {\n        'auth_url': 'https://accounts.google.com/o/oauth2/v2/auth',\n        'token_url': 'https://oauth2.googleapis.com/token',\n        'userinfo_url': 'https://www.googleapis.com/oauth2/v2/userinfo',\n        'scopes': 'openid email profile',\n        'client_id': os.environ.get('GOOGLE_CLIENT_ID'),\n        'client_secret': os.environ.get('GOOGLE_CLIENT_SECRET'),\n        'id_field': 'id',\n        'email_field': 'email',\n        'name_field': 'name',\n    },\n    'github': {\n        'auth_url': 'https://github.com/login/oauth/authorize',\n        'token_url': 'https://github.com/login/oauth/access_token',\n        'userinfo_url': 'https://api.github.com/user',\n        'scopes': 'read:user user:email',\n        'client_id': os.environ.get('GITHUB_CLIENT_ID'),\n        'client_secret': os.environ.get('GITHUB_CLIENT_SECRET'),\n        'id_field': 'id',\n        'email_field': 'email',\n        'name_field': 'name',\n    },\n    'discord': {\n        'auth_url': 'https://discord.com/api/oauth2/authorize',\n        'token_url': 'https://discord.com/api/oauth2/token',\n        'userinfo_url': 'https://discord.com/api/users/@me',\n        'scopes': 'identify email',\n        'client_id': os.environ.get('DISCORD_CLIENT_ID'),\n        'client_secret': os.environ.get('DISCORD_CLIENT_SECRET'),\n        'id_field': 'id',\n        'email_field': 'email',\n        'name_field': 'username',\n    },\n}\n\n\n@app.route('/api/auth/<provider>')\ndef oauth_login(provider):\n    config = OAUTH_PROVIDERS.get(provider)\n    if not config:\n        return jsonify({'error': f'Unknown provider: {provider}'}), 400\n\n    state = secrets.token_urlsafe(32)\n    session['oauth_state'] = state\n    session['oauth_provider'] = provider\n\n    params = {\n        'client_id': config['client_id'],\n        'redirect_uri': url_for('oauth_callback', provider=provider, _external=True),\n        'response_type': 'code',\n        'scope': config['scopes'],\n        'state': state,\n    }\n    auth_url = f\"{config['auth_url']}?{'&'.join(f'{k}={v}' for k, v in params.items())}\"\n    return redirect(auth_url)"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "API Key Authentication",
+      "headingLevel": 2,
+      "body": "API keys are simple, static tokens used to identify and authorize API consumers. They are ideal for server-to-server communication, public APIs with rate limiting, and third-party integrations. Unlike JWTs, API keys do not encode user information -- they are opaque strings that the server looks up in a database."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "api_keys.py",
+      "description": "Flask API key middleware with database lookup, rate limiting, and key management",
+      "code": "from flask import Flask, request, jsonify, g\nfrom functools import wraps\nfrom datetime import datetime, timezone, timedelta\nimport secrets\nimport hashlib\n\napp = Flask(__name__)\n\n# In production, use a real database\napi_keys_db = {}\nrate_limit_store = {}  # key_hash -> {count, window_start}\n\n\ndef hash_api_key(key: str) -> str:\n    \"\"\"Hash API keys before storing -- treat them like passwords.\"\"\"\n    return hashlib.sha256(key.encode()).hexdigest()\n\n\ndef require_api_key(f):\n    @wraps(f)\n    def decorated(*args, **kwargs):\n        api_key = request.headers.get('X-API-Key') or request.args.get('api_key')\n        if not api_key:\n            return jsonify({'error': 'API key required'}), 401\n\n        key_hash = hash_api_key(api_key)\n        key_record = api_keys_db.get(key_hash)\n\n        if not key_record:\n            return jsonify({'error': 'Invalid API key'}), 401\n\n        if not key_record.get('active', True):\n            return jsonify({'error': 'API key has been revoked'}), 401\n\n        # Rate limiting\n        now = datetime.now(timezone.utc)\n        rate_info = rate_limit_store.get(key_hash, {\n            'count': 0,\n            'window_start': now\n        })\n\n        if (now - rate_info['window_start']) > timedelta(minutes=1):\n            rate_info = {'count': 0, 'window_start': now}\n\n        rate_info['count'] += 1\n        rate_limit_store[key_hash] = rate_info\n\n        limit = key_record.get('rate_limit', 60)\n        if rate_info['count'] > limit:\n            return jsonify({\n                'error': 'Rate limit exceeded',\n                'retry_after': 60\n            }), 429\n\n        # Update last used timestamp\n        key_record['last_used'] = now.isoformat()\n\n        g.api_key_owner = key_record['owner']\n        g.api_key_scopes = key_record.get('scopes', [])\n        return f(*args, **kwargs)\n    return decorated\n\n\n@app.route('/api/keys', methods=['POST'])\ndef create_api_key():\n    \"\"\"Generate a new API key. Show it once -- it cannot be retrieved later.\"\"\"\n    data = request.get_json()\n    owner = data.get('owner', '')\n    scopes = data.get('scopes', ['read'])\n\n    raw_key = f\"myapp_{secrets.token_urlsafe(32)}\"\n    key_hash = hash_api_key(raw_key)\n\n    api_keys_db[key_hash] = {\n        'owner': owner,\n        'scopes': scopes,\n        'created': datetime.now(timezone.utc).isoformat(),\n        'last_used': None,\n        'active': True,\n        'rate_limit': 60,  # requests per minute\n    }\n\n    return jsonify({\n        'api_key': raw_key,\n        'message': 'Save this key now. It cannot be retrieved later.',\n        'scopes': scopes,\n    }), 201\n\n\n@app.route('/api/data', methods=['GET'])\n@require_api_key\ndef get_data():\n    if 'read' not in g.api_key_scopes:\n        return jsonify({'error': 'Insufficient scope'}), 403\n    return jsonify({'data': 'Here is your data', 'owner': g.api_key_owner})"
+    },
+    {
+      "type": "table",
+      "heading": "API Keys vs JWTs",
+      "headers": ["Aspect", "API Keys", "JWTs"],
+      "rows": [
+        ["Best for", "Server-to-server, public APIs", "User authentication, SPAs, mobile"],
+        ["Contains user data?", "No -- opaque, looked up server-side", "Yes -- self-contained claims"],
+        ["Stateful/Stateless", "Stateful -- requires database lookup", "Stateless -- verified by signature"],
+        ["Expiry", "Usually long-lived or never", "Short-lived (minutes to hours)"],
+        ["Revocation", "Easy -- delete from database", "Hard -- requires blocklist"],
+        ["Rotation", "Manual -- user generates new key", "Automatic with refresh tokens"],
+        ["Rate limiting", "Natural -- one key per consumer", "Possible but less natural"],
+        ["Granularity", "Scopes assigned per key", "Claims embedded in token"]
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "API Key Security",
+      "body": "API keys are like passwords -- never expose them in frontend code, URLs, or git repos. Always use environment variables and server-side requests. Prefix keys with your app name (e.g., myapp_sk_abc123) so they are easy to identify and can be detected by secret scanning tools."
+    },
+    {
+      "type": "text",
+      "heading": "Basic Auth and Digest Auth",
+      "headingLevel": 2,
+      "body": "HTTP Basic Authentication is the simplest auth scheme defined in the HTTP standard. The client sends a header with the username and password encoded in base64 -- not encrypted, just encoded. Digest Auth improves on this by using a challenge-response mechanism where the password is hashed before sending. Both are rarely used in modern web apps but still appear in internal tools, APIs, and legacy systems."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "basic_auth.py",
+      "description": "Flask Basic Auth decorator for simple password-protected endpoints",
+      "code": "from flask import Flask, request, jsonify\nfrom werkzeug.security import check_password_hash, generate_password_hash\nfrom functools import wraps\nimport base64\n\napp = Flask(__name__)\n\n# In production, use a database\nusers = {\n    'admin': generate_password_hash('secure-password-here'),\n}\n\n\ndef require_basic_auth(f):\n    @wraps(f)\n    def decorated(*args, **kwargs):\n        auth_header = request.headers.get('Authorization', '')\n\n        if not auth_header.startswith('Basic '):\n            return jsonify({'error': 'Basic auth required'}), 401, {\n                'WWW-Authenticate': 'Basic realm=\"API\"'\n            }\n\n        try:\n            encoded = auth_header.split(' ', 1)[1]\n            decoded = base64.b64decode(encoded).decode('utf-8')\n            username, password = decoded.split(':', 1)\n        except (ValueError, UnicodeDecodeError):\n            return jsonify({'error': 'Invalid auth header'}), 401\n\n        stored_hash = users.get(username)\n        if not stored_hash or not check_password_hash(stored_hash, password):\n            return jsonify({'error': 'Invalid credentials'}), 401\n\n        return f(*args, **kwargs)\n    return decorated\n\n\n@app.route('/api/admin/stats')\n@require_basic_auth\ndef admin_stats():\n    return jsonify({'users': 150, 'revenue': 12500})"
+    },
+    {
+      "type": "alert",
+      "severity": "error",
+      "title": "Basic Auth Warning",
+      "body": "Basic Auth sends credentials with EVERY request, and base64 encoding is trivially reversible -- it is NOT encryption. Only use Basic Auth over HTTPS. For production applications, prefer token-based auth (JWT) or session-based auth. Basic Auth is acceptable for internal tools, CI/CD webhooks, or quick prototypes."
+    },
+    {
+      "type": "text",
+      "heading": "Passkeys and WebAuthn",
+      "headingLevel": 2,
+      "body": "Passkeys represent the future of authentication -- passwordless login using biometrics (fingerprint, face recognition) or hardware security keys. Built on the WebAuthn standard, passkeys use public-key cryptography: a private key stays on the user's device and never leaves it, while a public key is stored on your server. Authentication happens by signing a challenge with the private key, which the server verifies with the public key. No password to steal, phish, or forget."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "webauthn_flow.py",
+      "description": "Conceptual WebAuthn registration and authentication flow",
+      "code": "# WebAuthn Registration (simplified conceptual flow)\n# In production, use a library like py_webauthn\n\nfrom flask import Flask, request, jsonify, session\nimport secrets\nimport json\n\napp = Flask(__name__)\ncredentials_db = {}  # user_id -> [credential_records]\n\n\n@app.route('/api/webauthn/register/options', methods=['POST'])\ndef registration_options():\n    \"\"\"Step 1: Generate registration options for the browser.\"\"\"\n    user_id = session['user_id']\n    challenge = secrets.token_urlsafe(32)\n    session['webauthn_challenge'] = challenge\n\n    return jsonify({\n        'challenge': challenge,\n        'rp': {'name': 'My App', 'id': 'myapp.com'},\n        'user': {\n            'id': str(user_id),\n            'name': session['email'],\n            'displayName': session.get('name', session['email']),\n        },\n        'pubKeyCredParams': [\n            {'alg': -7, 'type': 'public-key'},   # ES256\n            {'alg': -257, 'type': 'public-key'},  # RS256\n        ],\n        'authenticatorSelection': {\n            'authenticatorAttachment': 'platform',\n            'requireResidentKey': True,\n            'userVerification': 'required',\n        },\n        'timeout': 60000,\n    })\n\n\n@app.route('/api/webauthn/register/verify', methods=['POST'])\ndef verify_registration():\n    \"\"\"Step 2: Verify the credential created by the browser.\"\"\"\n    data = request.get_json()\n    challenge = session.pop('webauthn_challenge', None)\n\n    # In production, use py_webauthn to verify the attestation\n    # verify_registration_response(credential, challenge, rp_id, origin)\n\n    credential_record = {\n        'credential_id': data['id'],\n        'public_key': data['response']['publicKey'],\n        'sign_count': 0,\n    }\n\n    user_id = session['user_id']\n    if user_id not in credentials_db:\n        credentials_db[user_id] = []\n    credentials_db[user_id].append(credential_record)\n\n    return jsonify({'message': 'Passkey registered successfully'})"
+    },
+    {
+      "type": "list",
+      "heading": "Passkey and WebAuthn Support",
+      "ordered": false,
+      "items": [
+        "Chrome, Edge, Safari, and Firefox all support WebAuthn on desktop and mobile",
+        "iOS 16+ and Android 9+ support passkeys with cloud sync via iCloud Keychain and Google Password Manager",
+        "Windows Hello provides platform authenticator support (fingerprint, face, PIN)",
+        "Hardware keys like YubiKey work as cross-platform roaming authenticators",
+        "Passkeys can sync across devices within the same ecosystem (Apple, Google, Microsoft)",
+        "Cross-device authentication lets you use your phone's passkey to log into a desktop browser via QR code"
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Magic Links",
+      "headingLevel": 2,
+      "body": "Magic links provide passwordless authentication through email. The user enters their email address, receives an email with a unique time-limited link, and clicking that link logs them in. No password to remember or type. This approach is used by Slack, Notion, and many modern SaaS apps for a frictionless login experience."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "magic_links.py",
+      "description": "Flask magic link implementation with token generation, email sending, and verification",
+      "code": "from flask import Flask, request, jsonify, session, redirect\nfrom datetime import datetime, timezone, timedelta\nimport secrets\nimport hashlib\n\napp = Flask(__name__)\napp.secret_key = 'your-secret-key'\n\n# In production, use Redis with TTL\nmagic_link_store = {}\nMAGIC_LINK_EXPIRY = timedelta(minutes=15)\nMAGIC_LINK_BASE_URL = 'https://myapp.com/auth/verify'\n\n\ndef generate_magic_token() -> str:\n    return secrets.token_urlsafe(48)\n\n\ndef send_magic_link_email(email: str, link: str):\n    \"\"\"Send the magic link email. Use a real email service in production.\"\"\"\n    # In production, use SendGrid, AWS SES, Postmark, etc.\n    print(f\"Sending magic link to {email}: {link}\")\n\n\n@app.route('/api/auth/magic-link', methods=['POST'])\ndef request_magic_link():\n    data = request.get_json()\n    email = data.get('email', '').strip().lower()\n\n    if not email:\n        return jsonify({'error': 'Email is required'}), 400\n\n    token = generate_magic_token()\n    token_hash = hashlib.sha256(token.encode()).hexdigest()\n\n    magic_link_store[token_hash] = {\n        'email': email,\n        'expires': datetime.now(timezone.utc) + MAGIC_LINK_EXPIRY,\n        'used': False,\n    }\n\n    link = f\"{MAGIC_LINK_BASE_URL}?token={token}\"\n    send_magic_link_email(email, link)\n\n    # Always return success to prevent email enumeration\n    return jsonify({\n        'message': 'If that email is registered, you will receive a login link.'\n    })\n\n\n@app.route('/api/auth/verify-magic-link', methods=['GET'])\ndef verify_magic_link():\n    token = request.args.get('token', '')\n    if not token:\n        return jsonify({'error': 'Token required'}), 400\n\n    token_hash = hashlib.sha256(token.encode()).hexdigest()\n    record = magic_link_store.get(token_hash)\n\n    if not record:\n        return jsonify({'error': 'Invalid or expired link'}), 401\n\n    if record['used']:\n        return jsonify({'error': 'Link already used'}), 401\n\n    if datetime.now(timezone.utc) > record['expires']:\n        del magic_link_store[token_hash]\n        return jsonify({'error': 'Link expired'}), 401\n\n    # Mark as used (one-time use)\n    record['used'] = True\n\n    # Create session for the user\n    email = record['email']\n    session['user_id'] = email  # In production, look up user ID\n    session['email'] = email\n\n    return redirect('/dashboard')"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "MagicLinkForm.tsx",
+      "description": "React component for requesting a magic link",
+      "code": "import { useState, FormEvent } from 'react';\n\nexport default function MagicLinkForm() {\n  const [email, setEmail] = useState('');\n  const [sent, setSent] = useState(false);\n  const [loading, setLoading] = useState(false);\n\n  const handleSubmit = async (e: FormEvent) => {\n    e.preventDefault();\n    setLoading(true);\n\n    try {\n      await fetch('/api/auth/magic-link', {\n        method: 'POST',\n        headers: { 'Content-Type': 'application/json' },\n        body: JSON.stringify({ email }),\n      });\n      setSent(true);\n    } catch {\n      // Still show success to prevent email enumeration\n      setSent(true);\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  if (sent) {\n    return (\n      <div className=\"magic-link-sent\">\n        <h2>Check your email</h2>\n        <p>We sent a login link to <strong>{email}</strong>.</p>\n        <p>The link expires in 15 minutes.</p>\n        <button onClick={() => setSent(false)}>Use a different email</button>\n      </div>\n    );\n  }\n\n  return (\n    <form onSubmit={handleSubmit}>\n      <h2>Sign in with email</h2>\n      <label htmlFor=\"magic-email\">Email address</label>\n      <input\n        id=\"magic-email\"\n        type=\"email\"\n        value={email}\n        onChange={(e) => setEmail(e.target.value)}\n        placeholder=\"you@example.com\"\n        required\n      />\n      <button type=\"submit\" disabled={loading}>\n        {loading ? 'Sending...' : 'Send login link'}\n      </button>\n    </form>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Multi-Factor Authentication (MFA / 2FA)",
+      "headingLevel": 2,
+      "body": "Multi-factor authentication requires users to prove their identity using two or more independent factors. The three categories are: something you know (password, PIN), something you have (phone, hardware key), and something you are (fingerprint, face). By combining factors, even if an attacker steals your password, they cannot log in without the second factor."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "TOTP Apps",
+          "body": "Time-based one-time passwords generated by apps like Google Authenticator or Authy. Codes rotate every 30 seconds.",
+          "icon": "Timer",
+          "chip": "Recommended"
+        },
+        {
+          "title": "SMS Codes",
+          "body": "One-time codes sent via text message. Convenient but vulnerable to SIM swapping attacks.",
+          "icon": "Sms",
+          "chip": "Common"
+        },
+        {
+          "title": "Email Codes",
+          "body": "One-time codes sent to the user's email. Easy to implement but adds friction and depends on email security.",
+          "icon": "Email",
+          "chip": "Simple"
+        },
+        {
+          "title": "Hardware Keys",
+          "body": "Physical USB or NFC devices like YubiKey. Most secure factor but requires purchasing hardware.",
+          "icon": "UsbRounded",
+          "chip": "Most Secure"
+        },
+        {
+          "title": "Biometrics",
+          "body": "Fingerprint, face, or iris recognition. Convenient but requires device support and raises privacy concerns.",
+          "icon": "Fingerprint",
+          "chip": "Convenient"
+        },
+        {
+          "title": "Push Notifications",
+          "body": "Approve login from a trusted device with a single tap. Used by Duo, Microsoft Authenticator, and others.",
+          "icon": "NotificationsActive",
+          "chip": "User-Friendly"
+        }
+      ]
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "totp_auth.py",
+      "description": "Flask TOTP (authenticator app) implementation with setup and verification",
+      "code": "from flask import Flask, request, jsonify, session\nimport pyotp\nimport qrcode\nimport io\nimport base64\n\napp = Flask(__name__)\n\n# In production, store encrypted in database\nuser_totp_secrets = {}\n\n\n@app.route('/api/mfa/setup', methods=['POST'])\ndef setup_totp():\n    \"\"\"Generate TOTP secret and QR code for authenticator app.\"\"\"\n    user_id = session.get('user_id')\n    if not user_id:\n        return jsonify({'error': 'Login required'}), 401\n\n    # Generate a random secret\n    secret = pyotp.random_base32()\n\n    # Create provisioning URI for QR code\n    totp = pyotp.TOTP(secret)\n    provisioning_uri = totp.provisioning_uri(\n        name=session.get('email', ''),\n        issuer_name='MyApp'\n    )\n\n    # Generate QR code as base64 image\n    qr = qrcode.QRCode(version=1, box_size=10, border=4)\n    qr.add_data(provisioning_uri)\n    qr.make(fit=True)\n    img = qr.make_image(fill_color='black', back_color='white')\n\n    buffer = io.BytesIO()\n    img.save(buffer, format='PNG')\n    qr_base64 = base64.b64encode(buffer.getvalue()).decode()\n\n    # Store secret temporarily until verified\n    session['pending_totp_secret'] = secret\n\n    return jsonify({\n        'secret': secret,  # Manual entry backup\n        'qr_code': f'data:image/png;base64,{qr_base64}',\n        'message': 'Scan this QR code with your authenticator app, then verify with a code.'\n    })\n\n\n@app.route('/api/mfa/verify-setup', methods=['POST'])\ndef verify_totp_setup():\n    \"\"\"Verify the user can generate valid codes before enabling MFA.\"\"\"\n    user_id = session.get('user_id')\n    code = request.get_json().get('code', '')\n    secret = session.get('pending_totp_secret')\n\n    if not secret:\n        return jsonify({'error': 'Start MFA setup first'}), 400\n\n    totp = pyotp.TOTP(secret)\n    if not totp.verify(code, valid_window=1):\n        return jsonify({'error': 'Invalid code. Try again.'}), 400\n\n    # Save the secret permanently\n    user_totp_secrets[user_id] = secret\n    session.pop('pending_totp_secret', None)\n\n    return jsonify({'message': 'MFA enabled successfully'})\n\n\n@app.route('/api/mfa/verify', methods=['POST'])\ndef verify_totp_login():\n    \"\"\"Verify TOTP code during login.\"\"\"\n    user_id = session.get('pending_mfa_user_id')\n    code = request.get_json().get('code', '')\n\n    if not user_id:\n        return jsonify({'error': 'Complete primary login first'}), 400\n\n    secret = user_totp_secrets.get(user_id)\n    if not secret:\n        return jsonify({'error': 'MFA not configured'}), 400\n\n    totp = pyotp.TOTP(secret)\n    if not totp.verify(code, valid_window=1):\n        return jsonify({'error': 'Invalid code'}), 401\n\n    # MFA passed -- complete login\n    session.pop('pending_mfa_user_id', None)\n    session['user_id'] = user_id\n    session['mfa_verified'] = True\n\n    return jsonify({'message': 'Login successful'})"
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "SMS 2FA Weakness",
+      "body": "SMS-based 2FA is better than no 2FA at all, but it is vulnerable to SIM swapping attacks where an attacker convinces your phone carrier to transfer your number to their SIM card. Prefer authenticator apps (TOTP) or hardware security keys. If you must support SMS, treat it as the weakest MFA option and encourage users to upgrade."
+    },
+    {
+      "type": "text",
+      "heading": "Password Security",
+      "headingLevel": 2,
+      "body": "Passwords are still the most common authentication factor, and getting them wrong is one of the easiest ways to get hacked. The goal is simple: make it impossible for an attacker to recover passwords even if they steal your entire database. This means proper hashing, salting, and following modern password policies that prioritize length over complexity."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "password_security.py",
+      "description": "Proper password hashing with bcrypt -- registration and login verification",
+      "code": "import bcrypt\nimport hashlib\nimport requests\n\n\ndef hash_password(password: str) -> str:\n    \"\"\"Hash a password with bcrypt. Salt is generated automatically.\"\"\"\n    password_bytes = password.encode('utf-8')\n    salt = bcrypt.gensalt(rounds=12)  # 12 rounds is a good default\n    hashed = bcrypt.hashpw(password_bytes, salt)\n    return hashed.decode('utf-8')\n\n\ndef verify_password(password: str, hashed: str) -> bool:\n    \"\"\"Verify a password against its bcrypt hash.\"\"\"\n    return bcrypt.checkpw(\n        password.encode('utf-8'),\n        hashed.encode('utf-8')\n    )\n\n\ndef check_breached_password(password: str) -> bool:\n    \"\"\"Check if a password appears in the Have I Been Pwned database.\n    Uses k-anonymity: only sends first 5 chars of SHA-1 hash.\"\"\"\n    sha1 = hashlib.sha1(password.encode('utf-8')).hexdigest().upper()\n    prefix, suffix = sha1[:5], sha1[5:]\n\n    response = requests.get(f'https://api.pwnedpasswords.com/range/{prefix}')\n    hashes = (line.split(':') for line in response.text.splitlines())\n\n    for hash_suffix, count in hashes:\n        if hash_suffix == suffix:\n            return True  # Password has been breached\n    return False\n\n\ndef validate_password(password: str) -> list[str]:\n    \"\"\"Validate password strength. Returns list of issues.\"\"\"\n    issues = []\n\n    if len(password) < 8:\n        issues.append('Password must be at least 8 characters')\n\n    if len(password) > 128:\n        issues.append('Password must be 128 characters or fewer')\n\n    if password.strip() != password:\n        issues.append('Password must not start or end with spaces')\n\n    # Check against common passwords\n    common = {'password', '12345678', 'qwerty123', 'password1', 'letmein'}\n    if password.lower() in common:\n        issues.append('This is a commonly used password')\n\n    return issues\n\n\n# Usage\npassword = 'my-secure-passphrase-2024'\n\nif errors := validate_password(password):\n    print('Password issues:', errors)\nelif check_breached_password(password):\n    print('This password has appeared in a data breach. Choose another.')\nelse:\n    hashed = hash_password(password)\n    print('Password hashed:', hashed)\n    print('Verify:', verify_password(password, hashed))  # True"
+    },
+    {
+      "type": "table",
+      "heading": "Password Rules: DO vs DON'T",
+      "headers": ["DO", "DON'T"],
+      "rows": [
+        ["Use bcrypt, scrypt, or argon2 for hashing", "Store passwords in plaintext -- ever"],
+        ["Enforce minimum 8 characters", "Use MD5 or SHA1 for password hashing"],
+        ["Allow passwords up to 128 characters", "Limit password length to less than 64 characters"],
+        ["Check against breached password lists (HIBP)", "Require specific character types (uppercase, symbols)"],
+        ["Encourage passphrases (multiple words)", "Truncate or silently modify user passwords"],
+        ["Use a unique salt per password (bcrypt does this)", "Use a single global salt for all passwords"],
+        ["Rate-limit login attempts", "Lock accounts permanently after failed attempts"],
+        ["Allow password managers to autofill", "Disable paste on password fields"]
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "error",
+      "title": "Critical Password Rule",
+      "body": "NEVER store passwords in plaintext. NEVER use MD5 or SHA1 for password hashing -- they are too fast and can be brute-forced with modern GPUs. Use bcrypt (12+ rounds), scrypt, or argon2id with proper salt. Every major data breach that exposed passwords was made worse by weak hashing or plaintext storage."
+    },
+    {
+      "type": "text",
+      "heading": "Authorization Patterns",
+      "headingLevel": 2,
+      "body": "Once you know who a user is (authentication), you need to decide what they are allowed to do (authorization). There are three main patterns, and most real applications use a combination of them."
+    },
+    {
+      "type": "text",
+      "heading": "Role-Based Access Control (RBAC)",
+      "headingLevel": 3,
+      "body": "RBAC is the most common authorization model. Users are assigned roles (admin, editor, viewer), and each role has a set of permissions. When a user tries to do something, the system checks whether their role includes the required permission. RBAC is simple to understand, easy to implement, and works well for most applications."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "rbac.py",
+      "description": "Flask RBAC decorator with role hierarchy support",
+      "code": "from flask import Flask, g, jsonify\nfrom functools import wraps\n\napp = Flask(__name__)\n\n# Role hierarchy: higher roles inherit lower role permissions\nROLE_HIERARCHY = {\n    'viewer': 0,\n    'editor': 1,\n    'admin': 2,\n    'superadmin': 3,\n}\n\nROLE_PERMISSIONS = {\n    'viewer': ['posts:read', 'profile:read'],\n    'editor': ['posts:read', 'posts:create', 'posts:update', 'profile:read', 'profile:update'],\n    'admin': [\n        'posts:read', 'posts:create', 'posts:update', 'posts:delete',\n        'users:read', 'users:update',\n        'profile:read', 'profile:update',\n        'settings:read',\n    ],\n    'superadmin': [\n        'posts:read', 'posts:create', 'posts:update', 'posts:delete',\n        'users:read', 'users:create', 'users:update', 'users:delete',\n        'profile:read', 'profile:update',\n        'settings:read', 'settings:update',\n    ],\n}\n\n\ndef require_role(minimum_role: str):\n    \"\"\"Decorator that requires a minimum role level.\"\"\"\n    def decorator(f):\n        @wraps(f)\n        def decorated(*args, **kwargs):\n            user_role = getattr(g, 'current_user', {}).get('role', '')\n            user_level = ROLE_HIERARCHY.get(user_role, -1)\n            required_level = ROLE_HIERARCHY.get(minimum_role, 999)\n\n            if user_level < required_level:\n                return jsonify({\n                    'error': 'Insufficient permissions',\n                    'required_role': minimum_role,\n                }), 403\n\n            return f(*args, **kwargs)\n        return decorated\n    return decorator\n\n\ndef require_permission(permission: str):\n    \"\"\"Decorator that requires a specific permission.\"\"\"\n    def decorator(f):\n        @wraps(f)\n        def decorated(*args, **kwargs):\n            user_role = getattr(g, 'current_user', {}).get('role', '')\n            user_permissions = ROLE_PERMISSIONS.get(user_role, [])\n\n            if permission not in user_permissions:\n                return jsonify({\n                    'error': 'Permission denied',\n                    'required': permission,\n                }), 403\n\n            return f(*args, **kwargs)\n        return decorated\n    return decorator\n\n\n@app.route('/api/admin/users')\n@require_role('admin')\ndef list_users():\n    return jsonify({'users': []})\n\n\n@app.route('/api/posts', methods=['DELETE'])\n@require_permission('posts:delete')\ndef delete_post():\n    return jsonify({'message': 'Post deleted'})"
+    },
+    {
+      "type": "table",
+      "heading": "Example Role Permission Matrix",
+      "headers": ["Permission", "Viewer", "Editor", "Admin", "Super Admin"],
+      "rows": [
+        ["Read posts", "Yes", "Yes", "Yes", "Yes"],
+        ["Create posts", "No", "Yes", "Yes", "Yes"],
+        ["Edit own posts", "No", "Yes", "Yes", "Yes"],
+        ["Delete any post", "No", "No", "Yes", "Yes"],
+        ["View users", "No", "No", "Yes", "Yes"],
+        ["Manage users", "No", "No", "No", "Yes"],
+        ["View settings", "No", "No", "Yes", "Yes"],
+        ["Change settings", "No", "No", "No", "Yes"]
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Attribute-Based Access Control (ABAC)",
+      "headingLevel": 3,
+      "body": "ABAC makes authorization decisions based on attributes of the user, the resource, the action, and the environment. Instead of broad roles, you write fine-grained policies like 'allow if user is in the same department as the document AND the current time is within business hours.' ABAC is more flexible than RBAC but also more complex to implement and audit."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "abac.py",
+      "description": "Python ABAC policy engine with attribute-based rules",
+      "code": "from datetime import datetime\nfrom typing import Any\n\n\ndef evaluate_policy(policy: dict, context: dict) -> bool:\n    \"\"\"Evaluate an ABAC policy against a context.\n\n    Context contains:\n      - user: {id, department, role, clearance_level}\n      - resource: {id, type, owner_id, department, classification}\n      - action: 'read' | 'write' | 'delete'\n      - environment: {time, ip_address, is_vpn}\n    \"\"\"\n    for condition in policy.get('conditions', []):\n        field = condition['field']\n        operator = condition['operator']\n        value = condition['value']\n\n        # Resolve dotted field paths (e.g., 'user.department')\n        actual = _resolve_field(context, field)\n\n        if not _evaluate_condition(actual, operator, value, context):\n            return False\n\n    return True\n\n\ndef _resolve_field(context: dict, field: str) -> Any:\n    parts = field.split('.')\n    current = context\n    for part in parts:\n        if isinstance(current, dict):\n            current = current.get(part)\n        else:\n            return None\n    return current\n\n\ndef _evaluate_condition(actual, operator, value, context) -> bool:\n    # Resolve value references like 'resource.department'\n    if isinstance(value, str) and '.' in value:\n        resolved = _resolve_field(context, value)\n        if resolved is not None:\n            value = resolved\n\n    operators = {\n        'equals': lambda a, v: a == v,\n        'not_equals': lambda a, v: a != v,\n        'in': lambda a, v: a in v,\n        'gte': lambda a, v: a >= v,\n        'lte': lambda a, v: a <= v,\n        'between': lambda a, v: v[0] <= a <= v[1],\n    }\n\n    evaluator = operators.get(operator)\n    return evaluator(actual, value) if evaluator else False\n\n\n# Example policies\npolicies = [\n    {\n        'name': 'Same department can read',\n        'effect': 'allow',\n        'actions': ['read'],\n        'conditions': [\n            {'field': 'user.department', 'operator': 'equals', 'value': 'resource.department'},\n        ],\n    },\n    {\n        'name': 'Business hours only for writes',\n        'effect': 'allow',\n        'actions': ['write'],\n        'conditions': [\n            {'field': 'user.department', 'operator': 'equals', 'value': 'resource.department'},\n            {'field': 'environment.hour', 'operator': 'between', 'value': [9, 17]},\n        ],\n    },\n    {\n        'name': 'High clearance can read anything',\n        'effect': 'allow',\n        'actions': ['read'],\n        'conditions': [\n            {'field': 'user.clearance_level', 'operator': 'gte', 'value': 4},\n        ],\n    },\n]\n\n\ndef check_access(user, resource, action, environment=None):\n    if environment is None:\n        environment = {'hour': datetime.now().hour}\n\n    context = {\n        'user': user,\n        'resource': resource,\n        'action': action,\n        'environment': environment,\n    }\n\n    for policy in policies:\n        if action in policy['actions'] and evaluate_policy(policy, context):\n            return policy['effect'] == 'allow'\n\n    return False  # Default deny\n\n\n# Usage\nuser = {'id': 1, 'department': 'engineering', 'role': 'dev', 'clearance_level': 3}\nresource = {'id': 42, 'type': 'document', 'department': 'engineering', 'classification': 'internal'}\n\nprint(check_access(user, resource, 'read'))   # True -- same department\nprint(check_access(user, resource, 'write'))  # True if during business hours"
+    },
+    {
+      "type": "table",
+      "heading": "RBAC vs ABAC vs Permission-Based",
+      "headers": ["Aspect", "RBAC", "ABAC", "Permission-Based"],
+      "rows": [
+        ["Complexity", "Low -- simple role assignments", "High -- complex policy rules", "Medium -- explicit permission grants"],
+        ["Flexibility", "Limited to role definitions", "Very flexible -- any attribute combo", "Moderate -- per-resource grants"],
+        ["Scalability", "Roles can explode (role explosion)", "Scales with policy engine", "Grows linearly with users/resources"],
+        ["Auditability", "Easy -- check role assignments", "Hard -- must trace policy evaluation", "Easy -- check permission table"],
+        ["Best for", "Most web apps, clear hierarchies", "Enterprise, regulated industries", "File systems, document sharing"],
+        ["Example", "Admin can delete any post", "Engineering dept can edit docs during business hours", "User X has 'write' on Document Y"]
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Auth Architecture Patterns",
+      "headingLevel": 2,
+      "body": "How you structure authentication depends on your application architecture. A monolith handles everything in one place. Microservices need a centralized gateway or shared token validation. And sometimes the best move is to outsource auth entirely to a specialized service."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Monolith Auth",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "In a monolith, authentication and authorization live inside the same application as your business logic. The server handles login, token/session management, and permission checks all in one process. This is the simplest architecture and works well for most applications."
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "filename": "monolith-architecture.txt",
+              "description": "Monolith auth architecture -- everything in one server",
+              "code": "Client (Browser/Mobile)\n    |\n    |  POST /api/login  { email, password }\n    v\n+------------------------------------------+\n|           Monolith Server                |\n|                                          |\n|  [Auth Module]                           |\n|    - Login / Register                    |\n|    - Session or JWT management           |\n|    - Password hashing                    |\n|                                          |\n|  [Middleware]                            |\n|    - Verify session/token on each req    |\n|    - Attach user to request context      |\n|                                          |\n|  [Business Logic]                        |\n|    - Check permissions inline            |\n|    - @require_role('admin')              |\n|                                          |\n|  [Database]                              |\n|    - users, sessions, roles tables       |\n+------------------------------------------+"
+            }
+          ]
+        },
+        {
+          "label": "Microservice Auth (API Gateway)",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "In a microservices architecture, an API Gateway sits in front of all services and handles authentication centrally. The gateway verifies JWTs, and downstream services trust the gateway's forwarded headers. This avoids duplicating auth logic across every service."
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "filename": "microservice-architecture.txt",
+              "description": "Microservice auth with API Gateway pattern",
+              "code": "Client (Browser/Mobile)\n    |\n    |  Authorization: Bearer <JWT>\n    v\n+---------------------+\n|    API Gateway      |\n|  - Verify JWT       |\n|  - Rate limiting    |\n|  - Route requests   |\n+---------------------+\n    |           |           |\n    | X-User-Id | X-User-Id | X-User-Id\n    | X-Role    | X-Role    | X-Role\n    v           v           v\n+--------+ +--------+ +--------+\n| Users  | | Posts  | | Orders |\n| Service| | Service| | Service|\n+--------+ +--------+ +--------+\n    |           |           |\n    v           v           v\n  [DB]        [DB]        [DB]\n\nAuth Service (separate)\n  - POST /auth/login -> returns JWT\n  - POST /auth/register\n  - POST /auth/refresh\n  - GET  /auth/verify -> validates token"
+            }
+          ]
+        },
+        {
+          "label": "Auth Service (Auth0 / Clerk)",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Auth-as-a-Service providers handle the entire authentication flow for you: login pages, social login, MFA, password resets, user management, and compliance. Your application just verifies tokens issued by the provider. This is the fastest way to add production-grade auth but gives you less control and adds a vendor dependency."
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "filename": "auth-service-architecture.txt",
+              "description": "Auth-as-a-Service architecture with a third-party provider",
+              "code": "Client (Browser/Mobile)\n    |\n    |  1. Redirect to Auth Provider login page\n    v\n+------------------------+\n| Auth Provider          |\n| (Auth0 / Clerk /       |\n|  Supabase / Firebase)  |\n|                        |\n| - Hosted login page    |\n| - Social login (Google,|\n|   GitHub, etc.)        |\n| - MFA enrollment       |\n| - Password reset       |\n| - User management      |\n+------------------------+\n    |\n    |  2. Returns JWT (ID token + access token)\n    v\nClient\n    |\n    |  3. Authorization: Bearer <JWT>\n    v\n+----------------------------+\n| Your Backend               |\n| - Verify JWT signature     |\n|   using provider's JWKS    |\n| - Extract user claims      |\n| - Check permissions/roles  |\n| - Business logic only      |\n+----------------------------+"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "heading": "Self-Hosted vs Auth-as-a-Service",
+      "headers": ["Aspect", "Self-Hosted", "Auth0", "Clerk", "Supabase Auth", "Firebase Auth"],
+      "rows": [
+        ["Setup time", "Days to weeks", "Hours", "Hours", "Hours", "Hours"],
+        ["Cost", "Infrastructure only", "Free tier, then per-user", "Free tier, then per-user", "Free tier included", "Free tier, generous limits"],
+        ["Social login", "Build it yourself", "30+ providers built-in", "20+ providers built-in", "Built-in", "Built-in"],
+        ["MFA support", "Build it yourself", "Built-in", "Built-in", "Built-in", "Built-in"],
+        ["Customization", "Full control", "High (Actions, Forms)", "High (components, hooks)", "Moderate", "Moderate"],
+        ["Compliance", "Your responsibility", "SOC2, HIPAA, GDPR", "SOC2, GDPR", "SOC2", "SOC2, ISO 27001"],
+        ["Vendor lock-in", "None", "Moderate", "Moderate", "Low", "Moderate"],
+        ["Best for", "Full control needed", "Enterprise, complex requirements", "Developer experience focus", "Supabase stack", "Firebase/Google stack"]
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Security Checklist",
+      "headingLevel": 2,
+      "body": "Auth is only as strong as its weakest link. Use this checklist to audit your authentication and authorization implementation. Every item matters -- attackers look for the one thing you forgot."
+    },
+    {
+      "type": "list",
+      "heading": "Complete Auth Security Checklist",
+      "ordered": true,
+      "items": [
+        "Enforce HTTPS everywhere -- never send credentials over plain HTTP. Use HSTS headers to prevent downgrade attacks.",
+        "Hash passwords with bcrypt (12+ rounds), scrypt, or argon2id. Never use MD5, SHA1, or SHA256 for passwords.",
+        "Set secure cookie flags: HttpOnly (no JavaScript access), Secure (HTTPS only), SameSite=Lax or Strict (CSRF protection).",
+        "Implement CSRF protection for session-based auth -- use CSRF tokens or SameSite cookies.",
+        "Configure CORS properly -- never use Access-Control-Allow-Origin: * with credentials. Whitelist specific origins.",
+        "Rate-limit login endpoints -- max 5-10 attempts per minute per IP/account. Use exponential backoff.",
+        "Implement account lockout after repeated failures -- lock for 15-30 minutes, notify the user by email.",
+        "Use short-lived access tokens (15 minutes) with longer-lived refresh tokens (7 days) stored in httpOnly cookies.",
+        "Validate and sanitize all auth inputs -- prevent SQL injection in login queries and XSS in error messages.",
+        "Return generic error messages -- say 'Invalid email or password' not 'No account with that email' (prevents enumeration).",
+        "Implement proper logout -- revoke tokens, clear sessions, delete cookies on both client and server.",
+        "Log all authentication events -- successful logins, failed attempts, password changes, MFA enrollments, token refreshes.",
+        "Rotate secrets and keys regularly -- JWT signing keys, API keys, OAuth client secrets.",
+        "Validate redirect URIs in OAuth flows -- use exact matching, never allow open redirects.",
+        "Implement Content Security Policy (CSP) headers to prevent XSS attacks that could steal tokens.",
+        "Use timing-safe comparison for token and password verification to prevent timing attacks.",
+        "Set appropriate token and session expiration times -- balance security with user experience.",
+        "Implement password reset securely -- use time-limited tokens, send to verified email only, invalidate after use."
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "Security Confidence",
+      "body": "If you implement everything in this checklist, your auth system will be more secure than 90% of web applications. Most breaches happen because of skipped basics, not sophisticated attacks. Focus on getting the fundamentals right before adding advanced features."
+    },
+    {
+      "type": "text",
+      "heading": "Common Auth Vulnerabilities",
+      "headingLevel": 2,
+      "body": "Understanding how attacks work is essential for building secure auth. Here are the most common vulnerabilities, how they are exploited, and how to prevent them."
+    },
+    {
+      "type": "table",
+      "heading": "Auth Vulnerabilities and Defenses",
+      "headers": ["Vulnerability", "Attack", "Prevention"],
+      "rows": [
+        ["SQL Injection in Login", "Attacker enters ' OR 1=1 -- as username to bypass login", "Use parameterized queries or an ORM. Never concatenate user input into SQL."],
+        ["Session Fixation", "Attacker sets a known session ID before victim logs in, then hijacks the session", "Regenerate session ID after login. Never accept session IDs from URL parameters."],
+        ["Cross-Site Request Forgery (CSRF)", "Malicious site submits forms to your app using the victim's cookies", "Use CSRF tokens, SameSite cookies, and verify Origin/Referer headers."],
+        ["XSS Token Theft", "Injected script reads JWT from localStorage or document.cookie", "Store tokens in httpOnly cookies. Use Content Security Policy headers. Sanitize output."],
+        ["Brute Force", "Attacker tries thousands of password combinations against a login endpoint", "Rate limiting, account lockout, CAPTCHA after failed attempts, strong password requirements."],
+        ["Credential Stuffing", "Attacker uses leaked email/password combos from other breaches to try your site", "Check passwords against breached lists (HIBP), enforce MFA, detect unusual login patterns."],
+        ["Insecure Password Reset", "Attacker requests password reset and intercepts or guesses the reset token", "Use long random tokens with short expiry. Send only to verified email. One-time use. Invalidate on password change."],
+        ["JWT Algorithm Confusion", "Attacker changes JWT header from RS256 to HS256, signs with the public key as HMAC secret", "Always specify allowed algorithms in jwt.decode(). Never use 'none' algorithm. Pin the expected algorithm."]
+      ]
+    }
+  ]
+}

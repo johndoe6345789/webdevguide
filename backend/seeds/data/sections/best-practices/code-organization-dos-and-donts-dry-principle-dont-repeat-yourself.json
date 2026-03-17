@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "DRY Principle: Don't Repeat Yourself",
+  "headingLevel": 3,
+  "body": "Every piece of knowledge should have a single, authoritative representation in your codebase. When you copy and paste code, you create multiple sources of truth. When you fix a bug in one copy, you have to remember to fix it in all the others -- and you will forget."
+}

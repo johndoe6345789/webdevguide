@@ -1,0 +1,7 @@
+{
+  "type": "code",
+  "language": "python",
+  "filename": "backend/app/services/glossary_service.py",
+  "description": "Glossary service with alphabetical sorting, category grouping, and search.",
+  "code": "from app.utils.db import get_db\n\ndef get_all_terms():\n    terms = get_db().read(\"glossary_terms\")\n    return sorted(terms, key=lambda t: t.get(\"term\", \"\").lower())\n\ndef get_categories():\n    terms = get_db().read(\"glossary_terms\")\n    categories = sorted({t.get(\"category\", \"General\") for t in terms})\n    return [{\"category\": c} for c in categories]\n\ndef search_terms(query):\n    q = query.lower()\n    return get_db().find(\"glossary_terms\", lambda t:\n        q in t.get(\"term\", \"\").lower() or\n        q in t.get(\"definition\", \"\").lower()\n    )"
+}

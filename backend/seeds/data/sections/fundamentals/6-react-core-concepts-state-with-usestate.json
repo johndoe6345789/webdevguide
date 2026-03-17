@@ -1,0 +1,29 @@
+{
+  "type": "accordion",
+  "title": "State with useState",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "`useState` gives a component its own memory that persists across renders. When you update state, React re-renders the component with the new value."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "StatefulComponent.tsx",
+      "code": "import { useState } from 'react';\n\nfunction TaskManager() {\n  const [tasks, setTasks] = useState<string[]>([]);\n  const [input, setInput] = useState('');\n  const [filter, setFilter] = useState<'all' | 'active' | 'done'>('all');\n\n  function addTask() {\n    if (input.trim() === '') return;\n    setTasks([...tasks, input.trim()]); // Create new array, never mutate\n    setInput('');                       // Reset input\n  }\n\n  function removeTask(index: number) {\n    setTasks(tasks.filter((_, i) => i !== index));\n  }\n\n  return (\n    <div>\n      <input\n        value={input}\n        onChange={(e) => setInput(e.target.value)}\n        onKeyDown={(e) => e.key === 'Enter' && addTask()}\n        placeholder=\"Add a task...\"\n      />\n      <button onClick={addTask}>Add</button>\n\n      <ul>\n        {tasks.map((task, index) => (\n          <li key={index}>\n            {task}\n            <button onClick={() => removeTask(index)}>Remove</button>\n          </li>\n        ))}\n      </ul>\n    </div>\n  );\n}"
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "Never mutate state directly",
+      "body": "Always create new arrays/objects instead of modifying existing ones. Use `setItems([...items, newItem])` to add, `setItems(items.filter(...))` to remove, and `setItems(items.map(...))` to update. Direct mutation like `items.push(newItem)` will not trigger a re-render."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "state-update-patterns.tsx",
+      "description": "Common state update patterns",
+      "code": "import { useState } from 'react';\n\ninterface Todo {\n  id: number;\n  text: string;\n  done: boolean;\n}\n\nfunction TodoApp() {\n  const [todos, setTodos] = useState<Todo[]>([]);\n\n  // Add an item\n  function addTodo(text: string) {\n    const newTodo: Todo = { id: Date.now(), text, done: false };\n    setTodos((prev) => [...prev, newTodo]);\n  }\n\n  // Update an item\n  function toggleTodo(id: number) {\n    setTodos((prev) =>\n      prev.map((todo) =>\n        todo.id === id ? { ...todo, done: !todo.done } : todo\n      )\n    );\n  }\n\n  // Remove an item\n  function removeTodo(id: number) {\n    setTodos((prev) => prev.filter((todo) => todo.id !== id));\n  }\n\n  // Update a nested property\n  const [user, setUser] = useState({ name: '', address: { city: '', zip: '' } });\n\n  function updateCity(city: string) {\n    setUser((prev) => ({\n      ...prev,\n      address: { ...prev.address, city },\n    }));\n  }\n\n  return <div>{/* render todos... */}</div>;\n}"
+    }
+  ]
+}

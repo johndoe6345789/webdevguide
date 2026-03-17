@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Navigation System",
+  "headingLevel": 3,
+  "body": "The header navigation is defined in `useHeader.ts`. It has a primary nav bar (`NAV_ITEMS`) with the main pages, and a grouped More menu (`MORE_GROUPS`) that organizes all the other sections into four categories: Websites, Development Guides, Best Practices, and Meta. Each nav item maps a `labelKey` (used to look up the translation string in en.json) to a route path."
+}

@@ -1,0 +1,27 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "Vulnerable Code",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "NEVER do this",
+          "code": "// VULNERABLE: User input is inserted directly into the SQL string\nconst email = req.body.email; // attacker sends: ' OR 1=1 --\n\n// This becomes: SELECT * FROM users WHERE email = '' OR 1=1 --'\n// Which returns ALL users in the database\nconst result = await pool.query(\n  `SELECT * FROM users WHERE email = '${email}'`\n);\n\n// Even worse with DELETE:\nconst id = req.params.id; // attacker sends: 1; DROP TABLE users; --\nawait pool.query(`DELETE FROM posts WHERE id = ${id}`);\n// This deletes the entire users table"
+        }
+      ]
+    },
+    {
+      "label": "Safe Code",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "ALWAYS use parameterized queries",
+          "code": "// SAFE: Parameterized query -- the database treats $1 as data, not code\nconst result = await pool.query(\n  'SELECT * FROM users WHERE email = $1',\n  [req.body.email]\n);\n\n// SAFE: Prisma (all queries are parameterized automatically)\nconst user = await prisma.user.findUnique({\n  where: { email: req.body.email },\n});\n\n// SAFE: Drizzle (parameterized by design)\nconst user = await db.select()\n  .from(users)\n  .where(eq(users.email, req.body.email));\n\n// Rule: NEVER concatenate user input into SQL strings.\n// Every ORM and query builder handles this for you."
+        }
+      ]
+    }
+  ]
+}

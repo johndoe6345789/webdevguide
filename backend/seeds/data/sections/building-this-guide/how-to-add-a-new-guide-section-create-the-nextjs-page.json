@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 3,
+  "title": "Create the Next.js page",
+  "body": "Create `frontend/src/app/[locale]/my-new-section/page.tsx` following the standard pattern. Copy any existing section page and change the slug string and function name.",
+  "code": "'use client';\nimport { useEffect } from 'react';\nimport { useAppDispatch, useAppSelector } from '@/store/hooks';\nimport { fetchSectionBySlug } from '@/store/slices/guideSlice';\nimport GuidePageLayout from '@/components/content/GuidePageLayout';\n\nexport default function MyNewSectionPage() {\n  const dispatch = useAppDispatch();\n  const { currentSection, loading, error } = useAppSelector((s) => s.guide);\n  useEffect(() => { dispatch(fetchSectionBySlug('my-new-section')); }, [dispatch]);\n  return <GuidePageLayout section={currentSection} loading={loading} error={error} />;\n}",
+  "language": "tsx"
+}

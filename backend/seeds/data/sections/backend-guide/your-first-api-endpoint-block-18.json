@@ -1,0 +1,8 @@
+{
+  "type": "list",
+  "ordered": false,
+  "items": [
+    "jsonify() — This converts a Python dictionary (the data inside the curly braces) into JSON format. JSON is the universal language that frontends and backends use to talk to each other.",
+    "methods=[\"GET\"] — This tells Flask that this endpoint only responds to GET requests. A GET request means \"give me some data.\" When you type a URL in your browser and press Enter, that is a GET request."
+  ]
+}

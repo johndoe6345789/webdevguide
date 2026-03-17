@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Encryption",
+  "headingLevel": 3,
+  "body": "Protect sensitive data both in transit (between client and server) and at rest (stored in the database)."
+}

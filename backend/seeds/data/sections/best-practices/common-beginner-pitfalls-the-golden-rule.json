@@ -1,0 +1,6 @@
+{
+  "type": "alert",
+  "severity": "success",
+  "title": "The Golden Rule",
+  "body": "Write code as if the next person to maintain it is a violent psychopath who knows where you live. In reality, that person is usually future you, six months from now, at 11 PM on a Friday, trying to figure out why production is down. Be kind to that person."
+}

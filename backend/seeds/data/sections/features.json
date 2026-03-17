@@ -1,7 +1,7 @@
 {
   "title": "Core Features",
   "slug": "features",
-  "description": "A deep dive into the nine core features that power a modern Next.js web application, from file-based routing and Redux state management to theming, internationalization, and component architecture patterns.",
+  "description": "A deep dive into ten essential features of modern web development, from rendering strategies and API design to accessibility, performance optimization, and state management patterns.",
   "icon": "Extension",
   "order": 4,
   "estimatedMinutes": 90,
@@ -11,652 +11,729 @@
       "type": "text",
       "heading": "Core Features",
       "headingLevel": 2,
-      "body": "This section explores the nine major features used in a production Next.js application. Each feature is explained from first principles with real code examples drawn from a working codebase."
+      "body": "Modern web applications share a common set of features that users expect. This section explains ten of the most important ones, each with real code examples and practical guidance. Understanding these features will prepare you to build production-quality applications."
     },
     {
       "type": "accordion",
-      "title": "1. Routing (App Router)",
+      "title": "1. Rendering Strategies: SSR vs CSR vs SSG",
       "defaultExpanded": true,
       "blocks": [
         {
           "type": "text",
-          "body": "In a traditional website, every page is a separate HTML file. If you want an \"About\" page, you create about.html. Next.js works the same way, except instead of HTML files you create folders and TypeScript files. This is called file-based routing -- the folder structure is the URL structure."
+          "body": "How your page gets built and delivered to the browser is one of the most important architectural decisions in web development. There are three main strategies, each with different trade-offs for performance, SEO, and developer experience."
         },
         {
           "type": "text",
-          "body": "Every folder inside src/app/ becomes a URL path. Every file named page.tsx inside that folder becomes the page the user sees. No configuration files, no route tables -- just folders and files."
-        },
-        {
-          "type": "text",
-          "heading": "How folders map to URLs",
+          "heading": "Client-Side Rendering (CSR)",
           "headingLevel": 3,
-          "body": "The folder structure directly determines your site's URL paths."
+          "body": "With CSR, the server sends a nearly empty HTML page with a JavaScript bundle. The browser downloads the JavaScript, runs it, and builds the page in the user's browser. This is how a plain React app (created with Vite or Create React App) works by default."
         },
         {
           "type": "code",
-          "language": "text",
-          "filename": "Folder structure",
-          "code": "src/app/\n  page.tsx                    --> yoursite.com/\n  getting-started/\n    page.tsx                  --> yoursite.com/getting-started\n  fundamentals/\n    page.tsx                  --> yoursite.com/fundamentals\n  features/\n    page.tsx                  --> yoursite.com/features\n  exam/\n    page.tsx                  --> yoursite.com/exam"
+          "language": "html",
+          "filename": "index.html (CSR)",
+          "description": "The minimal HTML shell served in a client-side rendered app",
+          "code": "<!DOCTYPE html>\n<html>\n<head>\n  <title>My App</title>\n</head>\n<body>\n  <!-- This div is empty until JavaScript runs -->\n  <div id=\"root\"></div>\n  <script src=\"/bundle.js\"></script>\n</body>\n</html>"
         },
         {
           "type": "text",
-          "body": "That is it. Create a folder, put a page.tsx in it, and you have a new page on your website. No imports, no registration -- Next.js finds it automatically."
-        },
-        {
-          "type": "text",
-          "heading": "Dynamic routes with [slug]",
+          "heading": "Server-Side Rendering (SSR)",
           "headingLevel": 3,
-          "body": "Sometimes you need a page that works for many different values. For example, a blog might have /blog/my-first-post and /blog/react-tips. Instead of creating a folder for every post, you create a dynamic route by wrapping the folder name in square brackets."
-        },
-        {
-          "type": "code",
-          "language": "text",
-          "filename": "Dynamic route folder",
-          "code": "src/app/\n  blog/\n    [slug]/\n      page.tsx                --> /blog/my-first-post, /blog/react-tips, etc."
+          "body": "With SSR, the server runs your React components on every request and sends fully-formed HTML to the browser. The user sees content immediately, and then React \"hydrates\" the page to make it interactive. Next.js uses SSR by default for pages that need fresh data."
         },
         {
           "type": "code",
           "language": "tsx",
-          "filename": "src/app/blog/[slug]/page.tsx",
-          "description": "Reading the dynamic slug parameter from the URL",
-          "code": "// The [slug] folder name becomes a parameter you can read\ninterface BlogPageProps {\n  params: Promise<{ slug: string }>;\n}\n\nexport default async function BlogPage({ params }: BlogPageProps) {\n  const { slug } = await params;\n\n  return (\n    <main>\n      <h1>Blog post: {slug}</h1>\n    </main>\n  );\n}"
+          "filename": "app/dashboard/page.tsx",
+          "description": "A server-rendered page that fetches fresh data on every request",
+          "code": "// This is a Server Component in Next.js App Router.\n// It runs on the server for EVERY request.\n// The user gets fully-rendered HTML immediately.\n\nexport default async function DashboardPage() {\n  // This fetch runs on the server, not in the browser\n  const res = await fetch('https://api.example.com/stats', {\n    cache: 'no-store', // Always fetch fresh data\n  });\n  const stats = await res.json();\n\n  return (\n    <main>\n      <h1>Dashboard</h1>\n      <p>Total users: {stats.totalUsers}</p>\n      <p>Revenue: ${stats.revenue}</p>\n    </main>\n  );\n}"
         },
         {
           "type": "text",
-          "heading": "Layouts wrap pages automatically",
+          "heading": "Static Site Generation (SSG)",
           "headingLevel": 3,
-          "body": "A layout.tsx file wraps every page in its folder (and all sub-folders) with shared UI. The locale layout adds the Header, Footer, theme provider, and Redux store around every page -- so each page only contains its own unique content."
+          "body": "With SSG, pages are built once at build time and served as static HTML files. This is the fastest option because there is no server computation per request -- the HTML is pre-built and can be served from a CDN. Ideal for content that does not change often, like blog posts or documentation."
         },
         {
           "type": "code",
           "language": "tsx",
-          "filename": "src/app/[locale]/layout.tsx",
-          "description": "A layout that wraps every page with shared providers and UI",
-          "code": "// This layout wraps EVERY page inside [locale]/\n// Pages never need to import Header or Footer themselves\nexport default async function LocaleLayout({ children, params }) {\n  const { locale } = await params;\n  const messages = await getMessages();\n\n  return (\n    <NextIntlClientProvider locale={locale} messages={messages}>\n      <StoreProvider>\n        <ThemeRegistry>\n          <Header />\n          <main>{children}</main>\n          <Footer />\n        </ThemeRegistry>\n      </StoreProvider>\n    </NextIntlClientProvider>\n  );\n}"
+          "filename": "app/blog/[slug]/page.tsx",
+          "description": "A statically generated page with generateStaticParams",
+          "code": "// generateStaticParams tells Next.js which pages to pre-build\nexport async function generateStaticParams() {\n  const posts = await fetch('https://api.example.com/posts').then(r => r.json());\n  return posts.map((post: { slug: string }) => ({\n    slug: post.slug,\n  }));\n}\n\n// This page is built ONCE at build time for each slug\nexport default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {\n  const { slug } = await params;\n  const post = await fetch(`https://api.example.com/posts/${slug}`).then(r => r.json());\n\n  return (\n    <article>\n      <h1>{post.title}</h1>\n      <p>{post.content}</p>\n    </article>\n  );\n}"
+        },
+        {
+          "type": "table",
+          "heading": "Rendering strategy comparison",
+          "headers": ["Strategy", "Build Time", "First Load Speed", "SEO", "Data Freshness", "Best For"],
+          "rows": [
+            ["CSR", "Fast", "Slow (blank page until JS loads)", "Poor", "Always fresh", "Internal dashboards, authenticated apps"],
+            ["SSR", "N/A (per request)", "Fast (HTML arrives ready)", "Excellent", "Always fresh", "Dynamic pages, personalized content"],
+            ["SSG", "Slow (builds all pages)", "Fastest (pre-built HTML from CDN)", "Excellent", "Stale until rebuild", "Blogs, docs, marketing pages"]
+          ]
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "body": "Next.js lets you mix strategies in the same app. A marketing page can be SSG, the dashboard can be SSR, and an interactive widget can be CSR -- all in one codebase."
         },
         {
           "type": "alert",
           "severity": "success",
           "title": "Key Takeaway",
-          "body": "Routing in Next.js is just folders and files. Create a folder, add a page.tsx, and that folder name becomes the URL. Use [brackets] for dynamic segments and layout.tsx to share UI across pages."
+          "body": "CSR builds the page in the browser (slow first load, always fresh). SSR builds the page on the server per request (fast first load, great SEO). SSG pre-builds pages at build time (fastest, but data can be stale). Choose based on how often your data changes and whether SEO matters."
         }
       ]
     },
     {
       "type": "accordion",
-      "title": "2. State Management (Redux Toolkit)",
+      "title": "2. API Routes and Backend for Frontend",
       "blocks": [
         {
           "type": "text",
-          "body": "React components can hold their own data using useState, but some data needs to be shared across many components. For example, whether the user prefers dark mode needs to be known by the theme provider, the toggle button, and possibly individual components. Passing that data through dozens of components manually (called prop drilling) gets messy fast."
+          "body": "API routes let you build backend endpoints directly inside your Next.js project. Instead of spinning up a separate Express server, you create handler files that respond to HTTP requests. This is the Backend for Frontend (BFF) pattern -- your frontend has its own lightweight backend layer."
         },
         {
           "type": "text",
-          "body": "Redux solves this by creating a single store that holds shared state. Any component anywhere in the app can read from the store or update it. Redux Toolkit is the modern, simplified version of Redux that removes most of the boilerplate."
-        },
-        {
-          "type": "text",
-          "heading": "Creating the store with makeStore()",
+          "heading": "Creating an API route",
           "headingLevel": 3,
-          "body": "The store combines all feature reducers into one central state object."
+          "body": "In the Next.js App Router, API routes are created by placing a route.ts file inside the app/api/ directory. Each file exports functions named after HTTP methods."
         },
         {
           "type": "code",
           "language": "typescript",
-          "filename": "src/store/store.ts",
-          "description": "Configuring the Redux store with multiple feature slices",
-          "code": "import { combineReducers, configureStore } from '@reduxjs/toolkit';\nimport themeReducer from './slices/themeSlice';\nimport examReducer from './slices/examSlice';\nimport progressReducer from './slices/progressSlice';\nimport bookmarkReducer from './slices/bookmarkSlice';\n\nconst rootReducer = combineReducers({\n  theme: themeReducer,\n  exam: examReducer,\n  progress: progressReducer,\n  bookmarks: bookmarkReducer,\n});\n\nexport const makeStore = () => {\n  const store = configureStore({\n    reducer: rootReducer,\n  });\n  return { store };\n};\n\n// These types let TypeScript know the shape of your store\nexport type AppStore = ReturnType<typeof makeStore>;\nexport type RootState = ReturnType<AppStore['store']['getState']>;\nexport type AppDispatch = AppStore['store']['dispatch'];"
+          "filename": "app/api/posts/route.ts",
+          "description": "API route with GET and POST handlers",
+          "code": "import { NextRequest, NextResponse } from 'next/server';\n\n// In-memory storage (use a real database in production)\nlet posts = [\n  { id: 1, title: 'Hello World', content: 'My first post' },\n  { id: 2, title: 'Learning Next.js', content: 'API routes are great' },\n];\n\n// GET /api/posts -- return all posts\nexport async function GET() {\n  return NextResponse.json(posts);\n}\n\n// POST /api/posts -- create a new post\nexport async function POST(request: NextRequest) {\n  const body = await request.json();\n\n  if (!body.title || !body.content) {\n    return NextResponse.json(\n      { error: 'Title and content are required' },\n      { status: 400 }\n    );\n  }\n\n  const newPost = {\n    id: Date.now(),\n    title: body.title,\n    content: body.content,\n  };\n  posts.push(newPost);\n\n  return NextResponse.json(newPost, { status: 201 });\n}"
         },
         {
           "type": "text",
-          "heading": "A slice is a piece of the store",
+          "heading": "Dynamic API routes",
           "headingLevel": 3,
-          "body": "Each feature gets its own \"slice\" of state. A slice defines the initial data, plus the actions (functions) that can change it. Here is the theme slice that controls dark and light mode:"
+          "body": "Use bracket folders for dynamic segments, just like page routes."
         },
         {
           "type": "code",
           "language": "typescript",
-          "filename": "src/store/slices/themeSlice.ts",
-          "description": "A Redux slice for managing dark/light theme mode",
-          "code": "import { createSlice, PayloadAction } from '@reduxjs/toolkit';\n\ninterface ThemeState {\n  mode: 'light' | 'dark';\n}\n\nconst initialState: ThemeState = {\n  mode: 'light',\n};\n\nconst themeSlice = createSlice({\n  name: 'theme',\n  initialState,\n  reducers: {\n    toggleTheme(state) {\n      state.mode = state.mode === 'light' ? 'dark' : 'light';\n    },\n    setThemeMode(state, action: PayloadAction<'light' | 'dark'>) {\n      state.mode = action.payload;\n    },\n  },\n});\n\nexport const { toggleTheme, setThemeMode } = themeSlice.actions;\nexport default themeSlice.reducer;"
+          "filename": "app/api/posts/[id]/route.ts",
+          "description": "Dynamic API route for single-resource operations",
+          "code": "import { NextRequest, NextResponse } from 'next/server';\n\n// GET /api/posts/123 -- return a single post\nexport async function GET(\n  request: NextRequest,\n  { params }: { params: Promise<{ id: string }> }\n) {\n  const { id } = await params;\n  const post = posts.find(p => p.id === parseInt(id));\n\n  if (!post) {\n    return NextResponse.json({ error: 'Not found' }, { status: 404 });\n  }\n  return NextResponse.json(post);\n}\n\n// DELETE /api/posts/123 -- delete a post\nexport async function DELETE(\n  request: NextRequest,\n  { params }: { params: Promise<{ id: string }> }\n) {\n  const { id } = await params;\n  posts = posts.filter(p => p.id !== parseInt(id));\n  return NextResponse.json({ success: true });\n}"
         },
         {
           "type": "text",
-          "heading": "Typed hooks for reading and updating state",
+          "heading": "Why use API routes instead of direct API calls?",
           "headingLevel": 3,
-          "body": "Instead of using the generic React-Redux hooks, you create typed versions. This gives you autocomplete and catches type errors at build time."
+          "body": "API routes act as a proxy between your frontend and external services. They keep API keys secret, validate data before forwarding, and let you combine multiple external APIs into a single response."
         },
         {
           "type": "code",
           "language": "typescript",
-          "filename": "src/store/hooks.ts",
-          "description": "Typed Redux hooks for use throughout the application",
-          "code": "import { useDispatch, useSelector } from 'react-redux';\nimport type { AppDispatch, RootState } from './store';\n\n// Use these everywhere instead of plain useDispatch / useSelector\nexport const useAppDispatch = useDispatch.withTypes<AppDispatch>();\nexport const useAppSelector = useSelector.withTypes<RootState>();"
-        },
-        {
-          "type": "text",
-          "heading": "StoreProvider wraps the app",
-          "headingLevel": 3,
-          "body": "The store needs to be available to every component. A provider component wraps the app and makes the store accessible through React context."
-        },
-        {
-          "type": "code",
-          "language": "tsx",
-          "filename": "src/store/StoreProvider.tsx",
-          "description": "Provider component that makes the Redux store available to all children",
-          "code": "'use client';\n\nimport { useRef } from 'react';\nimport { Provider } from 'react-redux';\nimport { makeStore, AppStore } from './store';\n\nexport default function StoreProvider({ children }: { children: React.ReactNode }) {\n  const storeRef = useRef<AppStore | null>(null);\n  if (!storeRef.current) {\n    storeRef.current = makeStore();\n  }\n\n  return (\n    <Provider store={storeRef.current.store}>\n      {children}\n    </Provider>\n  );\n}"
-        },
-        {
-          "type": "text",
-          "heading": "Using state in a component",
-          "headingLevel": 3,
-          "body": "Components read from the store with useAppSelector and dispatch actions with useAppDispatch."
-        },
-        {
-          "type": "code",
-          "language": "tsx",
-          "filename": "src/components/layout/ThemeToggle.tsx",
-          "description": "A component that reads and toggles the theme from Redux state",
-          "code": "import { useAppDispatch, useAppSelector } from '@/store/hooks';\nimport { toggleTheme } from '@/store/slices/themeSlice';\n\nexport default function ThemeToggle() {\n  const dispatch = useAppDispatch();\n  const mode = useAppSelector((state) => state.theme.mode);\n\n  return (\n    <IconButton onClick={() => dispatch(toggleTheme())}>\n      {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}\n    </IconButton>\n  );\n}"
+          "filename": "app/api/weather/route.ts",
+          "description": "API route that hides external API keys from the client",
+          "code": "// The API key stays on the server -- the browser never sees it\nexport async function GET(request: NextRequest) {\n  const { searchParams } = new URL(request.url);\n  const city = searchParams.get('city');\n\n  // This key is only available server-side\n  const API_KEY = process.env.WEATHER_API_KEY;\n\n  const res = await fetch(\n    `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}`\n  );\n  const data = await res.json();\n\n  // Only return the fields the frontend needs\n  return NextResponse.json({\n    temperature: data.main.temp,\n    description: data.weather[0].description,\n  });\n}"
         },
         {
           "type": "alert",
           "severity": "success",
           "title": "Key Takeaway",
-          "body": "Redux Toolkit gives your app a single store for shared state. Each feature gets a slice with its data and actions. Components read state with useAppSelector and update it with useAppDispatch. The StoreProvider in the layout makes it all work."
+          "body": "API routes let you build backend logic inside your Next.js project. They keep secrets safe, validate input, and simplify your frontend code by providing a clean internal API. Use them as a proxy layer between your UI and external services."
         }
       ]
     },
     {
       "type": "accordion",
-      "title": "3. Theming (Dark/Light Mode)",
+      "title": "3. Internationalization (i18n)",
       "blocks": [
         {
           "type": "text",
-          "body": "Material UI (MUI) has a built-in theming system. You define your colors, typography, and component styles in one place, and every MUI component in your app automatically uses them. Switching between dark and light mode means swapping the entire color palette at once."
+          "body": "Internationalization means building your app so it can support multiple languages without changing any component code. Instead of hardcoding text like \"Submit\" into your buttons, you use a key like t('form.submit') that looks up the correct translation from a JSON file."
         },
         {
           "type": "text",
-          "heading": "The getTheme() function",
+          "heading": "How it works in Next.js with next-intl",
           "headingLevel": 3,
-          "body": "This function takes a mode (\"light\" or \"dark\") and returns a complete MUI theme object. It defines the primary color, background colors, text colors, border radius, and overrides for specific components."
+          "body": "The next-intl library provides three pieces: a [locale] folder for language routing, JSON translation files, and a useTranslations hook for components."
+        },
+        {
+          "type": "step",
+          "step": 1,
+          "title": "Create translation files",
+          "body": "Each language gets its own JSON file with the same keys but translated values.",
+          "code": "// src/messages/en.json\n{\n  \"common\": {\n    \"welcome\": \"Welcome to our site\",\n    \"login\": \"Log In\",\n    \"signup\": \"Sign Up\"\n  },\n  \"home\": {\n    \"hero\": \"Build something amazing\",\n    \"subtitle\": \"The modern toolkit for web developers\"\n  }\n}\n\n// src/messages/es.json\n{\n  \"common\": {\n    \"welcome\": \"Bienvenido a nuestro sitio\",\n    \"login\": \"Iniciar sesion\",\n    \"signup\": \"Registrarse\"\n  },\n  \"home\": {\n    \"hero\": \"Construye algo increible\",\n    \"subtitle\": \"El kit de herramientas moderno para desarrolladores web\"\n  }\n}",
+          "language": "json"
+        },
+        {
+          "type": "step",
+          "step": 2,
+          "title": "Configure supported locales",
+          "body": "Define which languages your app supports and which is the default.",
+          "code": "import { defineRouting } from 'next-intl/routing';\n\nexport const routing = defineRouting({\n  locales: ['en', 'es', 'ja'],\n  defaultLocale: 'en',\n  localePrefix: 'as-needed',\n});",
+          "language": "typescript"
+        },
+        {
+          "type": "step",
+          "step": 3,
+          "title": "Use translations in components",
+          "body": "Call useTranslations with a namespace to access the translated strings.",
+          "code": "import { useTranslations } from 'next-intl';\n\nexport default function HomePage() {\n  const t = useTranslations('home');\n  const common = useTranslations('common');\n\n  return (\n    <main>\n      <h1>{t('hero')}</h1>\n      <p>{t('subtitle')}</p>\n      <button>{common('login')}</button>\n      <button>{common('signup')}</button>\n    </main>\n  );\n}",
+          "language": "tsx"
+        },
+        {
+          "type": "text",
+          "heading": "Handling plurals and interpolation",
+          "headingLevel": 3,
+          "body": "Translations often need dynamic values or plural forms. next-intl handles both with ICU message syntax."
+        },
+        {
+          "type": "code",
+          "language": "json",
+          "filename": "src/messages/en.json (excerpt)",
+          "description": "Translation keys with interpolation and plurals",
+          "code": "{\n  \"cart\": {\n    \"greeting\": \"Hello, {name}!\",\n    \"itemCount\": \"You have {count, plural, =0 {no items} one {# item} other {# items}} in your cart.\"\n  }\n}"
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "Using dynamic translations",
+          "description": "Passing variables to translation strings",
+          "code": "const t = useTranslations('cart');\n\n// \"Hello, Alice!\"\n<p>{t('greeting', { name: 'Alice' })}</p>\n\n// \"You have 3 items in your cart.\"\n<p>{t('itemCount', { count: 3 })}</p>\n\n// \"You have no items in your cart.\"\n<p>{t('itemCount', { count: 0 })}</p>"
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "Internationalization separates text from code. Put all user-facing strings in JSON files keyed by language. Use useTranslations to look up the correct string at render time. Adding a new language is just creating a new JSON file -- no component changes needed."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "4. Dark Mode and Theming",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Dark mode is no longer a nice-to-have -- users expect it. A proper theming system lets you define colors, typography, and spacing in one place and swap the entire palette with a single state change. This section shows how to build it with Material UI and Redux."
+        },
+        {
+          "type": "text",
+          "heading": "Defining a theme factory",
+          "headingLevel": 3,
+          "body": "A theme factory function takes a mode parameter and returns a complete theme object. Every color, shadow, and component override is defined once."
         },
         {
           "type": "code",
           "language": "typescript",
           "filename": "src/theme/theme.ts",
-          "description": "Theme factory function that produces light or dark MUI themes",
-          "code": "import { createTheme, type Theme } from '@mui/material/styles';\n\nexport function getTheme(mode: 'light' | 'dark'): Theme {\n  return createTheme({\n    palette: {\n      mode,\n      primary: {\n        main: '#6366f1',    // Indigo for both modes\n      },\n      // Dark mode gets custom background colors\n      ...(mode === 'dark'\n        ? {\n            background: {\n              default: '#0f172a',   // Deep navy\n              paper: '#1e293b',     // Slightly lighter navy\n            },\n          }\n        : {\n            background: {\n              default: '#f8fafc',   // Near-white\n              paper: '#ffffff',     // Pure white cards\n            },\n          }),\n    },\n    shape: { borderRadius: 12 },\n    // Override how specific components look\n    components: {\n      MuiButton: {\n        styleOverrides: {\n          root: { textTransform: 'none', fontWeight: 600 },\n        },\n      },\n      MuiCard: {\n        styleOverrides: {\n          root: {\n            borderRadius: 16,\n            boxShadow: mode === 'dark'\n              ? '0 2px 8px rgba(0,0,0,0.4)'\n              : '0 2px 8px rgba(0,0,0,0.08)',\n          },\n        },\n      },\n    },\n  });\n}"
+          "description": "Theme factory that produces light or dark MUI themes",
+          "code": "import { createTheme } from '@mui/material/styles';\n\nexport function getTheme(mode: 'light' | 'dark') {\n  return createTheme({\n    palette: {\n      mode,\n      primary: { main: '#6366f1' },\n      ...(mode === 'dark' ? {\n        background: { default: '#0f172a', paper: '#1e293b' },\n      } : {\n        background: { default: '#f8fafc', paper: '#ffffff' },\n      }),\n    },\n    shape: { borderRadius: 12 },\n    typography: {\n      fontFamily: '\"Inter\", \"Roboto\", sans-serif',\n    },\n    components: {\n      MuiButton: {\n        styleOverrides: {\n          root: { textTransform: 'none', fontWeight: 600 },\n        },\n      },\n    },\n  });\n}"
         },
         {
           "type": "text",
-          "heading": "ThemeRegistry with Emotion cache",
+          "heading": "Connecting theme to Redux state",
           "headingLevel": 3,
-          "body": "The ThemeRegistry component reads the current theme mode from Redux, builds the theme, and wraps the app with MUI's ThemeProvider. The Emotion cache with prepend: true ensures that MUI styles load before your custom styles, so your overrides always win."
+          "body": "Store the current mode in a Redux slice. A ThemeRegistry component reads the mode and wraps the app with the correct theme."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "src/store/slices/themeSlice.ts",
+          "description": "Redux slice for theme mode with toggle action",
+          "code": "import { createSlice } from '@reduxjs/toolkit';\n\nconst themeSlice = createSlice({\n  name: 'theme',\n  initialState: { mode: 'light' as 'light' | 'dark' },\n  reducers: {\n    toggleTheme(state) {\n      state.mode = state.mode === 'light' ? 'dark' : 'light';\n    },\n  },\n});\n\nexport const { toggleTheme } = themeSlice.actions;\nexport default themeSlice.reducer;"
         },
         {
           "type": "code",
           "language": "tsx",
           "filename": "src/theme/ThemeRegistry.tsx",
-          "description": "Bridges Redux state to MUI theming with Emotion cache",
-          "code": "'use client';\n\nimport { useMemo } from 'react';\nimport { ThemeProvider } from '@mui/material/styles';\nimport CssBaseline from '@mui/material/CssBaseline';\nimport createCache from '@emotion/cache';\nimport { CacheProvider } from '@emotion/react';\nimport { useAppSelector } from '@/store/hooks';\nimport { getTheme } from './theme';\n\nconst cache = createCache({ key: 'mui', prepend: true });\n\nexport default function ThemeRegistry({ children }: { children: React.ReactNode }) {\n  const mode = useAppSelector((state) => state.theme.mode);\n  const theme = useMemo(() => getTheme(mode), [mode]);\n\n  return (\n    <CacheProvider value={cache}>\n      <ThemeProvider theme={theme}>\n        <CssBaseline />\n        {children}\n      </ThemeProvider>\n    </CacheProvider>\n  );\n}"
+          "description": "ThemeRegistry reads Redux state and provides the MUI theme",
+          "code": "'use client';\nimport { useMemo } from 'react';\nimport { ThemeProvider, CssBaseline } from '@mui/material';\nimport { useAppSelector } from '@/store/hooks';\nimport { getTheme } from './theme';\n\nexport default function ThemeRegistry({ children }: { children: React.ReactNode }) {\n  const mode = useAppSelector(state => state.theme.mode);\n  const theme = useMemo(() => getTheme(mode), [mode]);\n\n  return (\n    <ThemeProvider theme={theme}>\n      <CssBaseline /> {/* Resets browser defaults and applies background color */}\n      {children}\n    </ThemeProvider>\n  );\n}"
         },
         {
           "type": "text",
-          "heading": "How the toggle connects to the theme",
+          "heading": "Respecting system preferences",
           "headingLevel": 3,
-          "body": "The flow works like this: the user clicks the toggle button, which dispatches toggleTheme() to Redux. Redux updates the mode in the store. ThemeRegistry reads the new mode and rebuilds the theme. MUI re-renders every component with the new colors. The entire switch happens in a single render cycle."
+          "body": "You can detect the user's OS-level dark mode preference with a media query and use it as the initial value."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "Detecting system dark mode preference",
+          "description": "Using matchMedia to detect OS-level dark mode setting",
+          "code": "// Check the user's OS preference on first load\nconst prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;\n\n// Use as initial state in your Redux slice\nconst initialState = {\n  mode: prefersDark ? 'dark' : 'light',\n};\n\n// Listen for changes (user toggles OS dark mode while your app is open)\nwindow.matchMedia('(prefers-color-scheme: dark)')\n  .addEventListener('change', (e) => {\n    store.dispatch(setThemeMode(e.matches ? 'dark' : 'light'));\n  });"
         },
         {
           "type": "list",
           "heading": "Theme toggle flow",
+          "ordered": true,
           "items": [
-            "User clicks toggle",
-            "dispatch(toggleTheme())",
-            "Redux store updates mode",
-            "ThemeRegistry reads new mode",
-            "getTheme(newMode) creates new theme",
-            "MUI re-renders with new colors"
-          ],
-          "ordered": true
-        },
-        {
-          "type": "alert",
-          "severity": "success",
-          "title": "Key Takeaway",
-          "body": "Define your colors and component overrides in a single getTheme() function. ThemeRegistry bridges Redux state to MUI, so toggling dark mode is just a Redux action. CssBaseline resets browser defaults so your theme is applied consistently."
-        }
-      ]
-    },
-    {
-      "type": "accordion",
-      "title": "4. Internationalization (i18n)",
-      "blocks": [
-        {
-          "type": "text",
-          "body": "Internationalization (i18n for short -- there are 18 letters between the \"i\" and \"n\") means building your app so it can support multiple languages. Localization (l10n) means actually translating it into a specific language. Think of i18n as building the plumbing, and l10n as connecting the water."
-        },
-        {
-          "type": "text",
-          "body": "The application uses next-intl, a library built specifically for Next.js. Instead of hardcoding English text in your components, you put translation keys and look up the actual text from JSON files. Switching languages means swapping which JSON file gets loaded."
-        },
-        {
-          "type": "text",
-          "heading": "Define your supported locales",
-          "headingLevel": 3,
-          "body": "The routing configuration specifies which languages are supported and which is the default."
-        },
-        {
-          "type": "code",
-          "language": "typescript",
-          "filename": "src/i18n/routing.ts",
-          "description": "Locale routing configuration for next-intl",
-          "code": "import { defineRouting } from 'next-intl/routing';\n\nexport const routing = defineRouting({\n  locales: ['en'],           // Add 'es', 'ja', etc. for more languages\n  defaultLocale: 'en',\n  localePrefix: 'as-needed', // Only show /en/ prefix when needed\n});"
-        },
-        {
-          "type": "text",
-          "heading": "The [locale] folder handles language routing",
-          "headingLevel": 3,
-          "body": "By placing all your pages inside a [locale] folder, Next.js captures the language code from the URL. Visiting /en/features sets the locale to English. Visiting /es/features would set it to Spanish."
-        },
-        {
-          "type": "code",
-          "language": "text",
-          "filename": "Folder structure",
-          "code": "src/app/\n  [locale]/                   <-- captures language from URL\n    layout.tsx                <-- loads the right translations\n    page.tsx                  <-- home page\n    getting-started/\n      page.tsx\n    features/\n      page.tsx"
-        },
-        {
-          "type": "text",
-          "heading": "Translation messages in JSON",
-          "headingLevel": 3,
-          "body": "Each language gets its own JSON file. The keys stay the same across all languages, but the values are translated."
-        },
-        {
-          "type": "code",
-          "language": "json",
-          "filename": "src/messages/en.json",
-          "description": "English translation messages for navigation labels",
-          "code": "{\n  \"nav\": {\n    \"home\": \"Home\",\n    \"gettingStarted\": \"Getting Started\",\n    \"fundamentals\": \"Fundamentals\",\n    \"features\": \"Core Features\",\n    \"exam\": \"Practice Exam\",\n    \"more\": \"More\"\n  }\n}"
-        },
-        {
-          "type": "text",
-          "heading": "The useTranslations hook",
-          "headingLevel": 3,
-          "body": "In your components, you never write raw English strings for UI labels. Instead, you call useTranslations with a namespace (like \"nav\") and use the t() function to look up each key."
-        },
-        {
-          "type": "code",
-          "language": "tsx",
-          "filename": "src/components/layout/Header.tsx (simplified)",
-          "description": "Using the useTranslations hook to render localized navigation labels",
-          "code": "import { useTranslations } from 'next-intl';\n\nexport default function Header() {\n  const t = useTranslations('nav');\n\n  return (\n    <nav>\n      <a href=\"/\">{t('home')}</a>           {/* \"Home\" */}\n      <a href=\"/features\">{t('features')}</a> {/* \"Core Features\" */}\n    </nav>\n  );\n}"
-        },
-        {
-          "type": "text",
-          "heading": "Middleware routes users to the right locale",
-          "headingLevel": 3,
-          "body": "The middleware intercepts every request and checks the URL for a locale prefix."
-        },
-        {
-          "type": "code",
-          "language": "typescript",
-          "filename": "src/middleware.ts",
-          "description": "Next.js middleware that routes users to the correct locale",
-          "code": "import createMiddleware from 'next-intl/middleware';\nimport { routing } from './i18n/routing';\n\nexport default createMiddleware(routing);\n\nexport const config = {\n  // Match all paths except static files and API routes\n  matcher: ['/', '/(en)/:path*', '/((?!api|_next|_vercel|.*\\\\..*).*)'],\n};"
-        },
-        {
-          "type": "alert",
-          "severity": "info",
-          "body": "The middleware intercepts every request and checks the URL for a locale. If none is found, it redirects to the default locale. This happens on the server before any page renders."
-        },
-        {
-          "type": "alert",
-          "severity": "success",
-          "title": "Key Takeaway",
-          "body": "i18n separates your text from your components. Put translated strings in JSON files, use useTranslations to look them up, and the [locale] folder structure plus middleware handle the rest. Adding a new language means creating a new JSON file."
-        }
-      ]
-    },
-    {
-      "type": "accordion",
-      "title": "5. Persistent State (Redux Persist)",
-      "blocks": [
-        {
-          "type": "text",
-          "body": "By default, all Redux state lives in memory. When the user refreshes the page or closes the browser tab, the state vanishes. The theme goes back to light mode, exam progress resets, and bookmarks disappear. That is a terrible user experience."
-        },
-        {
-          "type": "text",
-          "body": "Redux Persist solves this by automatically saving parts of your Redux store to localStorage (the browser's built-in key-value storage). When the page loads again, it reads the saved data and restores the store to its previous state. The user never notices anything happened."
-        },
-        {
-          "type": "text",
-          "heading": "The persist configuration",
-          "headingLevel": 3,
-          "body": "The whitelist array controls which slices get saved. Not everything should be persisted -- temporary UI state or data that should be fetched fresh does not belong in localStorage."
-        },
-        {
-          "type": "code",
-          "language": "typescript",
-          "filename": "src/store/store.ts",
-          "description": "Redux Persist configuration with whitelist for selective persistence",
-          "code": "import { persistStore, persistReducer } from 'redux-persist';\nimport storage from 'redux-persist/lib/storage'; // uses localStorage\n\nconst persistConfig = {\n  key: 'root',          // The key in localStorage\n  storage,              // Where to save (localStorage)\n  whitelist: [           // ONLY these slices get persisted\n    'theme',             // User's dark/light preference\n    'exam',              // Exam progress and scores\n    'progress',          // Chapter completion tracking\n    'bookmarks',         // Saved bookmarks\n  ],\n  // 'generator' is NOT in the list, so it resets on refresh\n};\n\nconst persistedReducer = persistReducer(persistConfig, rootReducer);\n\nexport const makeStore = () => {\n  const store = configureStore({ reducer: persistedReducer });\n  const persistor = persistStore(store);\n  return { store, persistor };\n};"
-        },
-        {
-          "type": "text",
-          "heading": "PersistGate delays rendering until state is loaded",
-          "headingLevel": 3,
-          "body": "When the page loads, Redux Persist needs a moment to read from localStorage and restore the state. PersistGate shows nothing (or a loading spinner) until the state is ready. Without it, you would briefly see light mode flash before dark mode kicks in."
-        },
-        {
-          "type": "code",
-          "language": "tsx",
-          "filename": "src/store/StoreProvider.tsx",
-          "description": "StoreProvider with PersistGate to prevent flash-of-default-state",
-          "code": "'use client';\n\nimport { useRef } from 'react';\nimport { Provider } from 'react-redux';\nimport { PersistGate } from 'redux-persist/integration/react';\nimport { makeStore, AppStore } from './store';\n\nexport default function StoreProvider({ children }: { children: React.ReactNode }) {\n  const storeRef = useRef<{ store: AppStore['store']; persistor: Persistor } | null>(null);\n  if (!storeRef.current) {\n    storeRef.current = makeStore();\n  }\n\n  return (\n    <Provider store={storeRef.current.store}>\n      <PersistGate loading={null} persistor={storeRef.current.persistor}>\n        {children}\n      </PersistGate>\n    </Provider>\n  );\n}"
-        },
-        {
-          "type": "text",
-          "heading": "What to persist vs what not to",
-          "headingLevel": 3,
-          "body": "Choose carefully which state to save to localStorage."
-        },
-        {
-          "type": "table",
-          "heading": "Persistence decision guide",
-          "headers": ["Good candidates for persistence", "Do not persist"],
-          "rows": [
-            ["User preferences (theme, language)", "Temporary UI state (modals open, tooltips)"],
-            ["Progress tracking (completed chapters)", "Data that should be fetched fresh from an API"],
-            ["Bookmarks and saved items", "Sensitive information (tokens, passwords)"],
-            ["Form drafts the user might want back", "Large objects that would slow down localStorage"]
+            "User clicks the toggle button",
+            "Component dispatches toggleTheme() to Redux",
+            "Redux updates mode from 'light' to 'dark' (or vice versa)",
+            "ThemeRegistry reads the new mode and rebuilds the theme with useMemo",
+            "MUI re-renders every component with the new color palette",
+            "Redux Persist saves the preference to localStorage for next visit"
           ]
         },
         {
           "type": "alert",
           "severity": "success",
           "title": "Key Takeaway",
-          "body": "Redux Persist saves your store to localStorage automatically. Use a whitelist to control which slices are saved. PersistGate prevents flash-of-default-state on page load. Only persist data the user would expect to survive a refresh."
+          "body": "Define your entire color palette in a theme factory function. Store the mode in Redux so any component can toggle it. Use CssBaseline to apply theme colors globally. Detect system preferences with matchMedia and persist the user's choice with Redux Persist."
         }
       ]
     },
     {
       "type": "accordion",
-      "title": "6. Responsive Design",
+      "title": "5. Progressive Web Apps (PWAs)",
       "blocks": [
         {
           "type": "text",
-          "body": "Responsive design means your website looks good on any screen size -- from a phone to a wide desktop monitor. Material UI makes this straightforward with its Grid2 layout system and the sx prop breakpoints."
+          "body": "A Progressive Web App is a website that can behave like a native app. Users can install it on their home screen, use it offline, and receive push notifications. PWAs bridge the gap between web and native without requiring app store distribution."
         },
         {
           "type": "text",
-          "heading": "MUI Grid2 for layouts",
+          "heading": "The Web App Manifest",
           "headingLevel": 3,
-          "body": "Grid2 divides the screen into 12 columns. You tell each item how many columns it should take up at different screen sizes. On small screens a card might take all 12 columns (full width), but on medium screens it takes 6 (half width), and on large screens it takes 4 (one third)."
+          "body": "The manifest is a JSON file that tells the browser how your app should appear when installed. It defines the app name, icons, theme color, and display mode."
         },
         {
           "type": "code",
-          "language": "tsx",
-          "filename": "Responsive grid example",
-          "description": "Using MUI Grid2 for responsive column layouts",
-          "code": "import Grid from '@mui/material/Grid2';\n\nfunction FeatureCards() {\n  return (\n    <Grid container spacing={3}>\n      {/* Full width on mobile, half on medium, third on large */}\n      <Grid size={{ xs: 12, sm: 6, lg: 4 }}>\n        <Card>Card 1</Card>\n      </Grid>\n      <Grid size={{ xs: 12, sm: 6, lg: 4 }}>\n        <Card>Card 2</Card>\n      </Grid>\n      <Grid size={{ xs: 12, sm: 6, lg: 4 }}>\n        <Card>Card 3</Card>\n      </Grid>\n    </Grid>\n  );\n}"
+          "language": "json",
+          "filename": "public/manifest.json",
+          "description": "Web app manifest for installable PWA",
+          "code": "{\n  \"name\": \"Web Dev Guide\",\n  \"short_name\": \"DevGuide\",\n  \"description\": \"Learn web development with interactive examples\",\n  \"start_url\": \"/\",\n  \"display\": \"standalone\",\n  \"background_color\": \"#0f172a\",\n  \"theme_color\": \"#6366f1\",\n  \"icons\": [\n    { \"src\": \"/icons/icon-192.png\", \"sizes\": \"192x192\", \"type\": \"image/png\" },\n    { \"src\": \"/icons/icon-512.png\", \"sizes\": \"512x512\", \"type\": \"image/png\" }\n  ]\n}"
         },
         {
           "type": "text",
-          "heading": "The sx prop with breakpoints",
+          "heading": "Service Workers for offline support",
           "headingLevel": 3,
-          "body": "The sx prop accepts objects where keys are breakpoint names. This lets you set different values for different screen sizes right in your JSX -- no separate CSS files, no media queries to write by hand."
+          "body": "A Service Worker is a script that runs in the background, separate from your page. It intercepts network requests and can serve cached responses when the user is offline."
         },
         {
           "type": "code",
-          "language": "tsx",
-          "filename": "Breakpoint examples",
-          "description": "Using sx prop breakpoints for responsive padding, font sizes, and visibility",
-          "code": "// Different padding at different screen sizes\n<Container sx={{ py: { xs: 2, md: 4, lg: 8 } }}>\n\n// Different font sizes\n<Typography sx={{ fontSize: { xs: '1.5rem', md: '2.5rem' } }}>\n  Big heading\n</Typography>\n\n// Hide elements on certain screen sizes\n<Box sx={{ display: { xs: 'none', md: 'flex' } }}>\n  {/* This only shows on md (960px) and above */}\n  <DesktopNavigation />\n</Box>\n\n<Box sx={{ display: { xs: 'flex', md: 'none' } }}>\n  {/* This only shows on mobile (below 960px) */}\n  <MobileMenuButton />\n</Box>"
+          "language": "javascript",
+          "filename": "public/sw.js",
+          "description": "Basic Service Worker with cache-first strategy",
+          "code": "const CACHE_NAME = 'devguide-v1';\nconst STATIC_ASSETS = [\n  '/',\n  '/offline.html',\n  '/styles.css',\n  '/icons/icon-192.png',\n];\n\n// Install: cache static assets\nself.addEventListener('install', (event) => {\n  event.waitUntil(\n    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))\n  );\n});\n\n// Fetch: serve from cache first, fall back to network\nself.addEventListener('fetch', (event) => {\n  event.respondWith(\n    caches.match(event.request).then((cached) => {\n      return cached || fetch(event.request).then((response) => {\n        // Cache new resources for future offline use\n        const clone = response.clone();\n        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));\n        return response;\n      });\n    }).catch(() => {\n      // If both cache and network fail, show offline page\n      return caches.match('/offline.html');\n    })\n  );\n});"
         },
         {
           "type": "text",
-          "heading": "The mobile drawer pattern",
+          "heading": "Registering the Service Worker",
           "headingLevel": 3,
-          "body": "On desktop, the header shows navigation links in a horizontal bar. On mobile, there is not enough room, so the links are hidden and a hamburger menu icon appears instead. Tapping it opens a Drawer (a panel that slides in from the side) with all the navigation links stacked vertically."
+          "body": "Register the Service Worker in your app's entry point so the browser knows to install it."
         },
         {
           "type": "code",
-          "language": "tsx",
-          "filename": "src/components/layout/Header.tsx (simplified)",
-          "description": "Responsive navigation with desktop links and mobile drawer",
-          "code": "// Hamburger icon: only visible on mobile (hidden on md+)\n<IconButton\n  onClick={handleDrawerToggle}\n  sx={{ display: { md: 'none' } }}  // Hidden on desktop\n>\n  <MenuIcon />\n</IconButton>\n\n// Desktop nav links: hidden on mobile\n<Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 0.5 }}>\n  {NAV_ITEMS.map(({ labelKey, href }) => (\n    <Button component={Link} href={href}>{t(labelKey)}</Button>\n  ))}\n</Box>\n\n// Mobile drawer: only renders on small screens\n<Drawer\n  variant=\"temporary\"\n  open={mobileOpen}\n  onClose={handleDrawerToggle}\n  sx={{ display: { xs: 'block', md: 'none' } }}\n>\n  <MobileDrawer onClose={handleDrawerToggle} />\n</Drawer>"
+          "language": "typescript",
+          "filename": "Registering the Service Worker",
+          "description": "Register the Service Worker on page load",
+          "code": "// Register the service worker on page load\nif ('serviceWorker' in navigator) {\n  window.addEventListener('load', () => {\n    navigator.serviceWorker.register('/sw.js').then(\n      (registration) => console.log('SW registered:', registration.scope),\n      (error) => console.error('SW registration failed:', error)\n    );\n  });\n}"
         },
         {
-          "type": "text",
-          "heading": "Container maxWidth",
-          "headingLevel": 3,
-          "body": "The Container component centers your content and limits its maximum width so it does not stretch across ultra-wide monitors. Common values are \"sm\" (600px), \"md\" (900px), and \"lg\" (1200px)."
-        },
-        {
-          "type": "code",
-          "language": "tsx",
-          "description": "The standard page container pattern",
-          "code": "// Every content page uses this pattern\n<Container maxWidth=\"md\" sx={{ py: { xs: 4, md: 8 } }}>\n  {/* Page content here */}\n</Container>"
+          "type": "cardGrid",
+          "columns": 3,
+          "cards": [
+            { "title": "Installable", "body": "Users can add the app to their home screen and launch it like a native app", "icon": "InstallMobile" },
+            { "title": "Offline Ready", "body": "Service Workers cache assets so the app works without an internet connection", "icon": "WifiOff" },
+            { "title": "Push Notifications", "body": "Send notifications to re-engage users even when the app is closed", "icon": "Notifications" }
+          ]
         },
         {
           "type": "alert",
           "severity": "success",
           "title": "Key Takeaway",
-          "body": "Use Grid2 size to control column spans at each breakpoint. Use sx with breakpoint objects for responsive padding, font sizes, and visibility. The Container component prevents content from stretching too wide. Desktop nav links + mobile drawer is the standard responsive navigation pattern."
+          "body": "PWAs need three things: HTTPS, a web app manifest, and a Service Worker. The manifest makes the app installable. The Service Worker enables offline support and caching. Together they give your web app a native-like experience without an app store."
         }
       ]
     },
     {
       "type": "accordion",
-      "title": "7. Custom Hooks Pattern",
+      "title": "6. Performance Optimization",
       "blocks": [
         {
           "type": "text",
-          "body": "A practical rule of thumb: if your component's TSX file is longer than about 50 lines, it is probably doing too much. Custom hooks let you extract logic (state, event handlers, computed values) out of the component and into a separate file, so the component file stays short and focused on what it looks like."
+          "body": "Performance directly impacts user experience and search rankings. A page that takes five seconds to load loses nearly half its visitors. This section covers the three most impactful optimization techniques: code splitting, lazy loading, and image optimization."
         },
         {
           "type": "text",
-          "heading": "The useHeader hook",
+          "heading": "Code splitting with dynamic imports",
           "headingLevel": 3,
-          "body": "The Header component needs to manage several pieces of state: whether the mobile drawer is open, and whether the \"More\" menu is open. Instead of putting all that logic in the component, it lives in a custom hook."
-        },
-        {
-          "type": "code",
-          "language": "typescript",
-          "filename": "src/hooks/useHeader.ts",
-          "description": "Custom hook that extracts all Header state and handlers",
-          "code": "import { useState } from 'react';\n\n// Navigation data also lives here, close to the logic that uses it\nexport const NAV_ITEMS = [\n  { labelKey: 'gettingStarted', href: '/getting-started' },\n  { labelKey: 'fundamentals', href: '/fundamentals' },\n  { labelKey: 'features', href: '/features' },\n  { labelKey: 'exam', href: '/exam' },\n];\n\nexport const MORE_ITEMS = [\n  { labelKey: 'aiDevelopment', href: '/ai-development' },\n  { labelKey: 'resources', href: '/resources' },\n  { labelKey: 'bookmarks', href: '/bookmarks' },\n];\n\nexport default function useHeader() {\n  const [mobileOpen, setMobileOpen] = useState(false);\n  const [moreAnchor, setMoreAnchor] = useState<null | HTMLElement>(null);\n\n  const handleDrawerToggle = () => setMobileOpen(!mobileOpen);\n  const handleMoreOpen = (e: React.MouseEvent<HTMLElement>) => setMoreAnchor(e.currentTarget);\n  const handleMoreClose = () => setMoreAnchor(null);\n\n  return { mobileOpen, moreAnchor, handleDrawerToggle, handleMoreOpen, handleMoreClose };\n}"
-        },
-        {
-          "type": "text",
-          "heading": "The component stays clean",
-          "headingLevel": 3,
-          "body": "Now the Header component just calls the hook and uses the returned values. All the state management logic is out of sight."
+          "body": "Instead of sending all your JavaScript in one giant bundle, code splitting breaks it into smaller chunks that load on demand. Users only download the code they actually need."
         },
         {
           "type": "code",
           "language": "tsx",
-          "filename": "src/components/layout/Header.tsx (simplified)",
-          "description": "Clean Header component that delegates logic to useHeader hook",
-          "code": "import useHeader, { NAV_ITEMS, MORE_ITEMS } from '@/hooks/useHeader';\n\nexport default function Header() {\n  const h = useHeader();  // All state and handlers in one line\n  const t = useTranslations('nav');\n\n  return (\n    <AppBar>\n      <IconButton onClick={h.handleDrawerToggle}>\n        <MenuIcon />\n      </IconButton>\n      {/* ... rest of the JSX ... */}\n    </AppBar>\n  );\n}"
+          "filename": "Code splitting with React.lazy",
+          "description": "Lazy-loading a heavy component only when it is needed",
+          "code": "import { lazy, Suspense } from 'react';\n\n// This component is NOT included in the initial bundle.\n// It downloads only when the user navigates to this page.\nconst HeavyChartDashboard = lazy(() => import('./HeavyChartDashboard'));\n\nexport default function AnalyticsPage() {\n  return (\n    <main>\n      <h1>Analytics</h1>\n      <Suspense fallback={<div>Loading charts...</div>}>\n        <HeavyChartDashboard />\n      </Suspense>\n    </main>\n  );\n}"
         },
         {
           "type": "text",
-          "heading": "Naming conventions and hook composition",
+          "heading": "Lazy loading images",
           "headingLevel": 3,
-          "body": "Follow these conventions when creating custom hooks."
+          "body": "Images are typically the heaviest assets on a page. Lazy loading defers loading off-screen images until the user scrolls to them."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "Image optimization with next/image",
+          "description": "Next.js Image component with automatic optimization",
+          "code": "import Image from 'next/image';\n\n// next/image provides:\n// - Automatic lazy loading (only loads when near viewport)\n// - Automatic format conversion (WebP/AVIF when supported)\n// - Responsive srcset generation\n// - Prevents layout shift with required width/height\n\nexport default function ProductCard({ product }) {\n  return (\n    <div>\n      <Image\n        src={product.imageUrl}\n        alt={product.name}\n        width={400}\n        height={300}\n        placeholder=\"blur\"          // Show blurred preview while loading\n        blurDataURL={product.blur}   // Tiny base64 blur placeholder\n        sizes=\"(max-width: 768px) 100vw, 50vw\"  // Responsive sizing hints\n      />\n      <h3>{product.name}</h3>\n    </div>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "heading": "Bundle analysis and tree shaking",
+          "headingLevel": 3,
+          "body": "Tree shaking removes unused code from your bundle. Import only what you need from libraries to keep bundles small."
+        },
+        {
+          "type": "tabs",
+          "tabs": [
+            {
+              "label": "Bad: imports everything",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "typescript",
+                  "description": "Importing the entire lodash library (70+ KB)",
+                  "code": "// BAD: imports the entire lodash library (~70 KB)\nimport _ from 'lodash';\nconst sorted = _.sortBy(users, 'name');"
+                }
+              ]
+            },
+            {
+              "label": "Good: imports only what is needed",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "typescript",
+                  "description": "Importing only the specific function needed (~2 KB)",
+                  "code": "// GOOD: imports only sortBy (~2 KB)\nimport sortBy from 'lodash/sortBy';\nconst sorted = sortBy(users, 'name');"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "heading": "Performance optimization checklist",
+          "headers": ["Technique", "Impact", "Effort"],
+          "rows": [
+            ["Use next/image for all images", "High -- automatic format, sizing, lazy loading", "Low"],
+            ["Code split with dynamic imports", "High -- reduces initial bundle by 30-60%", "Low"],
+            ["Import specific functions, not entire libraries", "Medium -- can save 50+ KB per library", "Low"],
+            ["Add loading.tsx for route segments", "Medium -- shows instant feedback during navigation", "Low"],
+            ["Use React.memo for expensive list items", "Medium -- prevents unnecessary re-renders", "Medium"],
+            ["Debounce search inputs", "Medium -- reduces API calls and re-renders", "Low"]
+          ]
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "The biggest performance wins come from sending less code (code splitting, tree shaking) and loading assets on demand (lazy loading images and components). Use next/image for automatic image optimization. Import specific functions instead of entire libraries."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "7. SEO: Search Engine Optimization",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "SEO determines whether people can find your site through search engines. Good SEO means providing structured metadata, generating sitemaps, and ensuring search engine crawlers can read your content. Next.js has built-in support for all of these."
+        },
+        {
+          "type": "text",
+          "heading": "Metadata with the Metadata API",
+          "headingLevel": 3,
+          "body": "Next.js App Router lets you define metadata by exporting a metadata object or a generateMetadata function from any page or layout."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "app/blog/[slug]/page.tsx",
+          "description": "Dynamic metadata generated from page content",
+          "code": "import type { Metadata } from 'next';\n\n// Generate metadata dynamically based on the blog post\nexport async function generateMetadata(\n  { params }: { params: Promise<{ slug: string }> }\n): Promise<Metadata> {\n  const { slug } = await params;\n  const post = await getPost(slug);\n\n  return {\n    title: `${post.title} | My Blog`,\n    description: post.excerpt,\n    openGraph: {\n      title: post.title,\n      description: post.excerpt,\n      type: 'article',\n      publishedTime: post.publishedAt,\n      images: [{ url: post.coverImage, width: 1200, height: 630 }],\n    },\n    twitter: {\n      card: 'summary_large_image',\n      title: post.title,\n      description: post.excerpt,\n      images: [post.coverImage],\n    },\n  };\n}"
+        },
+        {
+          "type": "text",
+          "heading": "Generating a sitemap",
+          "headingLevel": 3,
+          "body": "A sitemap tells search engines which pages exist on your site and how often they change."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "app/sitemap.ts",
+          "description": "Dynamic sitemap generation for all pages",
+          "code": "import type { MetadataRoute } from 'next';\n\nexport default async function sitemap(): Promise<MetadataRoute.Sitemap> {\n  const posts = await getAllPosts();\n\n  const blogPages = posts.map((post) => ({\n    url: `https://mysite.com/blog/${post.slug}`,\n    lastModified: new Date(post.updatedAt),\n    changeFrequency: 'weekly' as const,\n    priority: 0.7,\n  }));\n\n  return [\n    {\n      url: 'https://mysite.com',\n      lastModified: new Date(),\n      changeFrequency: 'daily',\n      priority: 1,\n    },\n    {\n      url: 'https://mysite.com/about',\n      lastModified: new Date(),\n      changeFrequency: 'monthly',\n      priority: 0.5,\n    },\n    ...blogPages,\n  ];\n}"
+        },
+        {
+          "type": "text",
+          "heading": "Structured data with JSON-LD",
+          "headingLevel": 3,
+          "body": "Structured data helps search engines understand your content. It can result in rich snippets -- enhanced search results with ratings, prices, or FAQ dropdowns."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "Adding JSON-LD structured data",
+          "description": "JSON-LD structured data for a blog post",
+          "code": "export default function BlogPost({ post }) {\n  const jsonLd = {\n    '@context': 'https://schema.org',\n    '@type': 'BlogPosting',\n    headline: post.title,\n    datePublished: post.publishedAt,\n    author: {\n      '@type': 'Person',\n      name: post.author,\n    },\n    image: post.coverImage,\n    description: post.excerpt,\n  };\n\n  return (\n    <article>\n      {/* Inject structured data into the page head */}\n      <script\n        type=\"application/ld+json\"\n        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}\n      />\n      <h1>{post.title}</h1>\n      <p>{post.content}</p>\n    </article>\n  );\n}"
         },
         {
           "type": "list",
+          "heading": "SEO checklist",
           "items": [
-            "Hook files always start with \"use\" -- this is a React requirement, not just a convention. React uses the \"use\" prefix to enforce the rules of hooks.",
-            "Name the hook after the component it serves: useHeader for Header, useCountdown for a countdown timer.",
-            "Hooks can call other hooks. A useQuiz hook might use useCountdown internally. This is called hook composition.",
-            "Keep hooks in a src/hooks/ folder so they are easy to find."
+            "Every page has a unique title and meta description",
+            "Open Graph and Twitter Card meta tags are set for social sharing",
+            "A sitemap.xml is generated and submitted to search engines",
+            "Images have descriptive alt text for accessibility and image search",
+            "Use SSR or SSG so search engines see fully-rendered HTML",
+            "Add JSON-LD structured data for rich search snippets",
+            "Create a robots.txt file to guide crawler behavior"
           ]
         },
         {
           "type": "alert",
           "severity": "success",
           "title": "Key Takeaway",
-          "body": "Custom hooks extract logic from components so your TSX files stay short and readable. Name them with the use prefix, keep them in src/hooks/, and return an object with the state and handlers the component needs. Hooks can use other hooks for composition."
+          "body": "SEO starts with metadata: title, description, and Open Graph tags. Use generateMetadata for dynamic pages. Generate a sitemap so search engines discover all your pages. Add JSON-LD structured data for rich snippets. Use SSR or SSG so crawlers see real content, not empty HTML."
         }
       ]
     },
     {
       "type": "accordion",
-      "title": "8. Component Architecture",
+      "title": "8. Accessibility (a11y)",
       "blocks": [
         {
           "type": "text",
-          "body": "A well-organized codebase is one where you can find any file in seconds. The application uses a feature-based folder structure where related components live together, and each component is small enough to understand at a glance."
+          "body": "Accessibility means making your website usable by everyone, including people who use screen readers, keyboard-only navigation, or have visual impairments. The Web Content Accessibility Guidelines (WCAG) define the standards. Accessibility is not optional -- it is a legal requirement in many countries and makes your site better for all users."
         },
         {
           "type": "text",
-          "heading": "Feature-based folder organization",
+          "heading": "Semantic HTML",
           "headingLevel": 3,
-          "body": "Components are grouped by the feature they belong to, not by their type."
+          "body": "The most impactful accessibility improvement is using the right HTML elements. Screen readers understand semantic elements like nav, main, button, and heading levels. They cannot interpret div and span."
         },
         {
-          "type": "code",
-          "language": "text",
-          "filename": "src/components/",
-          "description": "Feature-based component folder structure",
-          "code": "components/\n  layout/                 <-- Shared structural components\n    Header.tsx            <-- Top navigation bar\n    Footer.tsx            <-- Bottom of every page\n    MobileDrawer.tsx      <-- Mobile slide-out menu\n    ThemeToggle.tsx       <-- Dark/light mode switch\n\n  common/                 <-- Reusable across all features\n    CodeBlock.tsx         <-- Syntax-highlighted code display\n    BookmarkButton.tsx    <-- Bookmark toggle button\n    LoadingSpinner.tsx    <-- Loading indicator\n    GlossaryTooltip.tsx   <-- Hover definition tooltips\n\n  exam/                   <-- Everything for the exam feature\n    QuestionCard.tsx      <-- Displays one question\n    AnswerOption.tsx      <-- Single answer choice\n    ScoreCircle.tsx       <-- Circular progress indicator\n    ExamTimer.tsx         <-- Countdown timer\n    ExamProgress.tsx      <-- Progress bar\n\n  home/                   <-- Homepage-specific components\n    HeroSection.tsx       <-- Big banner at the top\n    FeatureCard.tsx       <-- Feature highlight card\n    CtaSection.tsx        <-- Call-to-action section"
+          "type": "tabs",
+          "tabs": [
+            {
+              "label": "Bad: div soup",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "tsx",
+                  "description": "Inaccessible layout using only divs",
+                  "code": "// BAD: Screen readers cannot understand this structure\n<div className=\"header\">\n  <div className=\"nav\">\n    <div onClick={goHome}>Home</div>\n    <div onClick={goAbout}>About</div>\n  </div>\n</div>\n<div className=\"content\">\n  <div className=\"title\">Welcome</div>\n  <div className=\"text\">Hello world</div>\n</div>"
+                }
+              ]
+            },
+            {
+              "label": "Good: semantic HTML",
+              "blocks": [
+                {
+                  "type": "code",
+                  "language": "tsx",
+                  "description": "Accessible layout using semantic elements",
+                  "code": "// GOOD: Screen readers understand the page structure\n<header>\n  <nav aria-label=\"Main navigation\">\n    <a href=\"/\">Home</a>\n    <a href=\"/about\">About</a>\n  </nav>\n</header>\n<main>\n  <h1>Welcome</h1>\n  <p>Hello world</p>\n</main>"
+                }
+              ]
+            }
+          ]
         },
         {
           "type": "text",
-          "heading": "The 50-line rule",
+          "heading": "Keyboard navigation",
           "headingLevel": 3,
-          "body": "If a component grows beyond about 50 lines, it is a sign that it has too many responsibilities. The solution is to extract parts of it into smaller sub-components. Each sub-component does one thing well."
+          "body": "Every interactive element must be reachable and operable with a keyboard. Users should be able to Tab through focusable elements, press Enter or Space to activate them, and press Escape to close modals."
         },
         {
           "type": "code",
           "language": "tsx",
-          "filename": "Before: one big component",
-          "description": "A single component doing too many things",
-          "code": "// BAD: This component does too much (100+ lines)\nfunction ExamPage() {\n  return (\n    <Container>\n      {/* 20 lines of header UI */}\n      {/* 30 lines of question display */}\n      {/* 25 lines of answer options */}\n      {/* 20 lines of timer and progress */}\n      {/* 15 lines of score display */}\n    </Container>\n  );\n}"
+          "filename": "Keyboard-accessible modal",
+          "description": "A modal that traps focus and responds to Escape",
+          "code": "import { useEffect, useRef } from 'react';\n\nfunction AccessibleModal({ isOpen, onClose, children }) {\n  const modalRef = useRef<HTMLDivElement>(null);\n\n  useEffect(() => {\n    if (!isOpen) return;\n\n    // Focus the modal when it opens\n    modalRef.current?.focus();\n\n    const handleKeyDown = (e: KeyboardEvent) => {\n      if (e.key === 'Escape') onClose();\n\n      // Trap focus inside the modal\n      if (e.key === 'Tab') {\n        const focusable = modalRef.current?.querySelectorAll(\n          'button, [href], input, select, textarea, [tabindex]:not([tabindex=\"-1\"])'\n        );\n        if (!focusable?.length) return;\n        const first = focusable[0] as HTMLElement;\n        const last = focusable[focusable.length - 1] as HTMLElement;\n\n        if (e.shiftKey && document.activeElement === first) {\n          e.preventDefault();\n          last.focus();\n        } else if (!e.shiftKey && document.activeElement === last) {\n          e.preventDefault();\n          first.focus();\n        }\n      }\n    };\n\n    document.addEventListener('keydown', handleKeyDown);\n    return () => document.removeEventListener('keydown', handleKeyDown);\n  }, [isOpen, onClose]);\n\n  if (!isOpen) return null;\n\n  return (\n    <div role=\"dialog\" aria-modal=\"true\" aria-label=\"Dialog\" ref={modalRef} tabIndex={-1}>\n      <button onClick={onClose} aria-label=\"Close dialog\">X</button>\n      {children}\n    </div>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "heading": "ARIA attributes",
+          "headingLevel": 3,
+          "body": "ARIA (Accessible Rich Internet Applications) attributes provide extra information to screen readers when semantic HTML alone is not enough."
         },
         {
           "type": "code",
           "language": "tsx",
-          "filename": "After: small, focused components",
-          "description": "The same page broken into focused sub-components",
-          "code": "// GOOD: Each piece is its own component\nfunction ExamPage() {\n  return (\n    <Container>\n      <ExamProgress current={3} total={10} />\n      <ExamTimer seconds={remaining} />\n      <QuestionCard question={currentQuestion} />\n      <AnswerOption options={currentQuestion.options} onSelect={handleAnswer} />\n      <ScoreCircle score={score} total={total} />\n    </Container>\n  );\n}"
-        },
-        {
-          "type": "text",
-          "heading": "When to use props, context, or Redux",
-          "headingLevel": 3,
-          "body": "Choose the right data-passing mechanism based on your needs."
+          "filename": "Common ARIA patterns",
+          "description": "Essential ARIA attributes for interactive components",
+          "code": "// Loading state -- announce to screen readers\n<div aria-live=\"polite\" aria-busy={isLoading}>\n  {isLoading ? 'Loading results...' : `${results.length} results found`}\n</div>\n\n// Icon-only button -- needs a label\n<button aria-label=\"Delete item\" onClick={handleDelete}>\n  <TrashIcon /> {/* No visible text, so aria-label is required */}\n</button>\n\n// Toggle button -- announce current state\n<button\n  aria-pressed={isDarkMode}\n  onClick={toggleDarkMode}\n>\n  Dark Mode\n</button>\n\n// Form field with error\n<label htmlFor=\"email\">Email</label>\n<input\n  id=\"email\"\n  aria-invalid={!!error}\n  aria-describedby={error ? 'email-error' : undefined}\n/>\n{error && <span id=\"email-error\" role=\"alert\">{error}</span>}"
         },
         {
           "type": "table",
-          "heading": "Data passing strategies",
-          "headers": ["Strategy", "When to use"],
+          "heading": "WCAG quick reference",
+          "headers": ["Guideline", "What It Means", "How to Achieve It"],
           "rows": [
-            ["Props (most common)", "Pass data directly from parent to child. Best when data only goes one or two levels deep. Example: passing a question object to QuestionCard."],
-            ["React Context", "For data that many components need but that does not change often. Example: the current locale, or a form's validation state across many fields."],
-            ["Redux", "For state shared across unrelated parts of the app that changes frequently. Example: theme mode, user bookmarks, exam progress that must survive page navigation."]
+            ["Perceivable", "Users can see or hear all content", "Alt text on images, captions on video, sufficient color contrast"],
+            ["Operable", "Users can interact with all controls", "Keyboard navigation, no time limits, skip navigation links"],
+            ["Understandable", "Users can comprehend the content", "Clear language, consistent navigation, helpful error messages"],
+            ["Robust", "Works across assistive technologies", "Valid HTML, proper ARIA, semantic elements"]
           ]
         },
         {
           "type": "alert",
           "severity": "success",
           "title": "Key Takeaway",
-          "body": "Organize by feature, not by type. Keep components under 50 lines by extracting sub-components. Use props for parent-child data, context for wide but stable data, and Redux for global state that changes often and needs to persist."
+          "body": "Accessibility starts with semantic HTML: use the right element for the job. Ensure all interactive elements work with keyboard. Use ARIA attributes when HTML alone is not enough. Test with a screen reader (VoiceOver on Mac, NVDA on Windows) and a keyboard."
         }
       ]
     },
     {
       "type": "accordion",
-      "title": "9. Data & Styling Separation",
+      "title": "9. State Management Patterns",
       "blocks": [
         {
           "type": "text",
-          "body": "A common beginner mistake is embedding all your data (questions, navigation links, page content) directly in your components. This makes files huge and mixes up what to show with how to show it. The proper pattern separates these concerns cleanly."
+          "body": "State management is how you store, share, and update data in your application. Choosing the wrong approach leads to props being passed through dozens of components (prop drilling), unnecessary re-renders, or state that gets out of sync. There is no single best solution -- the right choice depends on the scope and nature of your data."
         },
         {
           "type": "text",
-          "heading": "JSON files for data (the what)",
+          "heading": "Local state with useState",
           "headingLevel": 3,
-          "body": "Data lives in JSON files. This keeps your data portable, easy to edit, and completely separate from your presentation logic. Need to add a new exam question? Edit the JSON file. Need to change how questions look? Edit the component. They never interfere with each other."
-        },
-        {
-          "type": "code",
-          "language": "json",
-          "filename": "src/data/questions-chapter1.json",
-          "description": "Exam question data stored as pure JSON",
-          "code": "[\n  {\n    \"id\": \"q1\",\n    \"question\": \"What does HTML stand for?\",\n    \"options\": [\n      \"Hyper Text Markup Language\",\n      \"Home Tool Markup Language\",\n      \"Hyperlinks and Text Markup Language\"\n    ],\n    \"correctIndex\": 0,\n    \"explanation\": \"HTML stands for Hyper Text Markup Language.\"\n  }\n]"
-        },
-        {
-          "type": "text",
-          "heading": "TSX components for presentation (the how)",
-          "headingLevel": 3,
-          "body": "The component only knows HOW to display a question. It does not know or care where the data came from."
+          "body": "Use useState for data that belongs to a single component and does not need to be shared. Form inputs, toggle states, and UI-only data are good candidates."
         },
         {
           "type": "code",
           "language": "tsx",
-          "filename": "src/components/exam/QuestionCard.tsx (simplified)",
-          "description": "A presentation component that displays any question data it receives",
-          "code": "// The component only knows HOW to display a question\n// It does not know or care where the data came from\n\ninterface QuestionCardProps {\n  question: string;\n  options: string[];\n  questionNumber: number;\n}\n\nexport default function QuestionCard({ question, options, questionNumber }: QuestionCardProps) {\n  return (\n    <Card>\n      <CardContent>\n        <Typography variant=\"h6\">\n          Question {questionNumber}\n        </Typography>\n        <Typography>{question}</Typography>\n        {options.map((option, index) => (\n          <AnswerOption key={index} label={option} />\n        ))}\n      </CardContent>\n    </Card>\n  );\n}"
+          "filename": "Local state example",
+          "description": "useState for component-local UI state",
+          "code": "function SearchBar() {\n  // This state is only needed by this component\n  const [query, setQuery] = useState('');\n  const [isExpanded, setIsExpanded] = useState(false);\n\n  return (\n    <div>\n      <button onClick={() => setIsExpanded(!isExpanded)}>Search</button>\n      {isExpanded && (\n        <input\n          value={query}\n          onChange={e => setQuery(e.target.value)}\n          placeholder=\"Type to search...\"\n        />\n      )}\n    </div>\n  );\n}"
         },
         {
           "type": "text",
-          "heading": "Linking multiple JSON files to keep file size down",
+          "heading": "useReducer for complex local state",
           "headingLevel": 3,
-          "body": "If you have hundreds of exam questions, putting them all in one file makes it slow to load and hard to navigate. Instead, split data into multiple files and import only what you need."
-        },
-        {
-          "type": "code",
-          "language": "typescript",
-          "filename": "src/data/index.ts",
-          "description": "Central index file that links to all data files",
-          "code": "// A central index file links to all your data files\nimport chapter1 from './questions-chapter1.json';\nimport chapter2 from './questions-chapter2.json';\nimport chapter3 from './questions-chapter3.json';\n\n// Combine them when needed, or load chapters individually\nexport const allQuestions = [...chapter1, ...chapter2, ...chapter3];\nexport { chapter1, chapter2, chapter3 };"
+          "body": "When a component has multiple pieces of related state that change together, useReducer makes the logic clearer by centralizing all transitions in a single function."
         },
         {
           "type": "code",
           "language": "tsx",
-          "filename": "Usage in a page",
-          "description": "Importing only the data needed for a specific page",
-          "code": "// Only import the chapter the user is currently studying\nimport { chapter1 } from '@/data';\n\nexport default function Chapter1Exam() {\n  return (\n    <Container>\n      {chapter1.map((q, i) => (\n        <QuestionCard key={q.id} question={q.question} options={q.options} questionNumber={i + 1} />\n      ))}\n    </Container>\n  );\n}"
+          "filename": "useReducer example",
+          "description": "useReducer for complex form state with multiple fields",
+          "code": "type FormAction =\n  | { type: 'SET_FIELD'; field: string; value: string }\n  | { type: 'SET_ERROR'; field: string; error: string }\n  | { type: 'SUBMIT' }\n  | { type: 'RESET' };\n\nfunction formReducer(state: FormState, action: FormAction): FormState {\n  switch (action.type) {\n    case 'SET_FIELD':\n      return { ...state, values: { ...state.values, [action.field]: action.value }, errors: { ...state.errors, [action.field]: '' } };\n    case 'SET_ERROR':\n      return { ...state, errors: { ...state.errors, [action.field]: action.error } };\n    case 'SUBMIT':\n      return { ...state, isSubmitting: true };\n    case 'RESET':\n      return initialState;\n    default:\n      return state;\n  }\n}\n\nfunction ContactForm() {\n  const [state, dispatch] = useReducer(formReducer, initialState);\n  // All state transitions are centralized in the reducer\n}"
         },
         {
           "type": "text",
-          "heading": "Why this separation matters",
+          "heading": "React Context for shared stable data",
           "headingLevel": 3,
-          "body": "Separating data from presentation provides three key benefits."
+          "body": "React Context is best for data that many components need but that changes infrequently. The current locale, the authenticated user, or a form validation context are ideal use cases."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "React Context example",
+          "description": "Context for sharing auth state across the app",
+          "code": "const AuthContext = createContext<AuthContextType | null>(null);\n\nexport function AuthProvider({ children }: { children: React.ReactNode }) {\n  const [user, setUser] = useState<User | null>(null);\n\n  const value = useMemo(() => ({\n    user,\n    isAuthenticated: !!user,\n    login: async (email: string, password: string) => { /* ... */ },\n    logout: () => setUser(null),\n  }), [user]);\n\n  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;\n}\n\n// Any component can access auth state without prop drilling\nfunction NavBar() {\n  const { user, isAuthenticated, logout } = useContext(AuthContext)!;\n  return isAuthenticated ? <button onClick={logout}>Log out</button> : <a href=\"/login\">Log in</a>;\n}"
+        },
+        {
+          "type": "text",
+          "heading": "Redux for global, frequently-changing state",
+          "headingLevel": 3,
+          "body": "When state needs to be shared across unrelated components and changes frequently, Redux provides predictable updates with a single source of truth. Examples: theme mode, shopping cart, notification queue."
         },
         {
           "type": "table",
-          "heading": "Benefits of data/styling separation",
-          "headers": ["Benefit", "Explanation"],
+          "heading": "Which approach to use",
+          "headers": ["Approach", "Scope", "Best For", "Avoid When"],
           "rows": [
-            ["Easy to update content", "Non-developers can edit JSON files without understanding React. A subject-matter expert can add questions without touching any TSX code."],
-            ["Reusable components", "The same QuestionCard component can display questions from any chapter, any topic, or even a completely different quiz -- just feed it different data."],
-            ["Smaller bundle sizes", "When data is split into separate files, the browser only downloads what is needed for the current page instead of loading everything upfront."]
+            ["useState", "Single component", "Form inputs, toggles, UI-only state", "Data needs to be shared across siblings or distant components"],
+            ["useReducer", "Single component (complex)", "Forms with validation, state machines, multiple related values", "Simple boolean toggles or single values"],
+            ["React Context", "Subtree of components", "Auth, locale, theme (data that changes rarely)", "High-frequency updates (causes entire subtree to re-render)"],
+            ["Redux", "Entire application", "Theme, cart, notifications, data that persists across pages", "Data used by only one component"]
           ]
+        },
+        {
+          "type": "alert",
+          "severity": "warning",
+          "title": "Common Mistake",
+          "body": "Do not put everything in Redux. Most state is local. If a piece of state is only used by one component, useState is the right choice. Only promote state to context or Redux when multiple unrelated components need it."
         },
         {
           "type": "alert",
           "severity": "success",
           "title": "Key Takeaway",
-          "body": "Keep data in JSON files, presentation in TSX components. Split large data sets across multiple files and import only what each page needs. This separation makes your app easier to maintain, your components reusable, and your bundle sizes smaller."
+          "body": "Start with useState. Upgrade to useReducer when transitions get complex. Use Context for widely-shared stable data. Use Redux for global state that changes often and should persist. The right tool depends on how widely the state is shared and how frequently it changes."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "10. Form Handling",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Forms are the primary way users send data to your application. Good form handling means validating input before submission, showing clear error messages, managing multi-step flows, and providing instant feedback. This section covers patterns used in production forms."
+        },
+        {
+          "type": "text",
+          "heading": "Controlled inputs and real-time validation",
+          "headingLevel": 3,
+          "body": "In React, controlled inputs store their value in state. This gives you full control over validation, formatting, and submission."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "ValidatedForm.tsx",
+          "description": "Form with real-time field validation and error messages",
+          "code": "import { useState } from 'react';\n\ninterface FormErrors {\n  name?: string;\n  email?: string;\n  password?: string;\n}\n\nfunction validate(name: string, email: string, password: string): FormErrors {\n  const errors: FormErrors = {};\n  if (!name.trim()) errors.name = 'Name is required';\n  if (!email.includes('@')) errors.email = 'Enter a valid email address';\n  if (password.length < 8) errors.password = 'Password must be at least 8 characters';\n  if (password && !/[A-Z]/.test(password)) errors.password = 'Include at least one uppercase letter';\n  return errors;\n}\n\nexport default function SignUpForm() {\n  const [name, setName] = useState('');\n  const [email, setEmail] = useState('');\n  const [password, setPassword] = useState('');\n  const [errors, setErrors] = useState<FormErrors>({});\n  const [touched, setTouched] = useState<Set<string>>(new Set());\n  const [submitted, setSubmitted] = useState(false);\n\n  // Validate on every change, but only show errors for touched fields\n  const currentErrors = validate(name, email, password);\n\n  const handleBlur = (field: string) => {\n    setTouched(prev => new Set(prev).add(field));\n  };\n\n  const handleSubmit = (e: React.FormEvent) => {\n    e.preventDefault();\n    const validationErrors = validate(name, email, password);\n    if (Object.keys(validationErrors).length > 0) {\n      setErrors(validationErrors);\n      setTouched(new Set(['name', 'email', 'password'])); // Show all errors\n      return;\n    }\n    setSubmitted(true);\n  };\n\n  const showError = (field: keyof FormErrors) =>\n    touched.has(field) && currentErrors[field];\n\n  if (submitted) return <div style={{ padding: 32 }}>Account created successfully!</div>;\n\n  return (\n    <form onSubmit={handleSubmit} style={{ maxWidth: 400, margin: '0 auto', padding: 32 }}>\n      <h2>Create Account</h2>\n\n      <div style={{ marginBottom: 16 }}>\n        <label htmlFor=\"name\" style={{ display: 'block', marginBottom: 4, fontWeight: 600 }}>Name</label>\n        <input id=\"name\" value={name} onChange={e => setName(e.target.value)}\n          onBlur={() => handleBlur('name')}\n          aria-invalid={!!showError('name')}\n          style={{ width: '100%', padding: 10, borderRadius: 6,\n            border: `1px solid ${showError('name') ? '#dc2626' : '#d1d5db'}` }} />\n        {showError('name') && <p style={{ color: '#dc2626', fontSize: 13, margin: '4px 0 0' }}>{currentErrors.name}</p>}\n      </div>\n\n      <div style={{ marginBottom: 16 }}>\n        <label htmlFor=\"email\" style={{ display: 'block', marginBottom: 4, fontWeight: 600 }}>Email</label>\n        <input id=\"email\" type=\"email\" value={email} onChange={e => setEmail(e.target.value)}\n          onBlur={() => handleBlur('email')}\n          aria-invalid={!!showError('email')}\n          style={{ width: '100%', padding: 10, borderRadius: 6,\n            border: `1px solid ${showError('email') ? '#dc2626' : '#d1d5db'}` }} />\n        {showError('email') && <p style={{ color: '#dc2626', fontSize: 13, margin: '4px 0 0' }}>{currentErrors.email}</p>}\n      </div>\n\n      <div style={{ marginBottom: 16 }}>\n        <label htmlFor=\"password\" style={{ display: 'block', marginBottom: 4, fontWeight: 600 }}>Password</label>\n        <input id=\"password\" type=\"password\" value={password} onChange={e => setPassword(e.target.value)}\n          onBlur={() => handleBlur('password')}\n          aria-invalid={!!showError('password')}\n          style={{ width: '100%', padding: 10, borderRadius: 6,\n            border: `1px solid ${showError('password') ? '#dc2626' : '#d1d5db'}` }} />\n        {showError('password') && <p style={{ color: '#dc2626', fontSize: 13, margin: '4px 0 0' }}>{currentErrors.password}</p>}\n        {/* Password strength indicator */}\n        <div style={{ display: 'flex', gap: 4, marginTop: 6 }}>\n          {[8, 12, 16].map((threshold, i) => (\n            <div key={i} style={{\n              flex: 1, height: 4, borderRadius: 2,\n              backgroundColor: password.length >= threshold ? ['#dc2626','#f59e0b','#16a34a'][i] : '#e5e7eb',\n            }} />\n          ))}\n        </div>\n      </div>\n\n      <button type=\"submit\" style={{\n        width: '100%', padding: 12, backgroundColor: '#6366f1', color: 'white',\n        border: 'none', borderRadius: 6, fontWeight: 600, cursor: 'pointer'\n      }}>\n        Create Account\n      </button>\n    </form>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "heading": "Multi-step forms",
+          "headingLevel": 3,
+          "body": "Complex forms like checkout flows or onboarding wizards are split into multiple steps. Each step is a component, and a parent manages which step is active and collects data across steps."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "MultiStepForm.tsx",
+          "description": "Multi-step form with progress indicator, step validation, and collected data",
+          "code": "import { useState } from 'react';\n\ninterface FormData {\n  // Step 1: Personal\n  firstName: string;\n  lastName: string;\n  // Step 2: Contact\n  email: string;\n  phone: string;\n  // Step 3: Preferences\n  newsletter: boolean;\n  plan: 'free' | 'pro' | 'team';\n}\n\nconst initialData: FormData = {\n  firstName: '', lastName: '', email: '', phone: '',\n  newsletter: false, plan: 'free',\n};\n\nfunction StepIndicator({ current, total }: { current: number; total: number }) {\n  return (\n    <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>\n      {Array.from({ length: total }, (_, i) => (\n        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>\n          <div style={{\n            width: 32, height: 32, borderRadius: '50%',\n            display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: 14,\n            backgroundColor: i <= current ? '#6366f1' : '#e5e7eb',\n            color: i <= current ? 'white' : '#9ca3af',\n          }}>\n            {i < current ? '\\u2713' : i + 1}\n          </div>\n          {i < total - 1 && <div style={{ width: 40, height: 2, backgroundColor: i < current ? '#6366f1' : '#e5e7eb' }} />}\n        </div>\n      ))}\n    </div>\n  );\n}\n\nexport default function MultiStepForm() {\n  const [step, setStep] = useState(0);\n  const [data, setData] = useState<FormData>(initialData);\n\n  const update = (fields: Partial<FormData>) => setData({ ...data, ...fields });\n  const steps = ['Personal', 'Contact', 'Preferences'];\n\n  return (\n    <div style={{ maxWidth: 420, margin: '0 auto', padding: 32 }}>\n      <h2>Account Setup</h2>\n      <StepIndicator current={step} total={steps.length} />\n\n      {step === 0 && (\n        <div>\n          <h3>{steps[0]}</h3>\n          <input placeholder=\"First name\" value={data.firstName} onChange={e => update({ firstName: e.target.value })}\n            style={{ width: '100%', padding: 10, marginBottom: 10, borderRadius: 6, border: '1px solid #d1d5db' }} />\n          <input placeholder=\"Last name\" value={data.lastName} onChange={e => update({ lastName: e.target.value })}\n            style={{ width: '100%', padding: 10, marginBottom: 16, borderRadius: 6, border: '1px solid #d1d5db' }} />\n        </div>\n      )}\n\n      {step === 1 && (\n        <div>\n          <h3>{steps[1]}</h3>\n          <input type=\"email\" placeholder=\"Email\" value={data.email} onChange={e => update({ email: e.target.value })}\n            style={{ width: '100%', padding: 10, marginBottom: 10, borderRadius: 6, border: '1px solid #d1d5db' }} />\n          <input type=\"tel\" placeholder=\"Phone\" value={data.phone} onChange={e => update({ phone: e.target.value })}\n            style={{ width: '100%', padding: 10, marginBottom: 16, borderRadius: 6, border: '1px solid #d1d5db' }} />\n        </div>\n      )}\n\n      {step === 2 && (\n        <div>\n          <h3>{steps[2]}</h3>\n          <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, cursor: 'pointer' }}>\n            <input type=\"checkbox\" checked={data.newsletter} onChange={e => update({ newsletter: e.target.checked })} />\n            Subscribe to newsletter\n          </label>\n          <div style={{ display: 'flex', gap: 8 }}>\n            {(['free', 'pro', 'team'] as const).map(plan => (\n              <button key={plan} onClick={() => update({ plan })}\n                style={{\n                  flex: 1, padding: 12, borderRadius: 8, border: 'none', cursor: 'pointer', fontWeight: 600,\n                  backgroundColor: data.plan === plan ? '#6366f1' : '#f3f4f6',\n                  color: data.plan === plan ? 'white' : '#374151',\n                }}>\n                {plan.charAt(0).toUpperCase() + plan.slice(1)}\n              </button>\n            ))}\n          </div>\n        </div>\n      )}\n\n      {/* Navigation */}\n      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 24 }}>\n        <button onClick={() => setStep(s => s - 1)} disabled={step === 0}\n          style={{ padding: '10px 20px', borderRadius: 6, border: '1px solid #d1d5db', cursor: 'pointer' }}>Back</button>\n        {step < steps.length - 1 ? (\n          <button onClick={() => setStep(s => s + 1)}\n            style={{ padding: '10px 20px', borderRadius: 6, backgroundColor: '#6366f1', color: 'white', border: 'none', cursor: 'pointer' }}>Next</button>\n        ) : (\n          <button onClick={() => alert(JSON.stringify(data, null, 2))}\n            style={{ padding: '10px 20px', borderRadius: 6, backgroundColor: '#10b981', color: 'white', border: 'none', cursor: 'pointer' }}>Submit</button>\n        )}\n      </div>\n    </div>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "heading": "Debouncing input for API-backed validation",
+          "headingLevel": 3,
+          "body": "Some validations require a server call -- for example, checking if a username is already taken. Debouncing ensures you do not fire an API request on every keystroke."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "Debounced username check",
+          "description": "Custom hook for debouncing API-backed validation",
+          "code": "import { useState, useEffect } from 'react';\n\nfunction useDebouncedValue<T>(value: T, delay: number): T {\n  const [debounced, setDebounced] = useState(value);\n  useEffect(() => {\n    const timer = setTimeout(() => setDebounced(value), delay);\n    return () => clearTimeout(timer);\n  }, [value, delay]);\n  return debounced;\n}\n\nfunction UsernameField() {\n  const [username, setUsername] = useState('');\n  const [status, setStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');\n  const debouncedUsername = useDebouncedValue(username, 500);\n\n  useEffect(() => {\n    if (!debouncedUsername) { setStatus('idle'); return; }\n    setStatus('checking');\n    // Simulated API call\n    const timer = setTimeout(() => {\n      const taken = ['admin', 'user', 'test'].includes(debouncedUsername.toLowerCase());\n      setStatus(taken ? 'taken' : 'available');\n    }, 300);\n    return () => clearTimeout(timer);\n  }, [debouncedUsername]);\n\n  return (\n    <div>\n      <input value={username} onChange={e => setUsername(e.target.value)} placeholder=\"Choose a username\" />\n      {status === 'checking' && <span>Checking...</span>}\n      {status === 'available' && <span style={{ color: 'green' }}>\\u2713 Available</span>}\n      {status === 'taken' && <span style={{ color: 'red' }}>\\u2717 Already taken</span>}\n    </div>\n  );\n}"
+        },
+        {
+          "type": "alert",
+          "severity": "success",
+          "title": "Key Takeaway",
+          "body": "Use controlled inputs for full validation control. Show errors only after the field is touched (onBlur). Split complex forms into steps with a shared data object. Debounce API-backed validations to avoid excessive requests. Always pair labels with inputs and use aria-invalid for accessibility."
         }
       ]
     }
   ],
   "keyPoints": [
-    "File-based routing in Next.js maps folders to URLs -- create a folder with a page.tsx and you have a new route",
-    "Redux Toolkit provides a centralized store with typed slices for shared state management across components",
-    "MUI theming with a getTheme() factory function enables seamless dark/light mode switching via Redux",
-    "Internationalization with next-intl separates translatable text into JSON files looked up via useTranslations",
-    "Redux Persist saves selected state slices to localStorage so user preferences survive page refreshes",
-    "Responsive design uses MUI Grid2 column spans and sx breakpoint objects instead of manual CSS media queries",
-    "Custom hooks extract component logic into reusable files, keeping TSX components focused on presentation",
-    "Feature-based folder organization groups related components together and enforces the 50-line component rule",
-    "Separating data (JSON) from presentation (TSX) makes content easy to update and components reusable"
+    "CSR, SSR, and SSG are the three rendering strategies -- choose based on data freshness needs and SEO requirements",
+    "API routes act as a Backend for Frontend, keeping API keys secret and simplifying client code",
+    "Internationalization separates text from components using translation JSON files and the useTranslations hook",
+    "Dark mode requires a theme factory function, a Redux slice for the mode, and a ThemeRegistry provider component",
+    "PWAs need three things: HTTPS, a web app manifest for installability, and a Service Worker for offline support",
+    "The biggest performance wins come from code splitting, lazy loading images, and importing only what you need",
+    "SEO depends on metadata, sitemaps, structured data, and server-rendered HTML that crawlers can read",
+    "Accessibility starts with semantic HTML, keyboard navigation, focus management, and ARIA attributes",
+    "State management goes from local (useState) to complex local (useReducer) to shared (Context) to global (Redux)",
+    "Form handling combines controlled inputs, real-time validation, multi-step flows, and debounced API checks"
+  ],
+  "prerequisites": [
+    "Basic understanding of React components, props, and state",
+    "Familiarity with JavaScript ES6 features and async/await"
   ]
 }

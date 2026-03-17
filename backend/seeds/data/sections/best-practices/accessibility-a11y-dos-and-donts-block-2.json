@@ -1,0 +1,29 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "DON'T: Missing Alt & Bad ARIA",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "html",
+          "filename": "ProductCard.html",
+          "description": "Images without alt text are invisible to screen readers. Incorrect ARIA roles are worse than no ARIA at all.",
+          "code": "<!-- BAD: no alt text, screen readers say \"image\" with no context -->\n<img src=\"/product-shoe.jpg\" />\n\n<!-- BAD: decorative image that should be hidden from screen readers -->\n<img src=\"/decorative-border.svg\" alt=\"decorative border image\" />\n\n<!-- BAD: misusing ARIA roles -->\n<div role=\"button\">Click me</div>  <!-- use a real <button> -->\n<a role=\"button\" href=\"/page\">Go</a>  <!-- conflicting semantics -->\n<div role=\"navigation\">Links here</div>  <!-- use a real <nav> -->"
+        }
+      ]
+    },
+    {
+      "label": "DO: Proper Alt & ARIA",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "html",
+          "filename": "ProductCard.html",
+          "description": "Descriptive alt text for meaningful images, empty alt for decorative ones, and ARIA only when native HTML cannot convey the meaning.",
+          "code": "<!-- GOOD: descriptive alt text for meaningful images -->\n<img src=\"/product-shoe.jpg\" alt=\"Red Nike Air Max 90 running shoe, side view\" />\n\n<!-- GOOD: empty alt for purely decorative images -->\n<img src=\"/decorative-border.svg\" alt=\"\" role=\"presentation\" />\n\n<!-- GOOD: use native HTML elements instead of ARIA where possible -->\n<button type=\"button\">Click me</button>\n<a href=\"/page\">Go</a>\n<nav aria-label=\"Main navigation\">Links here</nav>\n\n<!-- GOOD: ARIA for custom widgets that have no native HTML equivalent -->\n<div\n  role=\"tablist\"\n  aria-label=\"Product information\"\n>\n  <button role=\"tab\" aria-selected=\"true\" aria-controls=\"panel-1\">Details</button>\n  <button role=\"tab\" aria-selected=\"false\" aria-controls=\"panel-2\">Reviews</button>\n</div>\n<div role=\"tabpanel\" id=\"panel-1\">Product details here...</div>"
+        }
+      ]
+    }
+  ]
+}

@@ -5,7 +5,9 @@ import Typography from '@mui/material/Typography';
 import CodeBlock from '@/components/common/CodeBlock';
 import type { StepBlock } from '@/types/content';
 
-export default function StepBlockRenderer({ step, title, body, code, language }: StepBlock) {
+export default function StepBlockRenderer(
+  { step, title, body, code, language }: StepBlock,
+) {
   return (
     <Card variant="outlined">
       <CardContent>

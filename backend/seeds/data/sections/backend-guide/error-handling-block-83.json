@@ -1,0 +1,6 @@
+{
+  "type": "code",
+  "language": "python",
+  "filename": "app/utils/error_handlers.py",
+  "code": "from flask import jsonify\n\ndef register_error_handlers(app):\n    \"\"\"Register error handlers with the Flask app.\"\"\"\n\n    @app.errorhandler(400)\n    def bad_request(error):\n        return jsonify({\n            \"error\": \"Bad Request\",\n            \"message\": \"The server could not understand your request. Check that you are sending valid JSON data.\"\n        }), 400\n\n    @app.errorhandler(401)\n    def unauthorized(error):\n        return jsonify({\n            \"error\": \"Unauthorized\",\n            \"message\": \"You need to log in to access this resource.\"\n        }), 401\n\n    @app.errorhandler(404)\n    def not_found(error):\n        return jsonify({\n            \"error\": \"Not Found\",\n            \"message\": \"The resource you are looking for does not exist.\"\n        }), 404\n\n    @app.errorhandler(500)\n    def server_error(error):\n        return jsonify({\n            \"error\": \"Internal Server Error\",\n            \"message\": \"Something went wrong on our end. Please try again later.\"\n        }), 500"
+}

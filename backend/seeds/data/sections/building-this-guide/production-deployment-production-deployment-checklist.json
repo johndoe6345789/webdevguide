@@ -1,0 +1,14 @@
+{
+  "type": "list",
+  "heading": "Production Deployment Checklist",
+  "ordered": true,
+  "items": [
+    "Set NEXT_PUBLIC_API_URL to your production backend URL (e.g., https://api.yourdomain.com/api)",
+    "Set CORS_ORIGINS to your production frontend URL (e.g., https://yourdomain.com)",
+    "Run `docker compose up --build -d` to build and start in detached mode",
+    "The backend entrypoint.py automatically seeds the database on container start",
+    "Set up a reverse proxy (nginx, Caddy, Traefik) to route traffic to ports 3000 and 5000",
+    "Configure TLS/SSL for HTTPS through your reverse proxy",
+    "Monitor the health endpoint at /api/health for uptime checks"
+  ]
+}

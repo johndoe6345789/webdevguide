@@ -1,0 +1,6 @@
+{
+  "type": "alert",
+  "severity": "warning",
+  "title": "Supply Chain Attacks",
+  "body": "Run npm audit regularly and enable Dependabot or Renovate for automated dependency updates. Always commit your lockfile (package-lock.json or yarn.lock) so CI installs the exact same versions you tested. Be cautious of typosquatting -- attackers publish packages with names similar to popular ones (e.g., lodahs instead of lodash)."
+}

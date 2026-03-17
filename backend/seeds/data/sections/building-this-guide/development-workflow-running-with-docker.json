@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Running with Docker",
+  "headingLevel": 3,
+  "body": "If you prefer Docker, use the development compose file with volume mounts for live code reloading."
+}

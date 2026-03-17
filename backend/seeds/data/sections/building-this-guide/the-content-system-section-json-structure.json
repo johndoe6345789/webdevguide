@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Section JSON Structure",
+  "headingLevel": 3,
+  "body": "Every section file follows the GuideSectionContent interface. At the top level, you define metadata (title, slug, description, icon, order, difficulty, estimatedMinutes). Then you provide an array of blocks -- each block is a self-contained unit of content with its own type and fields. Optional arrays for keyPoints and prerequisites provide summary information."
+}

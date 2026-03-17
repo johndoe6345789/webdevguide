@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Summary",
+  "headingLevel": 2,
+  "body": "Data architecture spans the full stack: databases store your data, schemas define its shape, ORMs provide type-safe access, APIs expose it to clients, validation prevents bad data, caching makes it fast, migrations evolve it safely, real-time transports deliver it live, and security protects it from attackers. Master each layer incrementally -- start with PostgreSQL and Prisma, add Redis caching when performance matters, and layer in real-time features as your application demands them."
+}

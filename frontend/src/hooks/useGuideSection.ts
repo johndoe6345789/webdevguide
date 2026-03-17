@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchSections, fetchSectionBySlug } from '@/store/slices/guideSlice';
 
-function useGuideSections() {
+export function useGuideSections() {
   const dispatch = useAppDispatch();
   const { sections, loading, error } = useAppSelector((s) => s.guide);
 

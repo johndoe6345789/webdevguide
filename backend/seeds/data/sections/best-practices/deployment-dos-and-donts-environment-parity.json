@@ -1,0 +1,6 @@
+{
+  "type": "alert",
+  "severity": "success",
+  "title": "Environment Parity",
+  "body": "Your development, staging, and production environments should be as identical as possible. Use Docker to ensure everyone runs the same OS, the same versions of Python, Node, and Postgres. If it works in Docker locally, it works in Docker on the server. \"It works on my machine\" is not a deployment strategy."
+}

@@ -1,0 +1,6 @@
+{
+  "type": "alert",
+  "severity": "info",
+  "title": "Why this section matters",
+  "body": "Most tutorials teach you isolated concepts. This section shows you a complete, working project that uses all of those concepts together. You will see how Flask blueprints, React components, Redux state management, Docker containers, and CI/CD pipelines combine into a real application. By the end, you will understand every file in the repository and how data flows from a JSON file on disk to a rendered page in the browser."
+}

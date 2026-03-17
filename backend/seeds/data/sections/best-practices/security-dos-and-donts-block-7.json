@@ -1,0 +1,29 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "DON'T: Open CORS",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "python",
+          "filename": "app/__init__.py",
+          "description": "Allowing all origins means any website on the internet can make authenticated requests to your API, potentially stealing user data.",
+          "code": "from flask import Flask\nfrom flask_cors import CORS\n\napp = Flask(__name__)\n# DANGEROUS: any website can make requests to your API\nCORS(app, origins=\"*\", supports_credentials=True)"
+        }
+      ]
+    },
+    {
+      "label": "DO: Specific Origins",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "python",
+          "filename": "app/__init__.py",
+          "description": "Whitelist only the domains you control. Use environment variables so staging and production have different allowed origins.",
+          "code": "import os\nfrom flask import Flask\nfrom flask_cors import CORS\n\napp = Flask(__name__)\n\nallowed_origins = os.environ.get(\n    \"CORS_ORIGINS\", \"http://localhost:3000\"\n).split(\",\")\n\nCORS(\n    app,\n    origins=allowed_origins,\n    supports_credentials=True,\n    methods=[\"GET\", \"POST\", \"PUT\", \"DELETE\"],\n    allow_headers=[\"Content-Type\", \"Authorization\"],\n)"
+        }
+      ]
+    }
+  ]
+}

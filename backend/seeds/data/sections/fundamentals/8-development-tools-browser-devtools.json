@@ -1,0 +1,62 @@
+{
+  "type": "accordion",
+  "title": "Browser DevTools",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "Every major browser ships with built-in developer tools (press F12 or Cmd+Option+I). Mastering DevTools lets you debug layout issues, inspect network requests, profile performance, and test code in real time."
+    },
+    {
+      "type": "table",
+      "heading": "DevTools panels you should know",
+      "headers": [
+        "Panel",
+        "What it does",
+        "When to use it"
+      ],
+      "rows": [
+        [
+          "Elements",
+          "Inspect and edit the DOM and CSS live",
+          "Debugging layout issues, tweaking styles, checking accessibility"
+        ],
+        [
+          "Console",
+          "Run JavaScript, view logs and errors",
+          "Debugging logic, testing API calls, reading error messages"
+        ],
+        [
+          "Network",
+          "See all HTTP requests and responses",
+          "Debugging API calls, checking load times, finding failed requests"
+        ],
+        [
+          "Sources",
+          "Set breakpoints and step through code",
+          "Finding bugs in JavaScript logic"
+        ],
+        [
+          "Application",
+          "Inspect localStorage, cookies, service workers",
+          "Debugging auth tokens, caching, PWA features"
+        ],
+        [
+          "Performance",
+          "Record and analyze runtime performance",
+          "Finding slow renders, memory leaks, jank"
+        ],
+        [
+          "Lighthouse",
+          "Run automated audits for performance, accessibility, SEO",
+          "Pre-launch checklist"
+        ]
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "React DevTools",
+      "body": "Install the React Developer Tools browser extension. It adds two new panels: **Components** (inspect the component tree, props, and state) and **Profiler** (measure render times and find unnecessary re-renders). These are indispensable for debugging React apps."
+    }
+  ]
+}

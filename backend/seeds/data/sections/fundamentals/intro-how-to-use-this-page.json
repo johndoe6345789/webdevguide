@@ -1,0 +1,6 @@
+{
+  "type": "alert",
+  "severity": "info",
+  "title": "How to use this page",
+  "body": "This guide condenses 30 years of web development knowledge into a single reference. Each accordion section builds on the ones before it. If you are brand new, start at the top. If you already know some topics, jump to any section. Every concept includes working code examples you can copy and run."
+}

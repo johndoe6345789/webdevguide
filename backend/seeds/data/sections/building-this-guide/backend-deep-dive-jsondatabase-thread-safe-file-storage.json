@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "JsonDatabase -- Thread-Safe File Storage",
+  "headingLevel": 3,
+  "body": "Instead of PostgreSQL or MongoDB, this project uses a custom file-based database. Each collection is stored as a single JSON file on disk. The `JsonDatabase` class wraps all operations with per-collection thread locks and uses atomic file replacement (write to a .tmp file, then rename) to prevent corruption. This approach gives you zero-dependency data storage that is easy to inspect, version-control, and debug."
+}

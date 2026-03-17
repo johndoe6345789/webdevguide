@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Adding a New Block Type",
+  "headingLevel": 3,
+  "body": "If the existing ten block types are not enough, you can add your own in three steps. This is the only content extension that requires writing React code."
+}

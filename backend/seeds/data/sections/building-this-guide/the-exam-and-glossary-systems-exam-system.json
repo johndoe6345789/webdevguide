@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Exam System",
+  "headingLevel": 3,
+  "body": "The exam feature lets users test their knowledge with randomly selected, category-filtered questions. The backend uses `random.sample()` for fair question selection and groups questions by category. On the frontend, the examSlice manages the entire exam lifecycle: fetching questions, starting an exam with a configurable question count and time limit, tracking answers, submitting for scoring, review mode, and persisted history (up to 20 attempts)."
+}

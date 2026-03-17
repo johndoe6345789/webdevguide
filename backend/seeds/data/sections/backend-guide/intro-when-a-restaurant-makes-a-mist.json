@@ -1,0 +1,4 @@
+{
+  "type": "text",
+  "body": "When a restaurant makes a mistake with your order, a good waiter explains what happened. Your API should do the same — return clear error messages that help the frontend understand what went wrong."
+}

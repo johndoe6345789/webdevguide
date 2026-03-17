@@ -1,0 +1,371 @@
+{
+  "title": "Notification & Alert Bell Systems",
+  "slug": "notification-systems",
+  "description": "Build real-time notification systems — bell icons with badges, notification feeds, push notifications, email digests, and user preference management",
+  "icon": "Notifications",
+  "order": 31,
+  "estimatedMinutes": 35,
+  "difficulty": "intermediate",
+  "prerequisites": ["fundamentals", "backend-guide"],
+  "keyPoints": [
+    "In-app notification bell with unread badge",
+    "Real-time delivery via WebSockets and SSE",
+    "Push notifications (browser and mobile)",
+    "Email notification digests",
+    "User notification preferences"
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "heading": "Notification System Overview",
+      "headingLevel": 2,
+      "body": "Every major platform has a notification bell. It is the primary re-engagement mechanism — it tells users \"something happened that matters to you.\" Facebook, GitHub, Slack, YouTube — they all rely on the same core pattern: an event happens, the system determines who cares, and it delivers a notification through the right channel at the right time. A well-built notification system increases engagement without overwhelming users. A poorly built one trains users to ignore you."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        { "title": "In-App Bell", "body": "Real-time badge count and dropdown feed. Users see notifications when they return to your site. Lowest friction, highest visibility for active users.", "icon": "Notifications", "chip": "Core" },
+        { "title": "Push (Browser)", "body": "Reaches users even when your tab is closed. Uses Web Push API with VAPID keys. Great for time-sensitive updates like messages and mentions.", "icon": "NotificationsActive", "chip": "Engagement" },
+        { "title": "Push (Mobile)", "body": "Firebase Cloud Messaging (FCM) or Apple Push Notification Service (APNs). Highest re-engagement rate but users can revoke permission.", "icon": "PhoneAndroid", "chip": "Mobile" },
+        { "title": "Email", "body": "Digests and summaries for users who are away. Best for daily/weekly roundups, account security alerts, and transactional notifications.", "icon": "Email", "chip": "Retention" },
+        { "title": "SMS", "body": "Reserve for critical alerts only — two-factor auth, payment confirmations, urgent account issues. Expensive and intrusive.", "icon": "Sms", "chip": "Critical" },
+        { "title": "Slack / Webhook", "body": "Developer and team notifications. CI/CD results, monitoring alerts, deployment status. Integrate with existing workflows.", "icon": "Webhook", "chip": "DevOps" }
+      ]
+    },
+    {
+      "type": "table",
+      "heading": "Notification Urgency Matrix",
+      "headers": ["Urgency", "In-App", "Push", "Email", "SMS", "Example"],
+      "rows": [
+        ["Critical", "Yes + Banner", "Immediate", "Immediate", "Yes", "Account compromised, payment failed, system outage"],
+        ["High", "Yes", "Immediate", "Immediate", "No", "Direct message, mention, comment reply"],
+        ["Medium", "Yes", "Batched", "Daily digest", "No", "New follower, post liked, achievement unlocked"],
+        ["Low", "Yes", "No", "Weekly digest", "No", "Product update, feature announcement, tips"]
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Database Design",
+      "headingLevel": 2,
+      "body": "The notification schema uses a polymorphic design. The object_type and object_id columns let any entity in your system trigger notifications — a comment, a post, a follower, an order. The actor_id tracks who caused the notification, so you can show \"Alice liked your post\" instead of just \"Your post was liked.\" The notification_preferences table gives users granular control over what they receive and how."
+    },
+    {
+      "type": "code",
+      "language": "sql",
+      "filename": "notification_schema.sql",
+      "description": "Complete notification system database schema with notifications, preferences, push subscriptions, and announcements.",
+      "code": "CREATE TABLE notifications (\n  id SERIAL PRIMARY KEY,\n  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  type VARCHAR(50) NOT NULL,\n  title VARCHAR(255) NOT NULL,\n  body TEXT DEFAULT '',\n  icon VARCHAR(50) DEFAULT 'info',\n  action_url VARCHAR(500) DEFAULT '',\n  actor_id INTEGER REFERENCES users(id) ON DELETE SET NULL,\n  object_type VARCHAR(50) DEFAULT '',\n  object_id INTEGER DEFAULT NULL,\n  is_read BOOLEAN DEFAULT FALSE,\n  read_at TIMESTAMP,\n  created_at TIMESTAMP DEFAULT NOW()\n);\n\nCREATE INDEX idx_notifications_user_unread\n  ON notifications(user_id, is_read, created_at DESC);\nCREATE INDEX idx_notifications_user_created\n  ON notifications(user_id, created_at DESC);\nCREATE INDEX idx_notifications_type\n  ON notifications(type);\n\nCREATE TABLE notification_preferences (\n  id SERIAL PRIMARY KEY,\n  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  notification_type VARCHAR(50) NOT NULL,\n  in_app_enabled BOOLEAN DEFAULT TRUE,\n  push_enabled BOOLEAN DEFAULT TRUE,\n  email_enabled BOOLEAN DEFAULT TRUE,\n  UNIQUE(user_id, notification_type)\n);\n\nCREATE TABLE push_subscriptions (\n  id SERIAL PRIMARY KEY,\n  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  endpoint TEXT NOT NULL,\n  p256dh_key VARCHAR(255) NOT NULL,\n  auth_key VARCHAR(255) NOT NULL,\n  user_agent VARCHAR(500) DEFAULT '',\n  created_at TIMESTAMP DEFAULT NOW(),\n  UNIQUE(user_id, endpoint)\n);\nCREATE INDEX idx_push_subs_user ON push_subscriptions(user_id);\n\nCREATE TABLE announcements (\n  id SERIAL PRIMARY KEY,\n  title VARCHAR(255) NOT NULL,\n  body TEXT NOT NULL,\n  severity VARCHAR(20) DEFAULT 'info',\n  start_date TIMESTAMP DEFAULT NOW(),\n  end_date TIMESTAMP,\n  dismissible BOOLEAN DEFAULT TRUE,\n  active BOOLEAN DEFAULT TRUE,\n  created_at TIMESTAMP DEFAULT NOW()\n);"
+    },
+    {
+      "type": "text",
+      "heading": "Flask Notification Service",
+      "headingLevel": 2,
+      "body": "The NotificationService class encapsulates all notification logic. It creates notifications, checks user preferences before delivery, fetches notification feeds with pagination, and manages read state. Every notification API route delegates to this service, keeping route handlers thin."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "services/notification_service.py",
+      "description": "Complete NotificationService class with create, read, mark-read, delete, and preference checking.",
+      "code": "from datetime import datetime, timezone\nfrom typing import Optional\n\nfrom db import get_db\n\n\nclass NotificationService:\n    \"\"\"Core notification service handling create, fetch, read, and preferences.\"\"\"\n\n    # --------------- create ---------------\n    def create_notification(\n        self,\n        user_id: int,\n        notif_type: str,\n        title: str,\n        body: str,\n        actor_id: Optional[int] = None,\n        object_type: str = \"\",\n        object_id: Optional[int] = None,\n        action_url: str = \"\",\n        icon: str = \"info\",\n    ) -> Optional[dict]:\n        \"\"\"Create a notification if user preferences allow it.\"\"\"\n        if not self.should_notify(user_id, notif_type, \"in_app\"):\n            return None\n\n        db = get_db()\n        cur = db.execute(\n            \"\"\"INSERT INTO notifications\n               (user_id, type, title, body, icon, action_url,\n                actor_id, object_type, object_id)\n               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)\n               RETURNING *\"\"\",\n            (user_id, notif_type, title, body, icon,\n             action_url, actor_id, object_type, object_id),\n        )\n        db.commit()\n        row = cur.fetchone()\n        return dict(row) if row else None\n\n    # --------------- fetch ---------------\n    def get_notifications(\n        self, user_id: int, limit: int = 20,\n        offset: int = 0, unread_only: bool = False,\n    ) -> list[dict]:\n        db = get_db()\n        query = \"\"\"SELECT n.*, u.username AS actor_username,\n                          u.avatar_url AS actor_avatar\n                   FROM notifications n\n                   LEFT JOIN users u ON u.id = n.actor_id\n                   WHERE n.user_id = %s\"\"\"\n        params: list = [user_id]\n        if unread_only:\n            query += \" AND n.is_read = FALSE\"\n        query += \" ORDER BY n.created_at DESC LIMIT %s OFFSET %s\"\n        params.extend([limit, offset])\n\n        cur = db.execute(query, params)\n        return [dict(r) for r in cur.fetchall()]\n\n    def get_unread_count(self, user_id: int) -> int:\n        db = get_db()\n        cur = db.execute(\n            \"SELECT COUNT(*) AS cnt FROM notifications \"\n            \"WHERE user_id = %s AND is_read = FALSE\",\n            (user_id,),\n        )\n        return cur.fetchone()[\"cnt\"]\n\n    # --------------- mark read ---------------\n    def mark_read(self, notification_id: int, user_id: int) -> bool:\n        db = get_db()\n        cur = db.execute(\n            \"\"\"UPDATE notifications\n               SET is_read = TRUE, read_at = %s\n               WHERE id = %s AND user_id = %s\"\"\",\n            (datetime.now(timezone.utc), notification_id, user_id),\n        )\n        db.commit()\n        return cur.rowcount > 0\n\n    def mark_all_read(self, user_id: int) -> int:\n        db = get_db()\n        cur = db.execute(\n            \"\"\"UPDATE notifications\n               SET is_read = TRUE, read_at = %s\n               WHERE user_id = %s AND is_read = FALSE\"\"\",\n            (datetime.now(timezone.utc), user_id),\n        )\n        db.commit()\n        return cur.rowcount\n\n    # --------------- delete ---------------\n    def delete_notification(self, notification_id: int, user_id: int) -> bool:\n        db = get_db()\n        cur = db.execute(\n            \"DELETE FROM notifications WHERE id = %s AND user_id = %s\",\n            (notification_id, user_id),\n        )\n        db.commit()\n        return cur.rowcount > 0\n\n    # --------------- preferences ---------------\n    def should_notify(\n        self, user_id: int, notif_type: str, channel: str,\n    ) -> bool:\n        \"\"\"Check if user wants this notification type on this channel.\"\"\"\n        db = get_db()\n        col = {\"in_app\": \"in_app_enabled\",\n               \"push\": \"push_enabled\",\n               \"email\": \"email_enabled\"}.get(channel, \"in_app_enabled\")\n\n        cur = db.execute(\n            f\"SELECT {col} FROM notification_preferences \"\n            \"WHERE user_id = %s AND notification_type = %s\",\n            (user_id, notif_type),\n        )\n        row = cur.fetchone()\n        # Default to enabled if no preference row exists\n        return row[col] if row else True\n\n    def get_preferences(self, user_id: int) -> list[dict]:\n        db = get_db()\n        cur = db.execute(\n            \"SELECT * FROM notification_preferences WHERE user_id = %s\",\n            (user_id,),\n        )\n        return [dict(r) for r in cur.fetchall()]\n\n    def update_preferences(\n        self, user_id: int, preferences: list[dict],\n    ) -> list[dict]:\n        \"\"\"Upsert a list of {notification_type, in_app, push, email} dicts.\"\"\"\n        db = get_db()\n        for pref in preferences:\n            db.execute(\n                \"\"\"INSERT INTO notification_preferences\n                   (user_id, notification_type,\n                    in_app_enabled, push_enabled, email_enabled)\n                   VALUES (%s, %s, %s, %s, %s)\n                   ON CONFLICT (user_id, notification_type)\n                   DO UPDATE SET in_app_enabled = EXCLUDED.in_app_enabled,\n                                push_enabled  = EXCLUDED.push_enabled,\n                                email_enabled = EXCLUDED.email_enabled\"\"\",\n                (user_id, pref[\"notification_type\"],\n                 pref.get(\"in_app\", True),\n                 pref.get(\"push\", True),\n                 pref.get(\"email\", True)),\n            )\n        db.commit()\n        return self.get_preferences(user_id)"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/notifications.py",
+      "description": "Flask API routes for notifications — fetch, count, mark read, delete, and preferences.",
+      "code": "from flask import Blueprint, jsonify, request, g\nfrom auth import login_required\nfrom services.notification_service import NotificationService\n\nbp = Blueprint(\"notifications\", __name__, url_prefix=\"/api/notifications\")\nsvc = NotificationService()\n\n\n@bp.route(\"\", methods=[\"GET\"])\n@login_required\ndef list_notifications():\n    \"\"\"GET /api/notifications?unread=true&limit=20&offset=0\"\"\"\n    unread = request.args.get(\"unread\", \"false\").lower() == \"true\"\n    limit = min(int(request.args.get(\"limit\", 20)), 100)\n    offset = int(request.args.get(\"offset\", 0))\n\n    items = svc.get_notifications(\n        g.user_id, limit=limit, offset=offset, unread_only=unread,\n    )\n    return jsonify({\"notifications\": items, \"offset\": offset, \"limit\": limit})\n\n\n@bp.route(\"/count\", methods=[\"GET\"])\n@login_required\ndef unread_count():\n    \"\"\"GET /api/notifications/count\"\"\"\n    count = svc.get_unread_count(g.user_id)\n    return jsonify({\"unread_count\": count})\n\n\n@bp.route(\"/<int:nid>/read\", methods=[\"PUT\"])\n@login_required\ndef mark_read(nid: int):\n    \"\"\"PUT /api/notifications/<id>/read\"\"\"\n    ok = svc.mark_read(nid, g.user_id)\n    if not ok:\n        return jsonify({\"error\": \"Not found\"}), 404\n    return jsonify({\"success\": True})\n\n\n@bp.route(\"/read-all\", methods=[\"PUT\"])\n@login_required\ndef mark_all_read():\n    \"\"\"PUT /api/notifications/read-all\"\"\"\n    count = svc.mark_all_read(g.user_id)\n    return jsonify({\"marked\": count})\n\n\n@bp.route(\"/<int:nid>\", methods=[\"DELETE\"])\n@login_required\ndef delete_notification(nid: int):\n    \"\"\"DELETE /api/notifications/<id>\"\"\"\n    ok = svc.delete_notification(nid, g.user_id)\n    if not ok:\n        return jsonify({\"error\": \"Not found\"}), 404\n    return jsonify({\"success\": True})\n\n\n@bp.route(\"/preferences\", methods=[\"GET\"])\n@login_required\ndef get_preferences():\n    \"\"\"GET /api/notifications/preferences\"\"\"\n    prefs = svc.get_preferences(g.user_id)\n    return jsonify({\"preferences\": prefs})\n\n\n@bp.route(\"/preferences\", methods=[\"PUT\"])\n@login_required\ndef update_preferences():\n    \"\"\"PUT /api/notifications/preferences\"\"\"\n    data = request.get_json()\n    prefs = svc.update_preferences(g.user_id, data.get(\"preferences\", []))\n    return jsonify({\"preferences\": prefs})"
+    },
+    {
+      "type": "text",
+      "heading": "Notification Types and Templates",
+      "headingLevel": 2,
+      "body": "Define your notification types centrally. Each type has a default icon, a title template, and a body template. Templates use Python string formatting with context variables — the actor name, object title, and other relevant details."
+    },
+    {
+      "type": "table",
+      "heading": "Common Notification Types",
+      "headers": ["Type", "Icon", "Title Template", "Body Template"],
+      "rows": [
+        ["new_follower", "PersonAdd", "{actor.name} followed you", "You have a new follower. Check out their profile."],
+        ["comment_reply", "Reply", "{actor.name} replied to your comment", "\"{comment.preview}\" on {post.title}"],
+        ["post_liked", "Favorite", "{actor.name} liked your post", "{post.title} received a new like."],
+        ["mention", "AlternateEmail", "{actor.name} mentioned you", "You were mentioned in {object.title}"],
+        ["achievement", "EmojiEvents", "Achievement unlocked!", "You earned the \"{achievement.name}\" badge."],
+        ["system", "Campaign", "{title}", "{body}"],
+        ["direct_message", "Chat", "New message from {actor.name}", "\"{message.preview}\""]
+      ]
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "services/notification_templates.py",
+      "description": "Notification template renderer that maps notification types to formatted title and body strings.",
+      "code": "from dataclasses import dataclass\nfrom typing import Any\n\n\n@dataclass\nclass NotificationTemplate:\n    icon: str\n    title_template: str\n    body_template: str\n\n\nTEMPLATES: dict[str, NotificationTemplate] = {\n    \"new_follower\": NotificationTemplate(\n        icon=\"PersonAdd\",\n        title_template=\"{actor_name} followed you\",\n        body_template=\"You have a new follower. Check out their profile.\",\n    ),\n    \"comment_reply\": NotificationTemplate(\n        icon=\"Reply\",\n        title_template=\"{actor_name} replied to your comment\",\n        body_template='\"{comment_preview}\" on {post_title}',\n    ),\n    \"post_liked\": NotificationTemplate(\n        icon=\"Favorite\",\n        title_template=\"{actor_name} liked your post\",\n        body_template=\"{post_title} received a new like.\",\n    ),\n    \"mention\": NotificationTemplate(\n        icon=\"AlternateEmail\",\n        title_template=\"{actor_name} mentioned you\",\n        body_template=\"You were mentioned in {object_title}\",\n    ),\n    \"achievement\": NotificationTemplate(\n        icon=\"EmojiEvents\",\n        title_template=\"Achievement unlocked!\",\n        body_template='You earned the \"{achievement_name}\" badge.',\n    ),\n    \"direct_message\": NotificationTemplate(\n        icon=\"Chat\",\n        title_template=\"New message from {actor_name}\",\n        body_template='\"{message_preview}\"',\n    ),\n}\n\n\ndef render_notification(\n    notif_type: str, context: dict[str, Any],\n) -> dict[str, str]:\n    \"\"\"Render a notification's title, body, and icon from its type + context.\n\n    Usage:\n        render_notification(\"post_liked\", {\n            \"actor_name\": \"Alice\",\n            \"post_title\": \"My First Blog Post\",\n        })\n        # => {\"title\": \"Alice liked your post\",\n        #     \"body\": \"My First Blog Post received a new like.\",\n        #     \"icon\": \"Favorite\"}\n    \"\"\"\n    template = TEMPLATES.get(notif_type)\n    if not template:\n        return {\n            \"title\": context.get(\"title\", \"Notification\"),\n            \"body\": context.get(\"body\", \"\"),\n            \"icon\": \"info\",\n        }\n\n    return {\n        \"title\": template.title_template.format(**context),\n        \"body\": template.body_template.format(**context),\n        \"icon\": template.icon,\n    }"
+    },
+    {
+      "type": "accordion",
+      "title": "Notification Grouping and Batching",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Instead of showing five separate \"X liked your post\" notifications, group them into \"Alice and 4 others liked your post.\" This reduces noise and keeps the notification feed scannable. Grouping works by collecting notifications with the same type, object_type, and object_id within a time window, then merging them into a single display entry."
+        },
+        {
+          "type": "code",
+          "language": "python",
+          "filename": "services/notification_grouping.py",
+          "description": "Group similar notifications into batched display entries.",
+          "code": "from itertools import groupby\nfrom operator import itemgetter\n\n\ndef group_notifications(notifications: list[dict]) -> list[dict]:\n    \"\"\"Merge consecutive notifications of the same type + object\n    into grouped display entries.\n\n    Input:  five separate 'post_liked' notifications for the same post\n    Output: one entry with actors=['Alice','Bob','Carol','Dave','Eve']\n            and title='Alice and 4 others liked your post'\n    \"\"\"\n    def group_key(n: dict) -> tuple:\n        return (n[\"type\"], n[\"object_type\"], n.get(\"object_id\"))\n\n    sorted_notifs = sorted(notifications, key=group_key)\n    grouped: list[dict] = []\n\n    for key, items in groupby(sorted_notifs, key=group_key):\n        batch = list(items)\n        if len(batch) == 1:\n            grouped.append(batch[0])\n            continue\n\n        # Use the most recent notification as the base\n        latest = max(batch, key=itemgetter(\"created_at\"))\n        actors = [n.get(\"actor_username\", \"Someone\") for n in batch]\n        unique_actors = list(dict.fromkeys(actors))  # dedupe, keep order\n        others_count = len(unique_actors) - 1\n\n        if others_count == 1:\n            title = f\"{unique_actors[0]} and {unique_actors[1]}\"\n        else:\n            title = f\"{unique_actors[0]} and {others_count} others\"\n\n        # Append the action from the original title\n        action_part = latest[\"title\"].split(\" \", 1)[-1]\n        latest[\"title\"] = f\"{title} {action_part}\"\n        latest[\"grouped_count\"] = len(batch)\n        latest[\"actors\"] = unique_actors\n        grouped.append(latest)\n\n    grouped.sort(key=itemgetter(\"created_at\"), reverse=True)\n    return grouped"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "React Notification Bell Component",
+      "headingLevel": 2,
+      "body": "The notification bell is the user-facing heart of the system. It shows an unread count badge, opens a dropdown with the latest notifications, and integrates with the real-time WebSocket connection to update instantly. Each notification item shows an avatar, the notification text, a relative timestamp, and the read/unread state."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/NotificationBell.tsx",
+      "description": "Full NotificationBell component with animated badge, dropdown panel, mark-all-read, and navigation on click.",
+      "code": "import { useState, useRef, useEffect, useCallback } from 'react';\nimport {\n  Badge, IconButton, Popover, Box, Typography, Button,\n  Divider, CircularProgress, List,\n} from '@mui/material';\nimport NotificationsIcon from '@mui/icons-material/Notifications';\nimport DoneAllIcon from '@mui/icons-material/DoneAll';\nimport { useNavigate, Link } from 'react-router-dom';\nimport { NotificationItem } from './NotificationItem';\nimport { useNotifications } from '../hooks/useNotifications';\n\nexport function NotificationBell() {\n  const navigate = useNavigate();\n  const anchorRef = useRef<HTMLButtonElement>(null);\n  const [open, setOpen] = useState(false);\n\n  const {\n    notifications, unreadCount, loading,\n    markRead, markAllRead, deleteNotification, refresh,\n  } = useNotifications();\n\n  useEffect(() => {\n    if (open) refresh();\n  }, [open, refresh]);\n\n  const handleClick = useCallback(\n    (notif: { id: number; action_url?: string }) => {\n      markRead(notif.id);\n      setOpen(false);\n      if (notif.action_url) navigate(notif.action_url);\n    },\n    [markRead, navigate],\n  );\n\n  return (\n    <>\n      <IconButton ref={anchorRef} onClick={() => setOpen((o) => !o)}>\n        <Badge\n          badgeContent={unreadCount}\n          color=\"error\"\n          max={99}\n          sx={{\n            '& .MuiBadge-badge': {\n              animation: unreadCount > 0\n                ? 'pulse 1.5s ease-in-out infinite'\n                : 'none',\n            },\n            '@keyframes pulse': {\n              '0%, 100%': { transform: 'scale(1)' },\n              '50%': { transform: 'scale(1.15)' },\n            },\n          }}\n        >\n          <NotificationsIcon />\n        </Badge>\n      </IconButton>\n\n      <Popover\n        open={open}\n        anchorEl={anchorRef.current}\n        onClose={() => setOpen(false)}\n        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}\n        transformOrigin={{ vertical: 'top', horizontal: 'right' }}\n        slotProps={{ paper: { sx: { width: 380, maxHeight: 480 } } }}\n      >\n        <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>\n          <Typography variant=\"h6\">Notifications</Typography>\n          {unreadCount > 0 && (\n            <Button size=\"small\" startIcon={<DoneAllIcon />} onClick={() => markAllRead()}>\n              Mark all read\n            </Button>\n          )}\n        </Box>\n        <Divider />\n\n        {loading ? (\n          <Box sx={{ p: 4, textAlign: 'center' }}><CircularProgress size={28} /></Box>\n        ) : notifications.length === 0 ? (\n          <Box sx={{ p: 4, textAlign: 'center' }}>\n            <Typography color=\"text.secondary\">You're all caught up!</Typography>\n          </Box>\n        ) : (\n          <List disablePadding sx={{ overflowY: 'auto', maxHeight: 340 }}>\n            {notifications.slice(0, 8).map((n) => (\n              <NotificationItem\n                key={n.id}\n                notification={n}\n                onClick={() => handleClick(n)}\n                onDelete={() => deleteNotification(n.id)}\n              />\n            ))}\n          </List>\n        )}\n\n        <Divider />\n        <Box sx={{ p: 1, textAlign: 'center' }}>\n          <Button component={Link} to=\"/notifications\" size=\"small\" onClick={() => setOpen(false)}>\n            See all notifications\n          </Button>\n        </Box>\n      </Popover>\n    </>\n  );\n}"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/NotificationItem.tsx",
+      "description": "Individual notification row with avatar, text, relative timestamp, blue unread dot, and hover delete button.",
+      "code": "import { useState } from 'react';\nimport {\n  ListItemButton, ListItemAvatar, Avatar, ListItemText,\n  IconButton, Typography, Box,\n} from '@mui/material';\nimport DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';\nimport FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';\nimport { formatDistanceToNowStrict } from 'date-fns';\n\ninterface Notification {\n  id: number;\n  title: string;\n  body: string;\n  icon: string;\n  actor_avatar?: string;\n  actor_username?: string;\n  is_read: boolean;\n  created_at: string;\n}\n\ninterface Props {\n  notification: Notification;\n  onClick: () => void;\n  onDelete: () => void;\n}\n\nexport function NotificationItem({ notification, onClick, onDelete }: Props) {\n  const [hovered, setHovered] = useState(false);\n  const timeAgo = formatDistanceToNowStrict(\n    new Date(notification.created_at), { addSuffix: true },\n  );\n\n  return (\n    <ListItemButton\n      onClick={onClick}\n      onMouseEnter={() => setHovered(true)}\n      onMouseLeave={() => setHovered(false)}\n      sx={{\n        bgcolor: notification.is_read ? 'transparent' : 'action.hover',\n        '&:hover': { bgcolor: 'action.selected' },\n      }}\n    >\n      <ListItemAvatar>\n        <Avatar src={notification.actor_avatar} alt={notification.actor_username ?? ''}>\n          {notification.actor_username?.[0]?.toUpperCase() ?? '?'}\n        </Avatar>\n      </ListItemAvatar>\n\n      <ListItemText\n        primary={\n          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>\n            {!notification.is_read && (\n              <FiberManualRecordIcon sx={{ fontSize: 10, color: 'primary.main' }} />\n            )}\n            <Typography variant=\"body2\" fontWeight={notification.is_read ? 400 : 600}>\n              {notification.title}\n            </Typography>\n          </Box>\n        }\n        secondary={\n          <>\n            <Typography variant=\"caption\" color=\"text.secondary\" noWrap>\n              {notification.body}\n            </Typography>\n            <br />\n            <Typography variant=\"caption\" color=\"text.disabled\">{timeAgo}</Typography>\n          </>\n        }\n      />\n\n      {hovered && (\n        <IconButton size=\"small\" onClick={(e) => { e.stopPropagation(); onDelete(); }} sx={{ ml: 1 }}>\n          <DeleteOutlineIcon fontSize=\"small\" />\n        </IconButton>\n      )}\n    </ListItemButton>\n  );\n}"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "pages/NotificationPage.tsx",
+      "description": "Full notification page with All/Unread/Read filters, type filtering, infinite scroll, and bulk mark-all-read.",
+      "code": "import { useState, useEffect, useCallback } from 'react';\nimport {\n  Container, Typography, ToggleButtonGroup, ToggleButton,\n  Box, Button, Select, MenuItem, FormControl, InputLabel,\n  CircularProgress,\n} from '@mui/material';\nimport DoneAllIcon from '@mui/icons-material/DoneAll';\nimport { NotificationItem } from '../components/NotificationItem';\nimport { useNotifications } from '../hooks/useNotifications';\n\ntype Filter = 'all' | 'unread' | 'read';\n\nexport default function NotificationPage() {\n  const [filter, setFilter] = useState<Filter>('all');\n  const [typeFilter, setTypeFilter] = useState<string>('all');\n  const {\n    notifications, loading, hasMore,\n    markRead, markAllRead, deleteNotification, loadMore, refresh,\n  } = useNotifications();\n\n  useEffect(() => { refresh(); }, [refresh]);\n\n  const handleScroll = useCallback(() => {\n    if (loading || !hasMore) return;\n    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;\n    if (scrollHeight - scrollTop - clientHeight < 200) loadMore();\n  }, [loading, hasMore, loadMore]);\n\n  useEffect(() => {\n    window.addEventListener('scroll', handleScroll);\n    return () => window.removeEventListener('scroll', handleScroll);\n  }, [handleScroll]);\n\n  const filtered = notifications.filter((n) => {\n    if (filter === 'unread' && n.is_read) return false;\n    if (filter === 'read' && !n.is_read) return false;\n    if (typeFilter !== 'all' && n.type !== typeFilter) return false;\n    return true;\n  });\n\n  const notifTypes = [...new Set(notifications.map((n) => n.type))];\n\n  return (\n    <Container maxWidth=\"md\" sx={{ py: 4 }}>\n      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>\n        <Typography variant=\"h4\">Notifications</Typography>\n        <Button startIcon={<DoneAllIcon />} onClick={() => markAllRead()}>Mark all read</Button>\n      </Box>\n\n      <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>\n        <ToggleButtonGroup value={filter} exclusive onChange={(_, v) => v && setFilter(v)} size=\"small\">\n          <ToggleButton value=\"all\">All</ToggleButton>\n          <ToggleButton value=\"unread\">Unread</ToggleButton>\n          <ToggleButton value=\"read\">Read</ToggleButton>\n        </ToggleButtonGroup>\n\n        <FormControl size=\"small\" sx={{ minWidth: 160 }}>\n          <InputLabel>Type</InputLabel>\n          <Select value={typeFilter} label=\"Type\" onChange={(e) => setTypeFilter(e.target.value)}>\n            <MenuItem value=\"all\">All types</MenuItem>\n            {notifTypes.map((t) => (\n              <MenuItem key={t} value={t}>{t.replace(/_/g, ' ')}</MenuItem>\n            ))}\n          </Select>\n        </FormControl>\n      </Box>\n\n      {filtered.length === 0 && !loading ? (\n        <Typography color=\"text.secondary\" sx={{ textAlign: 'center', py: 8 }}>\n          No notifications to show.\n        </Typography>\n      ) : (\n        filtered.map((n) => (\n          <NotificationItem\n            key={n.id}\n            notification={n}\n            onClick={() => markRead(n.id)}\n            onDelete={() => deleteNotification(n.id)}\n          />\n        ))\n      )}\n\n      {loading && (\n        <Box sx={{ textAlign: 'center', py: 3 }}><CircularProgress size={28} /></Box>\n      )}\n    </Container>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Real-Time Delivery with WebSockets",
+      "headingLevel": 2,
+      "body": "Polling wastes bandwidth and adds latency. With WebSockets, the server pushes a notification to the client the instant it is created. The user sees the bell badge increment in real time without refreshing the page. Flask-SocketIO makes this straightforward — each authenticated user joins a personal room, and the server emits events to that room."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "realtime/socket_events.py",
+      "description": "Flask-SocketIO setup — authenticate users, join personal rooms, emit notifications in real time.",
+      "code": "from flask_socketio import SocketIO, join_room, emit\nfrom flask import request\nfrom auth import decode_token\n\nsocketio = SocketIO(cors_allowed_origins=\"*\")\n\n\ndef init_socketio(app):\n    \"\"\"Initialize SocketIO with the Flask app.\"\"\"\n    socketio.init_app(app, async_mode=\"eventlet\")\n    return socketio\n\n\n@socketio.on(\"connect\")\ndef handle_connect():\n    \"\"\"Authenticate and join the user to their personal room.\"\"\"\n    token = request.args.get(\"token\", \"\")\n    payload = decode_token(token)\n    if not payload:\n        return False  # reject connection\n    user_id = payload[\"user_id\"]\n    join_room(f\"user_{user_id}\")\n    emit(\"connected\", {\"message\": \"Listening for notifications\"})\n\n\ndef emit_notification(user_id: int, notification: dict):\n    \"\"\"Send a notification to a specific user in real time.\"\"\"\n    socketio.emit(\"new_notification\", notification, room=f\"user_{user_id}\")\n\n\ndef emit_unread_count(user_id: int, count: int):\n    \"\"\"Push updated unread count to the user's bell badge.\"\"\"\n    socketio.emit(\"unread_count\", {\"count\": count}, room=f\"user_{user_id}\")"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "hooks/useNotifications.ts",
+      "description": "React hook that connects to WebSocket, manages notification state, plays sound on new notifications, and shows browser toasts.",
+      "code": "import { useState, useEffect, useCallback, useRef } from 'react';\nimport { io, Socket } from 'socket.io-client';\n\ninterface Notification {\n  id: number;\n  type: string;\n  title: string;\n  body: string;\n  icon: string;\n  action_url?: string;\n  actor_avatar?: string;\n  actor_username?: string;\n  is_read: boolean;\n  created_at: string;\n}\n\nconst API = '/api/notifications';\nconst notificationSound = new Audio('/sounds/notification.mp3');\n\nexport function useNotifications() {\n  const [notifications, setNotifications] = useState<Notification[]>([]);\n  const [unreadCount, setUnreadCount] = useState(0);\n  const [loading, setLoading] = useState(false);\n  const [hasMore, setHasMore] = useState(true);\n  const offsetRef = useRef(0);\n  const socketRef = useRef<Socket | null>(null);\n\n  const refresh = useCallback(async () => {\n    setLoading(true);\n    const [listRes, countRes] = await Promise.all([\n      fetch(`${API}?limit=20&offset=0`),\n      fetch(`${API}/count`),\n    ]);\n    const listData = await listRes.json();\n    const countData = await countRes.json();\n    setNotifications(listData.notifications);\n    setUnreadCount(countData.unread_count);\n    offsetRef.current = listData.notifications.length;\n    setHasMore(listData.notifications.length === 20);\n    setLoading(false);\n  }, []);\n\n  const loadMore = useCallback(async () => {\n    if (loading) return;\n    setLoading(true);\n    const res = await fetch(`${API}?limit=20&offset=${offsetRef.current}`);\n    const data = await res.json();\n    setNotifications((prev) => [...prev, ...data.notifications]);\n    offsetRef.current += data.notifications.length;\n    setHasMore(data.notifications.length === 20);\n    setLoading(false);\n  }, [loading]);\n\n  // WebSocket connection for real-time updates\n  useEffect(() => {\n    const token = localStorage.getItem('token') ?? '';\n    const socket = io(window.location.origin, { query: { token } });\n    socketRef.current = socket;\n\n    socket.on('new_notification', (notif: Notification) => {\n      setNotifications((prev) => [notif, ...prev]);\n      setUnreadCount((c) => c + 1);\n      notificationSound.play().catch(() => {});\n\n      if (Notification.permission === 'granted') {\n        new Notification(notif.title, {\n          body: notif.body,\n          icon: '/icon-192.png',\n        });\n      }\n    });\n\n    socket.on('unread_count', (data: { count: number }) => {\n      setUnreadCount(data.count);\n    });\n\n    return () => { socket.disconnect(); };\n  }, []);\n\n  const markRead = useCallback(async (id: number) => {\n    await fetch(`${API}/${id}/read`, { method: 'PUT' });\n    setNotifications((prev) =>\n      prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)),\n    );\n    setUnreadCount((c) => Math.max(0, c - 1));\n  }, []);\n\n  const markAllRead = useCallback(async () => {\n    await fetch(`${API}/read-all`, { method: 'PUT' });\n    setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));\n    setUnreadCount(0);\n  }, []);\n\n  const deleteNotification = useCallback(async (id: number) => {\n    await fetch(`${API}/${id}`, { method: 'DELETE' });\n    setNotifications((prev) => {\n      const target = prev.find((n) => n.id === id);\n      if (target && !target.is_read) setUnreadCount((c) => Math.max(0, c - 1));\n      return prev.filter((n) => n.id !== id);\n    });\n  }, []);\n\n  return {\n    notifications, unreadCount, loading, hasMore,\n    markRead, markAllRead, deleteNotification, refresh, loadMore,\n  };\n}"
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "SSE Alternative",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Server-Sent Events (SSE) are simpler than WebSockets for one-way push. They auto-reconnect natively and work through HTTP proxies without special configuration. Use SSE when you only need server-to-client push and do not need bidirectional communication."
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "filename": "sse_delivery.py",
+              "description": "Flask SSE endpoint that streams notifications as server-sent events.",
+              "code": "import json\nimport queue\nimport threading\nfrom flask import Blueprint, Response, g\nfrom auth import login_required\n\nbp = Blueprint(\"sse\", __name__)\n\n_user_queues: dict[int, list[queue.Queue]] = {}\n_lock = threading.Lock()\n\n\ndef send_sse(user_id: int, event: str, data: dict):\n    \"\"\"Push an SSE event to all connected clients for a user.\"\"\"\n    with _lock:\n        for q in _user_queues.get(user_id, []):\n            q.put(f\"event: {event}\\ndata: {json.dumps(data)}\\n\\n\")\n\n\n@bp.route(\"/api/notifications/stream\")\n@login_required\ndef stream():\n    user_id = g.user_id\n    q: queue.Queue = queue.Queue()\n\n    with _lock:\n        _user_queues.setdefault(user_id, []).append(q)\n\n    def generate():\n        try:\n            while True:\n                msg = q.get()\n                yield msg\n        finally:\n            with _lock:\n                _user_queues[user_id].remove(q)\n\n    return Response(\n        generate(),\n        mimetype=\"text/event-stream\",\n        headers={\"Cache-Control\": \"no-cache\", \"X-Accel-Buffering\": \"no\"},\n    )"
+            }
+          ]
+        },
+        {
+          "label": "Polling Fallback",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Polling is the simplest approach: periodically fetch the unread count. Works everywhere and requires no special server infrastructure, but wastes bandwidth and adds latency. Use only as a fallback or for very low-traffic apps."
+            },
+            {
+              "type": "code",
+              "language": "typescript",
+              "filename": "hooks/usePollingNotifications.ts",
+              "description": "Polling hook that fetches unread count every 30 seconds.",
+              "code": "import { useState, useEffect, useRef } from 'react';\n\nexport function usePollingNotifications(intervalMs = 30_000) {\n  const [unreadCount, setUnreadCount] = useState(0);\n  const timerRef = useRef<ReturnType<typeof setInterval>>();\n\n  useEffect(() => {\n    async function poll() {\n      try {\n        const res = await fetch('/api/notifications/count');\n        const data = await res.json();\n        setUnreadCount(data.unread_count);\n      } catch {\n        // Silently retry on next interval\n      }\n    }\n\n    poll();\n    timerRef.current = setInterval(poll, intervalMs);\n    return () => clearInterval(timerRef.current);\n  }, [intervalMs]);\n\n  return { unreadCount };\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Browser Push Notifications",
+      "headingLevel": 2,
+      "body": "Push notifications reach users even when they have closed your site. They use the Web Push protocol with VAPID (Voluntary Application Server Identification) keys. The flow is: generate VAPID keys on the server, register a service worker on the client, subscribe to push via the browser's Push API, save the subscription to your database, and send push messages from your backend using the pywebpush library."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "1. VAPID Keys + Backend",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "python",
+              "filename": "services/push_service.py",
+              "description": "Generate VAPID keys, save push subscriptions, and send push notifications from Flask.",
+              "code": "# pip install pywebpush py-vapid\nimport json\nimport os\nfrom flask import Blueprint, request, jsonify, g\nfrom pywebpush import webpush, WebPushException\nfrom auth import login_required\nfrom db import get_db\n\nbp = Blueprint(\"push\", __name__, url_prefix=\"/api/push\")\n\n# Generate VAPID keys once:\n#   from py_vapid import Vapid\n#   vapid = Vapid(); vapid.generate_keys()\n#   print(vapid.private_pem(), vapid.public_key)\nVAPID_PRIVATE_KEY = os.environ[\"VAPID_PRIVATE_KEY\"]\nVAPID_CLAIMS = {\"sub\": \"mailto:admin@yoursite.com\"}\n\n\n@bp.route(\"/subscribe\", methods=[\"POST\"])\n@login_required\ndef subscribe():\n    \"\"\"Save a push subscription from the browser.\"\"\"\n    data = request.get_json()\n    db = get_db()\n    db.execute(\n        \"\"\"INSERT INTO push_subscriptions\n           (user_id, endpoint, p256dh_key, auth_key, user_agent)\n           VALUES (%s, %s, %s, %s, %s)\n           ON CONFLICT (user_id, endpoint) DO UPDATE\n           SET p256dh_key = EXCLUDED.p256dh_key,\n               auth_key = EXCLUDED.auth_key\"\"\",\n        (g.user_id, data[\"endpoint\"],\n         data[\"keys\"][\"p256dh\"], data[\"keys\"][\"auth\"],\n         request.headers.get(\"User-Agent\", \"\")),\n    )\n    db.commit()\n    return jsonify({\"success\": True})\n\n\ndef send_push(user_id: int, title: str, body: str, url: str = \"/\"):\n    \"\"\"Send push notification to all of a user's subscribed devices.\"\"\"\n    db = get_db()\n    cur = db.execute(\n        \"SELECT * FROM push_subscriptions WHERE user_id = %s\",\n        (user_id,),\n    )\n    payload = json.dumps({\n        \"title\": title, \"body\": body,\n        \"url\": url, \"icon\": \"/icon-192.png\",\n    })\n\n    for sub in cur.fetchall():\n        try:\n            webpush(\n                subscription_info={\n                    \"endpoint\": sub[\"endpoint\"],\n                    \"keys\": {\"p256dh\": sub[\"p256dh_key\"],\n                             \"auth\": sub[\"auth_key\"]},\n                },\n                data=payload,\n                vapid_private_key=VAPID_PRIVATE_KEY,\n                vapid_claims=VAPID_CLAIMS,\n            )\n        except WebPushException as e:\n            if e.response and e.response.status_code == 410:\n                db.execute(\n                    \"DELETE FROM push_subscriptions WHERE id = %s\",\n                    (sub[\"id\"],),\n                )\n                db.commit()"
+            }
+          ]
+        },
+        {
+          "label": "2. Client Subscribe + Service Worker",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "javascript",
+              "filename": "public/register-push.js",
+              "description": "Register service worker, request permission, subscribe to push, and send subscription to backend.",
+              "code": "async function subscribeToPush() {\n  const registration = await navigator.serviceWorker.register('/sw.js');\n\n  const permission = await Notification.requestPermission();\n  if (permission !== 'granted') return null;\n\n  const subscription = await registration.pushManager.subscribe({\n    userVisibleOnly: true,\n    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),\n  });\n\n  await fetch('/api/push/subscribe', {\n    method: 'POST',\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify(subscription.toJSON()),\n  });\n\n  return subscription;\n}\n\nfunction urlBase64ToUint8Array(base64String) {\n  const padding = '='.repeat((4 - base64String.length % 4) % 4);\n  const base64 = (base64String + padding)\n    .replace(/-/g, '+').replace(/_/g, '/');\n  const raw = window.atob(base64);\n  return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));\n}"
+            },
+            {
+              "type": "code",
+              "language": "javascript",
+              "filename": "public/sw.js",
+              "description": "Service worker — handles push events and notification click to open the correct URL.",
+              "code": "self.addEventListener('push', (event) => {\n  const data = event.data?.json() ?? {};\n\n  event.waitUntil(\n    self.registration.showNotification(data.title ?? 'New notification', {\n      body: data.body ?? '',\n      icon: data.icon ?? '/icon-192.png',\n      badge: '/badge-72.png',\n      data: { url: data.url ?? '/' },\n      vibrate: [200, 100, 200],\n      tag: data.tag ?? 'default',\n    }),\n  );\n});\n\nself.addEventListener('notificationclick', (event) => {\n  event.notification.close();\n  const targetUrl = event.notification.data?.url ?? '/';\n\n  event.waitUntil(\n    clients.matchAll({ type: 'window' }).then((windowClients) => {\n      for (const client of windowClients) {\n        if (client.url.includes(targetUrl) && 'focus' in client) {\n          return client.focus();\n        }\n      }\n      return clients.openWindow(targetUrl);\n    }),\n  );\n});"
+            }
+          ]
+        },
+        {
+          "label": "3. Permission Banner",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "tsx",
+              "filename": "components/PushPermissionBanner.tsx",
+              "description": "Component that prompts users to enable push notifications with context about what they will receive.",
+              "code": "import { useState, useEffect } from 'react';\nimport { Alert, Button, Collapse, Typography } from '@mui/material';\nimport NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';\n\nexport function PushPermissionBanner() {\n  const [show, setShow] = useState(false);\n\n  useEffect(() => {\n    if ('Notification' in window && Notification.permission === 'default') {\n      const timer = setTimeout(() => setShow(true), 10_000);\n      return () => clearTimeout(timer);\n    }\n  }, []);\n\n  async function handleEnable() {\n    const permission = await Notification.requestPermission();\n    if (permission === 'granted') {\n      await (window as any).subscribeToPush?.();\n    }\n    setShow(false);\n  }\n\n  return (\n    <Collapse in={show}>\n      <Alert\n        severity=\"info\"\n        icon={<NotificationsActiveIcon />}\n        action={\n          <>\n            <Button color=\"inherit\" size=\"small\" onClick={handleEnable}>Enable</Button>\n            <Button color=\"inherit\" size=\"small\" onClick={() => setShow(false)}>Not now</Button>\n          </>\n        }\n        sx={{ mb: 2 }}\n      >\n        <Typography variant=\"body2\">\n          Get notified about replies, mentions, and important updates even when you are not on the site.\n        </Typography>\n      </Alert>\n    </Collapse>\n  );\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "Do Not Ask for Push Permission Immediately",
+      "body": "Ask for push permission at the RIGHT moment — after the user has seen value from your app, not on first page load. Browsers like Chrome and Firefox penalize sites with high permission-denial rates by auto-blocking the prompt. Show the banner after the user has engaged (read a few articles, received their first in-app notification) so they understand what they are opting into."
+    },
+    {
+      "type": "text",
+      "heading": "Email Notification Digests",
+      "headingLevel": 2,
+      "body": "Not everything needs instant delivery. Email digests batch notifications into a daily or weekly summary, bringing back users who have been away. The digest service collects unread notifications from a time window, groups them by type, and renders them into an HTML email. Include a List-Unsubscribe header in every notification email — Gmail shows an easy unsubscribe button when this header is present, and its absence hurts sender reputation."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "services/digest_service.py",
+      "description": "Email digest service — collects unread notifications, groups by type, renders HTML email, and sends via SMTP.",
+      "code": "import smtplib\nfrom email.mime.text import MIMEText\nfrom email.mime.multipart import MIMEMultipart\nfrom datetime import datetime, timedelta, timezone\nfrom itertools import groupby\nfrom operator import itemgetter\nimport os\n\nfrom db import get_db\n\n\nclass DigestService:\n    def __init__(self):\n        self.smtp_host = os.environ.get(\"SMTP_HOST\", \"smtp.gmail.com\")\n        self.smtp_port = int(os.environ.get(\"SMTP_PORT\", \"587\"))\n        self.smtp_user = os.environ.get(\"SMTP_USER\", \"\")\n        self.smtp_pass = os.environ.get(\"SMTP_PASS\", \"\")\n        self.from_addr = os.environ.get(\"FROM_EMAIL\", \"noreply@yoursite.com\")\n\n    def collect_digest(self, user_id: int, hours: int = 24) -> dict:\n        \"\"\"Gather unread notifications from the last N hours.\"\"\"\n        db = get_db()\n        since = datetime.now(timezone.utc) - timedelta(hours=hours)\n\n        cur = db.execute(\n            \"\"\"SELECT n.*, u.username AS actor_username\n               FROM notifications n\n               LEFT JOIN users u ON u.id = n.actor_id\n               WHERE n.user_id = %s\n                 AND n.is_read = FALSE\n                 AND n.created_at >= %s\n               ORDER BY n.type, n.created_at DESC\"\"\",\n            (user_id, since),\n        )\n        rows = [dict(r) for r in cur.fetchall()]\n\n        grouped = {}\n        for notif_type, items in groupby(rows, key=itemgetter(\"type\")):\n            grouped[notif_type] = list(items)\n\n        return {\"total\": len(rows), \"grouped\": grouped}\n\n    def render_html(self, username: str, digest: dict) -> str:\n        \"\"\"Render digest into HTML email body.\"\"\"\n        if digest[\"total\"] == 0:\n            return \"\"\n\n        sections = \"\"\n        for notif_type, items in digest[\"grouped\"].items():\n            label = notif_type.replace(\"_\", \" \").title()\n            rows = \"\".join(\n                '<tr style=\"border-bottom:1px solid #eee;\">'\n                '<td style=\"padding:8px;\">{title}</td>'\n                '<td style=\"padding:8px;color:#666;\">{body}</td>'\n                \"</tr>\".format(**item)\n                for item in items[:5]\n            )\n            if len(items) > 5:\n                rows += (\n                    '<tr><td colspan=\"2\" style=\"padding:8px;color:#999;\">'\n                    \"and {} more...</td></tr>\".format(len(items) - 5)\n                )\n            sections += (\n                '<h3 style=\"color:#333;margin:16px 0 8px;\">{label}'\n                \" ({count})</h3>\"\n                '<table style=\"width:100%;border-collapse:collapse;\">'\n                \"{rows}</table>\"\n            ).format(label=label, count=len(items), rows=rows)\n\n        return (\n            '<div style=\"font-family:sans-serif;max-width:600px;margin:0 auto;\">'\n            '<h2 style=\"color:#1a73e8;\">Your notification summary</h2>'\n            \"<p>Hi {username}, here is what you missed:</p>\"\n            \"{sections}\"\n            '<div style=\"margin-top:24px;text-align:center;\">'\n            '<a href=\"{site}/notifications\" '\n            'style=\"background:#1a73e8;color:#fff;padding:10px 24px;'\n            'border-radius:4px;text-decoration:none;\">'\n            \"View all notifications</a></div>\"\n            '<p style=\"margin-top:24px;font-size:12px;color:#999;\">'\n            \"You can manage your notification preferences in your \"\n            '<a href=\"{site}/settings/notifications\">settings</a>.'\n            \"</p></div>\"\n        ).format(\n            username=username,\n            sections=sections,\n            site=os.environ.get(\"SITE_URL\", \"https://yoursite.com\"),\n        )\n\n    def send_digest(self, user_email: str, username: str, html: str):\n        \"\"\"Send the digest email via SMTP.\"\"\"\n        if not html:\n            return\n\n        msg = MIMEMultipart(\"alternative\")\n        msg[\"Subject\"] = \"Your notification summary\"\n        msg[\"From\"] = self.from_addr\n        msg[\"To\"] = user_email\n        msg[\"List-Unsubscribe\"] = \"<{}/api/unsubscribe?email={}>\".format(\n            os.environ.get(\"SITE_URL\", \"\"), user_email,\n        )\n\n        msg.attach(MIMEText(html, \"html\"))\n\n        with smtplib.SMTP(self.smtp_host, self.smtp_port) as server:\n            server.starttls()\n            server.login(self.smtp_user, self.smtp_pass)\n            server.send_message(msg)"
+    },
+    {
+      "type": "accordion",
+      "title": "Email Deliverability and Digest Frequency",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Your carefully crafted digest is worthless if it lands in spam. Email deliverability depends on three DNS records working together. SPF declares which servers can send email for your domain. DKIM adds a cryptographic signature to each message proving it was not tampered with. DMARC ties them together and tells receiving servers what to do with messages that fail validation. Set up all three before sending your first production email. For digest frequency: use instant email only for critical alerts (password reset, payment failure), hourly digests for active discussions (forum replies, PR reviews), and daily digests for medium-priority items (new followers, content recommendations). Send daily digests at the time the user is most likely to read email, typically morning in their local timezone."
+        }
+      ]
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/NotificationPreferences.tsx",
+      "description": "Notification preferences page with per-type per-channel toggles and mute-all feature.",
+      "code": "import { useState, useEffect } from 'react';\nimport {\n  Container, Typography, Table, TableBody, TableCell,\n  TableContainer, TableHead, TableRow, Switch, Paper,\n  Button, Select, MenuItem, Box, Alert,\n} from '@mui/material';\nimport VolumeOffIcon from '@mui/icons-material/VolumeOff';\n\ninterface Pref {\n  notification_type: string;\n  in_app: boolean;\n  push: boolean;\n  email: boolean;\n}\n\nconst NOTIF_TYPES = [\n  { key: 'new_follower', label: 'New followers' },\n  { key: 'comment_reply', label: 'Comment replies' },\n  { key: 'post_liked', label: 'Post likes' },\n  { key: 'mention', label: 'Mentions' },\n  { key: 'direct_message', label: 'Direct messages' },\n  { key: 'achievement', label: 'Achievements' },\n  { key: 'system', label: 'System announcements' },\n];\n\nexport function NotificationPreferences() {\n  const [prefs, setPrefs] = useState<Pref[]>([]);\n  const [muteHours, setMuteHours] = useState<number>(0);\n  const [saved, setSaved] = useState(false);\n\n  useEffect(() => {\n    fetch('/api/notifications/preferences')\n      .then((r) => r.json())\n      .then((data) => {\n        const serverMap = new Map(\n          data.preferences.map((p: any) => [p.notification_type, p]),\n        );\n        setPrefs(\n          NOTIF_TYPES.map((t) => {\n            const existing = serverMap.get(t.key) as any;\n            return {\n              notification_type: t.key,\n              in_app: existing?.in_app_enabled ?? true,\n              push: existing?.push_enabled ?? true,\n              email: existing?.email_enabled ?? true,\n            };\n          }),\n        );\n      });\n  }, []);\n\n  function toggle(index: number, channel: 'in_app' | 'push' | 'email') {\n    setPrefs((prev) =>\n      prev.map((p, i) => (i === index ? { ...p, [channel]: !p[channel] } : p)),\n    );\n    setSaved(false);\n  }\n\n  async function save() {\n    await fetch('/api/notifications/preferences', {\n      method: 'PUT',\n      headers: { 'Content-Type': 'application/json' },\n      body: JSON.stringify({ preferences: prefs }),\n    });\n    setSaved(true);\n  }\n\n  function muteAll() {\n    if (muteHours <= 0) return;\n    const until = Date.now() + muteHours * 60 * 60 * 1000;\n    localStorage.setItem('notifications_muted_until', String(until));\n  }\n\n  return (\n    <Container maxWidth=\"md\" sx={{ py: 4 }}>\n      <Typography variant=\"h5\" gutterBottom>Notification Preferences</Typography>\n\n      {saved && <Alert severity=\"success\" sx={{ mb: 2 }}>Preferences saved successfully.</Alert>}\n\n      <Box sx={{ display: 'flex', gap: 2, mb: 3, alignItems: 'center' }}>\n        <VolumeOffIcon color=\"action\" />\n        <Typography>Mute all notifications for</Typography>\n        <Select size=\"small\" value={muteHours} onChange={(e) => setMuteHours(Number(e.target.value))}>\n          <MenuItem value={0}>Select duration</MenuItem>\n          <MenuItem value={1}>1 hour</MenuItem>\n          <MenuItem value={4}>4 hours</MenuItem>\n          <MenuItem value={8}>8 hours</MenuItem>\n          <MenuItem value={24}>24 hours</MenuItem>\n        </Select>\n        <Button variant=\"outlined\" size=\"small\" disabled={muteHours === 0} onClick={muteAll}>Mute</Button>\n      </Box>\n\n      <TableContainer component={Paper} variant=\"outlined\">\n        <Table>\n          <TableHead>\n            <TableRow>\n              <TableCell>Notification Type</TableCell>\n              <TableCell align=\"center\">In-App</TableCell>\n              <TableCell align=\"center\">Push</TableCell>\n              <TableCell align=\"center\">Email</TableCell>\n            </TableRow>\n          </TableHead>\n          <TableBody>\n            {prefs.map((pref, i) => (\n              <TableRow key={pref.notification_type}>\n                <TableCell>{NOTIF_TYPES.find((t) => t.key === pref.notification_type)?.label}</TableCell>\n                <TableCell align=\"center\"><Switch checked={pref.in_app} onChange={() => toggle(i, 'in_app')} /></TableCell>\n                <TableCell align=\"center\"><Switch checked={pref.push} onChange={() => toggle(i, 'push')} /></TableCell>\n                <TableCell align=\"center\"><Switch checked={pref.email} onChange={() => toggle(i, 'email')} /></TableCell>\n              </TableRow>\n            ))}\n          </TableBody>\n        </Table>\n      </TableContainer>\n\n      <Box sx={{ mt: 3, textAlign: 'right' }}>\n        <Button variant=\"contained\" onClick={save}>Save preferences</Button>\n      </Box>\n    </Container>\n  );\n}"
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Granular Controls Prevent Full Opt-Out",
+      "body": "Always provide granular notification controls. Users who cannot control notifications will disable them entirely — or worse, leave your platform. Let users choose what they care about, and they will keep notifications on for the things that matter to them."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "contexts/ToastContext.tsx",
+      "description": "ToastProvider and useToast hook — supports success, error, warning, info severities with auto-dismiss, stacking, and click-to-dismiss.",
+      "code": "import {\n  createContext, useContext, useState, useCallback, ReactNode,\n} from 'react';\nimport { Snackbar, Alert, AlertColor, Slide } from '@mui/material';\n\ninterface Toast {\n  id: number;\n  message: string;\n  severity: AlertColor;\n  duration: number;\n}\n\ninterface ToastContextValue {\n  showToast: (message: string, severity?: AlertColor, duration?: number) => void;\n}\n\nconst ToastContext = createContext<ToastContextValue>({ showToast: () => {} });\n\nlet nextId = 0;\n\nexport function ToastProvider({ children }: { children: ReactNode }) {\n  const [toasts, setToasts] = useState<Toast[]>([]);\n\n  const showToast = useCallback(\n    (message: string, severity: AlertColor = 'info', duration = 4000) => {\n      const id = nextId++;\n      setToasts((prev) => [...prev, { id, message, severity, duration }]);\n    },\n    [],\n  );\n\n  const dismiss = useCallback((id: number) => {\n    setToasts((prev) => prev.filter((t) => t.id !== id));\n  }, []);\n\n  return (\n    <ToastContext.Provider value={{ showToast }}>\n      {children}\n      {toasts.map((toast, index) => (\n        <Snackbar\n          key={toast.id}\n          open\n          autoHideDuration={toast.duration}\n          onClose={() => dismiss(toast.id)}\n          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}\n          TransitionComponent={Slide}\n          sx={{ bottom: { xs: 24 + index * 60 } }}\n        >\n          <Alert\n            severity={toast.severity}\n            variant=\"filled\"\n            onClose={() => dismiss(toast.id)}\n            sx={{ width: '100%', minWidth: 300 }}\n          >\n            {toast.message}\n          </Alert>\n        </Snackbar>\n      ))}\n    </ToastContext.Provider>\n  );\n}\n\nexport const useToast = () => useContext(ToastContext);\n\n// Usage:\n// const { showToast } = useToast();\n// showToast('Post published!', 'success');\n// showToast('Failed to save', 'error');\n// showToast('Check your connection', 'warning', 6000);"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/announcements.py",
+      "heading": "System-Wide Announcements",
+      "headingLevel": 2,
+      "description": "Sometimes you need to notify ALL users — planned maintenance, new features, policy changes, or incident reports. Announcements differ from notifications: they are not per-user, they have a start and end date, and they display as a banner at the top of every page. This Flask API handles CRUD for announcements with date ranges, severity levels, and a dismissible flag.",
+      "code": "from flask import Blueprint, jsonify, request\nfrom datetime import datetime, timezone\nfrom auth import login_required, admin_required\nfrom db import get_db\n\nbp = Blueprint(\"announcements\", __name__, url_prefix=\"/api/announcements\")\n\n\n@bp.route(\"\", methods=[\"GET\"])\ndef list_active():\n    \"\"\"GET /api/announcements — return currently active announcements.\"\"\"\n    db = get_db()\n    now = datetime.now(timezone.utc)\n    cur = db.execute(\n        \"\"\"SELECT * FROM announcements\n           WHERE active = TRUE\n             AND start_date <= %s\n             AND (end_date IS NULL OR end_date >= %s)\n           ORDER BY created_at DESC\"\"\",\n        (now, now),\n    )\n    return jsonify({\"announcements\": [dict(r) for r in cur.fetchall()]})\n\n\n@bp.route(\"\", methods=[\"POST\"])\n@login_required\n@admin_required\ndef create():\n    \"\"\"POST /api/announcements — create a new announcement.\"\"\"\n    data = request.get_json()\n    db = get_db()\n    cur = db.execute(\n        \"\"\"INSERT INTO announcements\n           (title, body, severity, start_date, end_date, dismissible)\n           VALUES (%s, %s, %s, %s, %s, %s)\n           RETURNING *\"\"\",\n        (data[\"title\"], data[\"body\"],\n         data.get(\"severity\", \"info\"),\n         data.get(\"start_date\", datetime.now(timezone.utc)),\n         data.get(\"end_date\"),\n         data.get(\"dismissible\", True)),\n    )\n    db.commit()\n    return jsonify(dict(cur.fetchone())), 201\n\n\n@bp.route(\"/<int:aid>\", methods=[\"DELETE\"])\n@login_required\n@admin_required\ndef deactivate(aid: int):\n    \"\"\"DELETE /api/announcements/<id> — deactivate an announcement.\"\"\"\n    db = get_db()\n    db.execute(\"UPDATE announcements SET active = FALSE WHERE id = %s\", (aid,))\n    db.commit()\n    return jsonify({\"success\": True})"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/AnnouncementBanner.tsx",
+      "description": "Sticky colored banner at top of page with dismiss button and localStorage persistence.",
+      "code": "import { useState, useEffect } from 'react';\nimport { Alert, AlertTitle, IconButton, Collapse, Box } from '@mui/material';\nimport CloseIcon from '@mui/icons-material/Close';\n\ninterface Announcement {\n  id: number;\n  title: string;\n  body: string;\n  severity: 'info' | 'warning' | 'success' | 'error';\n  dismissible: boolean;\n}\n\nexport function AnnouncementBanner() {\n  const [announcements, setAnnouncements] = useState<Announcement[]>([]);\n  const [dismissed, setDismissed] = useState<Set<number>>(new Set());\n\n  useEffect(() => {\n    const stored = localStorage.getItem('dismissed_announcements');\n    if (stored) setDismissed(new Set(JSON.parse(stored)));\n\n    fetch('/api/announcements')\n      .then((r) => r.json())\n      .then((data) => setAnnouncements(data.announcements));\n  }, []);\n\n  function dismiss(id: number) {\n    setDismissed((prev) => {\n      const next = new Set(prev).add(id);\n      localStorage.setItem('dismissed_announcements', JSON.stringify([...next]));\n      return next;\n    });\n  }\n\n  const visible = announcements.filter((a) => !dismissed.has(a.id));\n  if (visible.length === 0) return null;\n\n  return (\n    <Box sx={{ position: 'sticky', top: 0, zIndex: 1200 }}>\n      {visible.map((ann) => (\n        <Collapse key={ann.id} in>\n          <Alert\n            severity={ann.severity}\n            variant=\"filled\"\n            action={\n              ann.dismissible ? (\n                <IconButton color=\"inherit\" size=\"small\" onClick={() => dismiss(ann.id)}>\n                  <CloseIcon fontSize=\"small\" />\n                </IconButton>\n              ) : undefined\n            }\n            sx={{ borderRadius: 0 }}\n          >\n            <AlertTitle>{ann.title}</AlertTitle>\n            {ann.body}\n          </Alert>\n        </Collapse>\n      ))}\n    </Box>\n  );\n}"
+    },
+    {
+      "type": "table",
+      "heading": "Notification Analytics — Metrics to Track",
+      "headers": ["Metric", "What It Measures", "Target", "Action if Low"],
+      "rows": [
+        ["Delivery rate", "Notifications successfully delivered / total sent", ">99%", "Check push subscription cleanup, email bounces"],
+        ["Open rate", "Notifications seen (feed opened) / delivered", ">60%", "Improve notification titles, reduce volume"],
+        ["Click-through rate", "Notifications clicked / seen", ">15%", "Make action_url more relevant, improve body text"],
+        ["Opt-out rate", "Users disabling a type / total users", "<5%", "Reduce frequency, improve targeting"],
+        ["Time to read", "Median time from creation to is_read=true", "<2 hours", "Check delivery channels, send timing"]
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Optimizing Notification Timing",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Send notifications when users are most likely to act on them. Track each user's active hours (when they typically open your app) and schedule non-urgent notifications for those windows. Batch related notifications — if a user gets 10 likes in 5 minutes, send one grouped notification instead of 10. Respect quiet hours: do not send push notifications between 10 PM and 8 AM in the user's local timezone unless the notification is critical (security alert, service outage). Users who feel interrupted will revoke push permission permanently."
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "When to Scale Beyond a Single Database",
+      "body": "For small-medium apps, a single notifications table with WebSocket delivery works fine. For millions of users, you will need message queues (Redis or RabbitMQ), a dedicated notification microservice, and read/write database replicas. Do not over-engineer early — start simple and add infrastructure when metrics show you need it."
+    },
+    {
+      "type": "list",
+      "heading": "Notification System Scaling Path",
+      "ordered": true,
+      "items": [
+        "Single PostgreSQL table with direct WebSocket delivery — handles up to ~50K active users",
+        "Add Redis pub/sub for WebSocket fan-out across multiple server instances",
+        "Introduce a message queue (Celery + RabbitMQ) for async notification creation and email sending",
+        "Extract a dedicated notification microservice with its own database and API",
+        "Evaluate third-party services (OneSignal, Firebase Cloud Messaging, Amazon SNS) for push at scale"
+      ]
+    }
+  ]
+}

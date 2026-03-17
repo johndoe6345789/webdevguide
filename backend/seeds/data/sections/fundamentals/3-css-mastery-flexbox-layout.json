@@ -1,0 +1,57 @@
+{
+  "type": "accordion",
+  "title": "Flexbox Layout",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "**Flexbox** is a one-dimensional layout system for arranging items in rows or columns. It handles alignment, distribution, and spacing elegantly. Use flexbox when you need to lay out items in a single direction."
+    },
+    {
+      "type": "code",
+      "language": "css",
+      "filename": "flexbox-examples.css",
+      "code": "/* Basic flex container */\n.navbar {\n  display: flex;\n  justify-content: space-between; /* Distribute items along main axis */\n  align-items: center;            /* Align items along cross axis */\n  padding: 1rem 2rem;\n  gap: 1rem;                      /* Space between items */\n}\n\n/* Centering anything (the classic problem CSS finally solved) */\n.centered {\n  display: flex;\n  justify-content: center; /* Horizontal center */\n  align-items: center;     /* Vertical center */\n  min-height: 100vh;\n}\n\n/* Flex wrapping for responsive layouts */\n.card-grid {\n  display: flex;\n  flex-wrap: wrap;        /* Items wrap to the next line */\n  gap: 1rem;\n}\n\n.card-grid .card {\n  flex: 1 1 300px; /* Grow, shrink, minimum 300px wide */\n}\n\n/* Column layout */\n.sidebar-layout {\n  display: flex;\n}\n\n.sidebar-layout .sidebar {\n  flex: 0 0 250px;  /* Fixed 250px width, no grow, no shrink */\n}\n\n.sidebar-layout .content {\n  flex: 1;          /* Takes all remaining space */\n}"
+    },
+    {
+      "type": "table",
+      "heading": "Flexbox properties cheat sheet",
+      "headers": [
+        "Property",
+        "Values",
+        "What it controls"
+      ],
+      "rows": [
+        [
+          "justify-content",
+          "flex-start, center, flex-end, space-between, space-around, space-evenly",
+          "Main axis alignment (horizontal in a row)"
+        ],
+        [
+          "align-items",
+          "flex-start, center, flex-end, stretch, baseline",
+          "Cross axis alignment (vertical in a row)"
+        ],
+        [
+          "flex-direction",
+          "row, column, row-reverse, column-reverse",
+          "Direction of the main axis"
+        ],
+        [
+          "flex-wrap",
+          "nowrap, wrap, wrap-reverse",
+          "Whether items wrap to a new line"
+        ],
+        [
+          "gap",
+          "Any length value (e.g., 1rem, 16px)",
+          "Space between flex items"
+        ],
+        [
+          "flex",
+          "grow shrink basis (e.g., 1 0 auto)",
+          "Shorthand for how an item sizes itself"
+        ]
+      ]
+    }
+  ]
+}

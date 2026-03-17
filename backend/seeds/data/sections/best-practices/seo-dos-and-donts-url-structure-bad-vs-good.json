@@ -1,0 +1,31 @@
+{
+  "type": "table",
+  "heading": "URL Structure: Bad vs Good",
+  "headers": [
+    "DON'T",
+    "DO",
+    "Why"
+  ],
+  "rows": [
+    [
+      "example.com/page?id=42&cat=3",
+      "example.com/shoes/running",
+      "Descriptive URLs are readable by humans and search engines"
+    ],
+    [
+      "example.com/p/abc123xyz",
+      "example.com/blog/web-dev-best-practices",
+      "Hashed IDs tell search engines nothing about the content"
+    ],
+    [
+      "example.com/SHOES/Running-SHOES",
+      "example.com/shoes/running-shoes",
+      "Use lowercase with hyphens. Inconsistent casing causes duplicate content."
+    ],
+    [
+      "example.com/shoes_running_latest_2024",
+      "example.com/shoes/running",
+      "Use path segments for hierarchy instead of cramming everything into one slug"
+    ]
+  ]
+}

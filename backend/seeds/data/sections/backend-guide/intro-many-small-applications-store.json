@@ -1,0 +1,4 @@
+{
+  "type": "text",
+  "body": "Many small applications store their data in JSON files instead of a database. JSON files are just text files that contain structured data."
+}

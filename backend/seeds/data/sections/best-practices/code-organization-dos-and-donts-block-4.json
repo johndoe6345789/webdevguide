@@ -1,0 +1,29 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "DON'T: Duplicated Code",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "src/features/products/ProductList.tsx",
+          "description": "The same price formatting logic is copied into every component that displays prices. If the format needs to change, you must find and update every copy.",
+          "code": "function ProductList({ products }: { products: Product[] }) {\n  return (\n    <ul>\n      {products.map((p) => (\n        <li key={p.id}>\n          {p.name} - ${(p.price / 100).toFixed(2)}\n          {p.salePrice && (\n            <span className=\"sale\">\n              Sale: ${(p.salePrice / 100).toFixed(2)}\n            </span>\n          )}\n        </li>\n      ))}\n    </ul>\n  );\n}\n\n// Same logic copied in CartItem.tsx\nfunction CartItem({ item }: { item: CartItem }) {\n  return (\n    <div>\n      {item.name} - ${(item.price / 100).toFixed(2)}\n      <span>Total: ${((item.price * item.qty) / 100).toFixed(2)}</span>\n    </div>\n  );\n}\n\n// And again in OrderSummary.tsx\nfunction OrderSummary({ order }: { order: Order }) {\n  return (\n    <div>\n      Subtotal: ${(order.subtotal / 100).toFixed(2)}\n      Tax: ${(order.tax / 100).toFixed(2)}\n      Total: ${(order.total / 100).toFixed(2)}\n    </div>\n  );\n}"
+        }
+      ]
+    },
+    {
+      "label": "DO: Extracted Utility",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "src/utils/formatCurrency.ts",
+          "description": "A single utility function is the source of truth for price formatting. Change it once and every component updates.",
+          "code": "/**\n * Format cents as a USD currency string.\n * formatCurrency(1999) => \"$19.99\"\n */\nexport function formatCurrency(cents: number): string {\n  return new Intl.NumberFormat(\"en-US\", {\n    style: \"currency\",\n    currency: \"USD\",\n  }).format(cents / 100);\n}\n\n// --- ProductList.tsx ---\nimport { formatCurrency } from \"@/utils/formatCurrency\";\n\nfunction ProductList({ products }: { products: Product[] }) {\n  return (\n    <ul>\n      {products.map((p) => (\n        <li key={p.id}>\n          {p.name} - {formatCurrency(p.price)}\n          {p.salePrice && (\n            <span className=\"sale\">Sale: {formatCurrency(p.salePrice)}</span>\n          )}\n        </li>\n      ))}\n    </ul>\n  );\n}\n\n// --- CartItem.tsx ---\nfunction CartItem({ item }: { item: CartItem }) {\n  return (\n    <div>\n      {item.name} - {formatCurrency(item.price)}\n      <span>Total: {formatCurrency(item.price * item.qty)}</span>\n    </div>\n  );\n}"
+        }
+      ]
+    }
+  ]
+}

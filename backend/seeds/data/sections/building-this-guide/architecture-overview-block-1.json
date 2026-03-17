@@ -1,0 +1,21 @@
+{
+  "type": "cardGrid",
+  "columns": 3,
+  "cards": [
+    {
+      "title": "JSON Seed Data",
+      "body": "All content lives in backend/seeds/data/ as structured JSON files. Sections, exam questions, and glossary terms are authored here. A $ref system allows splitting large sections into modular files that are resolved at seed time.",
+      "icon": "DataObject"
+    },
+    {
+      "title": "Flask API",
+      "body": "A Python Flask backend reads the seed JSON, stores it in a file-based database (JsonDatabase), and serves it through RESTful endpoints. Three blueprints handle /api/guide, /api/exam, and /api/glossary.",
+      "icon": "Dns"
+    },
+    {
+      "title": "Next.js Frontend",
+      "body": "A React 19 frontend built with Next.js 15 App Router fetches data from the API and renders it using a block-based component system. Redux Toolkit manages client state with persistence via redux-persist. Material UI provides theming.",
+      "icon": "DesktopMac"
+    }
+  ]
+}

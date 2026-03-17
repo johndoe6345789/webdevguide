@@ -1,0 +1,35 @@
+{
+  "type": "table",
+  "headers": [
+    "Letter",
+    "Operation",
+    "Description",
+    "HTTP Method"
+  ],
+  "rows": [
+    [
+      "C",
+      "Create",
+      "Add new data",
+      "POST"
+    ],
+    [
+      "R",
+      "Read",
+      "Get existing data",
+      "GET"
+    ],
+    [
+      "U",
+      "Update",
+      "Change existing data",
+      "PUT"
+    ],
+    [
+      "D",
+      "Delete",
+      "Remove data",
+      "DELETE"
+    ]
+  ]
+}

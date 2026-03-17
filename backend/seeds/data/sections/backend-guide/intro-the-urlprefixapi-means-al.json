@@ -1,0 +1,5 @@
+{
+  "type": "alert",
+  "severity": "info",
+  "body": "The url_prefix=\"/api\" means all routes in this blueprint will start with /api. So /items becomes /api/items."
+}

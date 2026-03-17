@@ -1,0 +1,6 @@
+{
+  "type": "alert",
+  "severity": "info",
+  "title": "Checklist for new sections",
+  "body": "Five files are touched when adding a new section: (1) `backend/seeds/data/sections/my-new-section.json` (the content), (2) `backend/seeds/data/index.json` (the $ref entry), (3) `frontend/src/app/[locale]/my-new-section/page.tsx` (the page), (4) `frontend/src/hooks/useHeader.ts` (the nav entry), and (5) `frontend/src/messages/en.json` (the translation). No backend Python code or React component code needs to change."
+}

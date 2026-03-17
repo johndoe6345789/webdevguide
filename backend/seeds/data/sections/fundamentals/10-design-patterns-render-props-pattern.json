@@ -1,0 +1,21 @@
+{
+  "type": "accordion",
+  "title": "Render Props Pattern",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "A **render prop** is a function prop that a component uses to know what to render. It lets you share stateful logic while giving the consumer full control over the UI. This pattern was more common before hooks, but is still useful for certain cases like headless UI libraries."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "render-props.tsx",
+      "code": "import { useState, useEffect } from 'react';\n\ninterface MousePosition {\n  x: number;\n  y: number;\n}\n\n// Component with a render prop\ninterface MouseTrackerProps {\n  render: (position: MousePosition) => React.ReactNode;\n}\n\nfunction MouseTracker({ render }: MouseTrackerProps) {\n  const [position, setPosition] = useState<MousePosition>({ x: 0, y: 0 });\n\n  useEffect(() => {\n    function handleMouseMove(event: MouseEvent) {\n      setPosition({ x: event.clientX, y: event.clientY });\n    }\n\n    window.addEventListener('mousemove', handleMouseMove);\n    return () => window.removeEventListener('mousemove', handleMouseMove);\n  }, []);\n\n  return <>{render(position)}</>;\n}\n\n// Usage: consumer controls what is rendered\nfunction App() {\n  return (\n    <MouseTracker\n      render={({ x, y }) => (\n        <p>Mouse is at ({x}, {y})</p>\n      )}\n    />\n  );\n}\n\n// Alternative: children as a function (same pattern)\nfunction MouseTrackerV2({ children }: { children: (pos: MousePosition) => React.ReactNode }) {\n  const [position, setPosition] = useState<MousePosition>({ x: 0, y: 0 });\n  // ... same logic\n  return <>{children(position)}</>;\n}\n\n// Usage:\n// <MouseTrackerV2>\n//   {({ x, y }) => <p>({x}, {y})</p>}\n// </MouseTrackerV2>"
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "body": "In most cases, a **custom hook** achieves the same thing more cleanly. Use render props when you need to inject behavior into a component tree without hooks, such as in class components or headless UI libraries."
+    }
+  ]
+}

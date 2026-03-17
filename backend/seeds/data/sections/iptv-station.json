@@ -1,0 +1,329 @@
+{
+  "title": "Building an Online IPTV Station",
+  "slug": "iptv-station",
+  "description": "Build a live IPTV streaming platform with multiple channels, EPG guide, DVR recording, and multi-device playback",
+  "icon": "LiveTv",
+  "order": 24,
+  "estimatedMinutes": 50,
+  "difficulty": "advanced",
+  "prerequisites": ["fundamentals", "backend-guide", "video-platform"],
+  "keyPoints": [
+    "Live video streaming with HLS/DASH",
+    "Multi-channel management",
+    "Electronic Program Guide (EPG)",
+    "DVR and timeshift",
+    "Multi-device adaptive playback"
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "heading": "What is IPTV?",
+      "headingLevel": 2,
+      "body": "IPTV (Internet Protocol Television) delivers live and on-demand video content over IP networks instead of traditional satellite or cable. Unlike OTT services like Netflix that primarily serve on-demand content, IPTV focuses on scheduled, linear channels that viewers tune into, just like traditional TV but delivered over the internet. This guide builds a self-hosted IPTV platform with live channel ingestion, an electronic program guide, DVR recording, and adaptive multi-device playback."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        { "title": "IPTV (Managed Network)", "body": "Delivered over a private, managed network with guaranteed quality of service. Used by telecom operators like AT&T U-verse.", "icon": "Router", "chip": "Traditional" },
+        { "title": "OTT (Over-The-Top)", "body": "Delivered over the open internet without QoS guarantees. Netflix, YouTube TV, and Hulu are OTT services.", "icon": "Cloud", "chip": "Modern" },
+        { "title": "Broadcast (RF)", "body": "Traditional antenna/cable/satellite delivery using radio frequencies. No internet required but limited interactivity.", "icon": "SettingsInputAntenna", "chip": "Legacy" }
+      ]
+    },
+    {
+      "type": "table",
+      "heading": "Streaming Protocol Comparison",
+      "headers": ["Protocol", "Latency", "Adaptive", "Browser Support", "Best For"],
+      "rows": [
+        ["HLS", "6-30 seconds", "Yes (variants)", "All browsers", "General-purpose live/VOD streaming"],
+        ["DASH", "6-30 seconds", "Yes (MPD)", "MSE-capable browsers", "DRM-protected premium content"],
+        ["RTMP", "1-3 seconds", "No", "None (Flash deprecated)", "Ingest from encoders to origin server"],
+        ["SRT", "< 1 second", "No", "None (native only)", "Reliable point-to-point contribution feeds"],
+        ["WebRTC", "< 500ms", "Limited", "All modern browsers", "Ultra-low-latency interactive streams"],
+        ["LL-HLS", "2-5 seconds", "Yes", "Safari, growing support", "Low-latency live with broad compatibility"]
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "System Architecture",
+      "headingLevel": 2,
+      "body": "The IPTV platform follows a standard broadcast chain: video sources push RTMP streams to an Nginx-RTMP ingest server, FFmpeg transcodes each feed into multi-bitrate HLS segments, an origin server hosts the playlists and segments, and an optional CDN distributes them to viewers. The Flask API manages channels, EPG data, users, and DVR recordings, while the React frontend provides the channel player and TV guide."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        { "title": "Nginx-RTMP", "body": "Receives live RTMP feeds from cameras, encoders, or OBS. Acts as the ingest point for all channels.", "icon": "Input", "chip": "Ingest" },
+        { "title": "FFmpeg", "body": "Transcodes each RTMP feed into multiple HLS quality variants (1080p, 720p, 480p) with proper segmentation.", "icon": "Transform", "chip": "Transcoding" },
+        { "title": "Origin Server", "body": "Nginx serving HLS playlists (.m3u8) and segments (.ts) over HTTP. Source of truth for all streams.", "icon": "Storage", "chip": "Distribution" },
+        { "title": "Flask API", "body": "REST API for channel management, EPG data, user auth, DVR control, and stream health monitoring.", "icon": "Api", "chip": "Backend" },
+        { "title": "React Player", "body": "hls.js-powered video player with channel switching, quality selection, EPG overlay, and DVR controls.", "icon": "OndemandVideo", "chip": "Frontend" },
+        { "title": "PostgreSQL", "body": "Stores channels, EPG programs, users, subscriptions, DVR recordings, and analytics data.", "icon": "Database", "chip": "Storage" }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Live Stream Ingestion with Nginx-RTMP",
+      "headingLevel": 2,
+      "body": "Nginx with the RTMP module acts as the ingest point for all live video feeds. Cameras, hardware encoders, or software like OBS push RTMP streams to Nginx, which then triggers FFmpeg to transcode each feed into HLS with multiple quality levels."
+    },
+    {
+      "type": "code",
+      "language": "nginx",
+      "filename": "nginx-rtmp.conf",
+      "description": "Nginx configuration with RTMP module for live stream ingestion and FFmpeg-based HLS transcoding.",
+      "code": "worker_processes auto;\nevents { worker_connections 1024; }\n\nrtmp {\n    server {\n        listen 1935;\n        chunk_size 4096;\n        notify_method get;\n\n        application ingest {\n            live on;\n            record off;\n\n            # Authentication: call Flask API to verify stream key\n            on_publish http://api:5000/api/channels/auth;\n\n            # Transcode to multiple HLS variants via FFmpeg\n            exec_push ffmpeg -i rtmp://localhost/ingest/$name\n                -map 0:v -map 0:a -c:v libx264 -preset veryfast\n                -b:v:0 4500k -s:v:0 1920x1080 -profile:v:0 high\n                -b:v:1 2500k -s:v:1 1280x720  -profile:v:1 main\n                -b:v:2 1000k -s:v:2 854x480   -profile:v:2 main\n                -c:a aac -b:a 128k -ar 44100\n                -f hls\n                -hls_time 4\n                -hls_list_size 10\n                -hls_flags delete_segments+independent_segments\n                -hls_segment_filename /hls/$name_%v/segment_%03d.ts\n                -master_pl_name master.m3u8\n                -var_stream_map \"v:0,a:0,name:1080p v:1,a:0,name:720p v:2,a:0,name:480p\"\n                /hls/$name_%v/playlist.m3u8;\n\n            exec_kill_signal term;\n        }\n    }\n}\n\nhttp {\n    server {\n        listen 8080;\n\n        # Serve HLS segments and playlists\n        location /hls {\n            alias /hls;\n            types {\n                application/vnd.apple.mpegurl m3u8;\n                video/mp2t ts;\n            }\n            add_header Cache-Control no-cache;\n            add_header Access-Control-Allow-Origin *;\n        }\n\n        # RTMP statistics page\n        location /stat {\n            rtmp_stat all;\n            rtmp_stat_stylesheet stat.xsl;\n        }\n    }\n}"
+    },
+    {
+      "type": "code",
+      "language": "yaml",
+      "filename": "docker-compose.yml",
+      "description": "Docker Compose stack for the full IPTV platform: Nginx-RTMP ingest, Flask API, PostgreSQL, and Redis.",
+      "code": "version: \"3.8\"\n\nservices:\n  nginx-rtmp:\n    build:\n      context: ./nginx-rtmp\n      dockerfile: Dockerfile\n    ports:\n      - \"1935:1935\"   # RTMP ingest\n      - \"8080:8080\"   # HLS serving\n    volumes:\n      - hls_data:/hls\n      - dvr_data:/dvr\n      - ./nginx-rtmp.conf:/etc/nginx/nginx.conf\n    restart: unless-stopped\n\n  api:\n    build: ./backend\n    ports:\n      - \"5000:5000\"\n    environment:\n      DATABASE_URL: postgresql://iptv:iptv@db:5432/iptv_db\n      REDIS_URL: redis://redis:6379/0\n      SECRET_KEY: change-me-in-production\n      HLS_BASE_URL: http://nginx-rtmp:8080/hls\n      DVR_PATH: /dvr\n    volumes:\n      - dvr_data:/dvr\n    depends_on:\n      - db\n      - redis\n\n  db:\n    image: postgres:16-alpine\n    environment:\n      POSTGRES_USER: iptv\n      POSTGRES_PASSWORD: iptv\n      POSTGRES_DB: iptv_db\n    volumes:\n      - pgdata:/var/lib/postgresql/data\n    ports:\n      - \"5432:5432\"\n\n  redis:\n    image: redis:7-alpine\n    ports:\n      - \"6379:6379\"\n\nvolumes:\n  pgdata:\n  hls_data:\n  dvr_data:"
+    },
+    {
+      "type": "code",
+      "language": "dockerfile",
+      "filename": "nginx-rtmp/Dockerfile",
+      "description": "Dockerfile for Nginx with the RTMP module compiled in, plus FFmpeg for transcoding.",
+      "code": "FROM buildpack-deps:bookworm AS build\nARG NGINX_VERSION=1.25.4\nARG RTMP_MODULE_VERSION=1.2.2\n\nRUN apt-get update && apt-get install -y libpcre3-dev zlib1g-dev libssl-dev\nRUN curl -fSL https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz | tar xz \\\n && curl -fSL https://github.com/arut/nginx-rtmp-module/archive/v${RTMP_MODULE_VERSION}.tar.gz | tar xz\nRUN cd nginx-${NGINX_VERSION} && ./configure \\\n      --add-module=../nginx-rtmp-module-${RTMP_MODULE_VERSION} \\\n      --with-http_ssl_module \\\n      --prefix=/etc/nginx \\\n      --sbin-path=/usr/sbin/nginx \\\n    && make -j$(nproc) && make install\n\nFROM debian:bookworm-slim\nRUN apt-get update && apt-get install -y --no-install-recommends ffmpeg \\\n    && rm -rf /var/lib/apt/lists/*\nCOPY --from=build /usr/sbin/nginx /usr/sbin/nginx\nCOPY --from=build /etc/nginx /etc/nginx\nRUN mkdir -p /hls /dvr\nEXPOSE 1935 8080\nCMD [\"nginx\", \"-g\", \"daemon off;\"]"
+    },
+    {
+      "type": "text",
+      "heading": "Database Schema",
+      "headingLevel": 2,
+      "body": "The database stores channels with their stream configuration, EPG program listings, user subscriptions, and DVR recordings. Each channel has a unique stream key used to authenticate RTMP pushes."
+    },
+    {
+      "type": "code",
+      "language": "sql",
+      "filename": "schema.sql",
+      "description": "PostgreSQL schema for IPTV channels, EPG programs, users, subscriptions, and DVR recordings.",
+      "code": "CREATE TABLE channels (\n  id SERIAL PRIMARY KEY,\n  name VARCHAR(120) NOT NULL,\n  slug VARCHAR(140) UNIQUE NOT NULL,\n  description TEXT DEFAULT '',\n  logo_url VARCHAR(512),\n  category VARCHAR(60) DEFAULT 'General',\n  stream_key VARCHAR(64) UNIQUE NOT NULL,\n  hls_url VARCHAR(512),\n  is_active BOOLEAN DEFAULT true,\n  sort_order INTEGER DEFAULT 0,\n  created_at TIMESTAMP DEFAULT NOW()\n);\nCREATE INDEX idx_channels_active ON channels(is_active, sort_order);\n\nCREATE TABLE epg_programs (\n  id SERIAL PRIMARY KEY,\n  channel_id INTEGER NOT NULL REFERENCES channels(id) ON DELETE CASCADE,\n  title VARCHAR(200) NOT NULL,\n  description TEXT DEFAULT '',\n  category VARCHAR(60) DEFAULT '',\n  start_time TIMESTAMP NOT NULL,\n  end_time TIMESTAMP NOT NULL,\n  episode_num VARCHAR(20),\n  season_num VARCHAR(20),\n  rating VARCHAR(10),\n  poster_url VARCHAR(512),\n  created_at TIMESTAMP DEFAULT NOW()\n);\nCREATE INDEX idx_epg_channel_time ON epg_programs(channel_id, start_time);\nCREATE INDEX idx_epg_start ON epg_programs(start_time);\n\nCREATE TABLE subscription_tiers (\n  id SERIAL PRIMARY KEY,\n  name VARCHAR(60) UNIQUE NOT NULL,\n  description TEXT DEFAULT '',\n  price_cents INTEGER NOT NULL DEFAULT 0,\n  max_concurrent_streams INTEGER DEFAULT 1,\n  includes_dvr BOOLEAN DEFAULT false,\n  created_at TIMESTAMP DEFAULT NOW()\n);\n\nCREATE TABLE tier_channels (\n  tier_id INTEGER NOT NULL REFERENCES subscription_tiers(id) ON DELETE CASCADE,\n  channel_id INTEGER NOT NULL REFERENCES channels(id) ON DELETE CASCADE,\n  PRIMARY KEY (tier_id, channel_id)\n);\n\nCREATE TABLE users (\n  id SERIAL PRIMARY KEY,\n  email VARCHAR(200) UNIQUE NOT NULL,\n  password_hash VARCHAR(256) NOT NULL,\n  display_name VARCHAR(80),\n  tier_id INTEGER REFERENCES subscription_tiers(id),\n  max_devices INTEGER DEFAULT 3,\n  is_active BOOLEAN DEFAULT true,\n  created_at TIMESTAMP DEFAULT NOW()\n);\n\nCREATE TABLE user_devices (\n  id SERIAL PRIMARY KEY,\n  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  device_name VARCHAR(100),\n  device_type VARCHAR(30),\n  device_token VARCHAR(256) UNIQUE NOT NULL,\n  last_active TIMESTAMP DEFAULT NOW(),\n  created_at TIMESTAMP DEFAULT NOW()\n);\nCREATE INDEX idx_devices_user ON user_devices(user_id);\n\nCREATE TABLE dvr_recordings (\n  id SERIAL PRIMARY KEY,\n  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  channel_id INTEGER NOT NULL REFERENCES channels(id) ON DELETE CASCADE,\n  epg_program_id INTEGER REFERENCES epg_programs(id),\n  title VARCHAR(200) NOT NULL,\n  start_time TIMESTAMP NOT NULL,\n  end_time TIMESTAMP NOT NULL,\n  file_path VARCHAR(512),\n  file_size_bytes BIGINT,\n  status VARCHAR(20) DEFAULT 'scheduled',\n  created_at TIMESTAMP DEFAULT NOW()\n);\nCREATE INDEX idx_dvr_user ON dvr_recordings(user_id, status);\n\nCREATE TABLE stream_sessions (\n  id SERIAL PRIMARY KEY,\n  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  channel_id INTEGER NOT NULL REFERENCES channels(id),\n  device_id INTEGER REFERENCES user_devices(id),\n  started_at TIMESTAMP DEFAULT NOW(),\n  ended_at TIMESTAMP,\n  ip_address INET\n);\nCREATE INDEX idx_sessions_user_active ON stream_sessions(user_id, ended_at) WHERE ended_at IS NULL;"
+    },
+    {
+      "type": "text",
+      "heading": "Channel Management API",
+      "headingLevel": 2,
+      "body": "The Flask API provides CRUD operations for channels, stream key authentication for the RTMP ingest server, and status monitoring that checks whether each channel has an active HLS stream."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/channels.py",
+      "description": "Flask blueprint for channel CRUD, RTMP stream key authentication, and channel status monitoring.",
+      "code": "from flask import Blueprint, request, jsonify\nfrom flask_jwt_extended import jwt_required, get_jwt_identity\nfrom db import get_db\nimport secrets\nimport os\nimport requests as http_requests\n\nchannels_bp = Blueprint(\"channels\", __name__)\n\nHLS_BASE = os.environ.get(\"HLS_BASE_URL\", \"http://nginx-rtmp:8080/hls\")\n\n@channels_bp.route(\"\", methods=[\"GET\"])\ndef list_channels():\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT id, name, slug, description, logo_url, category, hls_url,\n               is_active, sort_order\n        FROM channels WHERE is_active = true\n        ORDER BY sort_order, name\n    \"\"\")\n    cols = [d[0] for d in cur.description]\n    channels = [dict(zip(cols, row)) for row in cur.fetchall()]\n    return jsonify(channels=channels)\n\n@channels_bp.route(\"\", methods=[\"POST\"])\n@jwt_required()\ndef create_channel():\n    data = request.get_json()\n    stream_key = secrets.token_urlsafe(32)\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        INSERT INTO channels (name, slug, description, logo_url, category, stream_key, sort_order)\n        VALUES (%s, %s, %s, %s, %s, %s, %s)\n        RETURNING id, stream_key\n    \"\"\", (data[\"name\"], data[\"slug\"], data.get(\"description\", \"\"),\n          data.get(\"logo_url\"), data.get(\"category\", \"General\"),\n          stream_key, data.get(\"sort_order\", 0)))\n    row = cur.fetchone()\n    db.commit()\n    return jsonify(id=row[0], stream_key=row[1],\n                   rtmp_url=f\"rtmp://your-server:1935/ingest/{row[1]}\"), 201\n\n@channels_bp.route(\"/auth\", methods=[\"GET\"])\ndef rtmp_auth():\n    \"\"\"Called by Nginx-RTMP on_publish to authenticate stream keys.\"\"\"\n    stream_key = request.args.get(\"name\", \"\")\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"SELECT id FROM channels WHERE stream_key = %s AND is_active = true\", (stream_key,))\n    row = cur.fetchone()\n    if row:\n        # Update the HLS URL for this channel\n        cur.execute(\n            \"UPDATE channels SET hls_url = %s WHERE id = %s\",\n            (f\"{HLS_BASE}/{stream_key}_1080p/master.m3u8\", row[0])\n        )\n        db.commit()\n        return \"\", 200  # Allow the stream\n    return \"\", 403  # Reject unauthorized stream keys\n\n@channels_bp.route(\"/status\", methods=[\"GET\"])\ndef channel_status():\n    \"\"\"Check which channels have active HLS streams.\"\"\"\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"SELECT id, name, slug, hls_url FROM channels WHERE is_active = true\")\n    cols = [d[0] for d in cur.description]\n    channels = [dict(zip(cols, row)) for row in cur.fetchall()]\n\n    for ch in channels:\n        try:\n            resp = http_requests.head(ch[\"hls_url\"], timeout=2)\n            ch[\"stream_online\"] = resp.status_code == 200\n        except Exception:\n            ch[\"stream_online\"] = False\n\n    return jsonify(channels=channels)"
+    },
+    {
+      "type": "text",
+      "heading": "Electronic Program Guide (EPG)",
+      "headingLevel": 2,
+      "body": "The EPG provides a TV guide experience showing what is currently playing and what is coming up on each channel. We parse XMLTV format data (the standard for EPG exchange), store it in PostgreSQL, and serve it through a REST API. The React frontend renders a traditional TV guide grid."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "services/epg_parser.py",
+      "description": "XMLTV format parser that imports EPG program data into the database.",
+      "code": "import xml.etree.ElementTree as ET\nfrom datetime import datetime\nfrom db import get_db\n\ndef parse_xmltv(xml_path: str):\n    \"\"\"Parse an XMLTV file and insert programs into the database.\"\"\"\n    tree = ET.parse(xml_path)\n    root = tree.getroot()\n\n    db = get_db()\n    cur = db.cursor()\n\n    # Build channel ID mapping from XMLTV channel IDs to our DB channel IDs\n    channel_map = {}\n    for ch_elem in root.findall(\"channel\"):\n        xmltv_id = ch_elem.get(\"id\")\n        display_name = ch_elem.findtext(\"display-name\", \"\")\n        cur.execute(\"SELECT id FROM channels WHERE name = %s\", (display_name,))\n        row = cur.fetchone()\n        if row:\n            channel_map[xmltv_id] = row[0]\n\n    # Parse programs\n    inserted = 0\n    for prog in root.findall(\"programme\"):\n        xmltv_channel = prog.get(\"channel\")\n        channel_id = channel_map.get(xmltv_channel)\n        if not channel_id:\n            continue\n\n        start_str = prog.get(\"start\", \"\")\n        stop_str = prog.get(\"stop\", \"\")\n        try:\n            start_time = datetime.strptime(start_str[:14], \"%Y%m%d%H%M%S\")\n            end_time = datetime.strptime(stop_str[:14], \"%Y%m%d%H%M%S\")\n        except ValueError:\n            continue\n\n        title = prog.findtext(\"title\", \"Untitled\")\n        description = prog.findtext(\"desc\", \"\")\n        category = prog.findtext(\"category\", \"\")\n        episode_num = prog.findtext(\"episode-num\", \"\")\n        rating_elem = prog.find(\".//rating/value\")\n        rating = rating_elem.text if rating_elem is not None else \"\"\n        icon_elem = prog.find(\"icon\")\n        poster_url = icon_elem.get(\"src\") if icon_elem is not None else None\n\n        # Upsert: avoid duplicates on re-import\n        cur.execute(\"\"\"\n            INSERT INTO epg_programs (channel_id, title, description, category,\n                                     start_time, end_time, episode_num, rating, poster_url)\n            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)\n            ON CONFLICT DO NOTHING\n        \"\"\", (channel_id, title, description, category,\n              start_time, end_time, episode_num, rating, poster_url))\n        inserted += 1\n\n    db.commit()\n    return inserted"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/epg.py",
+      "description": "Flask EPG endpoints: current program per channel, full EPG grid for a time range, and what's on now across all channels.",
+      "code": "from flask import Blueprint, request, jsonify\nfrom db import get_db\nfrom datetime import datetime, timedelta\n\nepg_bp = Blueprint(\"epg\", __name__)\n\n@epg_bp.route(\"/now\", methods=[\"GET\"])\ndef whats_on_now():\n    \"\"\"Return the currently airing program for each active channel.\"\"\"\n    now = datetime.now()\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT c.id AS channel_id, c.name AS channel_name, c.logo_url,\n               p.title, p.description, p.category,\n               p.start_time, p.end_time, p.rating, p.poster_url\n        FROM channels c\n        LEFT JOIN LATERAL (\n            SELECT * FROM epg_programs ep\n            WHERE ep.channel_id = c.id AND ep.start_time <= %s AND ep.end_time > %s\n            ORDER BY ep.start_time DESC LIMIT 1\n        ) p ON true\n        WHERE c.is_active = true\n        ORDER BY c.sort_order\n    \"\"\", (now, now))\n    cols = [d[0] for d in cur.description]\n    rows = [dict(zip(cols, r)) for r in cur.fetchall()]\n    for r in rows:\n        for key in (\"start_time\", \"end_time\"):\n            if r.get(key):\n                r[key] = r[key].isoformat()\n    return jsonify(now_playing=rows)\n\n@epg_bp.route(\"/guide\", methods=[\"GET\"])\ndef epg_guide():\n    \"\"\"Return EPG data for all channels within a time range (default: next 6 hours).\"\"\"\n    now = datetime.now()\n    start = request.args.get(\"start\", now.isoformat())\n    hours = request.args.get(\"hours\", 6, type=int)\n    try:\n        start_dt = datetime.fromisoformat(start)\n    except ValueError:\n        start_dt = now\n    end_dt = start_dt + timedelta(hours=hours)\n\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT c.id AS channel_id, c.name AS channel_name, c.logo_url, c.slug,\n               p.id AS program_id, p.title, p.description, p.category,\n               p.start_time, p.end_time, p.rating, p.poster_url\n        FROM channels c\n        JOIN epg_programs p ON p.channel_id = c.id\n        WHERE c.is_active = true\n          AND p.start_time < %s AND p.end_time > %s\n        ORDER BY c.sort_order, p.start_time\n    \"\"\", (end_dt, start_dt))\n    cols = [d[0] for d in cur.description]\n    rows = [dict(zip(cols, r)) for r in cur.fetchall()]\n\n    # Group by channel\n    guide = {}\n    for r in rows:\n        r[\"start_time\"] = r[\"start_time\"].isoformat()\n        r[\"end_time\"] = r[\"end_time\"].isoformat()\n        ch_id = r[\"channel_id\"]\n        if ch_id not in guide:\n            guide[ch_id] = {\n                \"channel_id\": ch_id, \"channel_name\": r[\"channel_name\"],\n                \"logo_url\": r[\"logo_url\"], \"slug\": r[\"slug\"], \"programs\": []\n            }\n        guide[ch_id][\"programs\"].append(r)\n\n    return jsonify(guide=list(guide.values()), start=start_dt.isoformat(), end=end_dt.isoformat())\n\n@epg_bp.route(\"/channel/<int:channel_id>\", methods=[\"GET\"])\ndef channel_epg(channel_id):\n    \"\"\"Return EPG for a specific channel for the next 24 hours.\"\"\"\n    now = datetime.now()\n    end = now + timedelta(hours=24)\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT id, title, description, category, start_time, end_time,\n               episode_num, season_num, rating, poster_url\n        FROM epg_programs\n        WHERE channel_id = %s AND start_time < %s AND end_time > %s\n        ORDER BY start_time\n    \"\"\", (channel_id, end, now))\n    cols = [d[0] for d in cur.description]\n    programs = [dict(zip(cols, r)) for r in cur.fetchall()]\n    for p in programs:\n        p[\"start_time\"] = p[\"start_time\"].isoformat()\n        p[\"end_time\"] = p[\"end_time\"].isoformat()\n    return jsonify(programs=programs)"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/EPGGrid.tsx",
+      "description": "React Electronic Program Guide component rendering a TV guide-style grid with time slots and channel rows.",
+      "code": "import { useState, useEffect, useRef } from 'react';\n\ninterface Program {\n  program_id: number;\n  title: string;\n  description: string;\n  category: string;\n  start_time: string;\n  end_time: string;\n  rating: string;\n}\n\ninterface ChannelGuide {\n  channel_id: number;\n  channel_name: string;\n  logo_url: string | null;\n  slug: string;\n  programs: Program[];\n}\n\ninterface Props {\n  onChannelSelect: (channelId: number) => void;\n  onProgramSelect: (program: Program, channelId: number) => void;\n}\n\nconst HOUR_WIDTH = 240; // pixels per hour\nconst ROW_HEIGHT = 64;\n\nexport default function EPGGrid({ onChannelSelect, onProgramSelect }: Props) {\n  const [guide, setGuide] = useState<ChannelGuide[]>([]);\n  const [startTime, setStartTime] = useState('');\n  const gridRef = useRef<HTMLDivElement>(null);\n\n  useEffect(() => {\n    fetch('/api/epg/guide?hours=8')\n      .then(r => r.json())\n      .then(data => {\n        setGuide(data.guide);\n        setStartTime(data.start);\n      });\n  }, []);\n\n  const guideStart = new Date(startTime).getTime();\n\n  const getProgramStyle = (prog: Program) => {\n    const start = new Date(prog.start_time).getTime();\n    const end = new Date(prog.end_time).getTime();\n    const offsetMs = Math.max(0, start - guideStart);\n    const durationMs = end - Math.max(start, guideStart);\n    const leftPx = (offsetMs / 3600000) * HOUR_WIDTH;\n    const widthPx = Math.max(40, (durationMs / 3600000) * HOUR_WIDTH);\n    return { left: `${leftPx}px`, width: `${widthPx}px`, height: `${ROW_HEIGHT - 4}px` };\n  };\n\n  const isCurrentProgram = (prog: Program) => {\n    const now = Date.now();\n    return new Date(prog.start_time).getTime() <= now && new Date(prog.end_time).getTime() > now;\n  };\n\n  // Generate time ruler labels\n  const timeLabels = [];\n  for (let h = 0; h < 8; h++) {\n    const t = new Date(guideStart + h * 3600000);\n    timeLabels.push({ label: t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), left: h * HOUR_WIDTH });\n  }\n\n  return (\n    <div className=\"epg-container\">\n      <div className=\"epg-time-ruler\">\n        {timeLabels.map((t, i) => (\n          <div key={i} className=\"time-label\" style={{ left: `${t.left}px` }}>{t.label}</div>\n        ))}\n      </div>\n      <div className=\"epg-grid\" ref={gridRef}>\n        {guide.map(ch => (\n          <div key={ch.channel_id} className=\"epg-row\" style={{ height: `${ROW_HEIGHT}px` }}>\n            <div className=\"epg-channel-label\" onClick={() => onChannelSelect(ch.channel_id)}>\n              {ch.logo_url && <img src={ch.logo_url} alt={ch.channel_name} className=\"channel-logo\" />}\n              <span>{ch.channel_name}</span>\n            </div>\n            <div className=\"epg-programs\">\n              {ch.programs.map(prog => (\n                <div\n                  key={prog.program_id}\n                  className={`epg-program ${isCurrentProgram(prog) ? 'now' : ''}`}\n                  style={getProgramStyle(prog)}\n                  onClick={() => onProgramSelect(prog, ch.channel_id)}\n                  title={`${prog.title}\\n${prog.start_time} - ${prog.end_time}`}\n                >\n                  <span className=\"prog-title\">{prog.title}</span>\n                  <span className=\"prog-time\">\n                    {new Date(prog.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}\n                  </span>\n                </div>\n              ))}\n            </div>\n          </div>\n        ))}\n      </div>\n    </div>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "HLS Packaging Details",
+      "headingLevel": 2,
+      "body": "The FFmpeg command in the Nginx-RTMP config creates adaptive HLS streams. Here is a standalone version of the FFmpeg command with detailed explanations, plus the master playlist format that hls.js uses to select the appropriate quality level."
+    },
+    {
+      "type": "code",
+      "language": "bash",
+      "filename": "transcode.sh",
+      "description": "Standalone FFmpeg command for creating multi-bitrate HLS streams with proper segment naming.",
+      "code": "#!/bin/bash\n# Transcode a live RTMP stream into multi-bitrate HLS\n# Usage: ./transcode.sh <stream_key>\n\nSTREAM_KEY=\"$1\"\nHLS_DIR=\"/hls/${STREAM_KEY}\"\nmkdir -p \"${HLS_DIR}/1080p\" \"${HLS_DIR}/720p\" \"${HLS_DIR}/480p\"\n\nffmpeg -i \"rtmp://localhost/ingest/${STREAM_KEY}\" \\\n  -filter_complex \"[0:v]split=3[v1][v2][v3]\" \\\n  \\\n  -map \"[v1]\" -map 0:a -c:v libx264 -preset veryfast -b:v 4500k \\\n    -maxrate 4800k -bufsize 9000k -s 1920x1080 -g 48 -keyint_min 48 \\\n    -sc_threshold 0 -profile:v high -c:a aac -b:a 128k \\\n    -f hls -hls_time 4 -hls_list_size 10 \\\n    -hls_flags delete_segments+independent_segments \\\n    -hls_segment_filename \"${HLS_DIR}/1080p/seg_%03d.ts\" \\\n    \"${HLS_DIR}/1080p/playlist.m3u8\" \\\n  \\\n  -map \"[v2]\" -map 0:a -c:v libx264 -preset veryfast -b:v 2500k \\\n    -maxrate 2700k -bufsize 5000k -s 1280x720 -g 48 -keyint_min 48 \\\n    -sc_threshold 0 -profile:v main -c:a aac -b:a 128k \\\n    -f hls -hls_time 4 -hls_list_size 10 \\\n    -hls_flags delete_segments+independent_segments \\\n    -hls_segment_filename \"${HLS_DIR}/720p/seg_%03d.ts\" \\\n    \"${HLS_DIR}/720p/playlist.m3u8\" \\\n  \\\n  -map \"[v3]\" -map 0:a -c:v libx264 -preset veryfast -b:v 1000k \\\n    -maxrate 1100k -bufsize 2000k -s 854x480 -g 48 -keyint_min 48 \\\n    -sc_threshold 0 -profile:v main -c:a aac -b:a 96k \\\n    -f hls -hls_time 4 -hls_list_size 10 \\\n    -hls_flags delete_segments+independent_segments \\\n    -hls_segment_filename \"${HLS_DIR}/480p/seg_%03d.ts\" \\\n    \"${HLS_DIR}/480p/playlist.m3u8\""
+    },
+    {
+      "type": "code",
+      "language": "text",
+      "filename": "master.m3u8",
+      "description": "HLS master playlist referencing all quality variants so the player can switch adaptively.",
+      "code": "#EXTM3U\n#EXT-X-VERSION:3\n\n#EXT-X-STREAM-INF:BANDWIDTH=4628000,RESOLUTION=1920x1080,CODECS=\"avc1.640028,mp4a.40.2\"\n1080p/playlist.m3u8\n\n#EXT-X-STREAM-INF:BANDWIDTH=2628000,RESOLUTION=1280x720,CODECS=\"avc1.4d401f,mp4a.40.2\"\n720p/playlist.m3u8\n\n#EXT-X-STREAM-INF:BANDWIDTH=1096000,RESOLUTION=854x480,CODECS=\"avc1.4d401f,mp4a.40.2\"\n480p/playlist.m3u8"
+    },
+    {
+      "type": "text",
+      "heading": "Video Player with Channel Switching",
+      "headingLevel": 2,
+      "body": "The React player uses hls.js for adaptive HLS playback. It supports channel switching without full page reloads, quality level selection, Picture-in-Picture mode, and displays the current EPG program info as an overlay."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/IPTVPlayer.tsx",
+      "description": "React IPTV player with hls.js, channel switching, quality selector, PiP support, and EPG overlay.",
+      "code": "import { useState, useRef, useEffect, useCallback } from 'react';\nimport Hls from 'hls.js';\n\ninterface Channel {\n  id: number;\n  name: string;\n  slug: string;\n  logo_url: string | null;\n  hls_url: string;\n}\n\ninterface CurrentProgram {\n  title: string;\n  start_time: string;\n  end_time: string;\n  category: string;\n}\n\ninterface Props {\n  channels: Channel[];\n  initialChannelId?: number;\n}\n\nexport default function IPTVPlayer({ channels, initialChannelId }: Props) {\n  const videoRef = useRef<HTMLVideoElement>(null);\n  const hlsRef = useRef<Hls | null>(null);\n  const [currentChannel, setCurrentChannel] = useState<Channel | null>(null);\n  const [qualities, setQualities] = useState<{ height: number; index: number }[]>([]);\n  const [selectedQuality, setSelectedQuality] = useState(-1); // -1 = auto\n  const [currentProgram, setCurrentProgram] = useState<CurrentProgram | null>(null);\n  const [showOverlay, setShowOverlay] = useState(true);\n\n  const loadChannel = useCallback((channel: Channel) => {\n    const video = videoRef.current;\n    if (!video) return;\n\n    // Destroy existing HLS instance\n    if (hlsRef.current) {\n      hlsRef.current.destroy();\n    }\n\n    if (Hls.isSupported()) {\n      const hls = new Hls({\n        enableWorker: true,\n        lowLatencyMode: true,\n        maxBufferLength: 30,\n        maxMaxBufferLength: 60,\n      });\n      hls.loadSource(channel.hls_url);\n      hls.attachMedia(video);\n\n      hls.on(Hls.Events.MANIFEST_PARSED, (_event, data) => {\n        const levels = data.levels.map((level, index) => ({\n          height: level.height, index\n        }));\n        setQualities(levels);\n        setSelectedQuality(-1);\n        video.play().catch(console.error);\n      });\n\n      hls.on(Hls.Events.ERROR, (_event, data) => {\n        if (data.fatal) {\n          if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {\n            hls.startLoad();\n          } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {\n            hls.recoverMediaError();\n          }\n        }\n      });\n\n      hlsRef.current = hls;\n    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {\n      // Native HLS support (Safari)\n      video.src = channel.hls_url;\n      video.play().catch(console.error);\n    }\n\n    setCurrentChannel(channel);\n\n    // Fetch current program for this channel\n    fetch(`/api/epg/channel/${channel.id}`)\n      .then(r => r.json())\n      .then(data => {\n        const now = Date.now();\n        const current = data.programs.find(\n          (p: CurrentProgram) =>\n            new Date(p.start_time).getTime() <= now && new Date(p.end_time).getTime() > now\n        );\n        setCurrentProgram(current || null);\n      });\n  }, []);\n\n  useEffect(() => {\n    const initial = channels.find(c => c.id === initialChannelId) || channels[0];\n    if (initial) loadChannel(initial);\n    return () => { hlsRef.current?.destroy(); };\n  }, []);\n\n  const changeQuality = (index: number) => {\n    if (hlsRef.current) {\n      hlsRef.current.currentLevel = index; // -1 for auto\n      setSelectedQuality(index);\n    }\n  };\n\n  const togglePiP = async () => {\n    const video = videoRef.current;\n    if (!video) return;\n    if (document.pictureInPictureElement) {\n      await document.exitPictureInPicture();\n    } else {\n      await video.requestPictureInPicture();\n    }\n  };\n\n  const channelUp = () => {\n    if (!currentChannel) return;\n    const idx = channels.findIndex(c => c.id === currentChannel.id);\n    const next = channels[(idx + 1) % channels.length];\n    loadChannel(next);\n  };\n\n  const channelDown = () => {\n    if (!currentChannel) return;\n    const idx = channels.findIndex(c => c.id === currentChannel.id);\n    const prev = channels[(idx - 1 + channels.length) % channels.length];\n    loadChannel(prev);\n  };\n\n  return (\n    <div className=\"iptv-player\" onMouseMove={() => setShowOverlay(true)}>\n      <video ref={videoRef} className=\"player-video\" playsInline />\n\n      {showOverlay && currentChannel && (\n        <div className=\"player-overlay\">\n          <div className=\"channel-info\">\n            {currentChannel.logo_url && (\n              <img src={currentChannel.logo_url} alt=\"\" className=\"overlay-logo\" />\n            )}\n            <span className=\"channel-name\">{currentChannel.name}</span>\n            {currentProgram && (\n              <span className=\"program-name\">{currentProgram.title}</span>\n            )}\n          </div>\n\n          <div className=\"player-controls\">\n            <button onClick={channelDown} title=\"Previous channel\">CH-</button>\n            <button onClick={channelUp} title=\"Next channel\">CH+</button>\n\n            <select value={selectedQuality}\n              onChange={e => changeQuality(parseInt(e.target.value))}>\n              <option value={-1}>Auto</option>\n              {qualities.map(q => (\n                <option key={q.index} value={q.index}>{q.height}p</option>\n              ))}\n            </select>\n\n            <button onClick={togglePiP} title=\"Picture in Picture\">PiP</button>\n          </div>\n        </div>\n      )}\n    </div>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "DVR & Timeshift",
+      "headingLevel": 2,
+      "body": "DVR allows users to schedule recordings of upcoming programs and watch them later. Timeshift enables pausing and rewinding live TV by maintaining a rolling buffer of recent segments. Catch-up TV makes recently aired programs available on demand."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "services/dvr.py",
+      "description": "DVR recording service that captures HLS segments from live channels and stores them as playable recordings.",
+      "code": "import subprocess\nimport os\nfrom datetime import datetime, timedelta\nfrom threading import Thread\nfrom db import get_db\n\nDVR_PATH = os.environ.get(\"DVR_PATH\", \"/dvr\")\n\ndef start_recording(channel_hls_url: str, recording_id: int,\n                    duration_seconds: int, output_dir: str):\n    \"\"\"Record an HLS stream to an MP4 file using FFmpeg.\"\"\"\n    os.makedirs(output_dir, exist_ok=True)\n    output_file = os.path.join(output_dir, f\"recording_{recording_id}.mp4\")\n\n    cmd = [\n        \"ffmpeg\", \"-y\",\n        \"-i\", channel_hls_url,\n        \"-t\", str(duration_seconds),\n        \"-c\", \"copy\",        # No re-encoding, just remux\n        \"-movflags\", \"+faststart\",\n        output_file\n    ]\n\n    process = subprocess.run(cmd, capture_output=True, timeout=duration_seconds + 120)\n\n    db = get_db()\n    cur = db.cursor()\n    if os.path.exists(output_file) and os.path.getsize(output_file) > 0:\n        file_size = os.path.getsize(output_file)\n        cur.execute(\"\"\"\n            UPDATE dvr_recordings SET status = 'completed',\n                   file_path = %s, file_size_bytes = %s\n            WHERE id = %s\n        \"\"\", (output_file, file_size, recording_id))\n    else:\n        cur.execute(\n            \"UPDATE dvr_recordings SET status = 'failed' WHERE id = %s\",\n            (recording_id,)\n        )\n    db.commit()\n\ndef schedule_dvr_recording(app, recording_id: int,\n                           channel_hls_url: str, duration_seconds: int):\n    \"\"\"Launch a DVR recording in a background thread.\"\"\"\n    output_dir = os.path.join(DVR_PATH, str(recording_id))\n    def _record():\n        with app.app_context():\n            db = get_db()\n            cur = db.cursor()\n            cur.execute(\n                \"UPDATE dvr_recordings SET status = 'recording' WHERE id = %s\",\n                (recording_id,)\n            )\n            db.commit()\n            start_recording(channel_hls_url, recording_id, duration_seconds, output_dir)\n    Thread(target=_record, daemon=True).start()"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/dvr.py",
+      "description": "Flask endpoints for scheduling DVR recordings, listing user recordings, and serving recorded files.",
+      "code": "from flask import Blueprint, request, jsonify, send_file\nfrom flask_jwt_extended import jwt_required, get_jwt_identity\nfrom db import get_db\nfrom datetime import datetime\nfrom services.dvr import schedule_dvr_recording\nfrom flask import current_app\nimport os\n\ndvr_bp = Blueprint(\"dvr\", __name__)\n\n@dvr_bp.route(\"/recordings\", methods=[\"POST\"])\n@jwt_required()\ndef create_recording():\n    \"\"\"Schedule a new DVR recording.\"\"\"\n    user_id = int(get_jwt_identity())\n    data = request.get_json()\n    db = get_db()\n    cur = db.cursor()\n\n    # Check user has DVR access\n    cur.execute(\"\"\"\n        SELECT st.includes_dvr FROM users u\n        JOIN subscription_tiers st ON st.id = u.tier_id\n        WHERE u.id = %s\n    \"\"\", (user_id,))\n    row = cur.fetchone()\n    if not row or not row[0]:\n        return jsonify(error=\"DVR not included in your subscription\"), 403\n\n    channel_id = data[\"channel_id\"]\n    start_time = datetime.fromisoformat(data[\"start_time\"])\n    end_time = datetime.fromisoformat(data[\"end_time\"])\n    title = data.get(\"title\", \"Untitled Recording\")\n    duration = int((end_time - start_time).total_seconds())\n\n    cur.execute(\"\"\"\n        INSERT INTO dvr_recordings (user_id, channel_id, epg_program_id, title,\n                                    start_time, end_time, status)\n        VALUES (%s, %s, %s, %s, %s, %s, 'scheduled')\n        RETURNING id\n    \"\"\", (user_id, channel_id, data.get(\"epg_program_id\"),\n          title, start_time, end_time))\n    recording_id = cur.fetchone()[0]\n    db.commit()\n\n    # Get channel HLS URL\n    cur.execute(\"SELECT hls_url FROM channels WHERE id = %s\", (channel_id,))\n    hls_url = cur.fetchone()[0]\n\n    # Schedule the actual recording (will start at the right time)\n    if start_time <= datetime.now():\n        schedule_dvr_recording(current_app._get_current_object(),\n                               recording_id, hls_url, duration)\n\n    return jsonify(id=recording_id, status=\"scheduled\"), 201\n\n@dvr_bp.route(\"/recordings\", methods=[\"GET\"])\n@jwt_required()\ndef list_recordings():\n    \"\"\"List all recordings for the current user.\"\"\"\n    user_id = int(get_jwt_identity())\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT r.id, r.title, r.start_time, r.end_time, r.status,\n               r.file_size_bytes, c.name AS channel_name, c.logo_url\n        FROM dvr_recordings r\n        JOIN channels c ON c.id = r.channel_id\n        WHERE r.user_id = %s\n        ORDER BY r.start_time DESC\n    \"\"\", (user_id,))\n    cols = [d[0] for d in cur.description]\n    recordings = [dict(zip(cols, row)) for row in cur.fetchall()]\n    for r in recordings:\n        r[\"start_time\"] = r[\"start_time\"].isoformat()\n        r[\"end_time\"] = r[\"end_time\"].isoformat()\n        if r[\"file_size_bytes\"]:\n            r[\"file_size_mb\"] = round(r[\"file_size_bytes\"] / 1048576, 1)\n    return jsonify(recordings=recordings)\n\n@dvr_bp.route(\"/recordings/<int:recording_id>/play\", methods=[\"GET\"])\n@jwt_required()\ndef play_recording(recording_id):\n    \"\"\"Stream a completed recording.\"\"\"\n    user_id = int(get_jwt_identity())\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT file_path FROM dvr_recordings\n        WHERE id = %s AND user_id = %s AND status = 'completed'\n    \"\"\", (recording_id, user_id))\n    row = cur.fetchone()\n    if not row or not row[0] or not os.path.exists(row[0]):\n        return jsonify(error=\"Recording not found\"), 404\n    return send_file(row[0], mimetype=\"video/mp4\")"
+    },
+    {
+      "type": "text",
+      "heading": "User Management & Access Control",
+      "headingLevel": 2,
+      "body": "The platform uses subscription tiers to control channel access. Each tier includes a set of channels, concurrent stream limits, and optional DVR access. Stream authentication uses short-lived tokens appended to HLS URLs to prevent unauthorized access."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/auth.py",
+      "description": "Flask authentication with JWT, subscription tier checks, concurrent stream enforcement, and HLS token generation.",
+      "code": "from flask import Blueprint, request, jsonify\nfrom flask_jwt_extended import (\n    create_access_token, create_refresh_token,\n    jwt_required, get_jwt_identity\n)\nfrom werkzeug.security import generate_password_hash, check_password_hash\nfrom db import get_db\nimport secrets\nimport time\nimport hashlib\n\nauth_bp = Blueprint(\"auth\", __name__)\n\nSTREAM_TOKEN_SECRET = \"change-this-to-a-real-secret\"\nSTREAM_TOKEN_TTL = 3600  # 1 hour\n\ndef generate_stream_token(user_id: int, channel_id: int) -> str:\n    \"\"\"Generate a time-limited token for HLS stream access.\"\"\"\n    expires = int(time.time()) + STREAM_TOKEN_TTL\n    payload = f\"{user_id}:{channel_id}:{expires}:{STREAM_TOKEN_SECRET}\"\n    signature = hashlib.sha256(payload.encode()).hexdigest()[:16]\n    return f\"{user_id}-{channel_id}-{expires}-{signature}\"\n\ndef verify_stream_token(token: str) -> dict:\n    \"\"\"Verify a stream token and return user_id and channel_id.\"\"\"\n    try:\n        parts = token.split(\"-\")\n        user_id, channel_id, expires = int(parts[0]), int(parts[1]), int(parts[2])\n        signature = parts[3]\n        if int(time.time()) > expires:\n            return None\n        payload = f\"{user_id}:{channel_id}:{expires}:{STREAM_TOKEN_SECRET}\"\n        expected = hashlib.sha256(payload.encode()).hexdigest()[:16]\n        if signature != expected:\n            return None\n        return {\"user_id\": user_id, \"channel_id\": channel_id}\n    except (IndexError, ValueError):\n        return None\n\n@auth_bp.route(\"/login\", methods=[\"POST\"])\ndef login():\n    data = request.get_json()\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT u.id, u.password_hash, u.display_name, u.tier_id,\n               st.name AS tier_name, st.max_concurrent_streams\n        FROM users u\n        LEFT JOIN subscription_tiers st ON st.id = u.tier_id\n        WHERE u.email = %s AND u.is_active = true\n    \"\"\", (data[\"email\"],))\n    row = cur.fetchone()\n    if not row or not check_password_hash(row[1], data[\"password\"]):\n        return jsonify(error=\"Invalid credentials\"), 401\n\n    user_id = row[0]\n    access_token = create_access_token(identity=str(user_id))\n    refresh_token = create_refresh_token(identity=str(user_id))\n    return jsonify(\n        access_token=access_token, refresh_token=refresh_token,\n        user={\"id\": user_id, \"name\": row[2], \"tier\": row[4]}\n    )\n\n@auth_bp.route(\"/stream-token\", methods=[\"POST\"])\n@jwt_required()\ndef get_stream_token():\n    \"\"\"Issue a stream token after checking subscription and concurrent limits.\"\"\"\n    user_id = int(get_jwt_identity())\n    data = request.get_json()\n    channel_id = data[\"channel_id\"]\n    db = get_db()\n    cur = db.cursor()\n\n    # Check channel is in user's tier\n    cur.execute(\"\"\"\n        SELECT 1 FROM tier_channels tc\n        JOIN users u ON u.tier_id = tc.tier_id\n        WHERE u.id = %s AND tc.channel_id = %s\n    \"\"\", (user_id, channel_id))\n    if not cur.fetchone():\n        return jsonify(error=\"Channel not in your subscription\"), 403\n\n    # Check concurrent stream limit\n    cur.execute(\"\"\"\n        SELECT st.max_concurrent_streams,\n               (SELECT COUNT(*) FROM stream_sessions\n                WHERE user_id = %s AND ended_at IS NULL) AS active\n        FROM users u\n        JOIN subscription_tiers st ON st.id = u.tier_id\n        WHERE u.id = %s\n    \"\"\", (user_id, user_id))\n    row = cur.fetchone()\n    if row and row[1] >= row[0]:\n        return jsonify(error=\"Maximum concurrent streams reached\"), 429\n\n    token = generate_stream_token(user_id, channel_id)\n\n    # Record stream session\n    cur.execute(\"\"\"\n        INSERT INTO stream_sessions (user_id, channel_id, ip_address)\n        VALUES (%s, %s, %s) RETURNING id\n    \"\"\", (user_id, channel_id, request.remote_addr))\n    session_id = cur.fetchone()[0]\n    db.commit()\n\n    return jsonify(stream_token=token, session_id=session_id)"
+    },
+    {
+      "type": "text",
+      "heading": "Multi-Device Support",
+      "headingLevel": 2,
+      "body": "The platform supports responsive layouts for phones, tablets, desktops, and smart TVs. Device registration tracks which devices a user has authorized, and concurrent viewing limits are enforced per subscription tier."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Device Registration API",
+          "content": "```python\n@auth_bp.route(\"/devices\", methods=[\"POST\"])\n@jwt_required()\ndef register_device():\n    user_id = int(get_jwt_identity())\n    data = request.get_json()\n    device_token = secrets.token_urlsafe(32)\n    db = get_db()\n    cur = db.cursor()\n    # Check device limit\n    cur.execute(\"SELECT max_devices FROM users WHERE id = %s\", (user_id,))\n    max_devices = cur.fetchone()[0]\n    cur.execute(\"SELECT COUNT(*) FROM user_devices WHERE user_id = %s\", (user_id,))\n    current_count = cur.fetchone()[0]\n    if current_count >= max_devices:\n        return jsonify(error=\"Maximum devices reached\"), 403\n    cur.execute(\"\"\"\n        INSERT INTO user_devices (user_id, device_name, device_type, device_token)\n        VALUES (%s, %s, %s, %s) RETURNING id, device_token\n    \"\"\", (user_id, data.get(\"device_name\", \"Unknown\"),\n          data.get(\"device_type\", \"web\"), device_token))\n    row = cur.fetchone()\n    db.commit()\n    return jsonify(device_id=row[0], device_token=row[1]), 201\n```"
+        },
+        {
+          "label": "Responsive Player CSS",
+          "content": "```css\n.iptv-player {\n  position: relative;\n  width: 100%;\n  background: #000;\n}\n\n.player-video {\n  width: 100%;\n  height: auto;\n  max-height: 100vh;\n}\n\n/* Mobile: stack controls below video */\n@media (max-width: 640px) {\n  .player-overlay { flex-direction: column; }\n  .channel-info { font-size: 0.85rem; }\n  .epg-container { display: none; }\n  .channel-list { position: fixed; bottom: 0; width: 100%; }\n}\n\n/* Tablet: side-by-side with mini guide */\n@media (min-width: 641px) and (max-width: 1024px) {\n  .iptv-layout { display: grid; grid-template-columns: 1fr 280px; }\n}\n\n/* Desktop/TV: full guide visible */\n@media (min-width: 1025px) {\n  .iptv-layout { display: grid; grid-template-columns: 1fr 360px; }\n  .epg-container { max-height: calc(100vh - 80px); overflow-y: auto; }\n}\n\n/* Smart TV: large text, d-pad friendly focus states */\n@media (min-width: 1920px) {\n  .channel-name { font-size: 1.5rem; }\n  .epg-program:focus { outline: 3px solid #e94560; transform: scale(1.02); }\n  button:focus { outline: 3px solid #e94560; }\n}\n```"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Content Protection",
+      "headingLevel": 2,
+      "body": "Protecting premium video content requires multiple layers. Token-based URL signing prevents unauthorized access to HLS playlists. AES-128 segment encryption makes intercepted segments unplayable without the key. For premium content, commercial DRM systems like Widevine (Chrome, Android) and FairPlay (Safari, iOS) provide hardware-backed protection."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "services/stream_security.py",
+      "description": "Stream security utilities: HLS URL token signing, AES-128 encryption key management, and a key server endpoint.",
+      "code": "import hashlib\nimport hmac\nimport time\nimport os\nfrom flask import Blueprint, request, Response\n\nsecurity_bp = Blueprint(\"stream_security\", __name__)\n\nHMAC_SECRET = os.environ.get(\"STREAM_HMAC_SECRET\", \"change-me\").encode()\nAES_KEYS_DIR = \"/keys\"\n\ndef sign_hls_url(base_url: str, user_id: int, expires_in: int = 3600) -> str:\n    \"\"\"Generate a signed HLS URL with expiration.\"\"\"\n    expires = int(time.time()) + expires_in\n    message = f\"{base_url}:{user_id}:{expires}\"\n    signature = hmac.new(HMAC_SECRET, message.encode(), hashlib.sha256).hexdigest()[:20]\n    separator = \"&\" if \"?\" in base_url else \"?\"\n    return f\"{base_url}{separator}token={signature}&expires={expires}&uid={user_id}\"\n\ndef verify_signed_url(url: str, token: str, user_id: int, expires: int) -> bool:\n    \"\"\"Verify the HMAC signature on an HLS URL.\"\"\"\n    if int(time.time()) > expires:\n        return False\n    base_url = url.split(\"?\")[0] if \"?\" in url else url\n    message = f\"{base_url}:{user_id}:{expires}\"\n    expected = hmac.new(HMAC_SECRET, message.encode(), hashlib.sha256).hexdigest()[:20]\n    return hmac.compare_digest(token, expected)\n\ndef generate_aes_key(channel_id: int) -> bytes:\n    \"\"\"Generate or retrieve the AES-128 key for a channel.\"\"\"\n    os.makedirs(AES_KEYS_DIR, exist_ok=True)\n    key_path = os.path.join(AES_KEYS_DIR, f\"channel_{channel_id}.key\")\n    if os.path.exists(key_path):\n        with open(key_path, \"rb\") as f:\n            return f.read()\n    key = os.urandom(16)\n    with open(key_path, \"wb\") as f:\n        f.write(key)\n    return key\n\n@security_bp.route(\"/keys/<int:channel_id>.key\", methods=[\"GET\"])\ndef serve_aes_key(channel_id):\n    \"\"\"Key server endpoint called by hls.js to decrypt AES-128 segments.\"\"\"\n    # Verify the requesting user has access\n    token = request.args.get(\"token\", \"\")\n    uid = request.args.get(\"uid\", 0, type=int)\n    expires = request.args.get(\"expires\", 0, type=int)\n    if not verify_signed_url(request.path, token, uid, expires):\n        return \"Unauthorized\", 403\n    key = generate_aes_key(channel_id)\n    return Response(key, mimetype=\"application/octet-stream\",\n                    headers={\"Access-Control-Allow-Origin\": \"*\"})"
+    },
+    {
+      "type": "accordion",
+      "items": [
+        {
+          "title": "How does AES-128 HLS encryption work?",
+          "content": "FFmpeg encrypts each HLS segment using AES-128-CBC. The encryption key is specified in the HLS playlist via the EXT-X-KEY tag, which points to a key server URL. When hls.js encounters an encrypted playlist, it fetches the key from the server, then decrypts each segment locally before playback. The key server should authenticate requests so only authorized viewers receive the decryption key."
+        },
+        {
+          "title": "What about Widevine and FairPlay DRM?",
+          "content": "Widevine (Google) and FairPlay (Apple) are commercial DRM systems that use hardware-backed security on the client device. Content is encrypted with CENC (Common Encryption) and the decryption keys are managed by a DRM license server. Implementing these requires a license agreement with Google/Apple and typically a third-party DRM provider like PallyCon, BuyDRM, or EZDRM. These are essential for premium content but add significant complexity and cost."
+        },
+        {
+          "title": "How do I add AES-128 encryption to my FFmpeg transcoding?",
+          "content": "Add these flags to the FFmpeg HLS output: -hls_key_info_file key_info.txt. The key_info.txt file has three lines: the key server URL (e.g., https://yourserver/keys/1.key?token=xxx), the local path to the 16-byte key file, and an optional 16-byte IV in hex. FFmpeg will then encrypt all segments and add the EXT-X-KEY tag to the playlist."
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Stream Health Monitoring",
+      "headingLevel": 2,
+      "body": "Monitoring stream health is critical for a reliable IPTV service. We check each channel's HLS playlist for freshness, measure segment availability, track bitrate consistency, and alert operators when a stream goes down or degrades."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "services/monitoring.py",
+      "description": "Stream health monitoring service that checks HLS playlist freshness, segment availability, and alerts on failures.",
+      "code": "import requests\nimport re\nimport time\nfrom datetime import datetime, timedelta\nfrom threading import Thread\nfrom db import get_db\n\ndef check_stream_health(hls_url: str) -> dict:\n    \"\"\"Check the health of an HLS stream by examining its playlist.\"\"\"\n    result = {\n        \"url\": hls_url, \"online\": False, \"segments\": 0,\n        \"segment_duration\": 0, \"last_segment_age\": None,\n        \"bitrate_kbps\": 0, \"error\": None\n    }\n    try:\n        resp = requests.get(hls_url, timeout=5)\n        if resp.status_code != 200:\n            result[\"error\"] = f\"HTTP {resp.status_code}\"\n            return result\n\n        playlist = resp.text\n        result[\"online\"] = True\n\n        # Count segments\n        segments = re.findall(r\"#EXTINF:([\\d.]+)\", playlist)\n        result[\"segments\"] = len(segments)\n        if segments:\n            result[\"segment_duration\"] = float(segments[-1])\n\n        # Check if master playlist (adaptive)\n        variants = re.findall(r\"BANDWIDTH=(\\d+)\", playlist)\n        if variants:\n            result[\"bitrate_kbps\"] = max(int(b) for b in variants) // 1000\n\n        # Check freshness: if the playlist has a sequence number, it should increment\n        seq_match = re.search(r\"#EXT-X-MEDIA-SEQUENCE:(\\d+)\", playlist)\n        if seq_match:\n            result[\"sequence\"] = int(seq_match.group(1))\n\n    except requests.Timeout:\n        result[\"error\"] = \"Timeout\"\n    except Exception as e:\n        result[\"error\"] = str(e)\n\n    return result\n\ndef monitor_all_channels(app, interval=30):\n    \"\"\"Background thread that periodically checks all channel streams.\"\"\"\n    def _monitor():\n        with app.app_context():\n            while True:\n                db = get_db()\n                cur = db.cursor()\n                cur.execute(\n                    \"SELECT id, name, hls_url FROM channels WHERE is_active = true AND hls_url IS NOT NULL\"\n                )\n                channels = cur.fetchall()\n\n                for ch_id, ch_name, hls_url in channels:\n                    health = check_stream_health(hls_url)\n\n                    # Store health snapshot\n                    cur.execute(\"\"\"\n                        INSERT INTO stream_health_log (channel_id, is_online, segments,\n                            bitrate_kbps, error_message)\n                        VALUES (%s, %s, %s, %s, %s)\n                    \"\"\", (ch_id, health[\"online\"], health[\"segments\"],\n                          health[\"bitrate_kbps\"], health.get(\"error\")))\n\n                    # Alert if stream is down\n                    if not health[\"online\"]:\n                        app.logger.error(\n                            f\"ALERT: Channel '{ch_name}' (ID: {ch_id}) is OFFLINE. \"\n                            f\"Error: {health.get('error')}\"\n                        )\n\n                db.commit()\n                time.sleep(interval)\n\n    Thread(target=_monitor, daemon=True).start()"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/monitoring.py",
+      "description": "Flask endpoints for stream health dashboard: per-channel status, health history, and viewer statistics.",
+      "code": "from flask import Blueprint, jsonify\nfrom flask_jwt_extended import jwt_required\nfrom db import get_db\n\nmonitoring_bp = Blueprint(\"monitoring\", __name__)\n\n@monitoring_bp.route(\"/health\", methods=[\"GET\"])\n@jwt_required()\ndef stream_health():\n    \"\"\"Current health status for all channels.\"\"\"\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT DISTINCT ON (c.id)\n               c.id, c.name, c.slug, c.logo_url,\n               h.is_online, h.segments, h.bitrate_kbps,\n               h.error_message, h.checked_at\n        FROM channels c\n        LEFT JOIN stream_health_log h ON h.channel_id = c.id\n        WHERE c.is_active = true\n        ORDER BY c.id, h.checked_at DESC\n    \"\"\")\n    cols = [d[0] for d in cur.description]\n    channels = [dict(zip(cols, r)) for r in cur.fetchall()]\n    for ch in channels:\n        if ch.get(\"checked_at\"):\n            ch[\"checked_at\"] = ch[\"checked_at\"].isoformat()\n    return jsonify(channels=channels)\n\n@monitoring_bp.route(\"/viewers\", methods=[\"GET\"])\n@jwt_required()\ndef viewer_stats():\n    \"\"\"Current viewer count per channel.\"\"\"\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT c.id, c.name, COUNT(ss.id) AS active_viewers\n        FROM channels c\n        LEFT JOIN stream_sessions ss ON ss.channel_id = c.id AND ss.ended_at IS NULL\n        WHERE c.is_active = true\n        GROUP BY c.id, c.name\n        ORDER BY active_viewers DESC\n    \"\"\")\n    cols = [d[0] for d in cur.description]\n    return jsonify(viewers=[dict(zip(cols, r)) for r in cur.fetchall()])\n\n@monitoring_bp.route(\"/health/<int:channel_id>/history\", methods=[\"GET\"])\n@jwt_required()\ndef channel_health_history(channel_id):\n    \"\"\"Health history for a specific channel over the last 24 hours.\"\"\"\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT is_online, segments, bitrate_kbps, error_message, checked_at\n        FROM stream_health_log\n        WHERE channel_id = %s AND checked_at > NOW() - INTERVAL '24 hours'\n        ORDER BY checked_at\n    \"\"\", (channel_id,))\n    cols = [d[0] for d in cur.description]\n    history = [dict(zip(cols, r)) for r in cur.fetchall()]\n    for h in history:\n        h[\"checked_at\"] = h[\"checked_at\"].isoformat()\n    return jsonify(history=history)"
+    },
+    {
+      "type": "alert",
+      "variant": "warning",
+      "title": "Legal & Compliance Considerations",
+      "body": "Operating an IPTV service involves significant legal obligations. You need content licensing agreements for every channel you distribute. Retransmitting broadcast TV without authorization violates copyright law in most jurisdictions. DMCA safe harbor provisions require a takedown procedure for infringing content. Geo-restrictions may be required by your content licenses, which means implementing IP-based access control. If you collect user data (viewing history, IP addresses), GDPR and CCPA compliance apply. Consult a media attorney before launching a commercial IPTV service."
+    },
+    {
+      "type": "list",
+      "heading": "Production Deployment Checklist",
+      "headingLevel": 2,
+      "variant": "checklist",
+      "items": [
+        "Generate unique stream keys for each channel and rotate them periodically",
+        "Place the HLS origin server behind a CDN for scalable delivery",
+        "Configure CORS headers to restrict HLS access to your player domain",
+        "Enable AES-128 encryption for premium channels at minimum",
+        "Set up automated EPG imports with an XMLTV data provider",
+        "Implement stream health monitoring with PagerDuty or Slack alerts",
+        "Configure DVR storage with automatic cleanup of expired recordings",
+        "Load-test concurrent viewer capacity before launch",
+        "Set up geographic IP blocking if required by content licenses",
+        "Implement GDPR-compliant viewer data retention policies",
+        "Test adaptive bitrate switching on low-bandwidth connections",
+        "Verify Picture-in-Picture and background playback on mobile browsers"
+      ]
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "app.py",
+      "description": "Main Flask application wiring all IPTV blueprints, JWT setup, and background monitoring services.",
+      "code": "from flask import Flask\nfrom flask_jwt_extended import JWTManager\nfrom flask_cors import CORS\nimport os\n\napp = Flask(__name__)\napp.config[\"SECRET_KEY\"] = os.environ.get(\"SECRET_KEY\", \"dev-secret\")\napp.config[\"JWT_SECRET_KEY\"] = os.environ.get(\"SECRET_KEY\", \"dev-secret\")\napp.config[\"DATABASE_URL\"] = os.environ.get(\"DATABASE_URL\")\n\nCORS(app)\njwt = JWTManager(app)\n\n# Register blueprints\nfrom routes.channels import channels_bp\nfrom routes.epg import epg_bp\nfrom routes.auth import auth_bp\nfrom routes.dvr import dvr_bp\nfrom routes.monitoring import monitoring_bp\nfrom services.stream_security import security_bp\n\napp.register_blueprint(channels_bp, url_prefix=\"/api/channels\")\napp.register_blueprint(epg_bp, url_prefix=\"/api/epg\")\napp.register_blueprint(auth_bp, url_prefix=\"/api/auth\")\napp.register_blueprint(dvr_bp, url_prefix=\"/api/dvr\")\napp.register_blueprint(monitoring_bp, url_prefix=\"/api/monitoring\")\napp.register_blueprint(security_bp, url_prefix=\"/api/security\")\n\n# Start background monitoring\nfrom services.monitoring import monitor_all_channels\nmonitor_all_channels(app, interval=30)\n\nif __name__ == \"__main__\":\n    app.run(host=\"0.0.0.0\", port=5000, debug=True)"
+    },
+    {
+      "type": "table",
+      "heading": "Technology Stack Summary",
+      "headers": ["Component", "Technology", "Purpose"],
+      "rows": [
+        ["Stream Ingest", "Nginx-RTMP", "Receive live RTMP feeds from encoders"],
+        ["Transcoder", "FFmpeg", "Multi-bitrate HLS packaging with AES-128 encryption"],
+        ["Origin Server", "Nginx HTTP", "Serve HLS playlists and segments"],
+        ["Backend API", "Flask + JWT", "Channel management, EPG, DVR, auth, monitoring"],
+        ["Database", "PostgreSQL 16", "Channels, EPG, users, subscriptions, analytics"],
+        ["Cache/Sessions", "Redis 7", "Stream tokens, rate limiting, session management"],
+        ["Frontend Player", "React + hls.js", "Adaptive video player with EPG overlay"],
+        ["Containerization", "Docker Compose", "Full stack orchestration"],
+        ["CDN", "CloudFront / Cloudflare", "Edge distribution of HLS segments"]
+      ]
+    }
+  ]
+}

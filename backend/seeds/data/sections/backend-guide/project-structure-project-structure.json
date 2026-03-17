@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Project Structure",
+  "headingLevel": 2,
+  "body": "As your backend grows, you need to organize your code. Here is a professional pattern used in real projects."
+}

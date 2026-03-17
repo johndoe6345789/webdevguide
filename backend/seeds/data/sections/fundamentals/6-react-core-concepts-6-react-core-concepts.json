@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "6. React Core Concepts",
+  "headingLevel": 2,
+  "body": "React is a JavaScript library for building user interfaces. It lets you compose complex UIs from small, reusable pieces called components. This section covers everything you need to build production React applications."
+}

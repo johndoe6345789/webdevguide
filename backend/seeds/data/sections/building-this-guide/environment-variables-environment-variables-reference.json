@@ -1,0 +1,60 @@
+{
+  "type": "table",
+  "heading": "Environment Variables Reference",
+  "headers": [
+    "Variable",
+    "Default",
+    "Used By",
+    "Description"
+  ],
+  "rows": [
+    [
+      "FLASK_ENV",
+      "development",
+      "Backend",
+      "Config class to load (development, testing, production)"
+    ],
+    [
+      "FLASK_APP",
+      "app:create_app",
+      "Backend",
+      "Flask app factory path for CLI commands"
+    ],
+    [
+      "DATA_DIR",
+      "backend/data/",
+      "Backend",
+      "Directory where JsonDatabase stores collection files"
+    ],
+    [
+      "CORS_ORIGINS",
+      "http://localhost:3000",
+      "Backend",
+      "Allowed CORS origins for the Flask API"
+    ],
+    [
+      "HOST",
+      "0.0.0.0",
+      "Backend",
+      "Gunicorn bind host"
+    ],
+    [
+      "PORT",
+      "5000",
+      "Backend",
+      "Gunicorn bind port"
+    ],
+    [
+      "WEB_CONCURRENCY",
+      "2",
+      "Backend",
+      "Number of gunicorn workers"
+    ],
+    [
+      "NEXT_PUBLIC_API_URL",
+      "http://localhost:5000/api",
+      "Frontend",
+      "Base URL for API calls from the frontend"
+    ]
+  ]
+}

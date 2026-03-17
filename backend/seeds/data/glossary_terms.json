@@ -1,5 +1,6 @@
 [
   {
+    "id": 1,
     "term": "React",
     "definition": "A free JavaScript library made by Facebook (now Meta) for building user interfaces. Think of it like a set of LEGO bricks for websites - you snap together small pieces (components) to build something bigger.",
     "category": "Core Concepts",
@@ -7,6 +8,7 @@
     "example": "React powers websites like Facebook, Instagram, Netflix, and Airbnb."
   },
   {
+    "id": 2,
     "term": "Component",
     "definition": "A reusable piece of your website. Like how a car is made of parts (engine, wheels, seats), a website is made of components (header, button, card). Each component is its own little piece of code that handles one thing.",
     "category": "Core Concepts",
@@ -14,6 +16,7 @@
     "example": "A 'Button' component can be reused everywhere on your site with different text and colors."
   },
   {
+    "id": 3,
     "term": "JSX",
     "definition": "A way of writing HTML inside JavaScript. It looks like HTML but it's actually JavaScript in disguise. React uses JSX to describe what the page should look like.",
     "category": "Core Concepts",
@@ -21,6 +24,7 @@
     "example": "<Button color='blue'>Click Me</Button> is JSX - it looks like HTML but it's inside a JavaScript file."
   },
   {
+    "id": 4,
     "term": "Props",
     "definition": "Short for 'properties'. These are inputs you pass to a component, like settings on a TV remote. Props tell a component what to display or how to behave. They flow one way: from parent to child.",
     "category": "Core Concepts",
@@ -28,6 +32,7 @@
     "example": "<UserCard name='Alice' age={25} /> - 'name' and 'age' are props being passed to the UserCard component."
   },
   {
+    "id": 5,
     "term": "State",
     "definition": "Data that can change over time inside a component. Think of it like a component's memory. When state changes, React automatically updates what's shown on screen. For example, a counter button keeps track of how many times it's been clicked.",
     "category": "Core Concepts",
@@ -35,6 +40,7 @@
     "example": "A shopping cart's item count is state - it changes when you add or remove items."
   },
   {
+    "id": 6,
     "term": "Hook",
     "definition": "Special functions that let you 'hook into' React features. They always start with 'use' (like useState, useEffect). Hooks let components remember things, run code at certain times, and share logic between components.",
     "category": "Core Concepts",
@@ -42,6 +48,7 @@
     "example": "useState lets a component remember a value. useEffect lets it run code when something changes."
   },
   {
+    "id": 7,
     "term": "Custom Hook",
     "definition": "A reusable function you write yourself that uses React hooks. It lets you extract and share logic between components. The name must start with 'use'. This keeps your components small (under 50 lines) and your logic testable.",
     "category": "Core Concepts",
@@ -49,6 +56,7 @@
     "example": "useCountdown() could be a custom hook that handles countdown timer logic, used by any component that needs a timer."
   },
   {
+    "id": 8,
     "term": "Virtual DOM",
     "definition": "A lightweight copy of the real webpage that React keeps in memory. When something changes, React compares the virtual copy to the real page, figures out what's different, and only updates those specific parts. This makes updates very fast.",
     "category": "Core Concepts",
@@ -56,6 +64,7 @@
     "example": "If you change one item in a list of 1000, React only updates that one item instead of rebuilding the entire list."
   },
   {
+    "id": 9,
     "term": "DOM",
     "definition": "Document Object Model. It's the browser's representation of your webpage as a tree of objects. Every HTML element (paragraph, button, image) is a node in this tree. JavaScript can read and change the DOM to update what you see.",
     "category": "Web Basics",
@@ -63,6 +72,7 @@
     "example": "When you right-click 'Inspect' on a webpage, you're looking at the DOM."
   },
   {
+    "id": 10,
     "term": "HTML",
     "definition": "HyperText Markup Language. The skeleton of every webpage. HTML tells the browser what content to show (headings, paragraphs, images, links) but not how it should look - that's CSS's job.",
     "category": "Web Basics",
@@ -70,6 +80,7 @@
     "example": "<h1>Hello World</h1> creates a big heading that says 'Hello World'."
   },
   {
+    "id": 11,
     "term": "CSS",
     "definition": "Cascading Style Sheets. The 'paint and decoration' of a webpage. CSS controls how things look: colors, sizes, spacing, fonts, animations. Without CSS, every website would look like a plain text document.",
     "category": "Web Basics",
@@ -77,6 +88,7 @@
     "example": "color: blue; font-size: 20px; makes text blue and 20 pixels tall."
   },
   {
+    "id": 12,
     "term": "JavaScript",
     "definition": "The programming language of the web. Every browser can run JavaScript. It makes websites interactive - handling button clicks, fetching data, showing/hiding things, validating forms. React is written in JavaScript.",
     "category": "Web Basics",
@@ -84,6 +96,7 @@
     "example": "When you click 'Add to Cart' and the cart count updates without reloading the page - that's JavaScript."
   },
   {
+    "id": 13,
     "term": "TypeScript",
     "definition": "JavaScript with added type checking. It's like JavaScript but with guardrails. You tell TypeScript what type of data to expect (string, number, etc.) and it catches mistakes before your code even runs. It prevents bugs.",
     "category": "Languages",
@@ -91,6 +104,7 @@
     "example": "function greet(name: string) - TypeScript ensures 'name' is always text, never accidentally a number."
   },
   {
+    "id": 14,
     "term": "TSX",
     "definition": "TypeScript + JSX combined. It's files ending in .tsx that contain both TypeScript code and JSX markup. This is the standard file format for React components when using TypeScript.",
     "category": "Languages",
@@ -98,6 +112,7 @@
     "example": "A file like Button.tsx contains a React component written with TypeScript type safety."
   },
   {
+    "id": 15,
     "term": "JSON",
     "definition": "JavaScript Object Notation. A simple format for storing and sending data. It uses curly braces {} for objects and square brackets [] for lists. It's human-readable and is the standard way websites send data back and forth.",
     "category": "Data",
@@ -105,6 +120,7 @@
     "example": "{ \"name\": \"Alice\", \"age\": 25 } is JSON representing a person."
   },
   {
+    "id": 16,
     "term": "API",
     "definition": "Application Programming Interface. A way for two pieces of software to talk to each other. Think of it like a waiter in a restaurant: your frontend (the customer) tells the API (the waiter) what it wants, and the API brings back data from the backend (the kitchen).",
     "category": "Backend",
@@ -112,6 +128,7 @@
     "example": "When a weather app shows today's forecast, it got that data by asking a weather API."
   },
   {
+    "id": 17,
     "term": "REST",
     "definition": "REpresentational State Transfer. A set of rules for how APIs should work. REST APIs use standard HTTP methods: GET (read data), POST (create data), PUT (update data), DELETE (remove data). Most web APIs follow REST.",
     "category": "Backend",
@@ -119,6 +136,7 @@
     "example": "GET /api/users fetches all users. POST /api/users creates a new user."
   },
   {
+    "id": 18,
     "term": "Backend",
     "definition": "The server-side part of a website that users never see. It handles data storage, business logic, authentication, and serving data to the frontend. Think of it as the kitchen in a restaurant - the work happens behind the scenes.",
     "category": "Backend",
@@ -126,6 +144,7 @@
     "example": "When you log in, the backend checks your password, creates a session, and tells the frontend 'you're in'."
   },
   {
+    "id": 19,
     "term": "Frontend",
     "definition": "The part of a website that users see and interact with in their browser. Everything visual: buttons, text, images, forms, animations. React is a frontend library.",
     "category": "Backend",
@@ -133,6 +152,7 @@
     "example": "The login form you type into is the frontend. Checking if the password is correct is the backend."
   },
   {
+    "id": 20,
     "term": "Flask",
     "definition": "A lightweight Python web framework for building backend APIs. It's simple and beginner-friendly - you can build a working API in just a few lines of code. Flask handles receiving requests and sending responses.",
     "category": "Backend",
@@ -140,6 +160,7 @@
     "example": "@app.route('/api/hello') creates an endpoint that responds when someone visits /api/hello."
   },
   {
+    "id": 21,
     "term": "Next.js",
     "definition": "A framework built on top of React that adds features like routing (pages), server-side rendering, and file-based organization. Think of React as the engine and Next.js as the car - it provides structure and extra features around React.",
     "category": "Frameworks",
@@ -147,6 +168,7 @@
     "example": "Creating a file at app/about/page.tsx automatically creates a /about page on your website."
   },
   {
+    "id": 22,
     "term": "Material UI (MUI)",
     "definition": "A library of pre-built, professionally designed React components. Instead of building buttons, cards, and forms from scratch, you import ready-made ones. It follows Google's Material Design guidelines.",
     "category": "Frameworks",
@@ -154,6 +176,7 @@
     "example": "import Button from '@mui/material/Button' gives you a styled, accessible button component instantly."
   },
   {
+    "id": 23,
     "term": "Redux",
     "definition": "A library for managing application state (data) in a central place. Instead of each component managing its own data, Redux keeps everything in one 'store' that any component can read from or write to.",
     "category": "State Management",
@@ -161,6 +184,7 @@
     "example": "A shopping cart state in Redux can be accessed from the header, the cart page, and the checkout - all reading the same data."
   },
   {
+    "id": 24,
     "term": "Redux Toolkit",
     "definition": "The official, recommended way to use Redux. It simplifies Redux by removing the boilerplate code. It includes utilities for creating stores, slices, and async logic. Always use Redux Toolkit, never plain Redux.",
     "category": "State Management",
@@ -168,6 +192,7 @@
     "example": "createSlice() from Redux Toolkit lets you define state + actions in one place, instead of writing separate files."
   },
   {
+    "id": 25,
     "term": "Store",
     "definition": "In Redux, the store is the single central object that holds all your application's state. Think of it like a database for your frontend. Every component can read from the store and dispatch actions to change it.",
     "category": "State Management",
@@ -175,6 +200,7 @@
     "example": "The store might contain { theme: 'dark', user: { name: 'Alice' }, cart: [item1, item2] }."
   },
   {
+    "id": 26,
     "term": "Slice",
     "definition": "A portion of the Redux store that handles one feature. Each slice has its own state, reducers (update functions), and actions. Slices keep your code organized by feature rather than by function.",
     "category": "State Management",
@@ -182,6 +208,7 @@
     "example": "themeSlice handles dark/light mode. examSlice handles quiz state. Each is independent."
   },
   {
+    "id": 27,
     "term": "npm",
     "definition": "Node Package Manager. A tool for installing and managing JavaScript libraries (packages). It comes with Node.js. When you run 'npm install', it downloads all the libraries your project needs.",
     "category": "Tools",
@@ -189,6 +216,7 @@
     "example": "npm install @mui/material downloads the Material UI library into your project."
   },
   {
+    "id": 28,
     "term": "Node.js",
     "definition": "A way to run JavaScript outside the browser (on your computer or a server). It's what makes tools like npm, Next.js dev server, and build tools work. You need Node.js installed to develop React websites.",
     "category": "Tools",
@@ -196,6 +224,7 @@
     "example": "When you run 'npm run dev', Node.js is what actually starts the development server."
   },
   {
+    "id": 29,
     "term": "package.json",
     "definition": "A file in your project root that lists all the libraries (dependencies) your project uses, plus scripts for common tasks. It's like a recipe card - it tells anyone exactly what ingredients (packages) and instructions (scripts) are needed.",
     "category": "Tools",
@@ -203,6 +232,7 @@
     "example": "\"dependencies\": { \"react\": \"^19.0.0\" } means your project needs React version 19 or later."
   },
   {
+    "id": 30,
     "term": "ESLint",
     "definition": "A tool that checks your code for common mistakes, bad practices, and style issues as you write. Think of it like a spelling and grammar checker for code. It can automatically fix many issues for you.",
     "category": "Tools",
@@ -210,6 +240,7 @@
     "example": "ESLint will warn you if you create a variable but never use it, or if you forget to handle an error."
   },
   {
+    "id": 31,
     "term": "Git",
     "definition": "A version control system that tracks changes to your code over time. It's like 'Save As' with superpowers - you can go back to any previous version, work on features without breaking the main code, and collaborate with others.",
     "category": "Tools",
@@ -217,6 +248,7 @@
     "example": "If you break something, 'git checkout' can take your code back to when it was working."
   },
   {
+    "id": 32,
     "term": "GitHub",
     "definition": "A website that hosts Git repositories (code projects) online. It's like Google Drive for code. Developers use it to store code, collaborate with others, track issues, and share open-source projects.",
     "category": "Tools",
@@ -224,6 +256,7 @@
     "example": "React itself is hosted on GitHub - anyone can read its source code and suggest improvements."
   },
   {
+    "id": 33,
     "term": "Docker",
     "definition": "A tool that packages your application and everything it needs (libraries, settings, runtime) into a container. Containers run the same everywhere, solving the 'works on my machine' problem. Like a shipping container that works on any ship.",
     "category": "DevOps",
@@ -231,6 +264,7 @@
     "example": "docker-compose up starts your entire app (frontend + backend + database) with one command."
   },
   {
+    "id": 34,
     "term": "Docker Compose",
     "definition": "A tool for running multiple Docker containers together. You define all your services (frontend, backend, database) in one YAML file, and start everything with a single command.",
     "category": "DevOps",
@@ -238,6 +272,7 @@
     "example": "docker-compose.yml might define a frontend on port 3000, backend on port 5000, and a database on port 5432."
   },
   {
+    "id": 35,
     "term": "i18n (Internationalization)",
     "definition": "Short for 'internationalization' (i + 18 letters + n). The process of designing your app so it CAN support multiple languages. This means using translation keys instead of hardcoded text, and formatting dates/numbers for different locales.",
     "category": "Internationalization",
@@ -245,6 +280,7 @@
     "example": "Instead of writing 'Hello', you write t('greeting') which shows 'Hello' in English, 'Bonjour' in French, etc."
   },
   {
+    "id": 36,
     "term": "l10n (Localization)",
     "definition": "Short for 'localization' (l + 10 letters + n). The actual work of translating your app into a specific language and adapting it to local conventions (date formats, currency symbols, reading direction).",
     "category": "Internationalization",
@@ -252,6 +288,7 @@
     "example": "Creating a French translation file with all your app's text translated to French is localization."
   },
   {
+    "id": 37,
     "term": "Locale",
     "definition": "A code identifying a language and optionally a region. It tells the app which language and formatting rules to use.",
     "category": "Internationalization",
@@ -259,6 +296,7 @@
     "example": "'en' = English, 'en-US' = American English, 'fr' = French, 'ja' = Japanese."
   },
   {
+    "id": 38,
     "term": "App Router",
     "definition": "Next.js 13+'s routing system. It uses the file system: creating a folder with a page.tsx file creates a route. Supports layouts, loading states, error boundaries, and server components out of the box.",
     "category": "Routing",
@@ -266,6 +304,7 @@
     "example": "app/about/page.tsx becomes the /about page. app/blog/[slug]/page.tsx becomes /blog/any-post-name."
   },
   {
+    "id": 39,
     "term": "Route",
     "definition": "A URL path that maps to a page in your app. Each route shows different content. Routes can have dynamic segments (like a blog post ID) and nested layouts.",
     "category": "Routing",
@@ -273,6 +312,7 @@
     "example": "/about is a route showing the about page. /products/123 is a dynamic route showing product #123."
   },
   {
+    "id": 40,
     "term": "Responsive Design",
     "definition": "Making your website look good on all screen sizes - phones, tablets, laptops, and big monitors. Instead of building separate mobile and desktop sites, responsive design adapts the same site to any screen.",
     "category": "Design",
@@ -280,6 +320,7 @@
     "example": "A 3-column layout on desktop might stack into a single column on mobile - same content, different arrangement."
   },
   {
+    "id": 41,
     "term": "Deployment",
     "definition": "The process of putting your website on the internet so anyone can visit it. You take your code from your computer and upload it to a server. Services like Vercel and Netlify make this very easy.",
     "category": "DevOps",
@@ -287,6 +328,7 @@
     "example": "Running 'git push' can automatically deploy your site to Vercel in about 30 seconds."
   },
   {
+    "id": 42,
     "term": "Vercel",
     "definition": "A cloud platform that hosts websites, especially Next.js apps. It was created by the same team that makes Next.js. It offers free hosting for personal projects and automatically deploys when you push code to GitHub.",
     "category": "DevOps",
@@ -294,6 +336,7 @@
     "example": "Connect your GitHub repo to Vercel, and every push to main automatically updates your live website."
   },
   {
+    "id": 43,
     "term": "Endpoint",
     "definition": "A specific URL on a server that accepts requests and returns data. Each endpoint serves a specific purpose. Think of endpoints as different counters at a government office - each handles a specific type of request.",
     "category": "Backend",
@@ -301,13 +344,15 @@
     "example": "GET /api/users is an endpoint that returns a list of users. POST /api/login is an endpoint for logging in."
   },
   {
+    "id": 44,
     "term": "Middleware",
     "definition": "Code that runs between receiving a request and sending a response. It can modify requests, check authentication, redirect users, or add headers. Think of it as a security guard who checks your ID before letting you into a building.",
-    "category": "Backend",
+    "category": "Architecture",
     "relatedTerms": ["API", "Authentication", "Next.js"],
     "example": "Auth middleware checks if a user is logged in before allowing access to protected pages."
   },
   {
+    "id": 45,
     "term": "Authentication",
     "definition": "The process of verifying who someone is (are you really Alice?). Usually done with a username/email and password, but can also use social logins (Google, GitHub), fingerprints, or security keys.",
     "category": "Security",
@@ -315,6 +360,7 @@
     "example": "Typing your email and password to log into a website is authentication."
   },
   {
+    "id": 46,
     "term": "JWT",
     "definition": "JSON Web Token. A compact, secure way to transmit information between two parties. After you log in, the server gives you a JWT (like a wristband at a concert). You show it with each request to prove you're authenticated.",
     "category": "Security",
@@ -322,6 +368,7 @@
     "example": "After login, the server returns a JWT. Your frontend includes it in every API request: Authorization: Bearer eyJhbG..."
   },
   {
+    "id": 47,
     "term": "Environment Variable",
     "definition": "A value stored outside your code that configures how your app behaves. Used for secrets (API keys, database passwords) and settings that change between development and production. Never put secrets directly in code.",
     "category": "Security",
@@ -329,6 +376,7 @@
     "example": "DATABASE_URL=postgres://... in a .env file tells your app where to find the database."
   },
   {
+    "id": 48,
     "term": "Lua",
     "definition": "A lightweight programming language popular in game development. If you've played Roblox, you've likely used Lua (or its derivative Luau). It can be embedded into web apps to let users write simple scripts.",
     "category": "Languages",
@@ -336,6 +384,7 @@
     "example": "Roblox games are scripted in Lua. The language is small, fast, and easy to learn."
   },
   {
+    "id": 49,
     "term": "WASM (WebAssembly)",
     "definition": "A binary format that lets you run code written in languages like C, Rust, or Lua directly in the browser at near-native speed. It's how you can embed a Lua engine into a website.",
     "category": "Languages",
@@ -343,6 +392,7 @@
     "example": "A Lua interpreter compiled to WebAssembly can run Lua scripts inside a web browser."
   },
   {
+    "id": 50,
     "term": "Terminal",
     "definition": "A text-based interface for giving commands to your computer. Also called command line, console, or shell. You type commands instead of clicking buttons. Essential for web development (running servers, installing packages, using git).",
     "category": "Tools",
@@ -350,6 +400,7 @@
     "example": "Typing 'npm run dev' in the terminal starts your development server."
   },
   {
+    "id": 51,
     "term": "IDE",
     "definition": "Integrated Development Environment. A fancy text editor designed for writing code, with features like syntax highlighting, auto-completion, error detection, and debugging tools. VS Code is the most popular free IDE.",
     "category": "Tools",
@@ -357,6 +408,7 @@
     "example": "VS Code highlights your code in different colors, suggests completions, and catches errors as you type."
   },
   {
+    "id": 52,
     "term": "Theme",
     "definition": "A set of design tokens (colors, fonts, spacing, shadows) that define the visual style of your entire app. By changing the theme, you can instantly change the look of every component. Supports dark mode and light mode.",
     "category": "Design",
@@ -364,6 +416,7 @@
     "example": "Changing primary.main from blue to green in your theme file changes every primary-colored element on the site."
   },
   {
+    "id": 53,
     "term": "Redux Persist",
     "definition": "A library that automatically saves Redux state to localStorage (browser storage) and restores it when the user comes back. Without it, all state would be lost on page refresh.",
     "category": "State Management",
@@ -371,6 +424,7 @@
     "example": "Your dark mode preference and exam history survive page refreshes because Redux Persist saves them to localStorage."
   },
   {
+    "id": 54,
     "term": "Rendering",
     "definition": "The process of converting your React components into actual HTML that the browser displays. Can happen on the server (SSR) or in the browser (client-side). React re-renders components when their state or props change.",
     "category": "Core Concepts",
@@ -378,6 +432,7 @@
     "example": "When you click a 'like' button and the count increases, React re-renders that component to show the new number."
   },
   {
+    "id": 55,
     "term": "Interface",
     "definition": "In TypeScript, a way to define the shape of an object - what properties it has and what types they are. Like a blueprint that says 'a User must have a name (string) and age (number)'. Helps catch errors at compile time.",
     "category": "Languages",
@@ -385,6 +440,7 @@
     "example": "interface User { name: string; age: number; } ensures every User object has the right shape."
   },
   {
+    "id": 56,
     "term": "Dependency",
     "definition": "A library or package your project relies on. Listed in package.json. Dependencies are other people's code that you use to avoid reinventing the wheel (React, Material UI, Redux are all dependencies).",
     "category": "Tools",
@@ -392,6 +448,7 @@
     "example": "React is a dependency of your project. Material UI is a dependency. They're installed with 'npm install'."
   },
   {
+    "id": 57,
     "term": "Build",
     "definition": "The process of converting your development code into optimized code ready for production. Building compresses files, removes unused code, and bundles everything into efficient packages. Like compiling a manuscript into a printed book.",
     "category": "DevOps",
@@ -399,6 +456,7 @@
     "example": "'npm run build' creates an optimized version of your site in a .next folder, ready to deploy."
   },
   {
+    "id": 58,
     "term": "Hot Reload",
     "definition": "A development feature where changes you make to code instantly appear in the browser without losing the current page state. You save a file, and the change shows up in milliseconds. Massively speeds up development.",
     "category": "Tools",
@@ -406,6 +464,7 @@
     "example": "Change a button's color in your code, save, and see it update in the browser instantly - no manual refresh needed."
   },
   {
+    "id": 59,
     "term": "Accessibility (a11y)",
     "definition": "Making websites usable by everyone, including people with disabilities. This includes screen reader support, keyboard navigation, sufficient color contrast, and proper HTML semantics. 'a11y' is short for 'accessibility' (a + 11 letters + y).",
     "category": "Design",
@@ -413,10 +472,571 @@
     "example": "Adding alt text to images means screen readers can describe the image to visually impaired users."
   },
   {
+    "id": 60,
     "term": "SEO",
     "definition": "Search Engine Optimization. Techniques to help your website appear higher in Google search results. Includes proper HTML structure, meta tags, fast loading times, mobile-friendliness, and good content.",
     "category": "Design",
     "relatedTerms": ["Meta Tags", "SSR", "Performance"],
     "example": "Adding a descriptive <title> and <meta description> helps Google understand what your page is about."
+  },
+  {
+    "id": 61,
+    "term": "OAuth 2.0",
+    "definition": "An industry-standard protocol that lets users log into your app using their existing accounts (Google, GitHub, Facebook) without sharing their password with you. The third-party service confirms the user's identity and sends back a token.",
+    "category": "Security",
+    "relatedTerms": ["Authentication", "JWT", "Token"],
+    "example": "Clicking 'Sign in with Google' uses OAuth 2.0 - Google verifies you, then tells the app you're legit."
+  },
+  {
+    "id": 62,
+    "term": "CORS",
+    "definition": "Cross-Origin Resource Sharing. A security feature built into browsers that blocks web pages from making requests to a different domain unless the server explicitly allows it. It prevents malicious sites from stealing data from other sites.",
+    "category": "Security",
+    "relatedTerms": ["API", "Backend", "HTTP"],
+    "example": "Your frontend at localhost:3000 can't call your backend at localhost:5000 unless the backend enables CORS for that origin."
+  },
+  {
+    "id": 63,
+    "term": "CSRF",
+    "definition": "Cross-Site Request Forgery. An attack where a malicious site tricks your browser into making unwanted requests to a site you're logged into. Prevented by using CSRF tokens - secret values that prove the request came from your own site.",
+    "category": "Security",
+    "relatedTerms": ["Security", "Token", "Authentication"],
+    "example": "Without CSRF protection, a hacker's site could trick your browser into transferring money from your bank account."
+  },
+  {
+    "id": 64,
+    "term": "XSS",
+    "definition": "Cross-Site Scripting. An attack where malicious JavaScript is injected into a webpage, usually through user input. Prevented by sanitizing (cleaning) all user input and using frameworks like React that escape output by default.",
+    "category": "Security",
+    "relatedTerms": ["Security", "Sanitization", "JavaScript"],
+    "example": "If a comment field doesn't sanitize input, a hacker could type <script>stealCookies()</script> and it would run for every visitor."
+  },
+  {
+    "id": 65,
+    "term": "RBAC",
+    "definition": "Role-Based Access Control. A way of restricting what users can do based on their role (admin, editor, viewer). Instead of assigning permissions to each user individually, you assign them to roles and give users roles.",
+    "category": "Security",
+    "relatedTerms": ["Authorization", "Authentication", "Middleware"],
+    "example": "An admin can delete posts, an editor can create and edit posts, and a viewer can only read posts."
+  },
+  {
+    "id": 66,
+    "term": "MFA/2FA",
+    "definition": "Multi-Factor Authentication / Two-Factor Authentication. Requires two or more forms of proof to log in - typically something you know (password) plus something you have (phone code) or something you are (fingerprint).",
+    "category": "Security",
+    "relatedTerms": ["Authentication", "Security", "TOTP"],
+    "example": "After entering your password, you also enter a 6-digit code from an authenticator app on your phone."
+  },
+  {
+    "id": 67,
+    "term": "HTTPS/TLS",
+    "definition": "HTTPS is the secure version of HTTP that encrypts all data between the browser and server using TLS (Transport Layer Security). The padlock icon in your browser means HTTPS is active. Required for any site handling passwords or personal data.",
+    "category": "Security",
+    "relatedTerms": ["Security", "SSL", "Encryption"],
+    "example": "Without HTTPS, anyone on the same Wi-Fi network could read your password as it travels to the server."
+  },
+  {
+    "id": 68,
+    "term": "Authorization",
+    "definition": "The process of determining what an authenticated user is allowed to do. Authentication asks 'who are you?' while authorization asks 'what are you allowed to do?' They work together but are separate concepts.",
+    "category": "Security",
+    "relatedTerms": ["Authentication", "RBAC", "Middleware"],
+    "example": "You're authenticated as Alice, but authorization determines whether Alice can access the admin dashboard."
+  },
+  {
+    "id": 69,
+    "term": "WebSocket",
+    "definition": "A communication protocol that keeps a persistent, two-way connection between the browser and server. Unlike regular HTTP (ask-then-respond), WebSockets let the server push updates to the browser instantly without the browser asking.",
+    "category": "Real-Time",
+    "relatedTerms": ["Server-Sent Events", "HTTP", "Real-Time"],
+    "example": "Chat apps use WebSockets so new messages appear instantly without refreshing the page."
+  },
+  {
+    "id": 70,
+    "term": "Server-Sent Events (SSE)",
+    "definition": "A one-way communication channel where the server can push updates to the browser. Simpler than WebSockets but only goes one direction (server to client). Great for live feeds, notifications, and progress updates.",
+    "category": "Real-Time",
+    "relatedTerms": ["WebSocket", "HTTP", "Event Sourcing"],
+    "example": "A stock ticker that updates prices in real-time could use SSE to stream new prices from the server."
+  },
+  {
+    "id": 71,
+    "term": "Pub/Sub",
+    "definition": "Publish/Subscribe pattern. A messaging pattern where senders (publishers) broadcast messages to a topic, and receivers (subscribers) listen to topics they care about. Publishers and subscribers don't know about each other directly.",
+    "category": "Real-Time",
+    "relatedTerms": ["Message Queue", "Event Sourcing", "WebSocket"],
+    "example": "When a user posts a photo, the 'new-photo' topic notifies the feed service, notification service, and analytics service independently."
+  },
+  {
+    "id": 72,
+    "term": "Event Sourcing",
+    "definition": "A pattern where you store every change (event) that happens in your application instead of just the current state. You can rebuild the current state by replaying all events. Like a bank statement that logs every transaction.",
+    "category": "Real-Time",
+    "relatedTerms": ["CQRS", "Pub/Sub", "Database"],
+    "example": "Instead of storing 'balance: $500', you store 'deposited $1000', 'withdrew $300', 'deposited $200', 'withdrew $400'."
+  },
+  {
+    "id": 73,
+    "term": "CQRS",
+    "definition": "Command Query Responsibility Segregation. A pattern that separates reading data (queries) from writing data (commands) into different models. This lets you optimize reads and writes independently for better performance.",
+    "category": "Real-Time",
+    "relatedTerms": ["Event Sourcing", "Database", "Architecture"],
+    "example": "Write operations go to a normalized database for consistency, while read operations hit a denormalized cache for speed."
+  },
+  {
+    "id": 74,
+    "term": "Message Queue",
+    "definition": "A system that holds messages in a line (queue) until the receiving service is ready to process them. It decouples services so they don't need to be online at the same time. Common tools include RabbitMQ and Amazon SQS.",
+    "category": "Real-Time",
+    "relatedTerms": ["Pub/Sub", "Microservices", "Backend"],
+    "example": "When a user uploads a video, a message is queued for the transcoding service. The video gets processed when the service is free."
+  },
+  {
+    "id": 75,
+    "term": "Core Web Vitals",
+    "definition": "A set of three metrics Google uses to measure how fast and smooth your website feels. LCP measures loading speed, FID/INP measures interactivity, and CLS measures visual stability. These metrics affect your Google search ranking.",
+    "category": "Performance",
+    "relatedTerms": ["SEO", "Performance", "Lighthouse"],
+    "example": "A site with LCP under 2.5 seconds, INP under 200ms, and CLS under 0.1 gets a 'good' Core Web Vitals score."
+  },
+  {
+    "id": 76,
+    "term": "Lazy Loading",
+    "definition": "A technique that delays loading content until it's actually needed. Instead of loading everything when the page first opens, resources load as the user scrolls down or navigates to them. This makes the initial page load much faster.",
+    "category": "Performance",
+    "relatedTerms": ["Code Splitting", "Performance", "Bundle"],
+    "example": "Images below the fold don't load until the user scrolls near them, saving bandwidth and speeding up the page."
+  },
+  {
+    "id": 77,
+    "term": "Code Splitting",
+    "definition": "Breaking your JavaScript bundle into smaller chunks that load on demand. Instead of downloading one massive file, the browser only downloads the code needed for the current page. Next.js does this automatically per route.",
+    "category": "Performance",
+    "relatedTerms": ["Lazy Loading", "Bundle", "Tree Shaking"],
+    "example": "The /settings page code only downloads when you visit /settings, not when you visit the homepage."
+  },
+  {
+    "id": 78,
+    "term": "CDN",
+    "definition": "Content Delivery Network. A global network of servers that stores copies of your files (images, CSS, JavaScript) close to your users. Instead of fetching from one server far away, users get files from a nearby server for faster loading.",
+    "category": "Performance",
+    "relatedTerms": ["Caching", "Performance", "Deployment"],
+    "example": "A user in Tokyo gets your images from a CDN server in Japan instead of your origin server in New York."
+  },
+  {
+    "id": 79,
+    "term": "Tree Shaking",
+    "definition": "A build-time optimization that removes unused code from your final bundle. If you import one function from a large library, tree shaking ensures only that function (and its dependencies) end up in your code, not the entire library.",
+    "category": "Performance",
+    "relatedTerms": ["Build", "Bundle", "Code Splitting"],
+    "example": "If you import only 'Button' from Material UI, tree shaking removes the other 100+ components you're not using."
+  },
+  {
+    "id": 80,
+    "term": "Memoization",
+    "definition": "A performance optimization that caches the result of an expensive function so it doesn't recalculate every time. If the same inputs are given again, it returns the cached result instantly. React provides useMemo and React.memo for this.",
+    "category": "Performance",
+    "relatedTerms": ["Hook", "Rendering", "Performance"],
+    "example": "useMemo(() => expensiveSort(items), [items]) only re-sorts when items change, not on every render."
+  },
+  {
+    "id": 81,
+    "term": "ORM",
+    "definition": "Object-Relational Mapping. A tool that lets you interact with your database using your programming language's objects instead of writing raw SQL. It maps database tables to classes and rows to objects.",
+    "category": "Database",
+    "relatedTerms": ["SQL", "Database", "Migration"],
+    "example": "Instead of writing 'SELECT * FROM users WHERE id = 1', you write User.query.get(1) in Python with SQLAlchemy."
+  },
+  {
+    "id": 82,
+    "term": "SQL",
+    "definition": "Structured Query Language. The standard language for talking to relational databases. You use SQL to create, read, update, and delete data stored in tables with rows and columns.",
+    "category": "Database",
+    "relatedTerms": ["Database", "ORM", "NoSQL"],
+    "example": "SELECT name, email FROM users WHERE age > 18 ORDER BY name fetches adult users sorted by name."
+  },
+  {
+    "id": 83,
+    "term": "NoSQL",
+    "definition": "Databases that don't use traditional SQL tables. They store data as documents (MongoDB), key-value pairs (Redis), or graphs (Neo4j). NoSQL is often more flexible and scales more easily than SQL databases for certain use cases.",
+    "category": "Database",
+    "relatedTerms": ["SQL", "Database", "MongoDB"],
+    "example": "MongoDB stores data as JSON-like documents: { name: 'Alice', hobbies: ['coding', 'gaming'] } - no rigid table structure needed."
+  },
+  {
+    "id": 84,
+    "term": "Database Index",
+    "definition": "A data structure that speeds up finding rows in a database, like a book's index helps you find pages about a topic. Without an index, the database must scan every row. Indexes make reads faster but writes slightly slower.",
+    "category": "Database",
+    "relatedTerms": ["SQL", "Database", "Performance"],
+    "example": "Adding an index on the 'email' column makes SELECT * FROM users WHERE email = 'alice@example.com' nearly instant."
+  },
+  {
+    "id": 85,
+    "term": "Migration",
+    "definition": "A script that changes your database structure (adding tables, columns, or constraints) in a controlled, versioned way. Migrations let you evolve your database over time and roll back changes if something goes wrong.",
+    "category": "Database",
+    "relatedTerms": ["Database", "ORM", "Schema"],
+    "example": "A migration file might add a 'profile_picture' column to the users table, and can undo it if needed."
+  },
+  {
+    "id": 86,
+    "term": "Redis",
+    "definition": "An extremely fast in-memory data store often used for caching, session storage, and real-time features. Because it stores data in RAM instead of on disk, it can respond in microseconds. Think of it as a super-fast sticky note board.",
+    "category": "Database",
+    "relatedTerms": ["Caching", "Database", "Session"],
+    "example": "Store frequently accessed user profiles in Redis so they load in 1ms instead of 50ms from the main database."
+  },
+  {
+    "id": 87,
+    "term": "Normalization",
+    "definition": "Organizing a database to reduce duplicate data by splitting information into related tables. Instead of repeating 'New York, NY' in every user row, you create a separate cities table and reference it. Saves space and prevents inconsistencies.",
+    "category": "Database",
+    "relatedTerms": ["SQL", "Database", "Schema"],
+    "example": "Instead of storing the full address in every order, you store a customer_id that links to the customers table."
+  },
+  {
+    "id": 88,
+    "term": "N+1 Problem",
+    "definition": "A common performance bug where your code makes one query to get a list of items, then makes a separate query for each item's related data. This turns what should be 2 queries into N+1 queries (one for the list, one per item).",
+    "category": "Database",
+    "relatedTerms": ["ORM", "SQL", "Performance"],
+    "example": "Fetching 100 blog posts (1 query) then each post's author separately (100 queries) = 101 queries instead of 2."
+  },
+  {
+    "id": 89,
+    "term": "CI/CD",
+    "definition": "Continuous Integration / Continuous Deployment. Automating the process of testing and deploying code. Every time you push code, CI automatically runs tests, and CD automatically deploys passing code to production.",
+    "category": "DevOps",
+    "relatedTerms": ["GitHub Actions", "Deployment", "Testing"],
+    "example": "Push to main -> tests run automatically -> if all pass -> site deploys automatically. No manual steps needed."
+  },
+  {
+    "id": 90,
+    "term": "Docker Container",
+    "definition": "A lightweight, isolated environment that runs your application with all its dependencies bundled together. Unlike a virtual machine, containers share the host OS kernel, making them fast to start and efficient with resources.",
+    "category": "DevOps",
+    "relatedTerms": ["Docker", "Docker Compose", "Image"],
+    "example": "Your app runs in a container with Python 3.11, Flask, and all libraries, regardless of what's installed on the host machine."
+  },
+  {
+    "id": 91,
+    "term": "GitHub Actions",
+    "definition": "GitHub's built-in CI/CD system. You write workflow files in YAML that tell GitHub what to do when certain events happen (push, pull request). It runs your tests, builds, and deployments automatically on GitHub's servers.",
+    "category": "DevOps",
+    "relatedTerms": ["CI/CD", "GitHub", "YAML"],
+    "example": "A workflow that runs 'npm test' on every pull request, blocking the merge if any tests fail."
+  },
+  {
+    "id": 92,
+    "term": "Health Check",
+    "definition": "An endpoint that reports whether your application is running correctly. Monitoring tools ping this endpoint regularly, and if it stops responding or reports errors, alerts are triggered. Essential for keeping services reliable.",
+    "category": "DevOps",
+    "relatedTerms": ["Endpoint", "Deployment", "Monitoring"],
+    "example": "GET /health returns { status: 'ok', database: 'connected', uptime: '3 days' } if everything is working."
+  },
+  {
+    "id": 93,
+    "term": "Blue-Green Deployment",
+    "definition": "A deployment strategy where you run two identical production environments (blue and green). You deploy new code to the inactive one, test it, then switch traffic over. If something goes wrong, you switch back instantly.",
+    "category": "DevOps",
+    "relatedTerms": ["Deployment", "CI/CD", "Load Balancer"],
+    "example": "Blue is running v1.0. Deploy v1.1 to green, test it, then route all traffic from blue to green. Rollback takes seconds."
+  },
+  {
+    "id": 94,
+    "term": "Infrastructure as Code",
+    "definition": "Managing servers, databases, and network configuration through code files instead of clicking through dashboards. Your entire infrastructure is version-controlled and reproducible. Tools include Terraform and AWS CloudFormation.",
+    "category": "DevOps",
+    "relatedTerms": ["DevOps", "Docker", "Deployment"],
+    "example": "A Terraform file defines '1 load balancer, 3 web servers, 1 database' - run it to create the entire infrastructure automatically."
+  },
+  {
+    "id": 95,
+    "term": "Load Balancer",
+    "definition": "A system that distributes incoming network traffic across multiple servers so no single server gets overwhelmed. If one server goes down, the load balancer routes traffic to the remaining healthy servers automatically.",
+    "category": "DevOps",
+    "relatedTerms": ["Deployment", "Scaling", "Health Check"],
+    "example": "With 3 web servers behind a load balancer, each handles roughly a third of the traffic instead of one server handling it all."
+  },
+  {
+    "id": 96,
+    "term": "Scaling",
+    "definition": "Increasing your application's capacity to handle more users. Vertical scaling means getting a bigger server. Horizontal scaling means adding more servers. Horizontal scaling is preferred because it's more resilient and has no ceiling.",
+    "category": "DevOps",
+    "relatedTerms": ["Load Balancer", "Docker", "Microservices"],
+    "example": "When your site goes from 1,000 to 100,000 users, you add more server instances behind a load balancer."
+  },
+  {
+    "id": 97,
+    "term": "Payment Intent",
+    "definition": "A concept from the Stripe payment API representing a customer's intention to pay. It tracks the lifecycle of a payment from creation through confirmation, handling retries and authentication steps automatically.",
+    "category": "E-Commerce",
+    "relatedTerms": ["Webhook", "API", "Backend"],
+    "example": "Create a PaymentIntent for $49.99 -> show the card form -> confirm the intent -> payment completes or fails."
+  },
+  {
+    "id": 98,
+    "term": "Webhook",
+    "definition": "A way for one service to automatically notify your server when something happens. Instead of constantly asking 'did anything change?', the service pushes an update to your URL when an event occurs. Like a doorbell instead of checking the door repeatedly.",
+    "category": "E-Commerce",
+    "relatedTerms": ["API", "Endpoint", "Payment Intent"],
+    "example": "Stripe sends a webhook to your server when a payment succeeds, so you can ship the order."
+  },
+  {
+    "id": 99,
+    "term": "PCI Compliance",
+    "definition": "Payment Card Industry Data Security Standard. A set of security rules you must follow if you handle credit card information. Using services like Stripe means they handle PCI compliance for you - your server never touches card numbers.",
+    "category": "E-Commerce",
+    "relatedTerms": ["Security", "Payment Intent", "HTTPS/TLS"],
+    "example": "Stripe's card input element runs in an iframe, so card numbers never pass through your server, keeping you PCI compliant."
+  },
+  {
+    "id": 100,
+    "term": "Cart Abandonment",
+    "definition": "When a shopper adds items to their online cart but leaves without completing the purchase. Roughly 70% of online carts are abandoned. Recovery tactics include reminder emails, exit-intent popups, and saved cart persistence.",
+    "category": "E-Commerce",
+    "relatedTerms": ["E-Commerce", "Webhook", "Engagement Loop"],
+    "example": "A user adds shoes to their cart but leaves. 24 hours later, an automated email reminds them to complete the purchase."
+  },
+  {
+    "id": 101,
+    "term": "SKU",
+    "definition": "Stock Keeping Unit. A unique code that identifies each distinct product or variant in your inventory. Every combination of size, color, and style gets its own SKU. Essential for tracking stock levels and processing orders.",
+    "category": "E-Commerce",
+    "relatedTerms": ["E-Commerce", "Database", "Inventory"],
+    "example": "A red t-shirt in size M might be SKU 'TSH-RED-M', while the same shirt in blue is 'TSH-BLU-M'."
+  },
+  {
+    "id": 102,
+    "term": "HLS",
+    "definition": "HTTP Live Streaming. Apple's protocol for streaming video over the internet. It breaks video into small chunks (usually 6-10 seconds) and serves them over standard HTTP. Supports adaptive bitrate so quality adjusts to your connection speed.",
+    "category": "Media & Streaming",
+    "relatedTerms": ["DASH", "Adaptive Bitrate", "Transcoding"],
+    "example": "YouTube and Netflix use HLS to stream video, automatically switching to lower quality if your internet slows down."
+  },
+  {
+    "id": 103,
+    "term": "DASH",
+    "definition": "Dynamic Adaptive Streaming over HTTP. An open standard alternative to HLS for video streaming. Like HLS, it breaks video into chunks and adapts quality to network conditions, but it's not tied to any single vendor.",
+    "category": "Media & Streaming",
+    "relatedTerms": ["HLS", "Adaptive Bitrate", "Transcoding"],
+    "example": "DASH lets a streaming service provide 4K, 1080p, 720p, and 480p versions of the same video, switching seamlessly."
+  },
+  {
+    "id": 104,
+    "term": "Transcoding",
+    "definition": "Converting a media file from one format or quality to another. When a user uploads a 4K video, the server transcodes it into multiple resolutions and formats so it can be played on any device and connection speed.",
+    "category": "Media & Streaming",
+    "relatedTerms": ["HLS", "DASH", "Adaptive Bitrate"],
+    "example": "An uploaded 4K MP4 video gets transcoded into 1080p, 720p, and 480p versions for streaming."
+  },
+  {
+    "id": 105,
+    "term": "Adaptive Bitrate",
+    "definition": "A streaming technique that adjusts video quality in real-time based on the viewer's internet speed and device capability. If your connection drops, it switches to a lower resolution. If it improves, quality goes back up.",
+    "category": "Media & Streaming",
+    "relatedTerms": ["HLS", "DASH", "CDN"],
+    "example": "You start watching a show in 1080p, enter a tunnel on the train, and it drops to 480p, then returns to 1080p after."
+  },
+  {
+    "id": 106,
+    "term": "CDN Edge",
+    "definition": "A server at the edge (outer boundary) of a CDN, physically located close to end users. Edge servers cache content and can run lightweight logic, reducing the distance data travels and improving response times.",
+    "category": "Media & Streaming",
+    "relatedTerms": ["CDN", "Caching", "Performance"],
+    "example": "A CDN edge server in London serves video chunks to UK viewers instead of fetching each chunk from a US origin server."
+  },
+  {
+    "id": 107,
+    "term": "WebRTC",
+    "definition": "Web Real-Time Communication. A set of browser APIs that enable peer-to-peer audio, video, and data sharing directly between browsers without going through a server. Used for video calls, screen sharing, and live streaming.",
+    "category": "Media & Streaming",
+    "relatedTerms": ["WebSocket", "Real-Time", "Streaming"],
+    "example": "Google Meet and Discord use WebRTC to stream your camera and microphone directly to other participants."
+  },
+  {
+    "id": 108,
+    "term": "XP System",
+    "definition": "Experience Points system. A gamification mechanic where users earn points for completing actions (reading articles, finishing quizzes, contributing content). XP accumulates toward levels, creating a sense of progression and achievement.",
+    "category": "Gamification",
+    "relatedTerms": ["Achievement", "Leaderboard", "Engagement Loop"],
+    "example": "Earn 10 XP for reading a chapter, 50 XP for passing a quiz, 100 XP for completing a project. Level up at 500 XP."
+  },
+  {
+    "id": 109,
+    "term": "Achievement",
+    "definition": "A badge or reward given to users for reaching specific milestones or completing challenges. Achievements provide recognition and motivation. They can be visible to others, adding a social incentive to participate.",
+    "category": "Gamification",
+    "relatedTerms": ["XP System", "Streak", "Engagement Loop"],
+    "example": "'First Steps' badge for completing onboarding. 'Contributor' badge for submitting 10 code reviews."
+  },
+  {
+    "id": 110,
+    "term": "Leaderboard",
+    "definition": "A ranked list showing top-performing users based on points, completions, or other metrics. Leaderboards add competition and social motivation. Best when they include different timeframes (weekly, monthly, all-time) to keep them fresh.",
+    "category": "Gamification",
+    "relatedTerms": ["XP System", "Achievement", "Engagement Loop"],
+    "example": "A weekly leaderboard showing the top 10 quiz scorers resets every Monday, giving everyone a fresh chance."
+  },
+  {
+    "id": 111,
+    "term": "Streak",
+    "definition": "A count of consecutive days (or sessions) a user has engaged with your app. Streaks create a powerful habit loop because users don't want to break their chain. Duolingo popularized this pattern for language learning.",
+    "category": "Gamification",
+    "relatedTerms": ["Engagement Loop", "Achievement", "XP System"],
+    "example": "A '7-day streak' badge for logging in and completing at least one activity every day for a week."
+  },
+  {
+    "id": 112,
+    "term": "Engagement Loop",
+    "definition": "A cycle of actions and rewards that keeps users coming back. The user takes an action (complete a lesson), gets a reward (XP, badge), sees progress (level up), and is motivated to take the next action. Well-designed loops feel rewarding, not manipulative.",
+    "category": "Gamification",
+    "relatedTerms": ["XP System", "Streak", "Achievement"],
+    "example": "Complete quiz -> earn XP -> level up -> unlock new content -> complete next quiz. Each step motivates the next."
+  },
+  {
+    "id": 113,
+    "term": "Microservices",
+    "definition": "An architecture where your application is split into small, independent services that each handle one specific function. Each service can be developed, deployed, and scaled independently. The opposite of a monolith.",
+    "category": "Architecture",
+    "relatedTerms": ["Monolith", "API Gateway", "Service Mesh"],
+    "example": "Separate services for user auth, payments, notifications, and inventory - each in its own codebase and deployment."
+  },
+  {
+    "id": 114,
+    "term": "Monolith",
+    "definition": "An application architecture where all code lives in a single codebase and deploys as one unit. Simpler to develop and debug than microservices, especially for small teams. Most apps should start as a monolith and split later if needed.",
+    "category": "Architecture",
+    "relatedTerms": ["Microservices", "Backend", "Deployment"],
+    "example": "Your Flask app handles auth, API routes, email sending, and background jobs all in one codebase - that's a monolith."
+  },
+  {
+    "id": 115,
+    "term": "Headless CMS",
+    "definition": "A content management system that provides content through an API instead of rendering pages itself. It separates content creation (backend) from content display (frontend), letting you use any frontend framework to display the content.",
+    "category": "Architecture",
+    "relatedTerms": ["API", "Jamstack", "Backend"],
+    "example": "Writers create blog posts in a headless CMS dashboard. Your Next.js frontend fetches and displays them via API."
+  },
+  {
+    "id": 116,
+    "term": "Jamstack",
+    "definition": "A modern web architecture using JavaScript, APIs, and Markup. Pages are pre-built at deploy time (static generation) and enhanced with JavaScript. Dynamic data comes from APIs. Results in very fast, secure, and scalable sites.",
+    "category": "Architecture",
+    "relatedTerms": ["SSR/SSG/ISR", "CDN", "Headless CMS"],
+    "example": "A blog built with Next.js static generation + a headless CMS + Vercel CDN is a classic Jamstack setup."
+  },
+  {
+    "id": 117,
+    "term": "SSR/SSG/ISR",
+    "definition": "Three rendering strategies in Next.js. SSR (Server-Side Rendering) builds pages on each request. SSG (Static Site Generation) builds pages at deploy time. ISR (Incremental Static Regeneration) rebuilds static pages in the background after a set interval.",
+    "category": "Architecture",
+    "relatedTerms": ["Next.js", "Rendering", "Performance"],
+    "example": "Use SSG for a blog (content rarely changes), SSR for a dashboard (always fresh), ISR for a product page (updates every 60 seconds)."
+  },
+  {
+    "id": 118,
+    "term": "API Gateway",
+    "definition": "A single entry point that sits in front of multiple backend services. It handles routing requests to the right service, authentication, rate limiting, and load balancing. Clients talk to one URL instead of many different services.",
+    "category": "Architecture",
+    "relatedTerms": ["Microservices", "Load Balancer", "Middleware"],
+    "example": "All API calls go to api.example.com. The gateway routes /users to the user service and /orders to the order service."
+  },
+  {
+    "id": 119,
+    "term": "Service Mesh",
+    "definition": "An infrastructure layer that handles communication between microservices. It manages service discovery, load balancing, encryption, and observability without changing application code. Tools include Istio and Linkerd.",
+    "category": "Architecture",
+    "relatedTerms": ["Microservices", "API Gateway", "DevOps"],
+    "example": "A service mesh automatically retries failed requests between services and encrypts all inter-service traffic."
+  },
+  {
+    "id": 120,
+    "term": "Database",
+    "definition": "An organized system for storing and retrieving data. Relational databases (PostgreSQL, MySQL) store data in tables with relationships. Non-relational databases (MongoDB, Redis) use other structures like documents or key-value pairs.",
+    "category": "Database",
+    "relatedTerms": ["SQL", "NoSQL", "ORM"],
+    "example": "A PostgreSQL database might have tables for users, posts, and comments, linked by foreign keys."
+  },
+  {
+    "id": 121,
+    "term": "Caching",
+    "definition": "Storing frequently accessed data in a fast temporary location so you don't have to fetch or compute it every time. Caching happens at many levels: browser, CDN, server memory (Redis), and database query results.",
+    "category": "Performance",
+    "relatedTerms": ["Redis", "CDN", "Performance"],
+    "example": "Cache the homepage HTML for 5 minutes. Instead of querying the database 1000 times, serve the cached version."
+  },
+  {
+    "id": 122,
+    "term": "HTTP",
+    "definition": "HyperText Transfer Protocol. The foundation of data communication on the web. Your browser uses HTTP to request web pages and APIs. Every URL starting with http:// or https:// uses this protocol. It's a request-response model.",
+    "category": "Web Basics",
+    "relatedTerms": ["REST", "API", "HTTPS/TLS"],
+    "example": "When you visit a website, your browser sends an HTTP GET request and the server responds with the page's HTML."
+  },
+  {
+    "id": 123,
+    "term": "Token",
+    "definition": "A string of characters that represents an authorization or identity claim. Tokens are used instead of sending a username and password with every request. JWTs and OAuth access tokens are common types.",
+    "category": "Security",
+    "relatedTerms": ["JWT", "OAuth 2.0", "Authentication"],
+    "example": "After login, you receive a token like 'eyJhbGciOi...' that you include in the header of every API request."
+  },
+  {
+    "id": 124,
+    "term": "Schema",
+    "definition": "The structure or blueprint of your data. In databases, a schema defines tables, columns, and their types. In APIs, a schema describes the shape of request and response data. It enforces consistency and prevents invalid data.",
+    "category": "Database",
+    "relatedTerms": ["Database", "Migration", "TypeScript"],
+    "example": "A user schema might define: id (integer), name (string, required), email (string, unique), created_at (timestamp)."
+  },
+  {
+    "id": 125,
+    "term": "Testing",
+    "definition": "Writing code that automatically verifies your other code works correctly. Unit tests check individual functions, integration tests check how parts work together, and end-to-end tests simulate real user actions in a browser.",
+    "category": "Testing",
+    "relatedTerms": ["CI/CD", "Jest", "TDD"],
+    "example": "A test for an add function: expect(add(2, 3)).toBe(5). If someone breaks the function, the test catches it."
+  },
+  {
+    "id": 126,
+    "term": "Rate Limiting",
+    "definition": "Restricting how many requests a user or IP address can make to your API within a time window. Prevents abuse, brute-force attacks, and one user from overwhelming your server. Returns a 429 'Too Many Requests' error when exceeded.",
+    "category": "Security",
+    "relatedTerms": ["API", "Security", "Middleware"],
+    "example": "Allow 100 API requests per minute per user. On the 101st request, return a 429 error with 'retry after 60 seconds'."
+  },
+  {
+    "id": 127,
+    "term": "Session",
+    "definition": "A way to remember who a user is across multiple requests. When you log in, the server creates a session and gives your browser a session ID cookie. Each subsequent request includes this cookie so the server knows it's still you.",
+    "category": "Security",
+    "relatedTerms": ["Authentication", "Cookie", "JWT"],
+    "example": "You log in once, and the session keeps you logged in as you navigate between pages without re-entering your password."
+  },
+  {
+    "id": 128,
+    "term": "YAML",
+    "definition": "A human-readable data format commonly used for configuration files. Similar to JSON but uses indentation instead of braces, making it easier to read and write by hand. Used by Docker Compose, GitHub Actions, and Kubernetes.",
+    "category": "Data",
+    "relatedTerms": ["JSON", "Docker Compose", "GitHub Actions"],
+    "example": "name: my-app\\nversion: 1.0\\nservices:\\n  web:\\n    port: 3000"
+  },
+  {
+    "id": 129,
+    "term": "Reducer",
+    "definition": "A pure function in Redux that takes the current state and an action, then returns a new state. Reducers specify how state changes in response to actions. They must be predictable - same input always produces the same output.",
+    "category": "State Management",
+    "relatedTerms": ["Redux", "Slice", "State"],
+    "example": "A counter reducer: if action is 'increment', return state + 1. If 'decrement', return state - 1."
+  },
+  {
+    "id": 130,
+    "term": "Pull Request",
+    "definition": "A request to merge your code changes into the main codebase. Other developers review your code, suggest changes, and approve it before it's merged. Pull requests are the standard way to collaborate on code in teams.",
+    "category": "Tools",
+    "relatedTerms": ["Git", "GitHub", "Code Review"],
+    "example": "You create a pull request with your new login feature. A teammate reviews it, approves it, and merges it into main."
   }
 ]

@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Service Layer",
+  "headingLevel": 3,
+  "body": "Each blueprint delegates to a service module that encapsulates the business logic. Services call `get_db()` to access the JsonDatabase singleton and perform queries using `read()`, `find()`, and `find_one()`. This separation means you can swap out the database implementation without changing the API routes."
+}

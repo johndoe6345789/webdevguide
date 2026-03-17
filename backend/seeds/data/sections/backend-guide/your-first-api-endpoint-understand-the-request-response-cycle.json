@@ -1,0 +1,6 @@
+{
+  "type": "step",
+  "step": 2,
+  "title": "Understand the Request / Response Cycle",
+  "body": "Every time someone interacts with your API, this cycle happens:"
+}

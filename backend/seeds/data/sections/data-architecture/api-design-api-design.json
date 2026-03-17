@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "API Design",
+  "headingLevel": 2,
+  "body": "Your API is the contract between frontend and backend. A well-designed API is predictable, consistent, and easy to evolve without breaking existing clients."
+}

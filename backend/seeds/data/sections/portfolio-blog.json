@@ -1,0 +1,437 @@
+{
+  "title": "Build a Developer Portfolio with Blog",
+  "slug": "portfolio-blog",
+  "description": "Create a developer portfolio with a project showcase, filterable tech stack display, MDX-powered blog with syntax highlighting, comments, newsletter integration, dark/light theme toggle, and deploy to Vercel using Next.js static generation.",
+  "icon": "Code",
+  "order": 16,
+  "estimatedMinutes": 150,
+  "difficulty": "intermediate",
+  "prerequisites": ["react-fundamentals", "javascript-basics"],
+  "keyPoints": [
+    "Define a content strategy with pillars, posting schedule, and audience focus",
+    "Set up a Next.js project with TypeScript and MDX for blog posts",
+    "Build a filterable project showcase with case study pages",
+    "Create a blog engine with tags, categories, reading time, TOC, and syntax highlighting",
+    "Implement SEO with structured data, RSS feed, sitemap, and social sharing cards",
+    "Add Giscus comments powered by GitHub Discussions",
+    "Integrate newsletter signup with ConvertKit or Buttondown",
+    "Track page views and popular posts with privacy-respecting analytics",
+    "Explore monetization through sponsored posts, affiliate links, and digital products",
+    "Add testimonials, GitHub stats widget, and social proof elements"
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "heading": "Content Strategy — What to Write About",
+      "headingLevel": 2,
+      "body": "Before building the blog engine, decide what you will write about. A developer blog without a content strategy becomes a graveyard of half-finished posts. Define your content pillars, commit to a realistic posting schedule, and write for a specific audience."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        { "title": "Content Pillars", "body": "Pick 3-4 topics you can write about repeatedly: tutorials, career advice, tool reviews, project walkthroughs. Pillars keep you focused.", "icon": "ViewColumn", "chip": "Strategy" },
+        { "title": "Posting Schedule", "body": "Consistency beats frequency. One quality post per month is better than four rushed ones. Block time for writing like any other task.", "icon": "CalendarMonth", "chip": "Strategy" },
+        { "title": "Target Audience", "body": "Write for the person you were six months ago. They have the same questions you already answered. Be specific — 'junior React developers' not 'everyone'.", "icon": "People", "chip": "Strategy" },
+        { "title": "Post Formats", "body": "Mix tutorials (step-by-step), explainers (how X works), opinions (why I chose Y), and case studies (building Z) to keep things fresh.", "icon": "Article", "chip": "Format" },
+        { "title": "Evergreen vs Timely", "body": "Prioritize evergreen content that stays useful for years. Timely content (new library release) gets clicks but decays fast.", "icon": "Update", "chip": "Strategy" },
+        { "title": "Repurposing", "body": "Turn each blog post into a Twitter thread, a LinkedIn post, and a dev.to cross-post. One piece of content becomes four distribution channels.", "icon": "Share", "chip": "Growth" }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "The best topic is the one you just learned",
+      "body": "You do not need to be an expert to write. Document what you learned today, how you solved a tricky bug, or how you evaluated two competing libraries. These 'learning in public' posts are some of the most valuable content on the internet."
+    },
+    {
+      "type": "text",
+      "heading": "Project Setup — Next.js with MDX",
+      "headingLevel": 2,
+      "body": "Next.js gives you static site generation for fast page loads, file-based routing, built-in image optimization, and MDX support for writing blog posts in Markdown with embedded React components. Combined with Vercel hosting, you get automatic deployments on every push."
+    },
+    {
+      "type": "step",
+      "step": 1,
+      "title": "Create the Next.js Project",
+      "body": "Bootstrap with create-next-app and install MDX, syntax highlighting, and blog utilities.",
+      "code": "npx create-next-app@latest my-portfolio --typescript --tailwind --app --src-dir\ncd my-portfolio\n\n# MDX support\nnpm install @next/mdx @mdx-js/loader @mdx-js/react\n\n# Syntax highlighting and heading anchors\nnpm install rehype-highlight rehype-slug rehype-autolink-headings\nnpm install remark-gfm\n\n# Blog utilities\nnpm install gray-matter reading-time\n\n# Comments\nnpm install @giscus/react\n\n# RSS feed generation\nnpm install rss",
+      "language": "bash"
+    },
+    {
+      "type": "step",
+      "step": 2,
+      "title": "Configure MDX in Next.js",
+      "body": "Update next.config.mjs to handle .mdx files with rehype plugins for syntax highlighting, heading anchors, and GitHub-flavored Markdown.",
+      "code": "// next.config.mjs\nimport createMDX from '@next/mdx';\nimport rehypeHighlight from 'rehype-highlight';\nimport rehypeSlug from 'rehype-slug';\nimport rehypeAutolinkHeadings from 'rehype-autolink-headings';\nimport remarkGfm from 'remark-gfm';\n\nconst withMDX = createMDX({\n  options: {\n    remarkPlugins: [remarkGfm],\n    rehypePlugins: [\n      rehypeHighlight,\n      rehypeSlug,\n      [rehypeAutolinkHeadings, { behavior: 'wrap' }],\n    ],\n  },\n});\n\n/** @type {import('next').NextConfig} */\nconst nextConfig = {\n  pageExtensions: ['ts', 'tsx', 'md', 'mdx'],\n};\n\nexport default withMDX(nextConfig);",
+      "language": "javascript"
+    },
+    {
+      "type": "text",
+      "heading": "Portfolio Gallery — Filterable Project Grid",
+      "headingLevel": 2,
+      "body": "The portfolio is the centerpiece of a developer site. Projects need to be filterable by technology, sortable by date, and each should link to a detailed case study page with before/after comparisons, technical decisions, and outcomes."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "src/data/projects.ts",
+      "description": "Typed project data with tags, links, metrics, and case study content for the portfolio.",
+      "code": "export interface Project {\n  slug: string;\n  title: string;\n  description: string;\n  longDescription: string;\n  image: string;\n  tags: string[];\n  github: string;\n  demo: string;\n  featured: boolean;\n  year: number;\n  metrics?: string;  // e.g. '50k+ users' or '99 Lighthouse score'\n  role?: string;     // e.g. 'Lead Frontend Developer'\n}\n\nexport const projects: Project[] = [\n  {\n    slug: 'weather-dashboard',\n    title: 'Weather Dashboard',\n    description: 'Real-time weather forecasts with interactive maps and 7-day predictions.',\n    longDescription: 'Built with React and the OpenWeather API. Features geolocation, saved locations, animated weather icons, and hourly/daily forecasts. The app uses React Query for data fetching with stale-while-revalidate caching, and Recharts for temperature trend visualization.',\n    image: '/projects/weather.png',\n    tags: ['React', 'TypeScript', 'API', 'Tailwind'],\n    github: 'https://github.com/you/weather-dashboard',\n    demo: 'https://weather.yourdomain.com',\n    featured: true,\n    year: 2025,\n    metrics: '12k monthly users',\n    role: 'Solo developer',\n  },\n  {\n    slug: 'task-flow',\n    title: 'TaskFlow',\n    description: 'Kanban-style task management with drag-and-drop and real-time collaboration.',\n    longDescription: 'Full-stack app with React frontend and Node.js/Express backend. Uses WebSockets for real-time updates, PostgreSQL for data storage, and DnD Kit for drag-and-drop. Implements optimistic updates and offline support.',\n    image: '/projects/taskflow.png',\n    tags: ['React', 'Node.js', 'PostgreSQL', 'WebSocket'],\n    github: 'https://github.com/you/taskflow',\n    demo: 'https://taskflow.yourdomain.com',\n    featured: true,\n    year: 2025,\n    metrics: '98 Lighthouse score',\n    role: 'Lead frontend developer',\n  },\n  {\n    slug: 'markdown-editor',\n    title: 'Markdown Editor',\n    description: 'Live preview Markdown editor with syntax highlighting and export.',\n    longDescription: 'A browser-based editor with split-pane live preview, code syntax highlighting via Prism.js, PDF/HTML export, and local storage autosave. Built with vanilla TypeScript and Vite for fast builds.',\n    image: '/projects/markdown.png',\n    tags: ['TypeScript', 'Vite', 'CSS'],\n    github: 'https://github.com/you/markdown-editor',\n    demo: 'https://md.yourdomain.com',\n    featured: false,\n    year: 2024,\n    role: 'Solo developer',\n  },\n];\n\nexport const allTags = [...new Set(projects.flatMap((p) => p.tags))].sort();"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/components/ProjectGrid.tsx",
+      "description": "Filterable project showcase with tag-based filtering, animated cards, and metrics badges.",
+      "code": "'use client';\n\nimport { useState } from 'react';\nimport Link from 'next/link';\nimport Image from 'next/image';\nimport { projects, allTags } from '@/data/projects';\n\nexport default function ProjectGrid() {\n  const [activeTag, setActiveTag] = useState<string | null>(null);\n\n  const filtered = activeTag\n    ? projects.filter((p) => p.tags.includes(activeTag))\n    : projects;\n\n  return (\n    <section id=\"projects\" className=\"py-20\">\n      <h2 className=\"text-3xl font-bold text-center mb-4\">Projects</h2>\n      <p className=\"text-center text-gray-500 dark:text-gray-400 mb-8\">\n        A selection of things I have built. Click any project for a detailed case study.\n      </p>\n\n      {/* Tag filter bar */}\n      <div className=\"flex flex-wrap justify-center gap-2 mb-10\">\n        <button\n          className={`px-4 py-2 rounded-full text-sm font-medium transition ${\n            !activeTag\n              ? 'bg-blue-500 text-white'\n              : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'\n          }`}\n          onClick={() => setActiveTag(null)}\n        >\n          All ({projects.length})\n        </button>\n        {allTags.map((tag) => (\n          <button\n            key={tag}\n            className={`px-4 py-2 rounded-full text-sm font-medium transition ${\n              activeTag === tag\n                ? 'bg-blue-500 text-white'\n                : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'\n            }`}\n            onClick={() => setActiveTag(activeTag === tag ? null : tag)}\n          >\n            {tag}\n          </button>\n        ))}\n      </div>\n\n      {/* Project grid */}\n      <div className=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto\">\n        {filtered.map((project) => (\n          <Link\n            href={`/projects/${project.slug}`}\n            key={project.slug}\n            className=\"group rounded-xl border border-gray-200 dark:border-gray-700\n                       overflow-hidden hover:-translate-y-1 transition-all duration-300\n                       hover:shadow-lg dark:hover:shadow-gray-900/30\"\n          >\n            <div className=\"relative overflow-hidden\">\n              <Image\n                src={project.image}\n                alt={project.title}\n                width={600}\n                height={360}\n                className=\"w-full h-52 object-cover group-hover:scale-105 transition-transform duration-300\"\n              />\n              {project.featured && (\n                <span className=\"absolute top-3 right-3 px-2 py-1 bg-blue-500 text-white text-xs font-bold rounded\">\n                  Featured\n                </span>\n              )}\n            </div>\n            <div className=\"p-5\">\n              <div className=\"flex items-center justify-between mb-2\">\n                <h3 className=\"text-lg font-bold\">{project.title}</h3>\n                <span className=\"text-xs text-gray-400\">{project.year}</span>\n              </div>\n              <p className=\"text-sm text-gray-500 dark:text-gray-400 mb-3\">{project.description}</p>\n              {project.metrics && (\n                <p className=\"text-xs font-semibold text-blue-500 mb-3\">{project.metrics}</p>\n              )}\n              <div className=\"flex flex-wrap gap-1.5\">\n                {project.tags.map((tag) => (\n                  <span key={tag} className=\"text-xs px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium\">\n                    {tag}\n                  </span>\n                ))}\n              </div>\n            </div>\n          </Link>\n        ))}\n      </div>\n    </section>\n  );\n}"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/app/projects/[slug]/page.tsx",
+      "description": "Case study page for individual projects with detailed description, screenshots, and links.",
+      "code": "import { projects } from '@/data/projects';\nimport Image from 'next/image';\nimport Link from 'next/link';\nimport type { Metadata } from 'next';\nimport { notFound } from 'next/navigation';\n\ninterface Props {\n  params: { slug: string };\n}\n\nexport function generateStaticParams() {\n  return projects.map((p) => ({ slug: p.slug }));\n}\n\nexport function generateMetadata({ params }: Props): Metadata {\n  const project = projects.find((p) => p.slug === params.slug);\n  if (!project) return { title: 'Not Found' };\n  return {\n    title: `${project.title} — Case Study`,\n    description: project.description,\n    openGraph: {\n      title: project.title,\n      description: project.description,\n      images: [{ url: project.image }],\n    },\n  };\n}\n\nexport default function ProjectCaseStudy({ params }: Props) {\n  const project = projects.find((p) => p.slug === params.slug);\n  if (!project) notFound();\n\n  return (\n    <article className=\"max-w-3xl mx-auto py-20 px-6\">\n      <Link href=\"/projects\" className=\"text-blue-500 hover:underline text-sm\">\n        &larr; Back to Projects\n      </Link>\n\n      <h1 className=\"text-4xl font-bold mt-6 mb-4\">{project.title}</h1>\n\n      <div className=\"flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-6\">\n        <span>{project.year}</span>\n        {project.role && <span>&middot; {project.role}</span>}\n        {project.metrics && <span>&middot; {project.metrics}</span>}\n      </div>\n\n      <Image\n        src={project.image}\n        alt={project.title}\n        width={1200}\n        height={630}\n        className=\"rounded-xl w-full mb-8\"\n        priority\n      />\n\n      <div className=\"flex flex-wrap gap-2 mb-8\">\n        {project.tags.map((tag) => (\n          <span key={tag} className=\"px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-medium\">\n            {tag}\n          </span>\n        ))}\n      </div>\n\n      <div className=\"prose dark:prose-invert max-w-none mb-10\">\n        <p className=\"text-lg leading-relaxed\">{project.longDescription}</p>\n      </div>\n\n      <div className=\"flex gap-4\">\n        <a\n          href={project.demo}\n          target=\"_blank\"\n          rel=\"noopener noreferrer\"\n          className=\"px-6 py-3 bg-blue-500 text-white rounded-lg font-semibold hover:-translate-y-0.5 transition\"\n        >\n          Live Demo\n        </a>\n        <a\n          href={project.github}\n          target=\"_blank\"\n          rel=\"noopener noreferrer\"\n          className=\"px-6 py-3 border-2 border-blue-500 text-blue-500 rounded-lg font-semibold hover:-translate-y-0.5 transition\"\n        >\n          View Source\n        </a>\n      </div>\n    </article>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "MDX Blog Engine",
+      "headingLevel": 2,
+      "body": "Blog posts are stored as .mdx files in a content directory. Each post has frontmatter for metadata and can embed React components directly in the Markdown. The blog engine parses frontmatter, calculates reading time, generates table of contents, and supports tags and categories."
+    },
+    {
+      "type": "code",
+      "language": "text",
+      "filename": "content/blog/getting-started-with-nextjs.mdx",
+      "description": "Example MDX blog post with frontmatter, Markdown, embedded React components, and code blocks.",
+      "code": "---\ntitle: \"Getting Started with Next.js\"\ndate: \"2025-06-15\"\nexcerpt: \"A practical guide to building your first Next.js application with the App Router.\"\ntags: [\"Next.js\", \"React\", \"Tutorial\"]\ncategory: \"Tutorials\"\nimage: \"/blog/nextjs-cover.png\"\nfeatured: true\n---\n\nimport { Callout } from '@/components/mdx/Callout'\nimport { CodeTabs } from '@/components/mdx/CodeTabs'\n\n# Getting Started with Next.js\n\nNext.js makes React development simpler with file-based routing,\nserver components, and built-in optimization.\n\n<Callout type=\"info\">\n  This tutorial uses Next.js 14+ with the App Router.\n</Callout>\n\n## Creating Your First Page\n\nIn Next.js, every file inside `app/` becomes a route automatically:\n\n```tsx\n// app/about/page.tsx\nexport default function AboutPage() {\n  return <h1>About Me</h1>;\n}\n```\n\nVisit `/about` and you will see your page.\n\n## Table of Contents\n\nThis heading structure automatically generates a table of contents\non the right sidebar of the blog post.\n\n## Fetching Data\n\nServer components can fetch data directly without useEffect:\n\n```tsx\nasync function getData() {\n  const res = await fetch('https://api.example.com/posts');\n  return res.json();\n}\n\nexport default async function Blog() {\n  const posts = await getData();\n  return (\n    <ul>\n      {posts.map((post) => (\n        <li key={post.id}>{post.title}</li>\n      ))}\n    </ul>\n  );\n}\n```"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "src/lib/blog.ts",
+      "description": "Blog engine: reads MDX files, parses frontmatter, calculates reading time, extracts headings for TOC.",
+      "code": "import fs from 'fs';\nimport path from 'path';\nimport matter from 'gray-matter';\nimport readingTime from 'reading-time';\n\nconst BLOG_DIR = path.join(process.cwd(), 'content', 'blog');\n\nexport interface PostMeta {\n  slug: string;\n  title: string;\n  date: string;\n  excerpt: string;\n  tags: string[];\n  category: string;\n  image: string;\n  readingTime: string;\n  featured: boolean;\n}\n\nexport interface TableOfContentsItem {\n  id: string;\n  title: string;\n  level: number;\n}\n\nexport function getAllPostSlugs(): string[] {\n  return fs\n    .readdirSync(BLOG_DIR)\n    .filter((f) => f.endsWith('.mdx'))\n    .map((f) => f.replace(/\\.mdx$/, ''));\n}\n\nexport function getPostBySlug(slug: string) {\n  const filePath = path.join(BLOG_DIR, `${slug}.mdx`);\n  const source = fs.readFileSync(filePath, 'utf8');\n  const { data, content } = matter(source);\n  const stats = readingTime(content);\n\n  // Extract headings for table of contents\n  const headings: TableOfContentsItem[] = [];\n  const headingRegex = /^(#{2,4})\\s+(.+)$/gm;\n  let match;\n  while ((match = headingRegex.exec(content)) !== null) {\n    const level = match[1].length;\n    const title = match[2].trim();\n    const id = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');\n    headings.push({ id, title, level });\n  }\n\n  return {\n    meta: {\n      slug,\n      title: data.title,\n      date: data.date,\n      excerpt: data.excerpt || '',\n      tags: data.tags || [],\n      category: data.category || 'Uncategorized',\n      image: data.image || '',\n      readingTime: stats.text,\n      featured: data.featured || false,\n    } as PostMeta,\n    content,\n    headings,\n  };\n}\n\nexport function getAllPosts(): PostMeta[] {\n  const slugs = getAllPostSlugs();\n  return slugs\n    .map((slug) => getPostBySlug(slug).meta)\n    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());\n}\n\nexport function getPostsByTag(tag: string): PostMeta[] {\n  return getAllPosts().filter((p) => p.tags.includes(tag));\n}\n\nexport function getPostsByCategory(category: string): PostMeta[] {\n  return getAllPosts().filter((p) => p.category === category);\n}\n\nexport function getAllTags(): { name: string; count: number }[] {\n  const tagCounts = new Map<string, number>();\n  getAllPosts().forEach((post) => {\n    post.tags.forEach((tag) => {\n      tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);\n    });\n  });\n  return Array.from(tagCounts.entries())\n    .map(([name, count]) => ({ name, count }))\n    .sort((a, b) => b.count - a.count);\n}\n\nexport function getAllCategories(): string[] {\n  const categories = new Set(getAllPosts().map((p) => p.category));\n  return Array.from(categories).sort();\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Blog Features — Tags, Categories, Reading Time, TOC",
+      "headingLevel": 2,
+      "body": "A well-featured blog helps readers find content. Tags group posts by technology, categories organize by format, reading time sets expectations, and a table of contents helps with long-form posts."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/app/blog/page.tsx",
+      "description": "Blog listing page with featured post hero, tag filtering, and reading time display.",
+      "code": "import Link from 'next/link';\nimport Image from 'next/image';\nimport { getAllPosts, getAllTags } from '@/lib/blog';\n\nexport const metadata = {\n  title: 'Blog | Jane Doe',\n  description: 'Articles about web development, React, and software engineering.',\n};\n\nexport default function BlogPage() {\n  const posts = getAllPosts();\n  const tags = getAllTags();\n  const featuredPost = posts.find((p) => p.featured);\n  const regularPosts = posts.filter((p) => p !== featuredPost);\n\n  return (\n    <main className=\"max-w-5xl mx-auto py-20 px-6\">\n      <h1 className=\"text-4xl font-bold mb-2\">Blog</h1>\n      <p className=\"text-gray-500 dark:text-gray-400 mb-8\">\n        Tutorials, case studies, and thoughts on web development.\n      </p>\n\n      {/* Featured post hero */}\n      {featuredPost && (\n        <Link href={`/blog/${featuredPost.slug}`}\n              className=\"block mb-12 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-lg transition\">\n          <div className=\"md:flex\">\n            {featuredPost.image && (\n              <Image src={featuredPost.image} alt=\"\" width={600} height={340}\n                     className=\"w-full md:w-1/2 h-64 object-cover\" />\n            )}\n            <div className=\"p-6 md:p-8 flex flex-col justify-center\">\n              <span className=\"text-xs font-bold text-blue-500 uppercase tracking-wide\">Featured</span>\n              <h2 className=\"text-2xl font-bold mt-2 mb-2\">{featuredPost.title}</h2>\n              <p className=\"text-gray-500 dark:text-gray-400 mb-3\">{featuredPost.excerpt}</p>\n              <div className=\"flex items-center gap-3 text-sm text-gray-400\">\n                <time>{new Date(featuredPost.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>\n                <span>&middot;</span>\n                <span>{featuredPost.readingTime}</span>\n              </div>\n            </div>\n          </div>\n        </Link>\n      )}\n\n      {/* Tag cloud */}\n      <div className=\"flex flex-wrap gap-2 mb-8\">\n        {tags.map((tag) => (\n          <Link key={tag.name} href={`/blog/tag/${tag.name.toLowerCase()}`}\n                className=\"px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-sm hover:bg-blue-50 dark:hover:bg-blue-900/30 transition\">\n            {tag.name} ({tag.count})\n          </Link>\n        ))}\n      </div>\n\n      {/* Post list */}\n      <div className=\"grid gap-6\">\n        {regularPosts.map((post) => (\n          <Link href={`/blog/${post.slug}`} key={post.slug}\n                className=\"flex gap-6 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700 transition\">\n            {post.image && (\n              <Image src={post.image} alt=\"\" width={200} height={120}\n                     className=\"w-48 h-28 object-cover rounded-lg hidden sm:block\" />\n            )}\n            <div className=\"flex-1\">\n              <div className=\"flex items-center gap-2 text-xs text-gray-400 mb-1\">\n                <time>{new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</time>\n                <span>&middot;</span>\n                <span>{post.readingTime}</span>\n                <span>&middot;</span>\n                <span>{post.category}</span>\n              </div>\n              <h3 className=\"text-lg font-bold mb-1\">{post.title}</h3>\n              <p className=\"text-sm text-gray-500 dark:text-gray-400 mb-2\">{post.excerpt}</p>\n              <div className=\"flex flex-wrap gap-1.5\">\n                {post.tags.map((tag) => (\n                  <span key={tag} className=\"text-xs px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400\">\n                    {tag}\n                  </span>\n                ))}\n              </div>\n            </div>\n          </Link>\n        ))}\n      </div>\n    </main>\n  );\n}"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/app/blog/[slug]/page.tsx",
+      "description": "Blog post page with table of contents sidebar, metadata, syntax highlighted code, and Giscus comments.",
+      "code": "import { getAllPostSlugs, getPostBySlug } from '@/lib/blog';\nimport { MDXRemote } from 'next-mdx-remote/rsc';\nimport { mdxComponents } from '@/components/mdx';\nimport TableOfContents from '@/components/TableOfContents';\nimport GiscusComments from '@/components/GiscusComments';\nimport type { Metadata } from 'next';\n\ninterface Props {\n  params: { slug: string };\n}\n\nexport function generateStaticParams() {\n  return getAllPostSlugs().map((slug) => ({ slug }));\n}\n\nexport function generateMetadata({ params }: Props): Metadata {\n  const { meta } = getPostBySlug(params.slug);\n  return {\n    title: `${meta.title} | Jane Doe`,\n    description: meta.excerpt,\n    openGraph: {\n      title: meta.title,\n      description: meta.excerpt,\n      type: 'article',\n      publishedTime: meta.date,\n      tags: meta.tags,\n      images: meta.image ? [{ url: meta.image }] : [],\n    },\n  };\n}\n\nexport default function BlogPostPage({ params }: Props) {\n  const { meta, content, headings } = getPostBySlug(params.slug);\n\n  // JSON-LD structured data for the blog post\n  const jsonLd = {\n    '@context': 'https://schema.org',\n    '@type': 'BlogPosting',\n    headline: meta.title,\n    datePublished: meta.date,\n    author: { '@type': 'Person', name: 'Jane Doe' },\n    description: meta.excerpt,\n    image: meta.image,\n  };\n\n  return (\n    <>\n      <script type=\"application/ld+json\" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />\n      <div className=\"max-w-7xl mx-auto py-20 px-6 flex gap-12\">\n        {/* Main content */}\n        <article className=\"flex-1 min-w-0\">\n          <header className=\"mb-10\">\n            <div className=\"flex items-center gap-3 text-sm text-gray-400 mb-3\">\n              <time>{new Date(meta.date).toLocaleDateString('en-US', {\n                year: 'numeric', month: 'long', day: 'numeric',\n              })}</time>\n              <span>&middot;</span>\n              <span>{meta.readingTime}</span>\n              <span>&middot;</span>\n              <span>{meta.category}</span>\n            </div>\n            <h1 className=\"text-4xl font-bold mb-4\">{meta.title}</h1>\n            <div className=\"flex flex-wrap gap-2\">\n              {meta.tags.map((tag) => (\n                <span key={tag} className=\"text-xs px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium\">\n                  {tag}\n                </span>\n              ))}\n            </div>\n          </header>\n\n          <div className=\"prose dark:prose-invert max-w-none\">\n            <MDXRemote source={content} components={mdxComponents} />\n          </div>\n\n          {/* Comments */}\n          <div className=\"mt-16\">\n            <h2 className=\"text-2xl font-bold mb-6\">Comments</h2>\n            <GiscusComments />\n          </div>\n        </article>\n\n        {/* Table of Contents sidebar */}\n        <aside className=\"hidden xl:block w-64 shrink-0\">\n          <div className=\"sticky top-24\">\n            <TableOfContents headings={headings} />\n          </div>\n        </aside>\n      </div>\n    </>\n  );\n}"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/components/TableOfContents.tsx",
+      "description": "Sticky table of contents that highlights the current section as the reader scrolls.",
+      "code": "'use client';\n\nimport { useEffect, useState } from 'react';\nimport type { TableOfContentsItem } from '@/lib/blog';\n\ninterface Props {\n  headings: TableOfContentsItem[];\n}\n\nexport default function TableOfContents({ headings }: Props) {\n  const [activeId, setActiveId] = useState<string>('');\n\n  useEffect(() => {\n    const observer = new IntersectionObserver(\n      (entries) => {\n        entries.forEach((entry) => {\n          if (entry.isIntersecting) {\n            setActiveId(entry.target.id);\n          }\n        });\n      },\n      { rootMargin: '-80px 0px -80% 0px' }\n    );\n\n    headings.forEach(({ id }) => {\n      const el = document.getElementById(id);\n      if (el) observer.observe(el);\n    });\n\n    return () => observer.disconnect();\n  }, [headings]);\n\n  return (\n    <nav aria-label=\"Table of Contents\">\n      <h3 className=\"text-sm font-bold uppercase tracking-wider text-gray-400 mb-4\">\n        On This Page\n      </h3>\n      <ul className=\"space-y-2\">\n        {headings.map(({ id, title, level }) => (\n          <li key={id} style={{ paddingLeft: `${(level - 2) * 16}px` }}>\n            <a\n              href={`#${id}`}\n              className={`block text-sm transition-colors ${\n                activeId === id\n                  ? 'text-blue-500 font-medium'\n                  : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'\n              }`}\n            >\n              {title}\n            </a>\n          </li>\n        ))}\n      </ul>\n    </nav>\n  );\n}"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/components/mdx/index.tsx",
+      "description": "Custom MDX components for callouts, code blocks, and enhanced Markdown elements.",
+      "code": "import { ReactNode } from 'react';\n\nfunction Callout({ type = 'info', children }: { type?: 'info' | 'warning' | 'tip'; children: ReactNode }) {\n  const styles = {\n    info:    'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200',\n    warning: 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200',\n    tip:     'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200',\n  };\n  const icons = { info: '\\u2139\\uFE0F', warning: '\\u26A0\\uFE0F', tip: '\\uD83D\\uDCA1' };\n\n  return (\n    <aside className={`my-6 p-4 rounded-lg border-l-4 ${styles[type]}`}>\n      <span className=\"mr-2\">{icons[type]}</span>\n      <div className=\"inline\">{children}</div>\n    </aside>\n  );\n}\n\nfunction CodeTabs({ children, labels }: { children: ReactNode[]; labels: string[] }) {\n  return (\n    <div className=\"my-4 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden\">\n      <div className=\"flex bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700\">\n        {labels.map((label) => (\n          <span key={label} className=\"px-4 py-2 text-sm font-medium\">{label}</span>\n        ))}\n      </div>\n      <div>{children}</div>\n    </div>\n  );\n}\n\nexport const mdxComponents = {\n  Callout,\n  CodeTabs,\n  h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (\n    <h2 {...props} className=\"scroll-mt-24 post-heading\" />\n  ),\n  h3: (props: React.HTMLAttributes<HTMLHeadingElement>) => (\n    <h3 {...props} className=\"scroll-mt-24\" />\n  ),\n  a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (\n    <a {...props}\n       target={props.href?.startsWith('http') ? '_blank' : undefined}\n       rel={props.href?.startsWith('http') ? 'noopener noreferrer' : undefined}\n    />\n  ),\n  img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (\n    <figure className=\"my-6\">\n      <img {...props} loading=\"lazy\" className=\"rounded-lg\" />\n      {props.alt && <figcaption className=\"text-center text-sm text-gray-400 mt-2\">{props.alt}</figcaption>}\n    </figure>\n  ),\n};"
+    },
+    {
+      "type": "text",
+      "heading": "SEO — Structured Data, RSS, Sitemap, Social Cards",
+      "headingLevel": 2,
+      "body": "SEO for a blog goes beyond meta tags. You need structured data so Google shows rich snippets, an RSS feed so readers can subscribe, a sitemap for crawler discovery, and Open Graph images for social sharing."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/app/layout.tsx",
+      "description": "Root layout with global metadata, fonts, theme provider, navigation, and RSS link.",
+      "code": "import type { Metadata } from 'next';\nimport { Inter } from 'next/font/google';\nimport { ThemeProvider } from '@/components/ThemeProvider';\nimport Navbar from '@/components/Navbar';\nimport './globals.css';\n\nconst inter = Inter({ subsets: ['latin'] });\n\nexport const metadata: Metadata = {\n  title: {\n    default: 'Jane Doe | Developer Portfolio',\n    template: '%s | Jane Doe',\n  },\n  description: 'Front-end developer specializing in React, TypeScript, and modern web technologies.',\n  metadataBase: new URL('https://janedoe.dev'),\n  openGraph: {\n    type: 'website',\n    locale: 'en_US',\n    siteName: 'Jane Doe Portfolio',\n  },\n  robots: { index: true, follow: true },\n  alternates: {\n    types: {\n      'application/rss+xml': '/rss.xml',\n    },\n  },\n};\n\nexport default function RootLayout({ children }: { children: React.ReactNode }) {\n  return (\n    <html lang=\"en\" suppressHydrationWarning>\n      <head>\n        <link rel=\"alternate\" type=\"application/rss+xml\" title=\"Jane Doe's Blog\" href=\"/rss.xml\" />\n      </head>\n      <body className={inter.className}>\n        <ThemeProvider>\n          <Navbar />\n          {children}\n        </ThemeProvider>\n      </body>\n    </html>\n  );\n}"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "src/app/rss.xml/route.ts",
+      "description": "RSS feed generation using the rss package for proper XML output.",
+      "code": "import RSS from 'rss';\nimport { getAllPosts } from '@/lib/blog';\n\nexport async function GET() {\n  const posts = getAllPosts();\n  const baseUrl = 'https://janedoe.dev';\n\n  const feed = new RSS({\n    title: \"Jane Doe's Blog\",\n    description: 'Articles about web development, React, and software engineering.',\n    feed_url: `${baseUrl}/rss.xml`,\n    site_url: baseUrl,\n    language: 'en',\n    pubDate: posts[0]?.date ? new Date(posts[0].date) : new Date(),\n  });\n\n  posts.forEach((post) => {\n    feed.item({\n      title: post.title,\n      description: post.excerpt,\n      url: `${baseUrl}/blog/${post.slug}`,\n      date: new Date(post.date),\n      categories: post.tags,\n    });\n  });\n\n  return new Response(feed.xml({ indent: true }), {\n    headers: {\n      'Content-Type': 'application/rss+xml; charset=utf-8',\n      'Cache-Control': 'public, max-age=3600, s-maxage=3600',\n    },\n  });\n}"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "src/app/sitemap.ts",
+      "description": "Dynamic sitemap generation for all static pages, blog posts, and project case studies.",
+      "code": "import { MetadataRoute } from 'next';\nimport { getAllPosts } from '@/lib/blog';\nimport { projects } from '@/data/projects';\n\nexport default function sitemap(): MetadataRoute.Sitemap {\n  const baseUrl = 'https://janedoe.dev';\n\n  const staticPages = ['', '/projects', '/blog', '/contact', '/uses'].map((route) => ({\n    url: `${baseUrl}${route}`,\n    lastModified: new Date(),\n    changeFrequency: 'monthly' as const,\n    priority: route === '' ? 1 : 0.8,\n  }));\n\n  const blogPosts = getAllPosts().map((post) => ({\n    url: `${baseUrl}/blog/${post.slug}`,\n    lastModified: new Date(post.date),\n    changeFrequency: 'yearly' as const,\n    priority: 0.6,\n  }));\n\n  const projectPages = projects.map((p) => ({\n    url: `${baseUrl}/projects/${p.slug}`,\n    lastModified: new Date(),\n    changeFrequency: 'yearly' as const,\n    priority: 0.7,\n  }));\n\n  return [...staticPages, ...blogPosts, ...projectPages];\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Comments with Giscus",
+      "headingLevel": 2,
+      "body": "Giscus uses GitHub Discussions as a backend for blog comments. Readers authenticate with their GitHub account to comment, which naturally filters spam. Comments are stored in your repository and you get notifications through GitHub."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/components/GiscusComments.tsx",
+      "description": "Giscus comment widget that adapts to the current theme and loads lazily.",
+      "code": "'use client';\n\nimport Giscus from '@giscus/react';\nimport { useTheme } from '@/components/ThemeProvider';\n\nexport default function GiscusComments() {\n  const { theme } = useTheme();\n\n  return (\n    <Giscus\n      repo=\"YOUR_USERNAME/YOUR_REPO\"          // e.g. 'janedoe/my-portfolio'\n      repoId=\"YOUR_REPO_ID\"                   // from giscus.app setup\n      category=\"Blog Comments\"                // create this category in Discussions\n      categoryId=\"YOUR_CATEGORY_ID\"           // from giscus.app setup\n      mapping=\"pathname\"                      // map comments to URL path\n      strict=\"0\"\n      reactionsEnabled=\"1\"                    // allow emoji reactions\n      emitMetadata=\"0\"\n      inputPosition=\"top\"                     // comment box at top\n      theme={theme === 'dark' ? 'dark' : 'light'}\n      lang=\"en\"\n      loading=\"lazy\"                          // load when scrolled into view\n    />\n  );\n}"
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Setting up Giscus",
+      "body": "Go to giscus.app, enter your repo name, enable Discussions on the repo, create a 'Blog Comments' category, and copy the generated config values. The setup takes about two minutes."
+    },
+    {
+      "type": "text",
+      "heading": "Newsletter Integration",
+      "headingLevel": 2,
+      "body": "Email subscribers are your most engaged audience. Unlike social media followers, you own the relationship. Capture emails with a simple form and deliver new posts directly to their inbox."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "ConvertKit",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "tsx",
+              "filename": "src/components/NewsletterSignup.tsx",
+              "description": "Newsletter signup form with ConvertKit integration and double opt-in.",
+              "code": "'use client';\n\nimport { useState, FormEvent } from 'react';\n\nconst CONVERTKIT_FORM_ID = 'YOUR_FORM_ID';\nconst CONVERTKIT_API_URL = `https://api.convertkit.com/v3/forms/${CONVERTKIT_FORM_ID}/subscribe`;\n\nexport default function NewsletterSignup() {\n  const [email, setEmail] = useState('');\n  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');\n\n  async function handleSubmit(e: FormEvent) {\n    e.preventDefault();\n    setStatus('loading');\n\n    try {\n      const res = await fetch(CONVERTKIT_API_URL, {\n        method: 'POST',\n        headers: { 'Content-Type': 'application/json' },\n        body: JSON.stringify({\n          api_key: process.env.NEXT_PUBLIC_CONVERTKIT_API_KEY,\n          email,\n        }),\n      });\n\n      if (res.ok) {\n        setStatus('success');\n        setEmail('');\n      } else {\n        setStatus('error');\n      }\n    } catch {\n      setStatus('error');\n    }\n  }\n\n  if (status === 'success') {\n    return (\n      <div className=\"bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-6 text-center\">\n        <p className=\"font-bold text-green-700 dark:text-green-300\">Check your inbox!</p>\n        <p className=\"text-sm text-green-600 dark:text-green-400 mt-1\">\n          Confirm your subscription to start receiving posts.\n        </p>\n      </div>\n    );\n  }\n\n  return (\n    <div className=\"bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-6\">\n      <h3 className=\"text-lg font-bold mb-1\">Subscribe to my newsletter</h3>\n      <p className=\"text-sm text-gray-500 dark:text-gray-400 mb-4\">\n        Get new posts delivered to your inbox. No spam, unsubscribe anytime.\n      </p>\n      <form onSubmit={handleSubmit} className=\"flex gap-2\">\n        <input\n          type=\"email\"\n          value={email}\n          onChange={(e) => setEmail(e.target.value)}\n          placeholder=\"you@example.com\"\n          required\n          className=\"flex-1 px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600\n                     bg-white dark:bg-gray-800 text-sm\"\n        />\n        <button\n          type=\"submit\"\n          disabled={status === 'loading'}\n          className=\"px-5 py-2.5 bg-blue-500 text-white rounded-lg font-semibold text-sm\n                     hover:bg-blue-600 transition disabled:opacity-50\"\n        >\n          {status === 'loading' ? 'Subscribing...' : 'Subscribe'}\n        </button>\n      </form>\n      {status === 'error' && (\n        <p className=\"text-sm text-red-500 mt-2\">Something went wrong. Please try again.</p>\n      )}\n    </div>\n  );\n}"
+            }
+          ]
+        },
+        {
+          "label": "Buttondown",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "tsx",
+              "filename": "src/components/NewsletterButtondown.tsx",
+              "description": "Simpler newsletter signup using Buttondown — a lightweight alternative to ConvertKit.",
+              "code": "'use client';\n\nexport default function NewsletterButtondown() {\n  return (\n    <div className=\"bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-6\">\n      <h3 className=\"text-lg font-bold mb-1\">Subscribe to my newsletter</h3>\n      <p className=\"text-sm text-gray-500 dark:text-gray-400 mb-4\">\n        New posts and tutorials, straight to your inbox.\n      </p>\n      <form\n        action=\"https://buttondown.com/api/emails/embed-subscribe/YOUR_USERNAME\"\n        method=\"post\"\n        target=\"popupwindow\"\n        className=\"flex gap-2\"\n      >\n        <input\n          type=\"email\"\n          name=\"email\"\n          placeholder=\"you@example.com\"\n          required\n          className=\"flex-1 px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600\n                     bg-white dark:bg-gray-800 text-sm\"\n        />\n        <button\n          type=\"submit\"\n          className=\"px-5 py-2.5 bg-blue-500 text-white rounded-lg font-semibold text-sm\n                     hover:bg-blue-600 transition\"\n        >\n          Subscribe\n        </button>\n      </form>\n    </div>\n  );\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Dark / Light Theme Toggle",
+      "headingLevel": 2,
+      "body": "Use CSS custom properties for theming and a React context to manage the current theme. The preference is persisted in localStorage and respects the system setting on first visit."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Theme Provider",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "tsx",
+              "filename": "src/components/ThemeProvider.tsx",
+              "description": "Context provider that manages light/dark theme state with localStorage and system preference.",
+              "code": "'use client';\nimport { createContext, useContext, useEffect, useState, ReactNode } from 'react';\n\ntype Theme = 'light' | 'dark';\n\ninterface ThemeContextType {\n  theme: Theme;\n  toggleTheme: () => void;\n}\n\nconst ThemeContext = createContext<ThemeContextType | null>(null);\n\nexport function ThemeProvider({ children }: { children: ReactNode }) {\n  const [theme, setTheme] = useState<Theme>('light');\n\n  useEffect(() => {\n    const saved = localStorage.getItem('theme') as Theme | null;\n    if (saved) {\n      setTheme(saved);\n    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {\n      setTheme('dark');\n    }\n  }, []);\n\n  useEffect(() => {\n    document.documentElement.setAttribute('data-theme', theme);\n    document.documentElement.classList.toggle('dark', theme === 'dark');\n    localStorage.setItem('theme', theme);\n  }, [theme]);\n\n  const toggleTheme = () => setTheme((t) => (t === 'light' ? 'dark' : 'light'));\n\n  return (\n    <ThemeContext.Provider value={{ theme, toggleTheme }}>\n      {children}\n    </ThemeContext.Provider>\n  );\n}\n\nexport const useTheme = () => {\n  const ctx = useContext(ThemeContext);\n  if (!ctx) throw new Error('useTheme must be used inside ThemeProvider');\n  return ctx;\n};"
+            }
+          ]
+        },
+        {
+          "label": "CSS Variables",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "css",
+              "filename": "src/app/globals.css",
+              "description": "CSS custom properties for light and dark themes with smooth transitions.",
+              "code": ":root {\n  --bg: #ffffff;\n  --bg-secondary: #f8fafc;\n  --text: #0f172a;\n  --text-secondary: #64748b;\n  --border: #e2e8f0;\n  --accent: #3b82f6;\n  --accent-hover: #2563eb;\n  --card-bg: #ffffff;\n  --code-bg: #f1f5f9;\n}\n\n[data-theme='dark'] {\n  --bg: #0f172a;\n  --bg-secondary: #1e293b;\n  --text: #f1f5f9;\n  --text-secondary: #94a3b8;\n  --border: #334155;\n  --accent: #60a5fa;\n  --accent-hover: #93bbfd;\n  --card-bg: #1e293b;\n  --code-bg: #1e293b;\n}\n\nbody {\n  background: var(--bg);\n  color: var(--text);\n  transition: background-color 0.3s ease, color 0.3s ease;\n}"
+            }
+          ]
+        },
+        {
+          "label": "Toggle Button",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "tsx",
+              "filename": "src/components/ThemeToggle.tsx",
+              "description": "Accessible theme toggle button with sun/moon icons and smooth animation.",
+              "code": "'use client';\nimport { useTheme } from './ThemeProvider';\n\nexport default function ThemeToggle() {\n  const { theme, toggleTheme } = useTheme();\n\n  return (\n    <button\n      onClick={toggleTheme}\n      className=\"relative w-10 h-10 rounded-lg flex items-center justify-center\n                 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700\n                 transition-colors\"\n      aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}\n    >\n      {/* Sun icon */}\n      <svg className={`w-5 h-5 transition-all ${theme === 'dark' ? 'rotate-0 scale-100' : 'rotate-90 scale-0'} absolute`}\n           viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" strokeWidth=\"2\">\n        <circle cx=\"12\" cy=\"12\" r=\"5\" />\n        <path d=\"M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42\" />\n      </svg>\n      {/* Moon icon */}\n      <svg className={`w-5 h-5 transition-all ${theme === 'light' ? 'rotate-0 scale-100' : '-rotate-90 scale-0'} absolute`}\n           viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" strokeWidth=\"2\">\n        <path d=\"M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z\" />\n      </svg>\n    </button>\n  );\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Tech Stack Display",
+      "headingLevel": 2,
+      "body": "A visual display of your skills with proficiency indicators helps visitors understand your technical range at a glance. Group skills by category for better organization."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/components/TechStack.tsx",
+      "description": "Grouped tech stack display with proficiency bars and category headers.",
+      "code": "const skillCategories = [\n  {\n    name: 'Frontend',\n    skills: [\n      { name: 'React', level: 90 },\n      { name: 'TypeScript', level: 85 },\n      { name: 'Next.js', level: 80 },\n      { name: 'CSS/Tailwind', level: 85 },\n    ],\n  },\n  {\n    name: 'Backend',\n    skills: [\n      { name: 'Node.js', level: 75 },\n      { name: 'Python', level: 70 },\n      { name: 'PostgreSQL', level: 70 },\n    ],\n  },\n  {\n    name: 'DevOps & Tools',\n    skills: [\n      { name: 'Git', level: 90 },\n      { name: 'Docker', level: 60 },\n      { name: 'AWS', level: 55 },\n      { name: 'CI/CD', level: 65 },\n    ],\n  },\n];\n\nexport default function TechStack() {\n  return (\n    <section id=\"skills\" className=\"py-20\">\n      <h2 className=\"text-3xl font-bold text-center mb-12\">Tech Stack</h2>\n      <div className=\"max-w-4xl mx-auto grid md:grid-cols-3 gap-8\">\n        {skillCategories.map((category) => (\n          <div key={category.name}>\n            <h3 className=\"text-lg font-bold text-blue-500 mb-4\">{category.name}</h3>\n            <div className=\"space-y-3\">\n              {category.skills.map((skill) => (\n                <div key={skill.name}>\n                  <div className=\"flex justify-between text-sm mb-1\">\n                    <span className=\"font-medium\">{skill.name}</span>\n                    <span className=\"text-gray-400\">{skill.level}%</span>\n                  </div>\n                  <div className=\"h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden\">\n                    <div\n                      className=\"h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full transition-all duration-1000\"\n                      style={{ width: `${skill.level}%` }}\n                    />\n                  </div>\n                </div>\n              ))}\n            </div>\n          </div>\n        ))}\n      </div>\n    </section>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Analytics — Page Views and Popular Posts",
+      "headingLevel": 2,
+      "body": "Track which posts perform best so you can write more of what your audience wants. Use privacy-respecting analytics that do not require cookie consent banners."
+    },
+    {
+      "type": "table",
+      "heading": "Analytics Metrics That Matter for a Blog",
+      "headers": ["Metric", "What It Tells You", "Tool"],
+      "rows": [
+        ["Page views per post", "Which topics resonate most", "Plausible / Umami"],
+        ["Time on page", "Whether people actually read the post or bounce", "Plausible"],
+        ["Referral sources", "Where your traffic comes from (Twitter, Google, dev.to)", "Plausible / Umami"],
+        ["Scroll depth", "How far down the page readers get", "Custom JS"],
+        ["Newsletter conversion rate", "Percentage of readers who subscribe", "ConvertKit / Buttondown"],
+        ["Outbound link clicks", "Which external links get clicks (GitHub, demo, etc.)", "Plausible events"]
+      ]
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/components/ViewCounter.tsx",
+      "description": "Client-side view counter using a simple API endpoint to track and display post views.",
+      "code": "'use client';\n\nimport { useEffect, useState } from 'react';\n\ninterface Props {\n  slug: string;\n  trackView?: boolean;\n}\n\nexport default function ViewCounter({ slug, trackView = false }: Props) {\n  const [views, setViews] = useState<number | null>(null);\n\n  useEffect(() => {\n    // Fetch current views\n    fetch(`/api/views/${slug}`)\n      .then((res) => res.json())\n      .then((data) => setViews(data.views))\n      .catch(() => setViews(null));\n\n    // Increment view count (only on post page, not listing)\n    if (trackView) {\n      fetch(`/api/views/${slug}`, { method: 'POST' }).catch(() => {});\n    }\n  }, [slug, trackView]);\n\n  if (views === null) return null;\n\n  return (\n    <span className=\"text-sm text-gray-400\">\n      {views.toLocaleString()} views\n    </span>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Contact Form with Validation",
+      "headingLevel": 2,
+      "body": "A contact form lets potential clients and collaborators reach you. Use client-side validation for immediate feedback and server-side submission via Formspree or your own API."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/components/ContactForm.tsx",
+      "description": "Contact form with real-time validation, loading states, and submission to Formspree.",
+      "code": "'use client';\nimport { useState, FormEvent } from 'react';\n\nexport default function ContactForm() {\n  const [name, setName] = useState('');\n  const [email, setEmail] = useState('');\n  const [message, setMessage] = useState('');\n  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');\n  const [errors, setErrors] = useState<Record<string, string>>({});\n\n  function validate() {\n    const errs: Record<string, string> = {};\n    if (name.trim().length < 2) errs.name = 'Name is required';\n    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) errs.email = 'Valid email required';\n    if (message.trim().length < 10) errs.message = 'Message must be at least 10 characters';\n    setErrors(errs);\n    return Object.keys(errs).length === 0;\n  }\n\n  async function handleSubmit(e: FormEvent) {\n    e.preventDefault();\n    if (!validate()) return;\n    setStatus('sending');\n    try {\n      const res = await fetch('https://formspree.io/f/YOUR_FORM_ID', {\n        method: 'POST',\n        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },\n        body: JSON.stringify({ name, email, message }),\n      });\n      if (res.ok) {\n        setStatus('sent');\n        setName(''); setEmail(''); setMessage('');\n      } else {\n        setStatus('error');\n      }\n    } catch {\n      setStatus('error');\n    }\n  }\n\n  if (status === 'sent') {\n    return (\n      <div className=\"text-center py-12\">\n        <p className=\"text-xl font-bold text-green-500\">Message sent!</p>\n        <p className=\"text-gray-500 mt-2\">I will get back to you within 48 hours.</p>\n      </div>\n    );\n  }\n\n  return (\n    <form onSubmit={handleSubmit} className=\"max-w-lg mx-auto space-y-4\" noValidate>\n      <div>\n        <label htmlFor=\"name\" className=\"block text-sm font-semibold mb-1\">Name</label>\n        <input id=\"name\" value={name} onChange={(e) => setName(e.target.value)}\n               className=\"w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800\" />\n        {errors.name && <span className=\"text-sm text-red-500\">{errors.name}</span>}\n      </div>\n      <div>\n        <label htmlFor=\"email\" className=\"block text-sm font-semibold mb-1\">Email</label>\n        <input id=\"email\" type=\"email\" value={email} onChange={(e) => setEmail(e.target.value)}\n               className=\"w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800\" />\n        {errors.email && <span className=\"text-sm text-red-500\">{errors.email}</span>}\n      </div>\n      <div>\n        <label htmlFor=\"message\" className=\"block text-sm font-semibold mb-1\">Message</label>\n        <textarea id=\"message\" rows={5} value={message} onChange={(e) => setMessage(e.target.value)}\n                  className=\"w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800\" />\n        {errors.message && <span className=\"text-sm text-red-500\">{errors.message}</span>}\n      </div>\n      <button type=\"submit\" disabled={status === 'sending'}\n              className=\"w-full py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition disabled:opacity-50\">\n        {status === 'sending' ? 'Sending...' : 'Send Message'}\n      </button>\n      {status === 'error' && <p className=\"text-sm text-red-500 text-center\">Something went wrong. Please try again.</p>}\n    </form>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Monetization Strategies",
+      "headingLevel": 2,
+      "body": "Once your blog has an audience, you can generate income from it. The most sustainable approach combines multiple revenue streams rather than relying on a single one."
+    },
+    {
+      "type": "table",
+      "heading": "Blog Monetization Options",
+      "headers": ["Strategy", "Effort", "Revenue Potential", "Best For"],
+      "rows": [
+        ["Sponsored posts", "Medium — requires audience and outreach", "$$$ per post", "Blogs with 10k+ monthly readers"],
+        ["Affiliate links", "Low — add links to tools you already use", "$ per click/sale", "Tutorial and review posts"],
+        ["Digital products", "High — requires product creation", "$$$$ passive income", "Blogs with established authority"],
+        ["Gumroad/Lemon Squeezy", "Medium — create and sell ebooks or templates", "$$ per sale", "Developers with niche expertise"],
+        ["Course platform", "Very high — video production and support", "$$$$$ recurring", "Experts with large audiences"],
+        ["GitHub Sponsors", "Low — just set it up", "$ recurring", "Open source contributors"]
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Adding Affiliate Links Ethically",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Affiliate marketing works when you recommend products you genuinely use. Always disclose affiliate relationships, only recommend tools you have personal experience with, and prioritize your audience's trust over commissions. Common affiliate programs for developer blogs include hosting providers (Vercel, Netlify), course platforms (Udemy, Frontend Masters), and development tools (JetBrains, GitHub Copilot)."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "src/components/mdx/AffiliateLink.tsx",
+          "description": "An MDX component that renders affiliate links with proper disclosure labels.",
+          "code": "interface AffiliateLinkProps {\n  href: string;\n  children: React.ReactNode;\n  product: string;\n}\n\nexport function AffiliateLink({ href, children, product }: AffiliateLinkProps) {\n  return (\n    <span className=\"inline-flex items-center gap-1\">\n      <a\n        href={href}\n        target=\"_blank\"\n        rel=\"noopener noreferrer sponsored\"\n        className=\"text-blue-500 hover:underline\"\n      >\n        {children}\n      </a>\n      <span className=\"text-[10px] px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded font-medium\">\n        affiliate\n      </span>\n    </span>\n  );\n}"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Social Proof — Testimonials and GitHub Stats",
+      "headingLevel": 2,
+      "body": "Social proof builds credibility. A testimonials section shows that real people vouch for your work, and a GitHub stats widget demonstrates active contributions."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/components/Testimonials.tsx",
+      "description": "Testimonials carousel with avatars, quotes, and titles — auto-rotates with manual controls.",
+      "code": "'use client';\n\nimport { useState, useEffect } from 'react';\n\nconst testimonials = [\n  {\n    name: 'Alex Chen',\n    title: 'CTO at StartupXYZ',\n    avatar: '/testimonials/alex.jpg',\n    text: 'Jane delivered our dashboard ahead of schedule. Her attention to accessibility and performance was outstanding. The codebase she left is the cleanest I have seen.',\n  },\n  {\n    name: 'Sarah Kim',\n    title: 'Product Designer at DesignCo',\n    text: 'Working with Jane was a pleasure. She translated my Figma designs into pixel-perfect code with smooth animations I hadn\\'t even imagined.',\n    avatar: '/testimonials/sarah.jpg',\n  },\n  {\n    name: 'Marcus Johnson',\n    title: 'Fellow Developer',\n    text: 'Jane\\'s blog posts taught me more about React patterns than any course. Her writing is clear, practical, and always includes working code.',\n    avatar: '/testimonials/marcus.jpg',\n  },\n];\n\nexport default function Testimonials() {\n  const [current, setCurrent] = useState(0);\n\n  useEffect(() => {\n    const timer = setInterval(() => {\n      setCurrent((c) => (c + 1) % testimonials.length);\n    }, 6000);\n    return () => clearInterval(timer);\n  }, []);\n\n  const t = testimonials[current];\n\n  return (\n    <section className=\"py-20 bg-gray-50 dark:bg-gray-800/50\">\n      <h2 className=\"text-3xl font-bold text-center mb-12\">What People Say</h2>\n      <div className=\"max-w-2xl mx-auto text-center px-6\">\n        <blockquote className=\"text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6\">\n          &ldquo;{t.text}&rdquo;\n        </blockquote>\n        <div className=\"flex items-center justify-center gap-3\">\n          <img src={t.avatar} alt={t.name} className=\"w-12 h-12 rounded-full object-cover\" />\n          <div className=\"text-left\">\n            <p className=\"font-bold\">{t.name}</p>\n            <p className=\"text-sm text-gray-400\">{t.title}</p>\n          </div>\n        </div>\n        <div className=\"flex justify-center gap-2 mt-6\">\n          {testimonials.map((_, i) => (\n            <button\n              key={i}\n              onClick={() => setCurrent(i)}\n              className={`w-2.5 h-2.5 rounded-full transition ${\n                i === current ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'\n              }`}\n              aria-label={`Show testimonial ${i + 1}`}\n            />\n          ))}\n        </div>\n      </div>\n    </section>\n  );\n}"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/components/GitHubStats.tsx",
+      "description": "GitHub stats widget showing contribution count, public repos, and stars using the GitHub API.",
+      "code": "interface GitHubData {\n  publicRepos: number;\n  followers: number;\n  totalStars: number;\n  contributions: number;\n}\n\nasync function fetchGitHubStats(username: string): Promise<GitHubData> {\n  const res = await fetch(`https://api.github.com/users/${username}`, {\n    next: { revalidate: 3600 }, // cache for 1 hour\n  });\n  const user = await res.json();\n\n  // Fetch repos to count total stars\n  const reposRes = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=stars`);\n  const repos = await reposRes.json();\n  const totalStars = repos.reduce((sum: number, repo: { stargazers_count: number }) => sum + repo.stargazers_count, 0);\n\n  return {\n    publicRepos: user.public_repos,\n    followers: user.followers,\n    totalStars,\n    contributions: 0, // Requires authenticated API or scraping\n  };\n}\n\nexport default async function GitHubStats() {\n  const stats = await fetchGitHubStats('janedoe');\n\n  const items = [\n    { label: 'Repositories', value: stats.publicRepos },\n    { label: 'Stars', value: stats.totalStars },\n    { label: 'Followers', value: stats.followers },\n  ];\n\n  return (\n    <div className=\"flex justify-center gap-8 py-8\">\n      {items.map((item) => (\n        <div key={item.label} className=\"text-center\">\n          <p className=\"text-3xl font-bold text-blue-500\">{item.value}</p>\n          <p className=\"text-sm text-gray-400\">{item.label}</p>\n        </div>\n      ))}\n    </div>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Deploy to Vercel",
+      "headingLevel": 2,
+      "body": "Vercel is built by the creators of Next.js, so deployment is seamless. Every push triggers a new build, and pull requests get preview URLs for reviewing changes before they go live."
+    },
+    {
+      "type": "step",
+      "step": 3,
+      "title": "Push to GitHub and Deploy",
+      "body": "Commit your code, push to GitHub, and import the repository into Vercel.",
+      "code": "git init\ngit add .\ngit commit -m \"Initial commit: portfolio with blog\"\ngit remote add origin https://github.com/YOUR_USERNAME/my-portfolio.git\ngit branch -M main\ngit push -u origin main\n\n# Then: vercel.com > New Project > Import your repo\n# Vercel auto-detects Next.js and deploys in ~60 seconds",
+      "language": "bash"
+    },
+    {
+      "type": "step",
+      "step": 4,
+      "title": "Configure Custom Domain",
+      "body": "Add your custom domain in the Vercel dashboard. Vercel handles SSL certificates and DNS configuration.",
+      "code": "# In Vercel dashboard: Settings > Domains > Add\n# Enter: janedoe.dev\n# Update your DNS:\n#   A record:     76.76.21.21\n#   CNAME record: cname.vercel-dns.com",
+      "language": "text"
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "Automatic deployments and preview URLs",
+      "body": "Every push to main triggers a production deployment. Pull requests get unique preview URLs so you can review changes before merging. Branch deployments let you test features in isolation."
+    },
+    {
+      "type": "list",
+      "heading": "Enhancement Ideas",
+      "ordered": false,
+      "items": [
+        "Create a /uses page listing your dev setup, editor, terminal, and hardware",
+        "Add animated hero section with particles.js or a gradient animation",
+        "Implement blog post series for multi-part tutorials with prev/next navigation",
+        "Generate dynamic Open Graph images with @vercel/og for each blog post",
+        "Add a search feature using Fuse.js for fuzzy full-text search across posts",
+        "Create email digests that send weekly roundups of new posts to subscribers",
+        "Add view counts to the blog listing page with a lightweight API",
+        "Build a reading progress bar at the top of blog posts"
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Summary",
+      "headingLevel": 2,
+      "body": "You have built a complete developer portfolio and blog with a content strategy, filterable project showcase with case study pages, an MDX blog engine with syntax highlighting, table of contents, tags, categories, and reading time, Giscus comments backed by GitHub Discussions, newsletter signup with ConvertKit or Buttondown, dark/light theme with system preference detection, SEO with structured data, RSS feed, and sitemap, social proof with testimonials and GitHub stats, analytics guidance, monetization strategies, and Vercel deployment with custom domain. Write your first post and ship it."
+    }
+  ]
+}

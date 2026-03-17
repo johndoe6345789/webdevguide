@@ -1,0 +1,16 @@
+{
+  "type": "list",
+  "heading": "Code Review Checklist",
+  "ordered": false,
+  "items": [
+    "Does the code do what the PR description says it does? Read the requirements first, then the code.",
+    "Are there any obvious bugs or logic errors? Check boundary conditions, null checks, and error handling.",
+    "Are there any security issues? SQL injection, XSS, exposed secrets, missing authentication checks.",
+    "Is the code readable? Could a new team member understand it without asking the author?",
+    "Are there tests? Do they test the right things? Do they cover edge cases and error paths?",
+    "Does it introduce any performance problems? N+1 queries, unnecessary re-renders, huge bundle imports.",
+    "Does it follow the project's patterns and conventions? Consistent naming, file structure, error handling.",
+    "Are there any hardcoded values that should be constants or configuration?",
+    "Is there any duplicated code that should be extracted into a shared function?"
+  ]
+}

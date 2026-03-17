@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 2,
+  "title": "Configure JWT in Your App Factory",
+  "body": "Add JWT configuration to your app factory:",
+  "code": "from flask import Flask\nfrom flask_cors import CORS\nfrom flask_jwt_extended import JWTManager\n\ndef create_app():\n    app = Flask(__name__)\n    CORS(app)\n\n    # JWT configuration\n    app.config[\"JWT_SECRET_KEY\"] = \"your-super-secret-key-change-this\"\n    jwt = JWTManager(app)\n\n    # Register blueprints\n    from app.api.items import items_bp\n    from app.api.auth import auth_bp\n    app.register_blueprint(items_bp, url_prefix=\"/api\")\n    app.register_blueprint(auth_bp, url_prefix=\"/api\")\n\n    return app",
+  "language": "python"
+}

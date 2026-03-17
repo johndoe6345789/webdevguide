@@ -1,0 +1,6 @@
+{
+  "type": "code",
+  "language": "typescript",
+  "filename": "Redis caching pattern (cache-aside / lazy loading)",
+  "code": "import Redis from 'ioredis';\nimport { prisma } from '../lib/prisma';\n\nconst redis = new Redis(process.env.REDIS_URL);\nconst CACHE_TTL = 300; // 5 minutes\n\nasync function getPostById(id: number) {\n  const cacheKey = `post:${id}`;\n\n  // 1. Check cache first\n  const cached = await redis.get(cacheKey);\n  if (cached) return JSON.parse(cached);\n\n  // 2. Cache miss -- query the database\n  const post = await prisma.post.findUnique({\n    where: { id },\n    include: { author: { select: { username: true } }, tags: true },\n  });\n\n  if (!post) return null;\n\n  // 3. Store in cache for next time\n  await redis.set(cacheKey, JSON.stringify(post), 'EX', CACHE_TTL);\n\n  return post;\n}\n\n// Invalidate cache when data changes\nasync function updatePost(id: number, data: UpdatePostInput) {\n  const post = await prisma.post.update({ where: { id }, data });\n\n  // Delete cached version so next read gets fresh data\n  await redis.del(`post:${id}`);\n\n  return post;\n}"
+}

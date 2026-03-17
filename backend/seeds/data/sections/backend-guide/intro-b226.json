@@ -1,0 +1,5 @@
+{
+  "type": "code",
+  "language": "bash",
+  "code": "pip install flask-cors"
+}

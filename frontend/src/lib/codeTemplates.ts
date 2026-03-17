@@ -1,7 +1,10 @@
 import type { GeneratorConfig } from '@/store/slices/generatorSlice';
 
 export function generateComponent(config: GeneratorConfig): string {
-  const { componentName, useTypeScript, useMui, useRedux, props, features } = config;
+  const {
+    componentName, useTypeScript,
+    useMui, useRedux, props, features,
+  } = config;
   const lines: string[] = [];
 
   lines.push("'use client';");

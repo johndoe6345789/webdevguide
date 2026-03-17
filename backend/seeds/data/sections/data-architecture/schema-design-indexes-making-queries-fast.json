@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Indexes: Making Queries Fast",
+  "headingLevel": 3,
+  "body": "An index is like a book index -- it lets the database find rows without scanning the entire table. Without indexes, every query is a full table scan."
+}

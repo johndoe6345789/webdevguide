@@ -1,0 +1,6 @@
+{
+  "type": "code",
+  "language": "sql",
+  "filename": "Index strategies",
+  "code": "-- B-tree index (default) -- best for equality and range queries\nCREATE INDEX idx_users_email ON users(email);\n\n-- Composite index -- for queries that filter on multiple columns\nCREATE INDEX idx_posts_author_date ON posts(author_id, created_at DESC);\n\n-- Partial index -- only index rows matching a condition (saves space)\nCREATE INDEX idx_posts_published ON posts(created_at DESC) WHERE published = TRUE;\n\n-- GIN index -- for full-text search and JSONB columns\nCREATE INDEX idx_posts_search ON posts USING GIN(to_tsvector('english', title || ' ' || body));\n\n-- Unique index -- enforces uniqueness at the database level\nCREATE UNIQUE INDEX idx_users_username ON users(LOWER(username));\n\n-- EXPLAIN ANALYZE shows how PostgreSQL executes a query\nEXPLAIN ANALYZE SELECT * FROM posts WHERE author_id = 5 ORDER BY created_at DESC LIMIT 20;"
+}

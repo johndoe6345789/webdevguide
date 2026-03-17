@@ -1,0 +1,261 @@
+{
+  "title": "SaaS Admin Dashboard",
+  "slug": "saas-dashboard",
+  "description": "Build a full-featured SaaS admin dashboard with role-based access control, data visualization, user management, and multi-tenancy from scratch.",
+  "icon": "Dashboard",
+  "order": 17,
+  "estimatedMinutes": 75,
+  "difficulty": "advanced",
+  "prerequisites": ["backend-guide", "fundamentals"],
+  "keyPoints": [
+    "Role-based access control (RBAC) restricts what each user can see and do based on their role (admin, user, viewer)",
+    "Dashboard layouts use a persistent sidebar for navigation and a main content area that changes based on the selected page",
+    "Recharts makes it simple to turn raw data into interactive line charts, bar charts, and pie charts",
+    "Multi-tenancy architecture keeps each organization's data completely isolated from others",
+    "API key management lets users generate and revoke programmatic access tokens securely",
+    "Always validate roles on the backend -- frontend role checks are for UX only, not security"
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "heading": "What We Are Building",
+      "headingLevel": 2,
+      "body": "In this section we build a SaaS admin dashboard -- the kind of internal tool that companies like Stripe, Vercel, and GitHub use to manage their platforms. By the end, you will have a working dashboard with authentication, role-based access, data charts, user management, and a billing page."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "Authentication",
+          "body": "JWT-based login with role-based access control. Admins see everything, users see their own data, viewers can only read.",
+          "icon": "Lock"
+        },
+        {
+          "title": "Data Visualization",
+          "body": "Interactive charts built with Recharts -- line charts for trends, bar charts for comparisons, and pie charts for distributions.",
+          "icon": "BarChart"
+        },
+        {
+          "title": "User Management",
+          "body": "Full CRUD table for managing users -- create, view, edit roles, and deactivate accounts from an admin panel.",
+          "icon": "Group"
+        },
+        {
+          "title": "API Key Management",
+          "body": "Generate, view, and revoke API keys so users can access your platform programmatically.",
+          "icon": "Key"
+        },
+        {
+          "title": "Billing & Subscriptions",
+          "body": "A subscription management page showing plans, usage, invoices, and upgrade paths.",
+          "icon": "CreditCard"
+        },
+        {
+          "title": "Multi-Tenancy",
+          "body": "Architecture that isolates data per organization so one customer never sees another's data.",
+          "icon": "Business"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Role-Based Access Control",
+      "headingLevel": 2,
+      "body": "The foundation of any admin dashboard is knowing who the user is and what they are allowed to do. We define three roles: **admin** (full access to everything), **user** (access to their own data and settings), and **viewer** (read-only access). The backend enforces these roles on every request."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "backend/app/middleware/auth.py",
+      "description": "Flask decorator that checks JWT tokens and enforces role-based access on API routes.",
+      "code": "import functools\nfrom flask import request, jsonify, g\nimport jwt\nimport os\n\nSECRET_KEY = os.environ.get(\"JWT_SECRET\", \"change-me-in-production\")\n\n\ndef require_auth(allowed_roles=None):\n    \"\"\"Decorator that verifies JWT and optionally checks roles.\"\"\"\n    def decorator(f):\n        @functools.wraps(f)\n        def wrapper(*args, **kwargs):\n            token = request.headers.get(\"Authorization\", \"\").replace(\"Bearer \", \"\")\n            if not token:\n                return jsonify({\"error\": \"Missing authentication token\"}), 401\n\n            try:\n                payload = jwt.decode(token, SECRET_KEY, algorithms=[\"HS256\"])\n            except jwt.ExpiredSignatureError:\n                return jsonify({\"error\": \"Token has expired\"}), 401\n            except jwt.InvalidTokenError:\n                return jsonify({\"error\": \"Invalid token\"}), 401\n\n            g.current_user = payload\n\n            if allowed_roles and payload.get(\"role\") not in allowed_roles:\n                return jsonify({\"error\": \"Insufficient permissions\"}), 403\n\n            return f(*args, **kwargs)\n        return wrapper\n    return decorator\n\n\ndef generate_token(user_id, email, role, tenant_id):\n    \"\"\"Create a JWT token with user info and tenant context.\"\"\"\n    import datetime\n    payload = {\n        \"user_id\": user_id,\n        \"email\": email,\n        \"role\": role,\n        \"tenant_id\": tenant_id,\n        \"exp\": datetime.datetime.utcnow() + datetime.timedelta(hours=24),\n    }\n    return jwt.encode(payload, SECRET_KEY, algorithm=\"HS256\")"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "backend/app/api/admin.py",
+      "description": "Admin API endpoints that use the role-based middleware to protect sensitive operations.",
+      "code": "from flask import Blueprint, jsonify, request, g\nfrom ..middleware.auth import require_auth, generate_token\n\nadmin_bp = Blueprint(\"admin\", __name__, url_prefix=\"/api/admin\")\n\n\n@admin_bp.route(\"/login\", methods=[\"POST\"])\ndef login():\n    data = request.get_json()\n    email = data.get(\"email\")\n    password = data.get(\"password\")\n\n    # In production, verify against hashed password in database\n    user = find_user_by_email(email)\n    if not user or not check_password(password, user[\"password_hash\"]):\n        return jsonify({\"error\": \"Invalid credentials\"}), 401\n\n    token = generate_token(\n        user_id=user[\"id\"],\n        email=user[\"email\"],\n        role=user[\"role\"],\n        tenant_id=user[\"tenant_id\"],\n    )\n    return jsonify({\"token\": token, \"role\": user[\"role\"]})\n\n\n@admin_bp.route(\"/dashboard/stats\")\n@require_auth(allowed_roles=[\"admin\", \"user\", \"viewer\"])\ndef dashboard_stats():\n    \"\"\"All authenticated users can view dashboard statistics.\"\"\"\n    tenant_id = g.current_user[\"tenant_id\"]\n    return jsonify({\n        \"totalUsers\": count_users(tenant_id),\n        \"activeSubscriptions\": count_subscriptions(tenant_id),\n        \"monthlyRevenue\": get_monthly_revenue(tenant_id),\n        \"apiCallsToday\": get_api_calls_today(tenant_id),\n    })\n\n\n@admin_bp.route(\"/users\")\n@require_auth(allowed_roles=[\"admin\"])\ndef list_users():\n    \"\"\"Only admins can list all users in the tenant.\"\"\"\n    tenant_id = g.current_user[\"tenant_id\"]\n    users = get_users_by_tenant(tenant_id)\n    return jsonify(users)\n\n\n@admin_bp.route(\"/users/<user_id>/role\", methods=[\"PATCH\"])\n@require_auth(allowed_roles=[\"admin\"])\ndef update_user_role(user_id):\n    \"\"\"Only admins can change user roles.\"\"\"\n    new_role = request.get_json().get(\"role\")\n    if new_role not in [\"admin\", \"user\", \"viewer\"]:\n        return jsonify({\"error\": \"Invalid role\"}), 400\n    update_role(user_id, new_role, g.current_user[\"tenant_id\"])\n    return jsonify({\"message\": \"Role updated\"})"
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "Never trust the frontend for security",
+      "body": "Hiding a button in the UI does not prevent someone from calling the API directly. Always enforce permissions on the backend with middleware like require_auth. The frontend role check is purely for user experience -- showing or hiding UI elements based on what the user is allowed to do."
+    },
+    {
+      "type": "text",
+      "heading": "Dashboard Layout with Sidebar Navigation",
+      "headingLevel": 2,
+      "body": "A SaaS dashboard uses a different layout from a marketing site. Instead of a top navigation bar, you have a persistent sidebar on the left that stays visible as you navigate between pages. The main content area fills the rest of the screen."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "frontend/src/components/dashboard/DashboardLayout.tsx",
+      "description": "The root layout component that wraps every dashboard page with a sidebar and top bar.",
+      "code": "'use client';\n\nimport { useState } from 'react';\nimport Box from '@mui/material/Box';\nimport Drawer from '@mui/material/Drawer';\nimport AppBar from '@mui/material/AppBar';\nimport Toolbar from '@mui/material/Toolbar';\nimport List from '@mui/material/List';\nimport ListItemButton from '@mui/material/ListItemButton';\nimport ListItemIcon from '@mui/material/ListItemIcon';\nimport ListItemText from '@mui/material/ListItemText';\nimport IconButton from '@mui/material/IconButton';\nimport Typography from '@mui/material/Typography';\nimport MenuIcon from '@mui/icons-material/Menu';\nimport DashboardIcon from '@mui/icons-material/Dashboard';\nimport PeopleIcon from '@mui/icons-material/People';\nimport BarChartIcon from '@mui/icons-material/BarChart';\nimport SettingsIcon from '@mui/icons-material/Settings';\nimport KeyIcon from '@mui/icons-material/Key';\nimport PaymentIcon from '@mui/icons-material/Payment';\n\nconst DRAWER_WIDTH = 260;\n\nconst NAV_ITEMS = [\n  { label: 'Overview',    icon: <DashboardIcon />, path: '/dashboard' },\n  { label: 'Analytics',   icon: <BarChartIcon />,  path: '/dashboard/analytics' },\n  { label: 'Users',       icon: <PeopleIcon />,    path: '/dashboard/users' },\n  { label: 'API Keys',    icon: <KeyIcon />,       path: '/dashboard/api-keys' },\n  { label: 'Billing',     icon: <PaymentIcon />,   path: '/dashboard/billing' },\n  { label: 'Settings',    icon: <SettingsIcon />,  path: '/dashboard/settings' },\n];\n\ninterface DashboardLayoutProps {\n  children: React.ReactNode;\n  currentPath: string;\n  userRole: 'admin' | 'user' | 'viewer';\n}\n\nexport default function DashboardLayout({ children, currentPath, userRole }: DashboardLayoutProps) {\n  const [mobileOpen, setMobileOpen] = useState(false);\n\n  // Filter nav items based on role\n  const visibleItems = NAV_ITEMS.filter((item) => {\n    if (item.path === '/dashboard/users' && userRole !== 'admin') return false;\n    if (item.path === '/dashboard/settings' && userRole === 'viewer') return false;\n    return true;\n  });\n\n  const drawer = (\n    <Box sx={{ mt: 2 }}>\n      <Typography variant=\"h6\" sx={{ px: 2, mb: 2, fontWeight: 700 }}>\n        Acme SaaS\n      </Typography>\n      <List>\n        {visibleItems.map((item) => (\n          <ListItemButton\n            key={item.path}\n            selected={currentPath === item.path}\n            href={item.path}\n            sx={{ borderRadius: 1, mx: 1, mb: 0.5 }}\n          >\n            <ListItemIcon>{item.icon}</ListItemIcon>\n            <ListItemText primary={item.label} />\n          </ListItemButton>\n        ))}\n      </List>\n    </Box>\n  );\n\n  return (\n    <Box sx={{ display: 'flex', minHeight: '100vh' }}>\n      {/* Mobile app bar */}\n      <AppBar position=\"fixed\" sx={{ display: { md: 'none' } }}>\n        <Toolbar>\n          <IconButton color=\"inherit\" onClick={() => setMobileOpen(!mobileOpen)}>\n            <MenuIcon />\n          </IconButton>\n          <Typography variant=\"h6\">Dashboard</Typography>\n        </Toolbar>\n      </AppBar>\n\n      {/* Sidebar -- permanent on desktop, temporary on mobile */}\n      <Drawer\n        variant=\"temporary\"\n        open={mobileOpen}\n        onClose={() => setMobileOpen(false)}\n        sx={{ display: { xs: 'block', md: 'none' }, '& .MuiDrawer-paper': { width: DRAWER_WIDTH } }}\n      >\n        {drawer}\n      </Drawer>\n      <Drawer\n        variant=\"permanent\"\n        sx={{ display: { xs: 'none', md: 'block' }, '& .MuiDrawer-paper': { width: DRAWER_WIDTH } }}\n        open\n      >\n        {drawer}\n      </Drawer>\n\n      {/* Main content */}\n      <Box component=\"main\" sx={{ flexGrow: 1, p: 3, ml: { md: `${DRAWER_WIDTH}px` }, mt: { xs: 8, md: 0 } }}>\n        {children}\n      </Box>\n    </Box>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Data Visualization with Recharts",
+      "headingLevel": 2,
+      "body": "Charts turn raw numbers into visual stories. Recharts is a React charting library built on D3 that makes it straightforward to create responsive, interactive charts. We will build three common chart types: a line chart for trends over time, a bar chart for comparisons, and a pie chart for showing proportions."
+    },
+    {
+      "type": "code",
+      "language": "bash",
+      "filename": "terminal",
+      "description": "Install Recharts in your frontend project.",
+      "code": "cd frontend && npm install recharts"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "frontend/src/components/dashboard/RevenueChart.tsx",
+      "description": "A responsive line chart showing monthly revenue trends with tooltips and a gradient fill.",
+      "code": "'use client';\n\nimport { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';\nimport Paper from '@mui/material/Paper';\nimport Typography from '@mui/material/Typography';\n\nconst MONTHLY_DATA = [\n  { month: 'Jan', revenue: 4200 },\n  { month: 'Feb', revenue: 5800 },\n  { month: 'Mar', revenue: 5200 },\n  { month: 'Apr', revenue: 7800 },\n  { month: 'May', revenue: 8100 },\n  { month: 'Jun', revenue: 9400 },\n  { month: 'Jul', revenue: 8900 },\n  { month: 'Aug', revenue: 11200 },\n];\n\nexport default function RevenueChart() {\n  return (\n    <Paper sx={{ p: 3 }}>\n      <Typography variant=\"h6\" gutterBottom>Monthly Revenue</Typography>\n      <ResponsiveContainer width=\"100%\" height={300}>\n        <AreaChart data={MONTHLY_DATA}>\n          <defs>\n            <linearGradient id=\"revenueGradient\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\">\n              <stop offset=\"5%\" stopColor=\"#1976d2\" stopOpacity={0.3} />\n              <stop offset=\"95%\" stopColor=\"#1976d2\" stopOpacity={0} />\n            </linearGradient>\n          </defs>\n          <CartesianGrid strokeDasharray=\"3 3\" />\n          <XAxis dataKey=\"month\" />\n          <YAxis tickFormatter={(v) => `$${v / 1000}k`} />\n          <Tooltip formatter={(v: number) => [`$${v.toLocaleString()}`, 'Revenue']} />\n          <Area type=\"monotone\" dataKey=\"revenue\" stroke=\"#1976d2\" fill=\"url(#revenueGradient)\" strokeWidth={2} />\n        </AreaChart>\n      </ResponsiveContainer>\n    </Paper>\n  );\n}"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "frontend/src/components/dashboard/UsageBarChart.tsx",
+      "description": "A bar chart comparing API usage across different endpoints, useful for showing feature adoption.",
+      "code": "'use client';\n\nimport { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';\nimport Paper from '@mui/material/Paper';\nimport Typography from '@mui/material/Typography';\n\nconst USAGE_DATA = [\n  { endpoint: '/users',   get: 1240, post: 320 },\n  { endpoint: '/orders',  get: 890,  post: 560 },\n  { endpoint: '/products', get: 2100, post: 180 },\n  { endpoint: '/search',  get: 3400, post: 0 },\n  { endpoint: '/auth',    get: 200,  post: 1800 },\n];\n\nexport default function UsageBarChart() {\n  return (\n    <Paper sx={{ p: 3 }}>\n      <Typography variant=\"h6\" gutterBottom>API Usage by Endpoint</Typography>\n      <ResponsiveContainer width=\"100%\" height={300}>\n        <BarChart data={USAGE_DATA}>\n          <CartesianGrid strokeDasharray=\"3 3\" />\n          <XAxis dataKey=\"endpoint\" />\n          <YAxis />\n          <Tooltip />\n          <Legend />\n          <Bar dataKey=\"get\" name=\"GET requests\" fill=\"#1976d2\" radius={[4, 4, 0, 0]} />\n          <Bar dataKey=\"post\" name=\"POST requests\" fill=\"#f57c00\" radius={[4, 4, 0, 0]} />\n        </BarChart>\n      </ResponsiveContainer>\n    </Paper>\n  );\n}"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "frontend/src/components/dashboard/PlanDistributionPie.tsx",
+      "description": "A pie chart showing the distribution of users across subscription plans.",
+      "code": "'use client';\n\nimport { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';\nimport Paper from '@mui/material/Paper';\nimport Typography from '@mui/material/Typography';\n\nconst PLAN_DATA = [\n  { name: 'Free',       value: 1200, color: '#9e9e9e' },\n  { name: 'Starter',    value: 800,  color: '#42a5f5' },\n  { name: 'Pro',        value: 450,  color: '#1976d2' },\n  { name: 'Enterprise', value: 120,  color: '#0d47a1' },\n];\n\nexport default function PlanDistributionPie() {\n  return (\n    <Paper sx={{ p: 3 }}>\n      <Typography variant=\"h6\" gutterBottom>Users by Plan</Typography>\n      <ResponsiveContainer width=\"100%\" height={300}>\n        <PieChart>\n          <Pie\n            data={PLAN_DATA}\n            cx=\"50%\"\n            cy=\"50%\"\n            innerRadius={60}\n            outerRadius={100}\n            paddingAngle={4}\n            dataKey=\"value\"\n            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}\n          >\n            {PLAN_DATA.map((entry) => (\n              <Cell key={entry.name} fill={entry.color} />\n            ))}\n          </Pie>\n          <Tooltip formatter={(v: number) => [v.toLocaleString(), 'Users']} />\n          <Legend />\n        </PieChart>\n      </ResponsiveContainer>\n    </Paper>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "User Management Table with CRUD",
+      "headingLevel": 2,
+      "body": "Every SaaS dashboard needs a user management page where admins can view, create, edit, and deactivate user accounts. We build this as a Material UI table with inline actions."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "frontend/src/components/dashboard/UserManagementTable.tsx",
+      "description": "A data table for managing users with role editing, status toggling, and a search filter.",
+      "code": "'use client';\n\nimport { useState, useEffect } from 'react';\nimport Box from '@mui/material/Box';\nimport Table from '@mui/material/Table';\nimport TableBody from '@mui/material/TableBody';\nimport TableCell from '@mui/material/TableCell';\nimport TableContainer from '@mui/material/TableContainer';\nimport TableHead from '@mui/material/TableHead';\nimport TableRow from '@mui/material/TableRow';\nimport Paper from '@mui/material/Paper';\nimport Chip from '@mui/material/Chip';\nimport IconButton from '@mui/material/IconButton';\nimport Select from '@mui/material/Select';\nimport MenuItem from '@mui/material/MenuItem';\nimport TextField from '@mui/material/TextField';\nimport DeleteIcon from '@mui/icons-material/Delete';\nimport EditIcon from '@mui/icons-material/Edit';\n\ninterface User {\n  id: string;\n  name: string;\n  email: string;\n  role: 'admin' | 'user' | 'viewer';\n  status: 'active' | 'inactive';\n  lastLogin: string;\n}\n\nconst ROLE_COLORS: Record<string, 'error' | 'primary' | 'default'> = {\n  admin: 'error',\n  user: 'primary',\n  viewer: 'default',\n};\n\nexport default function UserManagementTable() {\n  const [users, setUsers] = useState<User[]>([]);\n  const [search, setSearch] = useState('');\n\n  useEffect(() => {\n    fetch('/api/admin/users', {\n      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },\n    })\n      .then((res) => res.json())\n      .then(setUsers);\n  }, []);\n\n  const handleRoleChange = async (userId: string, newRole: string) => {\n    await fetch(`/api/admin/users/${userId}/role`, {\n      method: 'PATCH',\n      headers: {\n        'Content-Type': 'application/json',\n        Authorization: `Bearer ${localStorage.getItem('token')}`,\n      },\n      body: JSON.stringify({ role: newRole }),\n    });\n    setUsers((prev) =>\n      prev.map((u) => (u.id === userId ? { ...u, role: newRole as User['role'] } : u))\n    );\n  };\n\n  const filtered = users.filter(\n    (u) => u.name.toLowerCase().includes(search.toLowerCase()) ||\n           u.email.toLowerCase().includes(search.toLowerCase())\n  );\n\n  return (\n    <Paper sx={{ p: 2 }}>\n      <TextField\n        placeholder=\"Search users...\"\n        size=\"small\"\n        value={search}\n        onChange={(e) => setSearch(e.target.value)}\n        sx={{ mb: 2, width: 300 }}\n      />\n      <TableContainer>\n        <Table>\n          <TableHead>\n            <TableRow>\n              <TableCell>Name</TableCell>\n              <TableCell>Email</TableCell>\n              <TableCell>Role</TableCell>\n              <TableCell>Status</TableCell>\n              <TableCell>Last Login</TableCell>\n              <TableCell>Actions</TableCell>\n            </TableRow>\n          </TableHead>\n          <TableBody>\n            {filtered.map((user) => (\n              <TableRow key={user.id}>\n                <TableCell>{user.name}</TableCell>\n                <TableCell>{user.email}</TableCell>\n                <TableCell>\n                  <Select\n                    value={user.role}\n                    size=\"small\"\n                    onChange={(e) => handleRoleChange(user.id, e.target.value)}\n                  >\n                    <MenuItem value=\"admin\">Admin</MenuItem>\n                    <MenuItem value=\"user\">User</MenuItem>\n                    <MenuItem value=\"viewer\">Viewer</MenuItem>\n                  </Select>\n                </TableCell>\n                <TableCell>\n                  <Chip\n                    label={user.status}\n                    color={user.status === 'active' ? 'success' : 'default'}\n                    size=\"small\"\n                  />\n                </TableCell>\n                <TableCell>{user.lastLogin}</TableCell>\n                <TableCell>\n                  <IconButton size=\"small\"><EditIcon /></IconButton>\n                  <IconButton size=\"small\" color=\"error\"><DeleteIcon /></IconButton>\n                </TableCell>\n              </TableRow>\n            ))}\n          </TableBody>\n        </Table>\n      </TableContainer>\n    </Paper>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "API Key Management",
+      "headingLevel": 2,
+      "body": "SaaS products often provide API keys so customers can integrate programmatically. Users need to generate new keys, see a list of existing keys (masked), and revoke keys they no longer need. The key itself is only shown once at creation time."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "backend/app/api/api_keys.py",
+      "description": "Backend endpoints for generating, listing, and revoking API keys with secure hashing.",
+      "code": "import secrets\nimport hashlib\nfrom datetime import datetime\nfrom flask import Blueprint, jsonify, request, g\nfrom ..middleware.auth import require_auth\nfrom ..utils.db import get_db\n\napi_keys_bp = Blueprint(\"api_keys\", __name__, url_prefix=\"/api/keys\")\n\n\ndef hash_key(raw_key: str) -> str:\n    \"\"\"Hash the API key for storage. We never store the raw key.\"\"\"\n    return hashlib.sha256(raw_key.encode()).hexdigest()\n\n\n@api_keys_bp.route(\"\", methods=[\"POST\"])\n@require_auth(allowed_roles=[\"admin\", \"user\"])\ndef create_api_key():\n    data = request.get_json()\n    raw_key = f\"sk_live_{secrets.token_hex(24)}\"\n\n    record = {\n        \"id\": secrets.token_hex(8),\n        \"name\": data.get(\"name\", \"Unnamed key\"),\n        \"key_hash\": hash_key(raw_key),\n        \"prefix\": raw_key[:12],          # Store the prefix for display\n        \"tenant_id\": g.current_user[\"tenant_id\"],\n        \"created_by\": g.current_user[\"user_id\"],\n        \"created_at\": datetime.utcnow().isoformat(),\n        \"last_used\": None,\n        \"revoked\": False,\n    }\n    get_db().insert(\"api_keys\", record)\n\n    # Return the raw key ONCE -- it cannot be retrieved later\n    return jsonify({\"key\": raw_key, \"id\": record[\"id\"], \"name\": record[\"name\"]}), 201\n\n\n@api_keys_bp.route(\"\")\n@require_auth(allowed_roles=[\"admin\", \"user\"])\ndef list_api_keys():\n    tenant_id = g.current_user[\"tenant_id\"]\n    keys = get_db().find(\"api_keys\", lambda k: k[\"tenant_id\"] == tenant_id and not k[\"revoked\"])\n    # Never return the hash -- only the prefix\n    safe_keys = [\n        {\"id\": k[\"id\"], \"name\": k[\"name\"], \"prefix\": k[\"prefix\"], \"created_at\": k[\"created_at\"]}\n        for k in keys\n    ]\n    return jsonify(safe_keys)\n\n\n@api_keys_bp.route(\"/<key_id>\", methods=[\"DELETE\"])\n@require_auth(allowed_roles=[\"admin\", \"user\"])\ndef revoke_api_key(key_id):\n    tenant_id = g.current_user[\"tenant_id\"]\n    count = get_db().update(\n        \"api_keys\",\n        lambda k: k[\"id\"] == key_id and k[\"tenant_id\"] == tenant_id,\n        {\"revoked\": True},\n    )\n    if count == 0:\n        return jsonify({\"error\": \"Key not found\"}), 404\n    return jsonify({\"message\": \"API key revoked\"})"
+    },
+    {
+      "type": "alert",
+      "severity": "error",
+      "title": "Never store raw API keys",
+      "body": "Store only a SHA-256 hash of the key. Show the full key to the user exactly once when it is created. If they lose it, they must generate a new one. This is the same pattern used by GitHub, Stripe, and AWS."
+    },
+    {
+      "type": "text",
+      "heading": "Usage Metrics Dashboard",
+      "headingLevel": 2,
+      "body": "The overview page combines stat cards with charts to give users a quick snapshot of their account. Each stat card shows a number with a trend indicator comparing to the previous period."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "frontend/src/components/dashboard/StatCards.tsx",
+      "description": "Stat cards that show key metrics with trend arrows -- the first thing users see on the dashboard.",
+      "code": "'use client';\n\nimport Grid from '@mui/material/Grid';\nimport Paper from '@mui/material/Paper';\nimport Typography from '@mui/material/Typography';\nimport Box from '@mui/material/Box';\nimport TrendingUpIcon from '@mui/icons-material/TrendingUp';\nimport TrendingDownIcon from '@mui/icons-material/TrendingDown';\n\ninterface StatCardProps {\n  title: string;\n  value: string;\n  trend: number; // percentage change\n}\n\nfunction StatCard({ title, value, trend }: StatCardProps) {\n  const isPositive = trend >= 0;\n  return (\n    <Paper sx={{ p: 3 }}>\n      <Typography variant=\"body2\" color=\"text.secondary\">{title}</Typography>\n      <Typography variant=\"h4\" fontWeight={700} sx={{ my: 1 }}>{value}</Typography>\n      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>\n        {isPositive ? (\n          <TrendingUpIcon color=\"success\" fontSize=\"small\" />\n        ) : (\n          <TrendingDownIcon color=\"error\" fontSize=\"small\" />\n        )}\n        <Typography\n          variant=\"body2\"\n          color={isPositive ? 'success.main' : 'error.main'}\n        >\n          {isPositive ? '+' : ''}{trend}% from last month\n        </Typography>\n      </Box>\n    </Paper>\n  );\n}\n\nexport default function StatCards() {\n  return (\n    <Grid container spacing={3}>\n      <Grid item xs={12} sm={6} md={3}>\n        <StatCard title=\"Total Users\" value=\"2,570\" trend={12.5} />\n      </Grid>\n      <Grid item xs={12} sm={6} md={3}>\n        <StatCard title=\"Active Subscriptions\" value=\"1,380\" trend={8.2} />\n      </Grid>\n      <Grid item xs={12} sm={6} md={3}>\n        <StatCard title=\"Monthly Revenue\" value=\"$11,200\" trend={15.3} />\n      </Grid>\n      <Grid item xs={12} sm={6} md={3}>\n        <StatCard title=\"API Calls Today\" value=\"48.2k\" trend={-3.1} />\n      </Grid>\n    </Grid>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Billing and Subscription Page",
+      "headingLevel": 2,
+      "body": "The billing page lets users see their current plan, compare available plans, view invoices, and manage their subscription. We build the plan comparison as a card grid with a highlighted recommended plan."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "frontend/src/components/dashboard/PricingCards.tsx",
+      "description": "A pricing comparison component showing tiered SaaS plans with feature lists.",
+      "code": "'use client';\n\nimport Grid from '@mui/material/Grid';\nimport Card from '@mui/material/Card';\nimport CardContent from '@mui/material/CardContent';\nimport CardActions from '@mui/material/CardActions';\nimport Typography from '@mui/material/Typography';\nimport Button from '@mui/material/Button';\nimport Chip from '@mui/material/Chip';\nimport List from '@mui/material/List';\nimport ListItem from '@mui/material/ListItem';\nimport ListItemIcon from '@mui/material/ListItemIcon';\nimport ListItemText from '@mui/material/ListItemText';\nimport CheckIcon from '@mui/icons-material/Check';\n\nconst PLANS = [\n  {\n    name: 'Starter',\n    price: 29,\n    features: ['5 team members', '10k API calls/month', 'Email support', 'Basic analytics'],\n    recommended: false,\n  },\n  {\n    name: 'Pro',\n    price: 79,\n    features: ['25 team members', '100k API calls/month', 'Priority support', 'Advanced analytics', 'Custom domains', 'SSO integration'],\n    recommended: true,\n  },\n  {\n    name: 'Enterprise',\n    price: 199,\n    features: ['Unlimited team members', 'Unlimited API calls', 'Dedicated support', 'Full analytics suite', 'Custom domains', 'SSO + SCIM', 'SLA guarantee', 'On-premise option'],\n    recommended: false,\n  },\n];\n\ninterface PricingCardsProps {\n  currentPlan: string;\n}\n\nexport default function PricingCards({ currentPlan }: PricingCardsProps) {\n  return (\n    <Grid container spacing={3} alignItems=\"stretch\">\n      {PLANS.map((plan) => (\n        <Grid item xs={12} md={4} key={plan.name}>\n          <Card\n            variant={plan.recommended ? 'elevation' : 'outlined'}\n            sx={{\n              height: '100%',\n              display: 'flex',\n              flexDirection: 'column',\n              border: plan.recommended ? '2px solid' : undefined,\n              borderColor: plan.recommended ? 'primary.main' : undefined,\n            }}\n          >\n            <CardContent sx={{ flexGrow: 1 }}>\n              <Typography variant=\"h5\" fontWeight={700}>\n                {plan.name}\n                {plan.recommended && (\n                  <Chip label=\"Recommended\" color=\"primary\" size=\"small\" sx={{ ml: 1 }} />\n                )}\n              </Typography>\n              <Typography variant=\"h3\" fontWeight={700} sx={{ my: 2 }}>\n                ${plan.price}<Typography component=\"span\" variant=\"body1\" color=\"text.secondary\">/mo</Typography>\n              </Typography>\n              <List dense>\n                {plan.features.map((feature) => (\n                  <ListItem key={feature} disablePadding>\n                    <ListItemIcon sx={{ minWidth: 32 }}>\n                      <CheckIcon color=\"success\" fontSize=\"small\" />\n                    </ListItemIcon>\n                    <ListItemText primary={feature} />\n                  </ListItem>\n                ))}\n              </List>\n            </CardContent>\n            <CardActions sx={{ p: 2 }}>\n              <Button\n                variant={plan.name === currentPlan ? 'outlined' : 'contained'}\n                fullWidth\n                disabled={plan.name === currentPlan}\n              >\n                {plan.name === currentPlan ? 'Current Plan' : 'Upgrade'}\n              </Button>\n            </CardActions>\n          </Card>\n        </Grid>\n      ))}\n    </Grid>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Multi-Tenancy Architecture",
+      "headingLevel": 2,
+      "body": "Multi-tenancy means a single instance of your application serves multiple organizations (tenants). Each tenant's data is isolated -- Company A never sees Company B's users, API keys, or analytics. The tenant_id is embedded in every JWT token and used to filter every database query."
+    },
+    {
+      "type": "table",
+      "heading": "Multi-Tenancy Strategies",
+      "headers": ["Strategy", "How It Works", "Pros", "Cons"],
+      "rows": [
+        ["Shared database, shared tables", "All tenants in one table, filtered by tenant_id column", "Simple, cheap, easy to maintain", "Noisy neighbor risk, complex queries"],
+        ["Shared database, separate schemas", "Each tenant gets its own schema (table namespace)", "Good isolation, moderate complexity", "Schema migrations run per tenant"],
+        ["Separate databases", "Each tenant gets their own database", "Maximum isolation and security", "Expensive, complex to manage"]
+      ]
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "backend/app/middleware/tenant.py",
+      "description": "Middleware that automatically scopes all database queries to the current tenant from the JWT.",
+      "code": "from flask import g\nfrom ..utils.db import get_db\n\n\ndef get_tenant_db():\n    \"\"\"Get database queries scoped to the current tenant.\n\n    Every query automatically filters by the tenant_id from the JWT.\n    This prevents one tenant from accidentally (or maliciously)\n    accessing another tenant's data.\n    \"\"\"\n    tenant_id = g.current_user[\"tenant_id\"]\n    db = get_db()\n\n    class TenantScopedDB:\n        def find_all(self, collection):\n            return db.find(collection, lambda r: r.get(\"tenant_id\") == tenant_id)\n\n        def find_one(self, collection, predicate):\n            return db.find_one(\n                collection,\n                lambda r: r.get(\"tenant_id\") == tenant_id and predicate(r),\n            )\n\n        def insert(self, collection, record):\n            record[\"tenant_id\"] = tenant_id\n            return db.insert(collection, record)\n\n        def update(self, collection, predicate, updates):\n            return db.update(\n                collection,\n                lambda r: r.get(\"tenant_id\") == tenant_id and predicate(r),\n                updates,\n            )\n\n        def delete(self, collection, predicate):\n            return db.delete(\n                collection,\n                lambda r: r.get(\"tenant_id\") == tenant_id and predicate(r),\n            )\n\n    return TenantScopedDB()"
+    },
+    {
+      "type": "text",
+      "heading": "Settings Panel",
+      "headingLevel": 2,
+      "body": "The settings page lets users and admins configure their account. We organize settings into tabs: Profile, Notifications, Security, and (for admins) Organization. Each tab is a self-contained form."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "frontend/src/components/dashboard/SettingsPanel.tsx",
+      "description": "A tabbed settings panel with form sections for profile, notifications, and security.",
+      "code": "'use client';\n\nimport { useState } from 'react';\nimport Box from '@mui/material/Box';\nimport Tabs from '@mui/material/Tabs';\nimport Tab from '@mui/material/Tab';\nimport TextField from '@mui/material/TextField';\nimport Button from '@mui/material/Button';\nimport Switch from '@mui/material/Switch';\nimport FormControlLabel from '@mui/material/FormControlLabel';\nimport Paper from '@mui/material/Paper';\nimport Typography from '@mui/material/Typography';\nimport Divider from '@mui/material/Divider';\n\ninterface TabPanelProps {\n  children: React.ReactNode;\n  value: number;\n  index: number;\n}\n\nfunction TabPanel({ children, value, index }: TabPanelProps) {\n  return value === index ? <Box sx={{ py: 3 }}>{children}</Box> : null;\n}\n\nexport default function SettingsPanel() {\n  const [tab, setTab] = useState(0);\n\n  return (\n    <Paper sx={{ p: 3 }}>\n      <Typography variant=\"h5\" fontWeight={700} gutterBottom>Settings</Typography>\n      <Tabs value={tab} onChange={(_, v) => setTab(v)}>\n        <Tab label=\"Profile\" />\n        <Tab label=\"Notifications\" />\n        <Tab label=\"Security\" />\n      </Tabs>\n      <Divider />\n\n      <TabPanel value={tab} index={0}>\n        <Box component=\"form\" sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 500 }}>\n          <TextField label=\"Full Name\" defaultValue=\"Jane Smith\" />\n          <TextField label=\"Email\" defaultValue=\"jane@acme.com\" type=\"email\" />\n          <TextField label=\"Company\" defaultValue=\"Acme Inc\" />\n          <Button variant=\"contained\" sx={{ alignSelf: 'flex-start' }}>Save Changes</Button>\n        </Box>\n      </TabPanel>\n\n      <TabPanel value={tab} index={1}>\n        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>\n          <FormControlLabel control={<Switch defaultChecked />} label=\"Email notifications for new users\" />\n          <FormControlLabel control={<Switch defaultChecked />} label=\"Weekly usage report\" />\n          <FormControlLabel control={<Switch />} label=\"Marketing emails\" />\n          <FormControlLabel control={<Switch defaultChecked />} label=\"Security alerts\" />\n        </Box>\n      </TabPanel>\n\n      <TabPanel value={tab} index={2}>\n        <Box component=\"form\" sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 500 }}>\n          <TextField label=\"Current Password\" type=\"password\" />\n          <TextField label=\"New Password\" type=\"password\" />\n          <TextField label=\"Confirm New Password\" type=\"password\" />\n          <Button variant=\"contained\" color=\"primary\" sx={{ alignSelf: 'flex-start' }}>Update Password</Button>\n          <Divider sx={{ my: 2 }} />\n          <Typography variant=\"subtitle1\" fontWeight={600}>Two-Factor Authentication</Typography>\n          <FormControlLabel control={<Switch />} label=\"Enable 2FA via authenticator app\" />\n        </Box>\n      </TabPanel>\n    </Paper>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Responsive Dashboard Layout",
+      "headingLevel": 2,
+      "body": "The dashboard must work on every screen size. On desktop, the sidebar is permanently visible. On tablets, it collapses but can be toggled. On mobile, it becomes a temporary drawer that overlays the content. The content grid also adapts, stacking columns vertically on smaller screens."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "frontend/src/components/dashboard/DashboardOverview.tsx",
+      "description": "The main overview page that composes stat cards and charts into a responsive grid layout.",
+      "code": "'use client';\n\nimport Grid from '@mui/material/Grid';\nimport Typography from '@mui/material/Typography';\nimport Box from '@mui/material/Box';\nimport StatCards from './StatCards';\nimport RevenueChart from './RevenueChart';\nimport UsageBarChart from './UsageBarChart';\nimport PlanDistributionPie from './PlanDistributionPie';\n\nexport default function DashboardOverview() {\n  return (\n    <Box>\n      <Typography variant=\"h4\" fontWeight={700} gutterBottom>\n        Dashboard Overview\n      </Typography>\n\n      {/* Stat cards row */}\n      <StatCards />\n\n      {/* Charts grid -- 2 columns on desktop, 1 on mobile */}\n      <Grid container spacing={3} sx={{ mt: 1 }}>\n        <Grid item xs={12} lg={8}>\n          <RevenueChart />\n        </Grid>\n        <Grid item xs={12} lg={4}>\n          <PlanDistributionPie />\n        </Grid>\n        <Grid item xs={12}>\n          <UsageBarChart />\n        </Grid>\n      </Grid>\n    </Box>\n  );\n}"
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "You now have a complete SaaS dashboard",
+      "body": "You have built authentication with role-based access, a sidebar layout, three chart types, user management CRUD, API key generation, billing pages, settings panels, and multi-tenancy scoping. Each piece is modular -- you can mix and match these components to build any admin dashboard."
+    },
+    {
+      "type": "list",
+      "heading": "What to Build Next",
+      "ordered": false,
+      "items": [
+        "Add real-time updates with WebSockets so the dashboard charts refresh live",
+        "Implement audit logging to track who changed what and when",
+        "Add CSV/PDF export for reports and invoices",
+        "Build an onboarding flow for new tenants with a setup wizard",
+        "Add rate limiting to your API endpoints to prevent abuse",
+        "Implement Stripe integration for real payment processing"
+      ]
+    }
+  ]
+}

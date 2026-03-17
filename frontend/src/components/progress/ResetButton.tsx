@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -11,23 +12,27 @@ interface ResetButtonProps {
   onReset: () => void;
 }
 
-export default function ResetButton({ showReset, setShowReset, onReset }: ResetButtonProps) {
+export default function ResetButton(
+  { showReset, setShowReset, onReset }:
+  ResetButtonProps,
+) {
+  const t = useTranslations('progress');
   if (showReset) {
     return (
       <Alert severity="warning" sx={{ width: '100%' }} action={
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button size="small" color="error" onClick={onReset}>Yes, Reset Everything</Button>
-          <Button size="small" onClick={() => setShowReset(false)}>Cancel</Button>
+          <Button size="small" color="error" onClick={onReset}>{t('yesResetEverything')}</Button>
+          <Button size="small" onClick={() => setShowReset(false)}>{t('cancel')}</Button>
         </Box>
       }>
-        This will clear all progress, exam history, and bookmarks. This cannot be undone.
+        {t('resetWarning')}
       </Alert>
     );
   }
 
   return (
     <Button startIcon={<RestartAltIcon />} color="error" variant="outlined" onClick={() => setShowReset(true)}>
-      Reset All Progress
+      {t('resetProgress')}
     </Button>
   );
 }

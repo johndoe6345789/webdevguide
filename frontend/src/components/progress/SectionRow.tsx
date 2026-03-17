@@ -12,7 +12,9 @@ interface SectionRowProps {
   completed: boolean;
 }
 
-export default function SectionRow({ title, href, completed }: SectionRowProps) {
+export default function SectionRow(
+  { title, href, completed }: SectionRowProps,
+) {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', py: 1.5, px: 2, borderBottom: 1, borderColor: 'divider', '&:hover': { bgcolor: 'action.hover' } }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>

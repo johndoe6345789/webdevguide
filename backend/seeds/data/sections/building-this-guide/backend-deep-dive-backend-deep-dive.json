@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Backend Deep Dive",
+  "headingLevel": 2,
+  "body": "The backend is a Flask application that reads JSON seed data into a file-based database and serves it through a RESTful API. It uses four key patterns: the app factory pattern, Flask blueprints for modular routing, a service layer for business logic, and a custom JsonDatabase for storage."
+}

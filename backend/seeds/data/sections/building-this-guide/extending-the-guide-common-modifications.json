@@ -1,0 +1,42 @@
+{
+  "type": "table",
+  "heading": "Common Modifications",
+  "headers": [
+    "Want To",
+    "What To Change"
+  ],
+  "rows": [
+    [
+      "Add a new block type",
+      "Define the interface in content.ts, create a new renderer component, add a case to BlockRenderer.tsx"
+    ],
+    [
+      "Add a new API endpoint",
+      "Create or extend a blueprint, add a service function, update apiClient.ts"
+    ],
+    [
+      "Add a new Redux slice",
+      "Create the slice file, add it to combineReducers in store.ts, add to whitelist if persistence needed"
+    ],
+    [
+      "Add a new language",
+      "Create messages/<locale>.json, add locale to routing.ts locales array"
+    ],
+    [
+      "Change the color theme",
+      "Edit palette.ts primary/secondary colors"
+    ],
+    [
+      "Add exam questions",
+      "Add objects to exam_questions.json with id, text, options, correctOptionId, explanation, category, difficulty"
+    ],
+    [
+      "Add glossary terms",
+      "Add objects to glossary_terms.json with term, definition, category"
+    ],
+    [
+      "Deploy to production",
+      "Set NEXT_PUBLIC_API_URL to your backend URL, run docker compose up --build"
+    ]
+  ]
+}

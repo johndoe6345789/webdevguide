@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Using Try/Except in Your Routes",
+  "headingLevel": 3,
+  "body": "For errors you can anticipate, use Python's try/except blocks:"
+}

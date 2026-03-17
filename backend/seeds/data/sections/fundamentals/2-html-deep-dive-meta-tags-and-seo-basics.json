@@ -1,0 +1,29 @@
+{
+  "type": "accordion",
+  "title": "Meta Tags and SEO Basics",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "Meta tags live in the `<head>` of your document and provide information to browsers, search engines, and social media platforms. Getting them right improves how your site appears in search results and when shared on social media."
+    },
+    {
+      "type": "code",
+      "language": "html",
+      "filename": "seo-meta-tags.html",
+      "code": "<head>\n  <!-- Essential meta tags -->\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Web Dev Fundamentals | My Guide</title>\n  <meta name=\"description\" content=\"Learn web development from scratch with HTML, CSS, JavaScript, and React. Comprehensive guide with working code examples.\">\n\n  <!-- Open Graph for social media sharing -->\n  <meta property=\"og:title\" content=\"Web Dev Fundamentals\">\n  <meta property=\"og:description\" content=\"Learn web development from scratch.\">\n  <meta property=\"og:image\" content=\"https://example.com/og-image.png\">\n  <meta property=\"og:url\" content=\"https://example.com/fundamentals\">\n  <meta property=\"og:type\" content=\"article\">\n\n  <!-- Twitter card -->\n  <meta name=\"twitter:card\" content=\"summary_large_image\">\n  <meta name=\"twitter:title\" content=\"Web Dev Fundamentals\">\n  <meta name=\"twitter:description\" content=\"Learn web development from scratch.\">\n  <meta name=\"twitter:image\" content=\"https://example.com/twitter-card.png\">\n\n  <!-- Favicon -->\n  <link rel=\"icon\" href=\"/favicon.ico\">\n  <link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\">\n\n  <!-- Canonical URL (prevents duplicate content issues) -->\n  <link rel=\"canonical\" href=\"https://example.com/fundamentals\">\n</head>"
+    },
+    {
+      "type": "list",
+      "heading": "SEO best practices",
+      "items": [
+        "Every page needs a unique, descriptive `<title>` under 60 characters",
+        "Write a `meta description` between 120-155 characters that summarizes the page",
+        "Use one `<h1>` per page, and structure headings hierarchically (h1 > h2 > h3)",
+        "Add `alt` text to all images -- search engines use this to understand image content",
+        "Use semantic HTML so search engines understand your page structure",
+        "Set a canonical URL to prevent duplicate content issues",
+        "Ensure fast page load times -- Core Web Vitals directly affect rankings"
+      ]
+    }
+  ]
+}

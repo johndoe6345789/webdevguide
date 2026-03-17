@@ -1,0 +1,615 @@
+{
+  "title": "Build Your Personal Homepage",
+  "slug": "personal-homepage",
+  "description": "Create a polished personal landing page with a hero section, skills grid, project showcase, and contact form. Learn responsive design, CSS animations, performance optimization, and deploy to multiple hosting platforms.",
+  "icon": "Person",
+  "order": 12,
+  "estimatedMinutes": 120,
+  "difficulty": "beginner",
+  "prerequisites": ["html-fundamentals", "css-fundamentals", "javascript-basics"],
+  "keyPoints": [
+    "Plan your site goals, audience, content strategy, and domain name before writing code",
+    "Apply design principles like visual hierarchy, typography pairing, and color theory",
+    "Build a full-width hero section with gradient backgrounds and animated text",
+    "Create an about section with bio, skill progress bars, and experience timeline",
+    "Showcase projects with card layouts, tech stack badges, and live demo links",
+    "Implement a validated contact form with email integration and spam protection",
+    "Use mobile-first responsive design with proper breakpoints",
+    "Optimize performance with Lighthouse, WebP images, font loading, and Core Web Vitals",
+    "Deploy to Vercel, Netlify, or GitHub Pages with custom domain and SSL",
+    "Add privacy-respecting analytics with Plausible or Umami"
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "heading": "Planning Your Personal Site",
+      "headingLevel": 2,
+      "body": "A personal homepage is your corner of the internet. Before writing a single line of code, define what you want the site to accomplish. Are you looking for a job? Freelance clients? A place to share your thoughts? The answer shapes every design decision that follows."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        { "title": "Define Your Goals", "body": "Decide whether you want to attract employers, freelance clients, open-source collaborators, or simply have a creative outlet.", "icon": "Flag", "chip": "Planning" },
+        { "title": "Know Your Audience", "body": "Technical recruiters skim for keywords. Design clients want visual proof. Open-source devs want GitHub links. Tailor accordingly.", "icon": "People", "chip": "Planning" },
+        { "title": "Content Strategy", "body": "Plan your sections: hero, about, skills, projects, testimonials, contact. Less is more — cut anything that doesn't serve your goal.", "icon": "Article", "chip": "Planning" },
+        { "title": "Domain Name", "body": "yourname.dev or firstname-lastname.com. Keep it short, professional, and easy to spell out loud.", "icon": "Language", "chip": "Setup" },
+        { "title": "Design Inspiration", "body": "Browse Dribbble, Awwwards, and other developer portfolios. Screenshot what you like and identify patterns.", "icon": "Palette", "chip": "Design" },
+        { "title": "Tech Stack Choice", "body": "For a first site, vanilla HTML/CSS/JS is perfect. You can always migrate to React or Next.js later.", "icon": "Build", "chip": "Setup" }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Content-first design",
+      "body": "Write your about text, project descriptions, and tagline before touching CSS. Designing around real content prevents the common trap of building a gorgeous template that says nothing."
+    },
+    {
+      "type": "text",
+      "heading": "Design Principles for Developer Sites",
+      "headingLevel": 2,
+      "body": "Good design is invisible — visitors should absorb your content without thinking about the layout. A few foundational principles make the difference between an amateur page and a professional one."
+    },
+    {
+      "type": "table",
+      "heading": "Core Design Principles",
+      "headers": ["Principle", "What It Means", "How to Apply"],
+      "rows": [
+        ["Visual Hierarchy", "Guide the eye to the most important content first", "Use size, color, and spacing to make your name and tagline the first thing seen"],
+        ["Typography Pairing", "Use two complementary fonts — one for headings, one for body", "Try Inter + serif for body, or a monospace heading with clean sans-serif body"],
+        ["Color Theory", "Choose a primary accent color and build a palette from it", "Use a tool like coolors.co. Stick to 2-3 colors plus neutrals"],
+        ["Whitespace", "Empty space is not wasted space — it creates breathing room", "Add generous padding between sections (80-120px) and around text blocks"],
+        ["Above the Fold", "The first viewport should instantly communicate who you are", "Hero section with name, role, and one clear call-to-action"],
+        ["Consistency", "Repeating patterns create a professional feel", "Use the same border radius, spacing scale, and color for similar elements"]
+      ]
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Typography CSS",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "css",
+              "filename": "css/typography.css",
+              "description": "A typography system using CSS custom properties with a modular scale for consistent sizing.",
+              "code": "/* ---- Typography System ---- */\n@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code&display=swap');\n\n:root {\n  /* Modular scale (1.25 ratio) */\n  --fs-xs: 0.8rem;\n  --fs-sm: 0.9rem;\n  --fs-base: 1rem;\n  --fs-md: 1.25rem;\n  --fs-lg: 1.563rem;\n  --fs-xl: 1.953rem;\n  --fs-2xl: 2.441rem;\n  --fs-3xl: 3.052rem;\n\n  --ff-sans: 'Inter', system-ui, -apple-system, sans-serif;\n  --ff-mono: 'Fira Code', 'Cascadia Code', monospace;\n\n  --lh-tight: 1.2;\n  --lh-normal: 1.6;\n  --lh-loose: 1.8;\n}\n\nbody {\n  font-family: var(--ff-sans);\n  font-size: var(--fs-base);\n  line-height: var(--lh-normal);\n  -webkit-font-smoothing: antialiased;\n}\n\nh1 { font-size: var(--fs-3xl); line-height: var(--lh-tight); font-weight: 700; }\nh2 { font-size: var(--fs-2xl); line-height: var(--lh-tight); font-weight: 700; }\nh3 { font-size: var(--fs-xl);  line-height: var(--lh-tight); font-weight: 600; }\nh4 { font-size: var(--fs-lg);  line-height: var(--lh-tight); font-weight: 600; }\n\ncode, pre { font-family: var(--ff-mono); font-size: var(--fs-sm); }\n\n.text-gradient {\n  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);\n  -webkit-background-clip: text;\n  -webkit-text-fill-color: transparent;\n  background-clip: text;\n}"
+            }
+          ]
+        },
+        {
+          "label": "Color System",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "css",
+              "filename": "css/colors.css",
+              "description": "A full color palette with light and dark mode using CSS custom properties.",
+              "code": ":root {\n  /* Primary palette */\n  --clr-primary-50: #eff6ff;\n  --clr-primary-100: #dbeafe;\n  --clr-primary-200: #bfdbfe;\n  --clr-primary-400: #60a5fa;\n  --clr-primary-500: #3b82f6;\n  --clr-primary-600: #2563eb;\n  --clr-primary-700: #1d4ed8;\n\n  /* Neutrals */\n  --clr-gray-50: #f8fafc;\n  --clr-gray-100: #f1f5f9;\n  --clr-gray-200: #e2e8f0;\n  --clr-gray-400: #94a3b8;\n  --clr-gray-500: #64748b;\n  --clr-gray-700: #334155;\n  --clr-gray-800: #1e293b;\n  --clr-gray-900: #0f172a;\n\n  /* Semantic */\n  --clr-success: #22c55e;\n  --clr-warning: #f59e0b;\n  --clr-error: #ef4444;\n\n  /* Surfaces */\n  --surface-bg: #ffffff;\n  --surface-card: #ffffff;\n  --surface-elevated: #ffffff;\n  --text-primary: var(--clr-gray-900);\n  --text-secondary: var(--clr-gray-500);\n  --border-color: var(--clr-gray-200);\n}\n\n[data-theme='dark'] {\n  --surface-bg: var(--clr-gray-900);\n  --surface-card: var(--clr-gray-800);\n  --surface-elevated: var(--clr-gray-700);\n  --text-primary: var(--clr-gray-50);\n  --text-secondary: var(--clr-gray-400);\n  --border-color: var(--clr-gray-700);\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Project Structure",
+      "headingLevel": 2,
+      "body": "Organize files logically from the start. Even a simple static site benefits from separating concerns into folders."
+    },
+    {
+      "type": "step",
+      "step": 1,
+      "title": "Create the Project Structure",
+      "body": "Start with a clean folder. Keep styles, scripts, and images in their own directories.",
+      "code": "my-homepage/\n  index.html\n  css/\n    style.css\n    typography.css\n    colors.css\n    animations.css\n  js/\n    main.js\n    contact.js\n  images/\n    profile.webp\n    projects/\n      weather-app.webp\n      task-manager.webp\n  favicon.svg",
+      "language": "text"
+    },
+    {
+      "type": "text",
+      "heading": "Hero Section",
+      "headingLevel": 2,
+      "body": "The hero is your digital handshake. It should fill the entire viewport, immediately communicate who you are, and give the visitor one clear next action. A gradient background, your name with a text animation, a profile photo, and a call-to-action button are the essential ingredients."
+    },
+    {
+      "type": "step",
+      "step": 2,
+      "title": "Build the HTML Shell with Semantic Elements",
+      "body": "Use semantic HTML for accessibility and SEO. The page has a fixed nav, a hero, and content sections.",
+      "code": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n  <meta name=\"description\" content=\"Jane Doe — Front-End Developer specializing in React, TypeScript, and accessible web experiences.\" />\n\n  <!-- Open Graph for social sharing -->\n  <meta property=\"og:title\" content=\"Jane Doe — Web Developer\" />\n  <meta property=\"og:description\" content=\"Front-end developer building fast, accessible websites.\" />\n  <meta property=\"og:image\" content=\"https://janedoe.dev/og-image.png\" />\n  <meta property=\"og:url\" content=\"https://janedoe.dev\" />\n  <meta property=\"og:type\" content=\"website\" />\n\n  <title>Jane Doe &ndash; Web Developer</title>\n  <link rel=\"icon\" href=\"favicon.svg\" type=\"image/svg+xml\" />\n  <link rel=\"stylesheet\" href=\"css/style.css\" />\n</head>\n<body>\n  <nav id=\"navbar\" aria-label=\"Main navigation\">\n    <a href=\"#hero\" class=\"nav-logo\">JD</a>\n    <ul class=\"nav-links\" role=\"list\">\n      <li><a href=\"#about\">About</a></li>\n      <li><a href=\"#skills\">Skills</a></li>\n      <li><a href=\"#projects\">Projects</a></li>\n      <li><a href=\"#contact\">Contact</a></li>\n    </ul>\n    <button id=\"themeToggle\" class=\"theme-toggle\" aria-label=\"Toggle dark mode\">\n      <span class=\"icon-sun\">&#9788;</span>\n      <span class=\"icon-moon\">&#9790;</span>\n    </button>\n  </nav>\n\n  <section id=\"hero\" aria-label=\"Introduction\">\n    <div class=\"hero-content\">\n      <div class=\"hero-text\">\n        <p class=\"hero-greeting fade-in\">Hello, I'm</p>\n        <h1 class=\"fade-in\">\n          <span class=\"text-gradient\">Jane Doe</span>\n        </h1>\n        <p class=\"tagline fade-in\">Front-End Developer &amp; UI Designer</p>\n        <p class=\"hero-description fade-in\">I build accessible, performant websites that look great on every device. Currently focused on React, TypeScript, and design systems.</p>\n        <div class=\"hero-cta fade-in\">\n          <a href=\"#projects\" class=\"btn btn-primary\">View My Work</a>\n          <a href=\"#contact\" class=\"btn btn-outline\">Get In Touch</a>\n        </div>\n      </div>\n      <div class=\"hero-image fade-in\">\n        <img src=\"images/profile.webp\" alt=\"Jane Doe\" width=\"320\" height=\"320\" />\n      </div>\n    </div>\n    <div class=\"scroll-indicator\" aria-hidden=\"true\">\n      <span>&#8595;</span>\n    </div>\n  </section>\n\n  <!-- More sections below -->\n  <script src=\"js/main.js\" defer></script>\n  <script src=\"js/contact.js\" defer></script>\n</body>\n</html>",
+      "language": "html"
+    },
+    {
+      "type": "code",
+      "language": "css",
+      "filename": "css/style.css",
+      "description": "Hero section styles with a gradient background, animated text, and profile photo with a decorative ring.",
+      "code": "/* ---- Reset & Global ---- */\n*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }\nhtml { scroll-behavior: smooth; }\nbody {\n  font-family: var(--ff-sans);\n  color: var(--text-primary);\n  background: var(--surface-bg);\n  transition: background-color 0.3s ease, color 0.3s ease;\n}\n\n/* ---- Navbar ---- */\n#navbar {\n  position: fixed; top: 0; width: 100%; z-index: 100;\n  display: flex; justify-content: space-between; align-items: center;\n  padding: 1rem 2rem;\n  background: rgba(255, 255, 255, 0.85);\n  backdrop-filter: blur(12px);\n  border-bottom: 1px solid var(--border-color);\n  transition: background 0.3s, border-color 0.3s;\n}\n[data-theme='dark'] #navbar { background: rgba(15, 23, 42, 0.85); }\n\n.nav-logo {\n  font-weight: 700; font-size: var(--fs-md);\n  color: var(--clr-primary-500); text-decoration: none;\n}\n.nav-links {\n  list-style: none; display: flex; gap: 2rem;\n}\n.nav-links a {\n  text-decoration: none; color: var(--text-primary); font-weight: 500;\n  padding-bottom: 4px; border-bottom: 2px solid transparent;\n  transition: color 0.2s, border-color 0.2s;\n}\n.nav-links a:hover,\n.nav-links a.active {\n  color: var(--clr-primary-500);\n  border-bottom-color: var(--clr-primary-500);\n}\n\n/* ---- Hero ---- */\n#hero {\n  min-height: 100vh;\n  display: flex; flex-direction: column;\n  align-items: center; justify-content: center;\n  padding: 6rem 2rem 2rem;\n  background: linear-gradient(135deg, var(--clr-primary-50) 0%, #dbeafe 50%, #ede9fe 100%);\n  position: relative;\n}\n[data-theme='dark'] #hero {\n  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #1e293b 100%);\n}\n\n.hero-content {\n  display: flex; align-items: center; gap: 4rem;\n  max-width: 1100px; width: 100%;\n}\n.hero-text { flex: 1; }\n.hero-greeting {\n  font-size: var(--fs-md); color: var(--text-secondary);\n  margin-bottom: 0.5rem;\n}\n.hero-content h1 { font-size: clamp(2.5rem, 5vw, 4rem); margin-bottom: 0.5rem; }\n.tagline {\n  font-size: var(--fs-lg); color: var(--clr-primary-500);\n  font-weight: 600; margin-bottom: 1rem;\n}\n.hero-description {\n  font-size: var(--fs-md); color: var(--text-secondary);\n  max-width: 500px; margin-bottom: 2rem; line-height: var(--lh-loose);\n}\n.hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }\n\n.hero-image img {\n  width: 320px; height: 320px;\n  border-radius: 50%; object-fit: cover;\n  border: 6px solid var(--clr-primary-200);\n  box-shadow: 0 0 0 12px rgba(59, 130, 246, 0.1);\n}\n\n/* ---- Buttons ---- */\n.btn {\n  display: inline-block; padding: 0.875rem 1.75rem;\n  border-radius: 10px; font-weight: 600;\n  text-decoration: none; cursor: pointer;\n  border: 2px solid transparent;\n  font-size: var(--fs-base);\n  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;\n}\n.btn-primary {\n  background: var(--clr-primary-500); color: #fff;\n  border-color: var(--clr-primary-500);\n}\n.btn-primary:hover {\n  background: var(--clr-primary-600);\n  transform: translateY(-2px);\n  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);\n}\n.btn-outline {\n  background: transparent; color: var(--clr-primary-500);\n  border-color: var(--clr-primary-500);\n}\n.btn-outline:hover {\n  background: var(--clr-primary-50);\n  transform: translateY(-2px);\n}\n\n/* Scroll indicator */\n.scroll-indicator {\n  position: absolute; bottom: 2rem;\n  animation: bounce 2s infinite;\n  font-size: 1.5rem; color: var(--text-secondary);\n}\n@keyframes bounce {\n  0%, 100% { transform: translateY(0); }\n  50% { transform: translateY(8px); }\n}"
+    },
+    {
+      "type": "text",
+      "heading": "About Section with Bio and Experience Timeline",
+      "headingLevel": 2,
+      "body": "The about section humanizes you beyond a list of technologies. Include a short bio, a professional photo, and an experience timeline that shows your career progression."
+    },
+    {
+      "type": "code",
+      "language": "html",
+      "filename": "index.html (about section)",
+      "description": "About section with a two-column layout: bio on the left, experience timeline on the right.",
+      "code": "<section id=\"about\">\n  <h2>About Me</h2>\n  <div class=\"about-grid\">\n    <div class=\"about-text\">\n      <p>I am a front-end developer with 3 years of experience building web applications. I started with WordPress, moved to vanilla JavaScript, and now work primarily with React and TypeScript. I care deeply about accessibility, performance, and clean code.</p>\n      <p>When I am not coding, you will find me hiking, reading sci-fi novels, or contributing to open-source projects.</p>\n      <div class=\"social-links\">\n        <a href=\"https://github.com/janedoe\" aria-label=\"GitHub\" class=\"social-link\">\n          <svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.605-.015 2.896-.015 3.286 0 .315.21.694.825.576C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z\"/></svg>\n        </a>\n        <a href=\"https://linkedin.com/in/janedoe\" aria-label=\"LinkedIn\" class=\"social-link\">\n          <svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z\"/></svg>\n        </a>\n        <a href=\"https://twitter.com/janedoe\" aria-label=\"Twitter / X\" class=\"social-link\">\n          <svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z\"/></svg>\n        </a>\n      </div>\n    </div>\n    <div class=\"timeline\">\n      <div class=\"timeline-item\">\n        <div class=\"timeline-dot\"></div>\n        <div class=\"timeline-content\">\n          <span class=\"timeline-date\">2024 — Present</span>\n          <h4>Front-End Developer at TechCorp</h4>\n          <p>Building React component libraries and design systems.</p>\n        </div>\n      </div>\n      <div class=\"timeline-item\">\n        <div class=\"timeline-dot\"></div>\n        <div class=\"timeline-content\">\n          <span class=\"timeline-date\">2022 — 2024</span>\n          <h4>Junior Developer at StartupXYZ</h4>\n          <p>Built customer-facing dashboards and landing pages.</p>\n        </div>\n      </div>\n      <div class=\"timeline-item\">\n        <div class=\"timeline-dot\"></div>\n        <div class=\"timeline-content\">\n          <span class=\"timeline-date\">2022</span>\n          <h4>Bootcamp Graduate</h4>\n          <p>Completed a 12-week full-stack JavaScript bootcamp.</p>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>"
+    },
+    {
+      "type": "code",
+      "language": "css",
+      "filename": "css/style.css (about + timeline)",
+      "description": "Styles for the about section two-column layout and the vertical experience timeline.",
+      "code": "/* ---- Section shared ---- */\nsection { padding: 6rem 2rem; }\nsection h2 {\n  text-align: center; margin-bottom: 3rem;\n  font-size: var(--fs-2xl);\n}\n\n/* ---- About ---- */\n#about { max-width: 1100px; margin: 0 auto; }\n.about-grid {\n  display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;\n  align-items: start;\n}\n.about-text p {\n  color: var(--text-secondary); line-height: var(--lh-loose);\n  margin-bottom: 1rem; font-size: var(--fs-md);\n}\n.social-links { display: flex; gap: 1rem; margin-top: 1.5rem; }\n.social-link {\n  display: flex; align-items: center; justify-content: center;\n  width: 44px; height: 44px; border-radius: 50%;\n  background: var(--clr-gray-100); color: var(--text-primary);\n  transition: background 0.2s, color 0.2s, transform 0.2s;\n}\n.social-link:hover {\n  background: var(--clr-primary-500); color: #fff;\n  transform: translateY(-2px);\n}\n[data-theme='dark'] .social-link { background: var(--clr-gray-700); }\n\n/* ---- Timeline ---- */\n.timeline { position: relative; padding-left: 2rem; }\n.timeline::before {\n  content: ''; position: absolute; left: 7px; top: 0; bottom: 0;\n  width: 2px; background: var(--clr-primary-200);\n}\n.timeline-item {\n  position: relative; margin-bottom: 2rem;\n  padding-left: 1.5rem;\n}\n.timeline-dot {\n  position: absolute; left: -2rem; top: 4px;\n  width: 16px; height: 16px; border-radius: 50%;\n  background: var(--clr-primary-500);\n  border: 3px solid var(--surface-bg);\n}\n.timeline-date {\n  font-size: var(--fs-sm); color: var(--clr-primary-500);\n  font-weight: 600;\n}\n.timeline-content h4 { margin: 0.25rem 0; }\n.timeline-content p { color: var(--text-secondary); font-size: var(--fs-sm); }"
+    },
+    {
+      "type": "text",
+      "heading": "Skills with Progress Bars",
+      "headingLevel": 2,
+      "body": "A skills section lets visitors quickly assess your technical range. Progress bars provide a visual indicator of proficiency, and animating them on scroll makes the page feel polished."
+    },
+    {
+      "type": "code",
+      "language": "html",
+      "filename": "index.html (skills section)",
+      "description": "Skills section with categorized skill bars that animate into view on scroll.",
+      "code": "<section id=\"skills\">\n  <h2>Skills &amp; Technologies</h2>\n  <div class=\"skills-container\">\n    <div class=\"skill-category\">\n      <h3>Frontend</h3>\n      <div class=\"skill-bar\" data-skill=\"HTML & CSS\" data-level=\"95\"></div>\n      <div class=\"skill-bar\" data-skill=\"JavaScript\" data-level=\"90\"></div>\n      <div class=\"skill-bar\" data-skill=\"React\" data-level=\"85\"></div>\n      <div class=\"skill-bar\" data-skill=\"TypeScript\" data-level=\"80\"></div>\n      <div class=\"skill-bar\" data-skill=\"Tailwind CSS\" data-level=\"85\"></div>\n    </div>\n    <div class=\"skill-category\">\n      <h3>Backend & Tools</h3>\n      <div class=\"skill-bar\" data-skill=\"Node.js\" data-level=\"70\"></div>\n      <div class=\"skill-bar\" data-skill=\"Python\" data-level=\"65\"></div>\n      <div class=\"skill-bar\" data-skill=\"Git & GitHub\" data-level=\"90\"></div>\n      <div class=\"skill-bar\" data-skill=\"Docker\" data-level=\"55\"></div>\n      <div class=\"skill-bar\" data-skill=\"Figma\" data-level=\"75\"></div>\n    </div>\n  </div>\n</section>"
+    },
+    {
+      "type": "code",
+      "language": "css",
+      "filename": "css/style.css (skill bars)",
+      "description": "Animated progress bars with labels and percentage indicators.",
+      "code": "/* ---- Skills ---- */\n#skills { background: var(--surface-card); }\n.skills-container {\n  display: grid; grid-template-columns: 1fr 1fr;\n  gap: 3rem; max-width: 900px; margin: 0 auto;\n}\n.skill-category h3 {\n  font-size: var(--fs-lg); margin-bottom: 1.5rem;\n  color: var(--clr-primary-500);\n}\n.skill-bar {\n  margin-bottom: 1.25rem;\n}\n.skill-bar::before {\n  content: attr(data-skill);\n  display: flex; justify-content: space-between;\n  font-weight: 500; font-size: var(--fs-sm);\n  margin-bottom: 0.5rem;\n}\n.skill-bar-track {\n  width: 100%; height: 10px;\n  background: var(--clr-gray-200); border-radius: 999px;\n  overflow: hidden;\n}\n.skill-bar-fill {\n  height: 100%; border-radius: 999px;\n  background: linear-gradient(90deg, var(--clr-primary-500), var(--clr-primary-400));\n  width: 0; /* animated by JS */\n  transition: width 1s ease-out;\n}\n\n[data-theme='dark'] .skill-bar-track { background: var(--clr-gray-700); }"
+    },
+    {
+      "type": "code",
+      "language": "javascript",
+      "filename": "js/main.js",
+      "description": "JavaScript to render skill bar DOM, animate fills on scroll, and handle the Intersection Observer.",
+      "code": "// ---- Skill Bars: Build DOM and Animate ----\ndocument.querySelectorAll('.skill-bar').forEach((bar) => {\n  const skill = bar.dataset.skill;\n  const level = bar.dataset.level;\n\n  // Build inner markup\n  const label = document.createElement('div');\n  label.className = 'skill-bar-label';\n  label.innerHTML = `<span>${skill}</span><span>${level}%</span>`;\n  label.style.cssText = 'display:flex;justify-content:space-between;font-weight:500;font-size:0.9rem;margin-bottom:0.4rem;';\n\n  const track = document.createElement('div');\n  track.className = 'skill-bar-track';\n\n  const fill = document.createElement('div');\n  fill.className = 'skill-bar-fill';\n  track.appendChild(fill);\n\n  bar.innerHTML = '';\n  bar.appendChild(label);\n  bar.appendChild(track);\n});\n\n// Animate skill bars when they scroll into view\nconst skillObserver = new IntersectionObserver(\n  (entries) => {\n    entries.forEach((entry) => {\n      if (entry.isIntersecting) {\n        const fill = entry.target.querySelector('.skill-bar-fill');\n        if (fill) {\n          fill.style.width = entry.target.dataset.level + '%';\n        }\n        skillObserver.unobserve(entry.target);\n      }\n    });\n  },\n  { threshold: 0.3 }\n);\n\ndocument.querySelectorAll('.skill-bar').forEach((bar) => skillObserver.observe(bar));"
+    },
+    {
+      "type": "text",
+      "heading": "Projects Showcase",
+      "headingLevel": 2,
+      "body": "Project cards are the centerpiece of any developer homepage. Each card needs a screenshot, title, short description, the tech stack as badges, and links to both the live demo and the GitHub repository."
+    },
+    {
+      "type": "code",
+      "language": "javascript",
+      "filename": "js/main.js (projects)",
+      "description": "Project data and rendering with tech stack badges, image, and links to live demo and source code.",
+      "code": "// ---- Project Data ----\nconst projects = [\n  {\n    title: 'Weather Dashboard',\n    desc: 'Real-time weather with 5-day forecast, geolocation, and animated icons.',\n    image: 'images/projects/weather-app.webp',\n    tags: ['React', 'API', 'CSS Modules'],\n    demo: 'https://weather.janedoe.dev',\n    github: 'https://github.com/janedoe/weather-app',\n  },\n  {\n    title: 'Task Manager',\n    desc: 'Drag-and-drop Kanban board with local storage persistence.',\n    image: 'images/projects/task-manager.webp',\n    tags: ['TypeScript', 'DnD Kit', 'Tailwind'],\n    demo: 'https://tasks.janedoe.dev',\n    github: 'https://github.com/janedoe/task-manager',\n  },\n  {\n    title: 'E-Commerce Storefront',\n    desc: 'Responsive shop with cart, filters, search, and Stripe checkout.',\n    image: 'https://placehold.co/600x360/f59e0b/ffffff?text=E-Commerce',\n    tags: ['Next.js', 'Stripe', 'PostgreSQL'],\n    demo: '#',\n    github: 'https://github.com/janedoe/shop',\n  },\n];\n\n// ---- Render Project Cards ----\nconst projectGrid = document.getElementById('projectCards');\nprojects.forEach((p) => {\n  const card = document.createElement('article');\n  card.className = 'project-card fade-in';\n  card.innerHTML = `\n    <div class=\"project-image\">\n      <img src=\"${p.image}\" alt=\"Screenshot of ${p.title}\" loading=\"lazy\" width=\"600\" height=\"360\" />\n      <div class=\"project-overlay\">\n        <a href=\"${p.demo}\" class=\"btn btn-primary\" target=\"_blank\" rel=\"noopener\">Live Demo</a>\n        <a href=\"${p.github}\" class=\"btn btn-outline\" target=\"_blank\" rel=\"noopener\">Source Code</a>\n      </div>\n    </div>\n    <div class=\"card-body\">\n      <h3>${p.title}</h3>\n      <p>${p.desc}</p>\n      <div class=\"tag-list\">\n        ${p.tags.map((t) => `<span class=\"tag-chip\">${t}</span>`).join('')}\n      </div>\n    </div>`;\n  projectGrid.appendChild(card);\n});"
+    },
+    {
+      "type": "code",
+      "language": "css",
+      "filename": "css/style.css (project cards)",
+      "description": "Project card styles with hover overlay revealing demo and source links.",
+      "code": "/* ---- Projects ---- */\n#projects { max-width: 1100px; margin: 0 auto; }\n.project-cards {\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));\n  gap: 2rem;\n}\n.project-card {\n  border-radius: 16px; overflow: hidden;\n  background: var(--surface-card);\n  border: 1px solid var(--border-color);\n  transition: transform 0.3s, box-shadow 0.3s;\n}\n.project-card:hover {\n  transform: translateY(-6px);\n  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);\n}\n.project-image {\n  position: relative; overflow: hidden;\n}\n.project-image img {\n  width: 100%; height: 220px; object-fit: cover;\n  transition: transform 0.3s;\n}\n.project-card:hover .project-image img {\n  transform: scale(1.05);\n}\n.project-overlay {\n  position: absolute; inset: 0;\n  display: flex; align-items: center; justify-content: center; gap: 1rem;\n  background: rgba(15, 23, 42, 0.7);\n  opacity: 0; transition: opacity 0.3s;\n}\n.project-card:hover .project-overlay { opacity: 1; }\n\n.card-body { padding: 1.5rem; }\n.card-body h3 { margin-bottom: 0.5rem; }\n.card-body p { color: var(--text-secondary); font-size: var(--fs-sm); margin-bottom: 1rem; }\n\n.tag-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }\n.tag-chip {\n  font-size: var(--fs-xs); padding: 0.25rem 0.75rem;\n  border-radius: 999px; font-weight: 500;\n  background: var(--clr-primary-50); color: var(--clr-primary-600);\n}\n[data-theme='dark'] .tag-chip {\n  background: rgba(59, 130, 246, 0.15); color: var(--clr-primary-400);\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Contact Form with Validation and Email Integration",
+      "headingLevel": 2,
+      "body": "Your contact form is useless if it does not actually deliver messages. We will build a form with real-time validation, then connect it to an email delivery service. We cover three options: Formspree (no backend), EmailJS (client-side SDK), and Resend (API-based)."
+    },
+    {
+      "type": "code",
+      "language": "html",
+      "filename": "index.html (contact section)",
+      "description": "Contact form with accessible labels, honeypot spam protection, and real-time validation placeholders.",
+      "code": "<section id=\"contact\">\n  <h2>Get In Touch</h2>\n  <p class=\"section-subtitle\">Have a project in mind or just want to say hello? I would love to hear from you.</p>\n  <form id=\"contactForm\" class=\"contact-form\" novalidate>\n    <!-- Honeypot field for spam bots -->\n    <input type=\"text\" name=\"_honey\" style=\"display:none\" tabindex=\"-1\" autocomplete=\"off\" />\n\n    <div class=\"form-row\">\n      <div class=\"form-group\">\n        <label for=\"name\">Name</label>\n        <input type=\"text\" id=\"name\" name=\"name\" required minlength=\"2\" placeholder=\"Jane Doe\" />\n        <span class=\"error-msg\" aria-live=\"polite\"></span>\n      </div>\n      <div class=\"form-group\">\n        <label for=\"email\">Email</label>\n        <input type=\"email\" id=\"email\" name=\"email\" required placeholder=\"jane@example.com\" />\n        <span class=\"error-msg\" aria-live=\"polite\"></span>\n      </div>\n    </div>\n    <div class=\"form-group\">\n      <label for=\"subject\">Subject</label>\n      <input type=\"text\" id=\"subject\" name=\"subject\" placeholder=\"Project collaboration\" />\n    </div>\n    <div class=\"form-group\">\n      <label for=\"message\">Message</label>\n      <textarea id=\"message\" name=\"message\" rows=\"6\" required minlength=\"10\" placeholder=\"Tell me about your project...\"></textarea>\n      <span class=\"error-msg\" aria-live=\"polite\"></span>\n    </div>\n    <button type=\"submit\" class=\"btn btn-primary\" id=\"submitBtn\">Send Message</button>\n    <p id=\"formStatus\" class=\"form-status\" aria-live=\"polite\"></p>\n  </form>\n</section>"
+    },
+    {
+      "type": "code",
+      "language": "javascript",
+      "filename": "js/contact.js",
+      "description": "Contact form validation with real-time error clearing and submission to Formspree.",
+      "code": "// ---- Contact Form ----\nconst form = document.getElementById('contactForm');\nconst submitBtn = document.getElementById('submitBtn');\nconst formStatus = document.getElementById('formStatus');\n\nfunction showError(input, message) {\n  const group = input.closest('.form-group');\n  group.classList.add('invalid');\n  group.querySelector('.error-msg').textContent = message;\n}\n\nfunction clearError(input) {\n  const group = input.closest('.form-group');\n  group.classList.remove('invalid');\n  group.querySelector('.error-msg').textContent = '';\n}\n\nfunction isValidEmail(email) {\n  return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);\n}\n\nfunction validateForm() {\n  let valid = true;\n  const name = form.querySelector('#name');\n  const email = form.querySelector('#email');\n  const message = form.querySelector('#message');\n\n  if (name.value.trim().length < 2) {\n    showError(name, 'Name must be at least 2 characters.');\n    valid = false;\n  } else { clearError(name); }\n\n  if (!isValidEmail(email.value)) {\n    showError(email, 'Please enter a valid email address.');\n    valid = false;\n  } else { clearError(email); }\n\n  if (message.value.trim().length < 10) {\n    showError(message, 'Message must be at least 10 characters.');\n    valid = false;\n  } else { clearError(message); }\n\n  return valid;\n}\n\n// Clear errors in real-time\nform.querySelectorAll('input, textarea').forEach((el) => {\n  el.addEventListener('input', () => clearError(el));\n});\n\n// Submit handler\nform.addEventListener('submit', async (e) => {\n  e.preventDefault();\n\n  // Honeypot check\n  if (form.querySelector('[name=\"_honey\"]').value) return;\n\n  if (!validateForm()) return;\n\n  submitBtn.disabled = true;\n  submitBtn.textContent = 'Sending...';\n\n  try {\n    const res = await fetch('https://formspree.io/f/YOUR_FORM_ID', {\n      method: 'POST',\n      body: new FormData(form),\n      headers: { Accept: 'application/json' },\n    });\n\n    if (res.ok) {\n      formStatus.textContent = 'Message sent! I will get back to you soon.';\n      formStatus.className = 'form-status success';\n      form.reset();\n    } else {\n      throw new Error('Server error');\n    }\n  } catch {\n    formStatus.textContent = 'Something went wrong. Please try again or email me directly.';\n    formStatus.className = 'form-status error';\n  } finally {\n    submitBtn.disabled = false;\n    submitBtn.textContent = 'Send Message';\n  }\n});"
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "EmailJS",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "javascript",
+              "filename": "js/contact-emailjs.js",
+              "description": "Alternative email delivery using EmailJS — sends from the browser with no backend.",
+              "code": "// Initialize EmailJS with your public key\nimport emailjs from '@emailjs/browser';\n\nemailjs.init('YOUR_PUBLIC_KEY');\n\nasync function sendWithEmailJS(formData) {\n  const templateParams = {\n    from_name: formData.get('name'),\n    from_email: formData.get('email'),\n    subject: formData.get('subject'),\n    message: formData.get('message'),\n  };\n\n  try {\n    await emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams);\n    return { ok: true };\n  } catch (error) {\n    console.error('EmailJS error:', error);\n    return { ok: false };\n  }\n}"
+            }
+          ]
+        },
+        {
+          "label": "Resend (API)",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "python",
+              "filename": "backend/contact.py",
+              "description": "Server-side email delivery using the Resend API — more reliable than client-side solutions.",
+              "code": "import os\nimport resend\nfrom flask import Blueprint, request, jsonify\n\ncontact_bp = Blueprint('contact', __name__)\n\nresend.api_key = os.environ['RESEND_API_KEY']\n\n@contact_bp.route('/api/contact', methods=['POST'])\ndef send_contact_email():\n    data = request.get_json()\n    name = data.get('name', '').strip()\n    email = data.get('email', '').strip()\n    message = data.get('message', '').strip()\n\n    if not all([name, email, message]):\n        return jsonify({'error': 'All fields required'}), 400\n\n    try:\n        resend.Emails.send({\n            'from': 'Contact Form <noreply@janedoe.dev>',\n            'to': ['jane@janedoe.dev'],\n            'reply_to': email,\n            'subject': f'New message from {name}',\n            'text': f'From: {name} ({email})\\n\\n{message}',\n        })\n        return jsonify({'message': 'Email sent'})\n    except Exception as e:\n        return jsonify({'error': str(e)}), 500"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "code",
+      "language": "css",
+      "filename": "css/style.css (contact form)",
+      "description": "Contact form styles with focus states, error highlighting, and success/error message formatting.",
+      "code": "/* ---- Contact ---- */\n#contact { background: var(--surface-card); }\n.section-subtitle {\n  text-align: center; color: var(--text-secondary);\n  max-width: 500px; margin: -1.5rem auto 2rem;\n}\n.contact-form {\n  max-width: 640px; margin: 0 auto;\n}\n.form-row {\n  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;\n}\n.form-group {\n  margin-bottom: 1.25rem;\n}\n.form-group label {\n  display: block; font-weight: 600; margin-bottom: 0.4rem;\n  font-size: var(--fs-sm);\n}\n.form-group input,\n.form-group textarea {\n  width: 100%; padding: 0.875rem; border: 2px solid var(--border-color);\n  border-radius: 10px; font-size: var(--fs-base);\n  background: var(--surface-bg); color: var(--text-primary);\n  transition: border-color 0.2s, box-shadow 0.2s;\n  font-family: inherit;\n}\n.form-group input:focus,\n.form-group textarea:focus {\n  outline: none; border-color: var(--clr-primary-500);\n  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);\n}\n.form-group.invalid input,\n.form-group.invalid textarea { border-color: var(--clr-error); }\n.error-msg {\n  color: var(--clr-error); font-size: var(--fs-xs);\n  min-height: 1.25rem; display: block;\n}\n.form-status {\n  margin-top: 1rem; font-weight: 500; text-align: center;\n}\n.form-status.success { color: var(--clr-success); }\n.form-status.error { color: var(--clr-error); }\n\n@media (max-width: 640px) {\n  .form-row { grid-template-columns: 1fr; }\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Responsive Design — Mobile-First Approach",
+      "headingLevel": 2,
+      "body": "Over 60% of web traffic comes from mobile devices. Building mobile-first means starting with the smallest screen and adding complexity for larger ones. This approach naturally produces cleaner CSS because you add features rather than remove them."
+    },
+    {
+      "type": "table",
+      "heading": "Common Breakpoints",
+      "headers": ["Breakpoint", "Target", "Typical Changes"],
+      "rows": [
+        ["< 640px", "Mobile phones", "Single column, stacked elements, hamburger menu"],
+        ["640px — 768px", "Large phones / small tablets", "Two-column grids, larger touch targets"],
+        ["768px — 1024px", "Tablets", "Side-by-side layouts, visible navigation"],
+        ["1024px — 1280px", "Laptops", "Full layout with sidebar or multi-column grids"],
+        ["> 1280px", "Desktop monitors", "Max-width containers, comfortable reading widths"]
+      ]
+    },
+    {
+      "type": "code",
+      "language": "css",
+      "filename": "css/style.css (responsive)",
+      "description": "Mobile-first responsive breakpoints for the entire page layout.",
+      "code": "/* ---- Responsive: Mobile First ---- */\n\n/* Base (mobile) */\n.hero-content { flex-direction: column-reverse; text-align: center; gap: 2rem; }\n.hero-cta { justify-content: center; }\n.hero-image img { width: 200px; height: 200px; }\n.about-grid { grid-template-columns: 1fr; }\n.skills-container { grid-template-columns: 1fr; }\n.project-cards { grid-template-columns: 1fr; }\n.nav-links { display: none; }\n\n/* Tablet (768px+) */\n@media (min-width: 768px) {\n  .hero-content { flex-direction: row; text-align: left; gap: 3rem; }\n  .hero-cta { justify-content: flex-start; }\n  .hero-image img { width: 280px; height: 280px; }\n  .about-grid { grid-template-columns: 1fr 1fr; }\n  .skills-container { grid-template-columns: 1fr 1fr; }\n  .project-cards { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }\n  .nav-links { display: flex; }\n}\n\n/* Desktop (1024px+) */\n@media (min-width: 1024px) {\n  .hero-image img { width: 320px; height: 320px; }\n  section { padding: 8rem 2rem; }\n}\n\n/* Large screens — cap content width */\n@media (min-width: 1400px) {\n  body { max-width: 1400px; margin: 0 auto; }\n}"
+    },
+    {
+      "type": "accordion",
+      "title": "Hamburger Menu for Mobile",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "code",
+          "language": "css",
+          "filename": "css/style.css",
+          "description": "CSS-only hamburger menu using a checkbox hack for zero-JavaScript mobile navigation.",
+          "code": "/* Mobile hamburger */\n.hamburger {\n  display: none; background: none; border: none;\n  cursor: pointer; padding: 0.5rem;\n}\n.hamburger span {\n  display: block; width: 24px; height: 2px;\n  background: var(--text-primary); margin: 5px 0;\n  transition: transform 0.3s, opacity 0.3s;\n}\n\n@media (max-width: 767px) {\n  .hamburger { display: block; }\n  .nav-links {\n    display: none;\n    position: absolute; top: 100%; left: 0; width: 100%;\n    background: var(--surface-bg);\n    flex-direction: column; padding: 1rem 2rem;\n    border-bottom: 1px solid var(--border-color);\n    box-shadow: 0 4px 12px rgba(0,0,0,0.1);\n  }\n  .nav-links.open { display: flex; }\n\n  /* Animate hamburger to X */\n  .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }\n  .hamburger.open span:nth-child(2) { opacity: 0; }\n  .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }\n}"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "filename": "js/main.js",
+          "description": "Toggle handler for the mobile hamburger menu.",
+          "code": "// ---- Hamburger Menu ----\nconst hamburger = document.querySelector('.hamburger');\nconst navLinks = document.querySelector('.nav-links');\n\nif (hamburger) {\n  hamburger.addEventListener('click', () => {\n    hamburger.classList.toggle('open');\n    navLinks.classList.toggle('open');\n  });\n\n  // Close menu when a link is clicked\n  navLinks.querySelectorAll('a').forEach((link) => {\n    link.addEventListener('click', () => {\n      hamburger.classList.remove('open');\n      navLinks.classList.remove('open');\n    });\n  });\n}"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "CSS Animations and Scroll Effects",
+      "headingLevel": 2,
+      "body": "Subtle animations make a page feel alive without being distracting. Use the Intersection Observer API to trigger fade-in animations as elements scroll into view, and add micro-interactions on hover for buttons and cards."
+    },
+    {
+      "type": "code",
+      "language": "css",
+      "filename": "css/animations.css",
+      "description": "Scroll-triggered animation keyframes and utility classes.",
+      "code": "/* ---- Scroll Animations ---- */\n@keyframes fadeInUp {\n  from { opacity: 0; transform: translateY(30px); }\n  to   { opacity: 1; transform: translateY(0); }\n}\n\n@keyframes fadeInLeft {\n  from { opacity: 0; transform: translateX(-30px); }\n  to   { opacity: 1; transform: translateX(0); }\n}\n\n@keyframes fadeInRight {\n  from { opacity: 0; transform: translateX(30px); }\n  to   { opacity: 1; transform: translateX(0); }\n}\n\n.fade-in {\n  opacity: 0;\n}\n.fade-in.visible {\n  animation: fadeInUp 0.7s ease forwards;\n}\n.fade-in-left.visible {\n  animation: fadeInLeft 0.7s ease forwards;\n}\n.fade-in-right.visible {\n  animation: fadeInRight 0.7s ease forwards;\n}\n\n/* Stagger children */\n.stagger-children .fade-in:nth-child(1) { animation-delay: 0s; }\n.stagger-children .fade-in:nth-child(2) { animation-delay: 0.1s; }\n.stagger-children .fade-in:nth-child(3) { animation-delay: 0.2s; }\n.stagger-children .fade-in:nth-child(4) { animation-delay: 0.3s; }\n.stagger-children .fade-in:nth-child(5) { animation-delay: 0.4s; }\n\n/* Typing animation for hero tagline */\n.typed-text {\n  border-right: 2px solid var(--clr-primary-500);\n  white-space: nowrap; overflow: hidden;\n  animation: typing 3s steps(40) 1s forwards, blink 0.7s step-end infinite;\n  width: 0;\n}\n@keyframes typing { to { width: 100%; } }\n@keyframes blink { 50% { border-color: transparent; } }\n\n/* Reduced motion preference */\n@media (prefers-reduced-motion: reduce) {\n  *, *::before, *::after {\n    animation-duration: 0.01ms !important;\n    transition-duration: 0.01ms !important;\n  }\n}"
+    },
+    {
+      "type": "code",
+      "language": "javascript",
+      "filename": "js/main.js (scroll observer)",
+      "description": "Generic Intersection Observer that adds .visible to any .fade-in element when it enters the viewport.",
+      "code": "// ---- Scroll Animations ----\nconst scrollObserver = new IntersectionObserver(\n  (entries) => {\n    entries.forEach((entry) => {\n      if (entry.isIntersecting) {\n        entry.target.classList.add('visible');\n        scrollObserver.unobserve(entry.target);\n      }\n    });\n  },\n  { threshold: 0.15 }\n);\n\ndocument.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right').forEach((el) => {\n  scrollObserver.observe(el);\n});\n\n// ---- Active Nav on Scroll ----\nconst sections = document.querySelectorAll('section[id]');\nconst allNavLinks = document.querySelectorAll('.nav-links a');\n\nconst navObserver = new IntersectionObserver(\n  (entries) => {\n    entries.forEach((entry) => {\n      if (entry.isIntersecting) {\n        allNavLinks.forEach((link) => {\n          link.classList.toggle(\n            'active',\n            link.getAttribute('href') === `#${entry.target.id}`\n          );\n        });\n      }\n    });\n  },\n  { rootMargin: '-50% 0px -50% 0px' }\n);\n\nsections.forEach((section) => navObserver.observe(section));"
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "Respect prefers-reduced-motion",
+      "body": "Some users experience motion sickness from animations. Always wrap animation CSS in a @media (prefers-reduced-motion: reduce) query that disables or minimizes movement. This is both an accessibility requirement and a best practice."
+    },
+    {
+      "type": "text",
+      "heading": "Dark Mode Toggle",
+      "headingLevel": 2,
+      "body": "Dark mode is expected on developer sites. We implement it with a data attribute on the root element, CSS custom properties for all colors, and localStorage to persist the user's preference."
+    },
+    {
+      "type": "code",
+      "language": "javascript",
+      "filename": "js/main.js (dark mode)",
+      "description": "Dark mode toggle that respects system preference on first visit and persists choice to localStorage.",
+      "code": "// ---- Dark Mode ----\nconst themeToggle = document.getElementById('themeToggle');\n\nfunction getPreferredTheme() {\n  const saved = localStorage.getItem('theme');\n  if (saved) return saved;\n  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';\n}\n\nfunction setTheme(theme) {\n  document.documentElement.setAttribute('data-theme', theme);\n  localStorage.setItem('theme', theme);\n  // Update toggle visibility\n  themeToggle.querySelector('.icon-sun').style.display = theme === 'dark' ? 'inline' : 'none';\n  themeToggle.querySelector('.icon-moon').style.display = theme === 'light' ? 'inline' : 'none';\n}\n\n// Apply on load\nsetTheme(getPreferredTheme());\n\n// Toggle on click\nthemeToggle.addEventListener('click', () => {\n  const current = document.documentElement.getAttribute('data-theme');\n  setTheme(current === 'dark' ? 'light' : 'dark');\n});\n\n// Listen for system theme changes\nwindow.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {\n  if (!localStorage.getItem('theme')) {\n    setTheme(e.matches ? 'dark' : 'light');\n  }\n});"
+    },
+    {
+      "type": "text",
+      "heading": "Performance Optimization",
+      "headingLevel": 2,
+      "body": "A personal homepage should load in under two seconds. Google ranks fast sites higher, and visitors bounce from slow ones. Here is a systematic approach to hitting a Lighthouse score above 90 in every category."
+    },
+    {
+      "type": "table",
+      "heading": "Core Web Vitals Targets",
+      "headers": ["Metric", "What It Measures", "Target", "How to Improve"],
+      "rows": [
+        ["LCP (Largest Contentful Paint)", "Time until the biggest visible element renders", "< 2.5s", "Optimize hero image, preload fonts, use CDN"],
+        ["FID (First Input Delay)", "Time until the page responds to first click/tap", "< 100ms", "Minimize JavaScript, defer non-critical scripts"],
+        ["CLS (Cumulative Layout Shift)", "How much the layout jumps around during load", "< 0.1", "Set explicit width/height on images, reserve font space"],
+        ["INP (Interaction to Next Paint)", "Responsiveness to all interactions, not just first", "< 200ms", "Break up long tasks, use requestAnimationFrame"],
+        ["TTFB (Time to First Byte)", "Server response time", "< 800ms", "Use static hosting (Vercel/Netlify), enable caching"]
+      ]
+    },
+    {
+      "type": "list",
+      "heading": "Image Optimization Checklist",
+      "ordered": true,
+      "items": [
+        "Convert all photos to WebP format (80% smaller than JPEG with no visible quality loss)",
+        "Use AVIF for hero images if browser support is acceptable (even smaller than WebP)",
+        "Set explicit width and height attributes on every <img> to prevent layout shift",
+        "Use loading=\"lazy\" on all images below the fold",
+        "Use the <picture> element with srcset to serve different sizes for different screens",
+        "Keep hero images under 200 KB — compress with squoosh.app or sharp",
+        "Use SVG for icons and logos (infinitely scalable, tiny file size)",
+        "Consider using placeholder blur-up technique for large images"
+      ]
+    },
+    {
+      "type": "code",
+      "language": "html",
+      "filename": "index.html (optimized images)",
+      "description": "Responsive image loading with WebP/AVIF formats, srcset for multiple sizes, and lazy loading.",
+      "code": "<!-- Hero image with modern formats and fallback -->\n<picture>\n  <source srcset=\"images/profile.avif\" type=\"image/avif\" />\n  <source srcset=\"images/profile.webp\" type=\"image/webp\" />\n  <img\n    src=\"images/profile.jpg\"\n    alt=\"Jane Doe\"\n    width=\"320\" height=\"320\"\n    fetchpriority=\"high\"\n    decoding=\"async\"\n  />\n</picture>\n\n<!-- Project screenshot with responsive sizes -->\n<picture>\n  <source\n    srcset=\"images/projects/weather-sm.webp 400w,\n            images/projects/weather-md.webp 800w,\n            images/projects/weather-lg.webp 1200w\"\n    sizes=\"(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw\"\n    type=\"image/webp\"\n  />\n  <img\n    src=\"images/projects/weather-md.jpg\"\n    alt=\"Weather Dashboard screenshot\"\n    width=\"600\" height=\"360\"\n    loading=\"lazy\"\n    decoding=\"async\"\n  />\n</picture>"
+    },
+    {
+      "type": "accordion",
+      "title": "Font Loading Optimization",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "code",
+          "language": "html",
+          "filename": "index.html (head)",
+          "description": "Preload critical fonts and use font-display: swap to prevent invisible text during load.",
+          "code": "<head>\n  <!-- Preload the most critical font weight -->\n  <link\n    rel=\"preload\"\n    href=\"/fonts/inter-var-latin.woff2\"\n    as=\"font\"\n    type=\"font/woff2\"\n    crossorigin\n  />\n\n  <style>\n    /* Self-host fonts for better performance than Google Fonts */\n    @font-face {\n      font-family: 'Inter';\n      src: url('/fonts/inter-var-latin.woff2') format('woff2');\n      font-weight: 100 900;\n      font-display: swap;  /* Show fallback font immediately */\n      unicode-range: U+0000-00FF; /* Latin characters only */\n    }\n  </style>\n</head>"
+          },
+          {
+            "type": "alert",
+            "severity": "info",
+            "title": "Self-hosting vs Google Fonts",
+            "body": "Self-hosting fonts eliminates a DNS lookup and connection to fonts.googleapis.com. Download font files from google-webfonts-helper, put them in your /fonts folder, and reference them with @font-face."
+          }
+      ]
+    },
+    {
+      "type": "table",
+      "heading": "Lighthouse Performance Checklist",
+      "headers": ["Category", "Target", "Key Actions"],
+      "rows": [
+        ["Performance", "> 90", "Compress images, minify CSS/JS, defer scripts, preload fonts"],
+        ["Accessibility", "> 90", "Semantic HTML, alt text, focus styles, color contrast, skip link"],
+        ["Best Practices", "> 90", "HTTPS, no console errors, correct doctype, CSP headers"],
+        ["SEO", "> 90", "Meta description, title tag, Open Graph, structured data, mobile viewport"]
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Deployment Options",
+      "headingLevel": 2,
+      "body": "Static sites can be deployed for free on multiple platforms. Each has strengths depending on your workflow."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "GitHub Pages",
+          "blocks": [
+            {
+              "type": "step",
+              "step": 3,
+              "title": "Deploy to GitHub Pages",
+              "body": "GitHub Pages hosts static sites for free from any repository. Push your code and enable Pages in settings.",
+              "code": "git init\ngit add .\ngit commit -m \"Initial commit: personal homepage\"\ngit remote add origin https://github.com/YOUR_USERNAME/my-homepage.git\ngit branch -M main\ngit push -u origin main\n\n# Then: Settings > Pages > Source: Deploy from branch > main / root",
+              "language": "bash"
+            },
+            {
+              "type": "alert",
+              "severity": "info",
+              "title": "Custom domain on GitHub Pages",
+              "body": "Add a CNAME file with your domain name to the repo root. Update your DNS with an A record pointing to 185.199.108.153. GitHub provides free SSL for custom domains."
+            }
+          ]
+        },
+        {
+          "label": "Vercel",
+          "blocks": [
+            {
+              "type": "step",
+              "step": 3,
+              "title": "Deploy to Vercel",
+              "body": "Vercel provides instant deployments with preview URLs for every push. Install the CLI or import directly from GitHub.",
+              "code": "# Option 1: CLI\nnpm i -g vercel\nvercel\n\n# Option 2: Import from GitHub\n# Go to vercel.com > New Project > Import your repo\n# Vercel auto-detects static sites and configures the build",
+              "language": "bash"
+            }
+          ]
+        },
+        {
+          "label": "Netlify",
+          "blocks": [
+            {
+              "type": "step",
+              "step": 3,
+              "title": "Deploy to Netlify",
+              "body": "Netlify offers drag-and-drop deployment or Git integration. It also supports form handling without a backend.",
+              "code": "# Option 1: CLI\nnpm i -g netlify-cli\nnetlify deploy --prod --dir=.\n\n# Option 2: Drag and drop\n# Go to app.netlify.com/drop\n# Drag your project folder onto the page\n\n# Option 3: Git integration\n# Connect your GitHub repo in the Netlify dashboard",
+              "language": "bash"
+            },
+            {
+              "type": "alert",
+              "severity": "success",
+              "title": "Netlify Forms",
+              "body": "Add a netlify attribute to your form tag and Netlify automatically handles submissions with spam filtering — no backend code needed. <form name=\"contact\" netlify>"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Analytics — Tracking Visitors Responsibly",
+      "headingLevel": 2,
+      "body": "You need to know if anyone actually visits your site, which pages they view, and where they come from. But you should respect visitor privacy. Google Analytics 4 is the default, but privacy-focused alternatives are better for personal sites."
+    },
+    {
+      "type": "table",
+      "heading": "Analytics Platform Comparison",
+      "headers": ["Platform", "Privacy", "Free Tier", "Setup Complexity", "Best For"],
+      "rows": [
+        ["Google Analytics 4", "Collects extensive data, requires cookie consent banner", "Unlimited", "Medium — requires consent management", "Sites that need detailed funnels and conversion tracking"],
+        ["Plausible", "No cookies, no personal data, GDPR-compliant by default", "Free for <10k views", "Easy — single script tag", "Personal sites that want simple, clean analytics"],
+        ["Umami", "Self-hosted, no cookies, open source", "Free (self-hosted)", "Medium — requires a server", "Developers who want full control and zero cost"],
+        ["Fathom", "No cookies, GDPR/CCPA compliant", "Paid ($14/mo)", "Easy — single script tag", "Businesses that need compliant analytics"]
+      ]
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Plausible",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "html",
+              "filename": "index.html",
+              "description": "Add Plausible analytics with a single script tag — no cookie consent needed.",
+              "code": "<!-- Add before </head> -->\n<script defer data-domain=\"janedoe.dev\" src=\"https://plausible.io/js/script.js\"></script>"
+            }
+          ]
+        },
+        {
+          "label": "Umami (Self-Hosted)",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "html",
+              "filename": "index.html",
+              "description": "Self-hosted Umami analytics — deploy on Railway or Vercel for free.",
+              "code": "<!-- Point to your self-hosted Umami instance -->\n<script defer src=\"https://analytics.janedoe.dev/script.js\" data-website-id=\"YOUR_WEBSITE_ID\"></script>"
+            },
+            {
+              "type": "code",
+              "language": "bash",
+              "filename": "terminal",
+              "description": "Deploy Umami to Railway with one command for free, privacy-respecting analytics.",
+              "code": "# Clone and deploy Umami to Railway\ngit clone https://github.com/umami-software/umami.git\ncd umami\n\n# Or deploy directly from the Umami dashboard:\n# Go to cloud.umami.is/signup for a free hosted version"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "SEO Essentials",
+      "headingLevel": 2,
+      "body": "Search engine optimization ensures that when someone Googles your name, your personal site appears first. For a personal homepage, the fundamentals matter more than advanced techniques."
+    },
+    {
+      "type": "list",
+      "heading": "SEO Checklist for Personal Sites",
+      "ordered": true,
+      "items": [
+        "Write a unique <title> tag under 60 characters: 'Jane Doe — Front-End Developer'",
+        "Add a <meta name=\"description\"> under 160 characters summarizing who you are",
+        "Include Open Graph meta tags (og:title, og:description, og:image, og:url) for social sharing",
+        "Add Twitter Card meta tags for rich previews on Twitter/X",
+        "Use semantic HTML elements (header, nav, main, section, article, footer)",
+        "Add structured data (JSON-LD) for Person schema so Google shows a knowledge panel",
+        "Create a favicon.svg with your initials — it shows in browser tabs and bookmarks",
+        "Submit your sitemap to Google Search Console",
+        "Ensure all images have descriptive alt text",
+        "Use descriptive anchor text for links instead of 'click here'"
+      ]
+    },
+    {
+      "type": "code",
+      "language": "html",
+      "filename": "index.html (structured data)",
+      "description": "JSON-LD structured data for Person schema — helps search engines understand who you are.",
+      "code": "<script type=\"application/ld+json\">\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"Person\",\n  \"name\": \"Jane Doe\",\n  \"url\": \"https://janedoe.dev\",\n  \"image\": \"https://janedoe.dev/images/profile.webp\",\n  \"jobTitle\": \"Front-End Developer\",\n  \"worksFor\": {\n    \"@type\": \"Organization\",\n    \"name\": \"TechCorp\"\n  },\n  \"sameAs\": [\n    \"https://github.com/janedoe\",\n    \"https://linkedin.com/in/janedoe\",\n    \"https://twitter.com/janedoe\"\n  ],\n  \"knowsAbout\": [\"React\", \"TypeScript\", \"CSS\", \"Web Accessibility\", \"Design Systems\"]\n}\n</script>"
+    },
+    {
+      "type": "accordion",
+      "title": "Generating a Dynamic OG Image",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Open Graph images appear when your site is shared on Twitter, LinkedIn, Slack, and other platforms. Instead of a static screenshot, you can generate a dynamic image using @vercel/og or a simple HTML-to-image approach."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "filename": "og-template.html",
+          "description": "A simple OG image template you can screenshot at 1200x630px using a browser or automation tool.",
+          "code": "<!-- Screenshot this at 1200x630 for your og:image -->\n<div style=\"width:1200px;height:630px;display:flex;align-items:center;justify-content:center;\n            background:linear-gradient(135deg,#1e293b,#0f172a);color:#f1f5f9;font-family:Inter,sans-serif;\">\n  <div style=\"text-align:center;\">\n    <div style=\"font-size:72px;font-weight:700;\">Jane Doe</div>\n    <div style=\"font-size:32px;color:#60a5fa;margin-top:12px;\">Front-End Developer</div>\n    <div style=\"font-size:20px;color:#94a3b8;margin-top:24px;\">janedoe.dev</div>\n  </div>\n</div>"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Footer and Final Touches",
+      "headingLevel": 2,
+      "body": "The footer wraps up your page. Keep it simple: copyright, a few social links, and optionally a link to the site source code to show transparency."
+    },
+    {
+      "type": "code",
+      "language": "html",
+      "filename": "index.html (footer)",
+      "description": "Minimal footer with copyright, social links, and a link to the source code.",
+      "code": "<footer>\n  <div class=\"footer-content\">\n    <p>&copy; 2025 Jane Doe. Built with HTML, CSS, and JavaScript.</p>\n    <div class=\"footer-links\">\n      <a href=\"https://github.com/janedoe\" aria-label=\"GitHub\">GitHub</a>\n      <a href=\"https://linkedin.com/in/janedoe\" aria-label=\"LinkedIn\">LinkedIn</a>\n      <a href=\"https://github.com/janedoe/my-homepage\" aria-label=\"Source code\">Source</a>\n    </div>\n  </div>\n</footer>"
+    },
+    {
+      "type": "code",
+      "language": "css",
+      "filename": "css/style.css (footer)",
+      "description": "Footer styles with flexbox layout.",
+      "code": "/* ---- Footer ---- */\nfooter {\n  padding: 2rem;\n  border-top: 1px solid var(--border-color);\n  background: var(--surface-bg);\n}\n.footer-content {\n  max-width: 1100px; margin: 0 auto;\n  display: flex; justify-content: space-between; align-items: center;\n  color: var(--text-secondary); font-size: var(--fs-sm);\n}\n.footer-links { display: flex; gap: 1.5rem; }\n.footer-links a {\n  color: var(--text-secondary); text-decoration: none;\n  transition: color 0.2s;\n}\n.footer-links a:hover { color: var(--clr-primary-500); }\n\n@media (max-width: 640px) {\n  .footer-content { flex-direction: column; gap: 1rem; text-align: center; }\n}"
+    },
+    {
+      "type": "cardGrid",
+      "columns": 2,
+      "cards": [
+        { "title": "Accessibility Audit", "body": "Run Lighthouse and axe DevTools. Fix color contrast issues, add skip-to-content link, ensure all interactive elements are keyboard-accessible.", "icon": "Accessibility", "chip": "A11y" },
+        { "title": "Print Stylesheet", "body": "Add @media print styles to hide the nav, show URLs next to links, and format for paper. Recruiters sometimes print portfolios.", "icon": "Print", "chip": "CSS" },
+        { "title": "404 Page", "body": "Create a custom 404.html with navigation back to the homepage. GitHub Pages and Netlify both support this automatically.", "icon": "Error", "chip": "UX" },
+        { "title": "Progressive Web App", "body": "Add a manifest.json and service worker to make your site installable and available offline. Use Workbox for cache strategies.", "icon": "InstallMobile", "chip": "PWA" }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "Your personal homepage is ready",
+      "body": "You now have a fully responsive, animated, accessible personal homepage with a hero section, about page with timeline, animated skill bars, project showcase with hover overlays, a validated contact form with email integration, dark mode, SEO, performance optimization, and multiple deployment options. Update the data with your real content, push to your preferred host, and share it."
+    },
+    {
+      "type": "text",
+      "heading": "Summary",
+      "headingLevel": 2,
+      "body": "Building a personal homepage is the best way to learn foundational web development. You practiced semantic HTML, responsive CSS with custom properties, JavaScript DOM manipulation, form validation, scroll animations with Intersection Observer, dark mode toggling, image optimization, and deployment. These skills transfer directly to every web project you will build in the future."
+    }
+  ]
+}

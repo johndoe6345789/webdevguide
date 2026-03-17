@@ -1,0 +1,6 @@
+{
+  "type": "alert",
+  "severity": "error",
+  "title": "Never Commit .env Files",
+  "body": "Add .env to your .gitignore before your first commit. If you accidentally commit secrets, rotating them is not enough -- you must assume they have been compromised. Use git-secrets or trufflehog to scan for leaked credentials."
+}

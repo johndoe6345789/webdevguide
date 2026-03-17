@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Error Handling",
+  "headingLevel": 2,
+  "body": "Things will go wrong. Good error handling means your API tells the frontend exactly what happened instead of crashing silently."
+}

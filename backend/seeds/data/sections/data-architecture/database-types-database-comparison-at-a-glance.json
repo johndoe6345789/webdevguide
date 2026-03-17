@@ -1,0 +1,48 @@
+{
+  "type": "table",
+  "heading": "Database comparison at a glance",
+  "headers": [
+    "Database",
+    "Type",
+    "Best For",
+    "Query Language",
+    "Scaling Model"
+  ],
+  "rows": [
+    [
+      "PostgreSQL",
+      "Relational (SQL)",
+      "Complex queries, joins, transactions, ACID compliance",
+      "SQL",
+      "Vertical (read replicas for horizontal)"
+    ],
+    [
+      "MongoDB",
+      "Document (NoSQL)",
+      "Flexible schemas, nested data, rapid prototyping",
+      "MQL (JSON-like)",
+      "Horizontal (sharding)"
+    ],
+    [
+      "Redis",
+      "Key-Value / Cache",
+      "Caching, sessions, rate limiting, pub/sub, leaderboards",
+      "Redis commands",
+      "In-memory, clustering"
+    ],
+    [
+      "SQLite",
+      "Embedded Relational",
+      "Local-first apps, mobile, prototyping, edge computing",
+      "SQL",
+      "Single file, no server"
+    ],
+    [
+      "MySQL",
+      "Relational (SQL)",
+      "Web apps, WordPress, read-heavy workloads",
+      "SQL",
+      "Vertical (replication for horizontal)"
+    ]
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "type": "list",
+  "heading": "Rollback Strategy: Always Have One",
+  "ordered": true,
+  "items": [
+    "Deploy behind feature flags. If a new feature breaks, flip the flag off without redeploying. LaunchDarkly and Unleash are popular tools, or build a simple flags table in your database.",
+    "Use blue-green deployments. Run two identical environments (blue and green). Deploy to the inactive one, test it, then switch traffic. If something breaks, switch back in seconds.",
+    "Make database migrations reversible. Every migration should have a down() method. Never drop columns in the same deploy that stops using them -- do it in a follow-up deploy after the code change is stable.",
+    "Keep the previous build artifact. If your CI builds a Docker image tagged v1.2.3, do not delete v1.2.2 until v1.2.3 is confirmed stable. You can roll back by redeploying the old tag.",
+    "Monitor after every deploy. Watch error rates, response times, and user-facing metrics for 30 minutes after deploying. Automated alerts should fire if error rates spike above baseline."
+  ]
+}

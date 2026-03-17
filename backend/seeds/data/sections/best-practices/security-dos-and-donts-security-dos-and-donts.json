@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Security Do's and Don'ts",
+  "headingLevel": 2,
+  "body": "Security is not a feature you add later -- it is a mindset you apply from the first line of code. The most common vulnerabilities are not sophisticated hacks. They are simple mistakes: trusting user input, exposing secrets, and misconfiguring access controls."
+}

@@ -52,11 +52,30 @@ const glossarySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchGlossaryTerms.pending, (state) => { state.loading = true; state.error = null; })
-      .addCase(fetchGlossaryTerms.fulfilled, (state, action) => { state.loading = false; state.terms = action.payload; })
-      .addCase(fetchGlossaryTerms.rejected, (state, action) => { state.loading = false; state.error = action.error.message ?? 'Failed to load terms'; })
-      .addCase(fetchGlossaryCategories.fulfilled, (state, action) => { state.categories = action.payload; })
-      .addCase(searchGlossary.fulfilled, (state, action) => { state.searchResults = action.payload; });
+      .addCase(fetchGlossaryTerms.pending, (s) => {
+        s.loading = true; s.error = null;
+      })
+      .addCase(fetchGlossaryTerms.fulfilled,
+        (s, action) => {
+          s.loading = false;
+          s.terms = action.payload;
+        })
+      .addCase(fetchGlossaryTerms.rejected,
+        (s, action) => {
+          s.loading = false;
+          s.error = action.error.message
+            ?? 'Failed to load terms';
+        })
+      .addCase(
+        fetchGlossaryCategories.fulfilled,
+        (s, action) => {
+          s.categories = action.payload;
+        },
+      )
+      .addCase(searchGlossary.fulfilled,
+        (s, action) => {
+          s.searchResults = action.payload;
+        });
   },
 });
 

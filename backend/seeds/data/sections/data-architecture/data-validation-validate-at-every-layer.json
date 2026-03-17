@@ -1,0 +1,6 @@
+{
+  "type": "alert",
+  "severity": "warning",
+  "title": "Validate at every layer",
+  "body": "Client-side validation (React Hook Form + Zod) gives instant feedback. Server-side validation (API middleware) catches bypassed or malformed requests. Database constraints (NOT NULL, CHECK, UNIQUE) are the last line of defense. Never rely on just one layer."
+}

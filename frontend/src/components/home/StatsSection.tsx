@@ -3,9 +3,8 @@
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid2';
-import Typography from '@mui/material/Typography';
-
-const STAT_KEYS = ['statsChapters', 'statsExamples', 'statsQuestions'] as const;
+import StatItemCard from './StatItemCard';
+import { STATS } from './statsData';
 
 interface Props {
   t: (key: string) => string;
@@ -13,14 +12,20 @@ interface Props {
 
 export default function StatsSection({ t }: Props) {
   return (
-    <Box sx={{ bgcolor: 'background.paper', py: { xs: 6, md: 8 } }}>
-      <Container maxWidth="md">
+    <Box
+      sx={{
+        bgcolor: 'background.paper',
+        py: { xs: 6, md: 8 },
+        borderTop: '1px solid',
+        borderBottom: '1px solid',
+        borderColor: 'divider',
+      }}
+    >
+      <Container maxWidth="lg">
         <Grid container spacing={4} justifyContent="center">
-          {STAT_KEYS.map((key) => (
-            <Grid size={{ xs: 12, sm: 4 }} key={key}>
-              <Box textAlign="center">
-                <Typography variant="h4" component="p" fontWeight={700} color="primary.main">{t(key)}</Typography>
-              </Box>
+          {STATS.map(({ icon, value, labelKey }) => (
+            <Grid size={{ xs: 6, sm: 3 }} key={labelKey}>
+              <StatItemCard icon={icon} value={value} label={t(labelKey)} />
             </Grid>
           ))}
         </Grid>

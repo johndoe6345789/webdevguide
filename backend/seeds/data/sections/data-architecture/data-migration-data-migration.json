@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Data Migration",
+  "headingLevel": 2,
+  "body": "Your database schema will evolve as your application grows. Schema migrations are version-controlled files that describe each change to your database structure, allowing you to apply and roll back changes safely."
+}

@@ -1,0 +1,80 @@
+{
+  "type": "accordion",
+  "title": "Essential Hooks: useEffect, useRef, useMemo, useCallback",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "Hooks are functions that let you use React features in function components. Beyond `useState`, the most important hooks are `useEffect` (side effects), `useRef` (mutable refs), `useMemo` (memoized values), and `useCallback` (memoized functions)."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "useEffect",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "tsx",
+              "filename": "useEffect-examples.tsx",
+              "code": "import { useState, useEffect } from 'react';\n\nfunction UserProfile({ userId }: { userId: number }) {\n  const [user, setUser] = useState<User | null>(null);\n  const [loading, setLoading] = useState(true);\n\n  // Fetch data when userId changes\n  useEffect(() => {\n    let cancelled = false; // Prevent state updates on unmounted component\n\n    async function loadUser() {\n      setLoading(true);\n      try {\n        const res = await fetch(`/api/users/${userId}`);\n        const data = await res.json();\n        if (!cancelled) {\n          setUser(data);\n        }\n      } finally {\n        if (!cancelled) {\n          setLoading(false);\n        }\n      }\n    }\n\n    loadUser();\n\n    // Cleanup: runs when userId changes or component unmounts\n    return () => {\n      cancelled = true;\n    };\n  }, [userId]); // Re-run when userId changes\n\n  if (loading) return <p>Loading...</p>;\n  if (!user) return <p>User not found.</p>;\n  return <h1>{user.name}</h1>;\n}"
+            },
+            {
+              "type": "table",
+              "heading": "useEffect dependency array",
+              "headers": [
+                "Pattern",
+                "When it runs"
+              ],
+              "rows": [
+                [
+                  "useEffect(fn)",
+                  "After every render"
+                ],
+                [
+                  "useEffect(fn, [])",
+                  "Once on mount"
+                ],
+                [
+                  "useEffect(fn, [a, b])",
+                  "When a or b changes"
+                ],
+                [
+                  "useEffect(() => { return cleanup; }, [])",
+                  "Cleanup runs on unmount"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "label": "useRef",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "tsx",
+              "filename": "useRef-examples.tsx",
+              "code": "import { useRef, useEffect } from 'react';\n\nfunction TextInput() {\n  // useRef: access DOM elements directly\n  const inputRef = useRef<HTMLInputElement>(null);\n\n  // Focus the input on mount\n  useEffect(() => {\n    inputRef.current?.focus();\n  }, []);\n\n  return <input ref={inputRef} placeholder=\"Auto-focused!\" />;\n}\n\nfunction StopWatch() {\n  // useRef: store mutable values that do NOT trigger re-renders\n  const intervalRef = useRef<NodeJS.Timeout | null>(null);\n  const [seconds, setSeconds] = useState(0);\n\n  function start() {\n    if (intervalRef.current) return; // Already running\n    intervalRef.current = setInterval(() => {\n      setSeconds((prev) => prev + 1);\n    }, 1000);\n  }\n\n  function stop() {\n    if (intervalRef.current) {\n      clearInterval(intervalRef.current);\n      intervalRef.current = null;\n    }\n  }\n\n  return (\n    <div>\n      <p>{seconds}s</p>\n      <button onClick={start}>Start</button>\n      <button onClick={stop}>Stop</button>\n    </div>\n  );\n}"
+            }
+          ]
+        },
+        {
+          "label": "useMemo / useCallback",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "tsx",
+              "filename": "memoization.tsx",
+              "code": "import { useState, useMemo, useCallback } from 'react';\n\ninterface Product {\n  id: number;\n  name: string;\n  price: number;\n  category: string;\n}\n\nfunction ProductList({ products }: { products: Product[] }) {\n  const [search, setSearch] = useState('');\n  const [sortBy, setSortBy] = useState<'name' | 'price'>('name');\n\n  // useMemo: cache expensive computations\n  // Only recalculates when products, search, or sortBy changes\n  const filteredProducts = useMemo(() => {\n    return products\n      .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))\n      .sort((a, b) => {\n        if (sortBy === 'price') return a.price - b.price;\n        return a.name.localeCompare(b.name);\n      });\n  }, [products, search, sortBy]);\n\n  // useCallback: cache a function reference\n  // Useful when passing callbacks to memoized child components\n  const handleProductClick = useCallback((productId: number) => {\n    console.log('Clicked product:', productId);\n  }, []); // No dependencies = same function reference every render\n\n  return (\n    <div>\n      <input value={search} onChange={(e) => setSearch(e.target.value)} />\n      <p>Showing {filteredProducts.length} of {products.length} products</p>\n      {filteredProducts.map((p) => (\n        <div key={p.id} onClick={() => handleProductClick(p.id)}>\n          {p.name} - ${p.price}\n        </div>\n      ))}\n    </div>\n  );\n}"
+            },
+            {
+              "type": "alert",
+              "severity": "warning",
+              "title": "Do not over-optimize",
+              "body": "Only use `useMemo` and `useCallback` when you have measured a performance problem. Adding them everywhere adds complexity with no benefit. They are most useful for expensive calculations and callbacks passed to memoized child components (wrapped in `React.memo`)."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

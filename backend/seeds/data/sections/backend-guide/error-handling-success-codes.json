@@ -1,0 +1,22 @@
+{
+  "type": "table",
+  "heading": "Success Codes",
+  "headers": [
+    "Status Code",
+    "Description"
+  ],
+  "rows": [
+    [
+      "200 OK",
+      "Everything worked."
+    ],
+    [
+      "201 Created",
+      "A new item was successfully created."
+    ],
+    [
+      "204 No Content",
+      "Success, but nothing to send back."
+    ]
+  ]
+}

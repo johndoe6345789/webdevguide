@@ -1,0 +1,4 @@
+{
+  "type": "text",
+  "body": "A JWT token (JSON Web Token) works exactly like that wristband. When a user logs in, the backend checks the credentials and sends back a token. The frontend stores this token and includes it in every future request."
+}
