@@ -1,0 +1,5 @@
+{
+  "type": "alert",
+  "severity": "success",
+  "body": "Your first API endpoint is working. The browser made a GET request, your Flask code ran the api_hello function, and it sent back JSON data."
+}

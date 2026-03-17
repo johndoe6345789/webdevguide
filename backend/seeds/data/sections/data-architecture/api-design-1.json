@@ -1,0 +1,110 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "REST",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "REST (Representational State Transfer) uses HTTP methods and URL paths to represent operations on resources. It is the most widely used API pattern and works well for CRUD-heavy applications."
+        },
+        {
+          "type": "table",
+          "heading": "REST conventions",
+          "headers": [
+            "HTTP Method",
+            "URL",
+            "Action",
+            "Status Code"
+          ],
+          "rows": [
+            [
+              "GET",
+              "/api/posts",
+              "List all posts",
+              "200 OK"
+            ],
+            [
+              "GET",
+              "/api/posts/:id",
+              "Get one post",
+              "200 OK / 404 Not Found"
+            ],
+            [
+              "POST",
+              "/api/posts",
+              "Create a post",
+              "201 Created"
+            ],
+            [
+              "PUT",
+              "/api/posts/:id",
+              "Replace a post",
+              "200 OK"
+            ],
+            [
+              "PATCH",
+              "/api/posts/:id",
+              "Partially update a post",
+              "200 OK"
+            ],
+            [
+              "DELETE",
+              "/api/posts/:id",
+              "Delete a post",
+              "204 No Content"
+            ]
+          ]
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "REST API with Express (Flask-style for Python backends)",
+          "code": "import express from 'express';\nimport { prisma } from '../lib/prisma';\n\nconst router = express.Router();\n\n// GET /api/posts?page=1&limit=20&published=true\nrouter.get('/posts', async (req, res) => {\n  const page = Math.max(1, parseInt(req.query.page as string) || 1);\n  const limit = Math.min(100, parseInt(req.query.limit as string) || 20);\n  const published = req.query.published === 'true';\n\n  const [posts, total] = await Promise.all([\n    prisma.post.findMany({\n      where: { published },\n      include: { author: { select: { username: true } } },\n      orderBy: { createdAt: 'desc' },\n      skip: (page - 1) * limit,\n      take: limit,\n    }),\n    prisma.post.count({ where: { published } }),\n  ]);\n\n  res.json({\n    data: posts,\n    meta: { page, limit, total, totalPages: Math.ceil(total / limit) },\n  });\n});\n\n// POST /api/posts\nrouter.post('/posts', authMiddleware, async (req, res) => {\n  const { title, body, tags } = req.body;\n  const slug = title.toLowerCase().replace(/\\s+/g, '-');\n\n  const post = await prisma.post.create({\n    data: { title, slug, body, authorId: req.user.id },\n  });\n\n  res.status(201).json({ data: post });\n});\n\nexport default router;"
+        }
+      ]
+    },
+    {
+      "label": "GraphQL",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "GraphQL lets clients request exactly the data they need in a single query, eliminating over-fetching and under-fetching. The client specifies the shape of the response, and the server returns data matching that shape."
+        },
+        {
+          "type": "code",
+          "language": "graphql",
+          "filename": "GraphQL schema definition",
+          "code": "type User {\n  id: ID!\n  username: String!\n  email: String!\n  posts: [Post!]!\n}\n\ntype Post {\n  id: ID!\n  title: String!\n  body: String!\n  author: User!\n  tags: [Tag!]!\n  createdAt: String!\n}\n\ntype Tag {\n  id: ID!\n  name: String!\n}\n\ntype Query {\n  posts(page: Int, limit: Int): [Post!]!\n  post(id: ID!): Post\n  user(id: ID!): User\n}\n\ntype Mutation {\n  createPost(title: String!, body: String!): Post!\n  updatePost(id: ID!, title: String, body: String): Post!\n  deletePost(id: ID!): Boolean!\n}"
+        },
+        {
+          "type": "code",
+          "language": "graphql",
+          "filename": "Client query -- request only the fields you need",
+          "code": "query GetPostsForHomepage {\n  posts(page: 1, limit: 10) {\n    id\n    title\n    author {\n      username\n    }\n    tags {\n      name\n    }\n    createdAt\n  }\n}"
+        }
+      ]
+    },
+    {
+      "label": "tRPC",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "tRPC provides end-to-end type safety between your TypeScript backend and frontend with zero code generation. You define procedures on the server, and the client calls them with full autocompletion and type checking."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "tRPC router (server side)",
+          "code": "import { initTRPC } from '@trpc/server';\nimport { z } from 'zod';\nimport { prisma } from '../lib/prisma';\n\nconst t = initTRPC.context<Context>().create();\n\nexport const appRouter = t.router({\n  posts: t.router({\n    list: t.procedure\n      .input(z.object({\n        page: z.number().min(1).default(1),\n        limit: z.number().min(1).max(100).default(20),\n      }))\n      .query(async ({ input }) => {\n        const posts = await prisma.post.findMany({\n          where: { published: true },\n          skip: (input.page - 1) * input.limit,\n          take: input.limit,\n          orderBy: { createdAt: 'desc' },\n        });\n        return posts;\n      }),\n\n    create: t.procedure\n      .input(z.object({\n        title: z.string().min(1).max(200),\n        body: z.string().min(1),\n      }))\n      .mutation(async ({ input, ctx }) => {\n        return prisma.post.create({\n          data: { ...input, slug: slugify(input.title), authorId: ctx.user.id },\n        });\n      }),\n  }),\n});\n\nexport type AppRouter = typeof appRouter;"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "tRPC client (frontend) -- fully typed, no code generation",
+          "code": "import { trpc } from '../utils/trpc';\n\nfunction PostList() {\n  // Full autocompletion -- input and output types are inferred\n  const { data: posts, isLoading } = trpc.posts.list.useQuery({ page: 1, limit: 10 });\n\n  const createPost = trpc.posts.create.useMutation({\n    onSuccess: () => utils.posts.list.invalidate(),\n  });\n\n  if (isLoading) return <Spinner />;\n\n  return (\n    <div>\n      {posts?.map((post) => (\n        <PostCard key={post.id} post={post} />  {/* post is fully typed */}\n      ))}\n    </div>\n  );\n}"
+        }
+      ]
+    }
+  ]
+}

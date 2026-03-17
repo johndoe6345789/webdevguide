@@ -1,0 +1,29 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "Bad Structure",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "filename": "project root",
+          "description": "Everything dumped into a flat structure with no organization. As the project grows, this becomes impossible to navigate.",
+          "code": "src/\n  App.tsx\n  Header.tsx\n  Footer.tsx\n  Login.tsx\n  LoginForm.tsx\n  Dashboard.tsx\n  DashboardChart.tsx\n  DashboardTable.tsx\n  UserProfile.tsx\n  UserSettings.tsx\n  api.ts\n  helpers.ts\n  utils.ts\n  types.ts\n  constants.ts\n  styles.css\n  more-styles.css\n  dashboard-styles.css\n  formatDate.ts\n  formatCurrency.ts\n  useAuth.ts\n  useApi.ts\n  Button.tsx\n  Modal.tsx\n  Table.tsx\n  ... 200 more files"
+        }
+      ]
+    },
+    {
+      "label": "Good Structure",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "text",
+          "filename": "project root",
+          "description": "Organized by feature with shared components separated. Any developer can find what they need in seconds.",
+          "code": "src/\n  components/          # Shared, reusable UI components\n    ui/\n      Button.tsx\n      Modal.tsx\n      Table.tsx\n    layout/\n      Header.tsx\n      Footer.tsx\n      Sidebar.tsx\n  features/            # Feature-specific code grouped together\n    auth/\n      LoginPage.tsx\n      LoginForm.tsx\n      useAuth.ts\n      auth.api.ts\n      auth.types.ts\n    dashboard/\n      DashboardPage.tsx\n      DashboardChart.tsx\n      DashboardTable.tsx\n      dashboard.api.ts\n    user/\n      UserProfile.tsx\n      UserSettings.tsx\n      user.api.ts\n      user.types.ts\n  hooks/               # Shared custom hooks\n    useApi.ts\n    useDebounce.ts\n  utils/               # Pure utility functions\n    formatDate.ts\n    formatCurrency.ts\n  config/              # App-wide configuration\n    constants.ts\n    routes.ts"
+        }
+      ]
+    }
+  ]
+}

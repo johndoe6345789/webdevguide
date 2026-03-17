@@ -1,0 +1,35 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "Normalized (3NF)",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "sql",
+          "filename": "Normalized schema -- no duplication",
+          "code": "-- Each entity gets its own table\nCREATE TABLE authors (\n  id   SERIAL PRIMARY KEY,\n  name VARCHAR(100) NOT NULL,\n  bio  TEXT\n);\n\nCREATE TABLE categories (\n  id   SERIAL PRIMARY KEY,\n  name VARCHAR(50) UNIQUE NOT NULL,\n  slug VARCHAR(50) UNIQUE NOT NULL\n);\n\nCREATE TABLE articles (\n  id          SERIAL PRIMARY KEY,\n  author_id   INTEGER REFERENCES authors(id),\n  category_id INTEGER REFERENCES categories(id),\n  title       VARCHAR(200) NOT NULL,\n  body        TEXT NOT NULL\n);\n\n-- To get an article with its author and category:\nSELECT a.title, a.body, au.name AS author, c.name AS category\nFROM articles a\nJOIN authors au ON a.author_id = au.id\nJOIN categories c ON a.category_id = c.id\nWHERE a.id = 42;"
+        },
+        {
+          "type": "text",
+          "body": "Pros: No duplicate data, easy to update (change author name in one place). Cons: Requires JOIN queries, which can be slower for read-heavy workloads."
+        }
+      ]
+    },
+    {
+      "label": "Denormalized",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "sql",
+          "filename": "Denormalized schema -- faster reads",
+          "code": "-- Everything in one table for fast reads\nCREATE TABLE articles (\n  id            SERIAL PRIMARY KEY,\n  title         VARCHAR(200) NOT NULL,\n  body          TEXT NOT NULL,\n  author_name   VARCHAR(100) NOT NULL,  -- duplicated from authors\n  author_bio    TEXT,                    -- duplicated from authors\n  category_name VARCHAR(50) NOT NULL,   -- duplicated from categories\n  category_slug VARCHAR(50) NOT NULL    -- duplicated from categories\n);\n\n-- No JOIN needed:\nSELECT title, body, author_name, category_name\nFROM articles WHERE id = 42;"
+        },
+        {
+          "type": "text",
+          "body": "Pros: No JOINs, very fast reads. Cons: If an author changes their name, you must update every article row. Data can become inconsistent."
+        }
+      ]
+    }
+  ]
+}

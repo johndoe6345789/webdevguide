@@ -1,0 +1,7 @@
+{
+  "type": "code",
+  "language": "tsx",
+  "filename": "frontend/src/app/[locale]/getting-started/page.tsx",
+  "description": "The standard page pattern. Copy this file, change the function name and slug, and you have a new section page.",
+  "code": "'use client';\n\nimport { useEffect } from 'react';\nimport { useAppDispatch, useAppSelector } from '@/store/hooks';\nimport { fetchSectionBySlug } from '@/store/slices/guideSlice';\nimport GuidePageLayout from '@/components/content/GuidePageLayout';\n\nexport default function GettingStartedPage() {\n  const dispatch = useAppDispatch();\n  const { currentSection, loading, error } = useAppSelector((s) => s.guide);\n\n  useEffect(() => {\n    dispatch(fetchSectionBySlug('getting-started'));\n  }, [dispatch]);\n\n  return <GuidePageLayout section={currentSection} loading={loading} error={error} />;\n}"
+}

@@ -1,0 +1,502 @@
+{
+  "title": "Writing Great Documentation",
+  "slug": "writing-documentation",
+  "description": "Write concise, useful documentation that developers actually read -- from inline comments to API docs to architecture decision records.",
+  "icon": "Description",
+  "order": 27,
+  "estimatedMinutes": 25,
+  "difficulty": "beginner",
+  "prerequisites": ["fundamentals"],
+  "keyPoints": [
+    "Write docs that developers actually read -- brevity is the soul of documentation",
+    "Code comments should explain WHY, never WHAT -- the code already tells you what it does",
+    "A README should answer five questions in under two minutes: what, how to run, how to use, how to contribute, where to get help",
+    "Architecture Decision Records capture the reasoning behind technical choices so future developers understand the why",
+    "Treat documentation as code -- version control it, review it in PRs, and test it for broken links"
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "heading": "Why Documentation Matters",
+      "headingLevel": 2,
+      "body": "If it is not documented, it does not exist. Every hour you spend writing good documentation saves ten hours of questions, onboarding confusion, and reverse-engineering. But the key word is **good**. Nobody reads a 200-page wiki. The best documentation is short, scannable, and answers the question a developer actually has."
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "The Best Documentation Is the Code Itself",
+      "body": "Good naming, strong types, and clear structure reduce the need for external documentation. Before writing a comment, ask yourself: can I rename this variable or function so the comment is unnecessary? If yes, rename it instead."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "Inline Comments",
+          "body": "Short explanations next to tricky code. Explain the WHY, not the WHAT. One or two lines max.",
+          "icon": "Code",
+          "chip": "In Code"
+        },
+        {
+          "title": "README",
+          "body": "Your project's front door. What is this, how do I run it, how do I use it. Should take under 2 minutes to read.",
+          "icon": "Home",
+          "chip": "Essential"
+        },
+        {
+          "title": "API Docs",
+          "body": "Endpoint references with request/response examples. Ideally auto-generated from code with OpenAPI/Swagger.",
+          "icon": "Api",
+          "chip": "Reference"
+        },
+        {
+          "title": "Architecture Docs",
+          "body": "High-level system design and decision records. Why did we choose this database? Why this folder structure?",
+          "icon": "AccountTree",
+          "chip": "Design"
+        },
+        {
+          "title": "Changelogs",
+          "body": "What changed between versions. Keep a CHANGELOG.md so users and developers know what shipped.",
+          "icon": "History",
+          "chip": "Tracking"
+        },
+        {
+          "title": "Runbooks",
+          "body": "Step-by-step playbooks for incidents. When the database is down at 2am, you want a checklist, not a novel.",
+          "icon": "Checklist",
+          "chip": "Operations"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Code Comments -- The Art of Saying Less",
+      "headingLevel": 2,
+      "body": "Comments should explain **why** the code exists, not **what** it does. The code already tells you what it does -- if it does not, the code needs rewriting, not more comments. Every comment is a maintenance burden: when the code changes and the comment does not, you now have a lie in your codebase."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Bad Comments",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "typescript",
+              "filename": "bad-comments.ts",
+              "description": "These comments add no value. They restate what the code already says, clutter the file, and go stale quickly.",
+              "code": "// Increment i by 1\ni += 1;\n\n// This function gets users from the database\nfunction getUsers() {\n  return db.query('SELECT * FROM users');\n}\n\n// Commented out because it might be needed later\n// function oldCalculation(x: number) {\n//   return x * 0.85 + TAX_RATE;\n// }\n// function olderCalculation(x: number) {\n//   return x * 0.9;\n// }\n\n// TODO: fix this later\nconst result = data.filter((d) => d.status !== 'inactive');\n\n/**\n * ============================================\n * Function: processOrder\n * Author: John Smith\n * Date: 2024-01-15\n * Description: This function processes an order\n * Parameters: order - the order to process\n * Returns: the processed order\n * ============================================\n */\nfunction processOrder(order: Order): ProcessedOrder {\n  // ...\n}"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "filename": "bad_comments.py",
+              "description": "The same anti-patterns in Python. Obvious comments, dead code, and vague TODOs.",
+              "code": "# Set x to 5\nx = 5\n\n# Loop through the list\nfor item in items:\n    # Check if item is valid\n    if item.is_valid():\n        # Process the item\n        process(item)\n\n# This might break, not sure why\ntry:\n    result = calculate_total(cart)\nexcept Exception:\n    pass  # TODO: handle this"
+            }
+          ]
+        },
+        {
+          "label": "Good Comments",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "typescript",
+              "filename": "good-comments.ts",
+              "description": "These comments explain WHY -- business logic, workarounds, non-obvious decisions, and linked issue references.",
+              "code": "// Retry with exponential backoff to handle Stripe rate limits (max 100 req/sec)\nfor (let attempt = 0; attempt < MAX_RETRIES; attempt++) {\n  try {\n    return await stripe.charges.create(charge);\n  } catch (err) {\n    if (attempt === MAX_RETRIES - 1) throw err;\n    await sleep(Math.pow(2, attempt) * 1000);\n  }\n}\n\n// No comment needed -- the function name says it all\nfunction getUsersByRole(role: UserRole): Promise<User[]> {\n  return db.users.findMany({ where: { role } });\n}\n\n// Deleted oldCalculation() -- see git history at commit abc123 if needed\n\n// TODO(#142): Switch to batch API once Stripe resolves rate limit issue\n// Tracking: https://github.com/our-org/app/issues/142\nconst result = data.filter((d) => d.status !== 'inactive');\n\n// No giant header block needed -- TypeScript types document the contract\nfunction processOrder(order: Order): ProcessedOrder {\n  // ...\n}"
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "filename": "good_comments.py",
+              "description": "Python comments that add real value -- explaining business rules, workarounds, and linking to references.",
+              "code": "MAX_CONNECTIONS = 5  # Heroku free tier limit, upgrade plan to increase\n\n# We process items in reverse because the payment gateway\n# requires line items in descending price order (API quirk)\nfor item in sorted(items, key=lambda i: i.price, reverse=True):\n    gateway.add_line_item(item)\n\n# HACK: The PDF library segfaults on empty strings.\n# Fixed upstream in v3.2 -- remove this guard after upgrading.\n# See: https://github.com/pdf-lib/issues/847\ntry:\n    result = calculate_total(cart)\nexcept PdfError as e:\n    logger.error(\"PDF generation failed\", exc_info=e)\n    raise OrderProcessingError(\"Could not generate receipt\") from e"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "Outdated Comments Are Worse Than No Comments",
+      "body": "When you change the code, update the comment. A comment that contradicts the code is actively harmful -- the next developer will trust the comment, not the code, and waste hours debugging the wrong thing."
+    },
+    {
+      "type": "text",
+      "heading": "JSDoc and Python Docstrings",
+      "headingLevel": 2,
+      "body": "For public APIs and library code, structured documentation strings are essential. They power IDE tooltips, auto-generated docs, and help other developers use your code without reading the implementation. But keep them focused -- document the contract (inputs, outputs, edge cases), not the implementation."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "src/services/billing.ts",
+      "description": "A well-written JSDoc comment for a public API function. Note how TypeScript types handle parameter types, so JSDoc focuses on behavior and edge cases.",
+      "code": "/**\n * Calculate the prorated charge when a user upgrades mid-billing cycle.\n *\n * @param currentPlan - The plan the user is currently on\n * @param newPlan - The plan the user is upgrading to\n * @param daysRemaining - Days left in the current billing cycle\n * @returns The prorated amount in cents (never negative)\n * @throws {InvalidPlanError} If newPlan costs less than currentPlan\n *\n * @example\n * ```ts\n * const charge = calculateProration(\n *   { id: 'basic', priceInCents: 1000 },\n *   { id: 'pro', priceInCents: 3000 },\n *   15\n * );\n * // charge === 985 (cents)\n * ```\n */\nexport function calculateProration(\n  currentPlan: Plan,\n  newPlan: Plan,\n  daysRemaining: number\n): number {\n  if (newPlan.priceInCents < currentPlan.priceInCents) {\n    throw new InvalidPlanError('Use calculateRefund() for downgrades');\n  }\n  const dailyDiff = (newPlan.priceInCents - currentPlan.priceInCents) / 30;\n  return Math.max(0, Math.round(dailyDiff * daysRemaining));\n}"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "backend/services/billing.py",
+      "description": "Google-style Python docstring for a service function. Concise but covers all edge cases a caller needs to know.",
+      "code": "def calculate_proration(\n    current_plan: Plan,\n    new_plan: Plan,\n    days_remaining: int,\n) -> int:\n    \"\"\"Calculate the prorated charge for a mid-cycle plan upgrade.\n\n    Args:\n        current_plan: The user's current subscription plan.\n        new_plan: The plan being upgraded to. Must cost more than current_plan.\n        days_remaining: Days left in the current 30-day billing cycle.\n\n    Returns:\n        Prorated charge in cents, always non-negative.\n\n    Raises:\n        InvalidPlanError: If new_plan costs less than current_plan.\n            Use calculate_refund() for downgrades instead.\n\n    Example:\n        >>> charge = calculate_proration(basic_plan, pro_plan, 15)\n        >>> assert charge == 985  # cents\n    \"\"\"\n    if new_plan.price_in_cents < current_plan.price_in_cents:\n        raise InvalidPlanError(\"Use calculate_refund() for downgrades\")\n    daily_diff = (new_plan.price_in_cents - current_plan.price_in_cents) / 30\n    return max(0, round(daily_diff * days_remaining))"
+    },
+    {
+      "type": "table",
+      "heading": "JSDoc Tags Reference",
+      "headers": ["Tag", "Purpose", "When to Use"],
+      "rows": [
+        ["@param", "Describe a function parameter", "Always for public APIs, skip for obvious params"],
+        ["@returns", "Describe the return value", "When the return value is not obvious from the type"],
+        ["@throws", "Document exceptions the function can throw", "Always -- callers need to know what to catch"],
+        ["@example", "Show a usage example with expected output", "For any function that is not immediately obvious"],
+        ["@deprecated", "Mark as deprecated with migration path", "When replacing with a new API"],
+        ["@see", "Link to related functions or external docs", "When functions work together as a group"],
+        ["@internal", "Mark as not part of the public API", "For helper functions that consumers should not use"]
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "TypeScript Types Replace Most JSDoc",
+      "body": "If your function signature is `function getUser(id: string): Promise<User>`, you do not need @param or @returns annotations for the types. Save JSDoc for describing behavior, edge cases, and examples. Let the type system do the boring work."
+    },
+    {
+      "type": "text",
+      "heading": "README -- Your Project's Front Door",
+      "headingLevel": 2,
+      "body": "A developer lands on your repo. They have 60 seconds of attention. Your README must answer five questions fast: **What** is this? **How** do I run it? **How** do I use it? **How** do I contribute? **Where** do I get help? If your README cannot answer those in under two minutes, it is failing."
+    },
+    {
+      "type": "step",
+      "step": 1,
+      "title": "Title and One-Line Description",
+      "body": "Start with the project name and a single sentence that explains what it does. Not how it works. Not the tech stack. Just what value it provides.",
+      "code": "# InvoiceBot\n\nAutomatically generate and send PDF invoices from your Stripe transactions.",
+      "language": "markdown"
+    },
+    {
+      "type": "step",
+      "step": 2,
+      "title": "Quick Start (3-5 Commands)",
+      "body": "Get the developer from zero to running in under a minute. Clone, install, configure, run. That is it.",
+      "code": "## Quick Start\n\n```bash\ngit clone https://github.com/your-org/invoicebot.git\ncd invoicebot\ncp .env.example .env          # Add your Stripe key\nnpm install\nnpm run dev                    # http://localhost:3000\n```",
+      "language": "markdown"
+    },
+    {
+      "type": "step",
+      "step": 3,
+      "title": "Usage Examples",
+      "body": "Show the two or three most common things a developer will do with your project. Real code, real output.",
+      "code": "## Usage\n\n```bash\n# Generate an invoice for a specific charge\ninvoicebot generate --charge ch_1234 --output invoice.pdf\n\n# Send all pending invoices\ninvoicebot send --pending --dry-run   # Preview first\ninvoicebot send --pending              # Actually send\n```",
+      "language": "markdown"
+    },
+    {
+      "type": "step",
+      "step": 4,
+      "title": "Configuration Reference",
+      "body": "List environment variables and settings in a table. Developers should not have to read source code to find configuration options.",
+      "code": "## Configuration\n\n| Variable | Required | Default | Description |\n|----------|----------|---------|-------------|\n| `STRIPE_SECRET_KEY` | Yes | -- | Your Stripe API secret key |\n| `SMTP_HOST` | Yes | -- | Email server hostname |\n| `INVOICE_DIR` | No | `./invoices` | Output directory for PDFs |\n| `LOG_LEVEL` | No | `info` | Logging verbosity (debug, info, warn, error) |",
+      "language": "markdown"
+    },
+    {
+      "type": "step",
+      "step": 5,
+      "title": "Contributing and Help Links",
+      "body": "Point developers to the right place. Do not duplicate the contributing guide in the README -- just link to it.",
+      "code": "## Contributing\n\nSee [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup and guidelines.\n\n## Help\n\n- **Bug reports**: [Open an issue](https://github.com/your-org/invoicebot/issues)\n- **Questions**: [Discussions](https://github.com/your-org/invoicebot/discussions)\n- **Security**: Email security@your-org.com (do not open a public issue)",
+      "language": "markdown"
+    },
+    {
+      "type": "alert",
+      "severity": "error",
+      "title": "Do Not Write a 500-Line README",
+      "body": "If your README is longer than a few scrolls, split it up. Put detailed setup in CONTRIBUTING.md, architecture in ARCHITECTURE.md, and API reference in its own docs site. The README is a landing page, not an encyclopedia."
+    },
+    {
+      "type": "text",
+      "heading": "API Documentation",
+      "headingLevel": 2,
+      "body": "API docs should be machine-readable AND human-readable. OpenAPI (formerly Swagger) is the standard -- you define your API in a structured format, and tools generate interactive docs, client SDKs, and tests from it. The best approach is generating the spec from your code so it never goes stale."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "backend/routes/invoices.py",
+      "description": "A Flask API endpoint with a docstring structured for auto-generating OpenAPI documentation using flask-smorest or similar tools.",
+      "code": "@app.route('/api/invoices', methods=['POST'])\ndef create_invoice():\n    \"\"\"Create a new invoice from a Stripe charge.\n\n    ---\n    tags:\n      - Invoices\n    requestBody:\n      required: true\n      content:\n        application/json:\n          schema:\n            type: object\n            required: [charge_id, recipient_email]\n            properties:\n              charge_id:\n                type: string\n                example: \"ch_1N2abc\"\n              recipient_email:\n                type: string\n                format: email\n              due_date:\n                type: string\n                format: date\n                description: \"Defaults to 30 days from now\"\n    responses:\n      201:\n        description: Invoice created successfully\n      400:\n        description: Invalid charge_id or email format\n      404:\n        description: Stripe charge not found\n    \"\"\"\n    data = request.get_json()\n    invoice = InvoiceService.create(\n        charge_id=data['charge_id'],\n        email=data['recipient_email'],\n        due_date=data.get('due_date'),\n    )\n    return jsonify(invoice.to_dict()), 201"
+    },
+    {
+      "type": "code",
+      "language": "yaml",
+      "filename": "docs/openapi.yaml",
+      "description": "The equivalent OpenAPI spec for the same endpoint. This YAML can power Swagger UI, Redoc, or Postman collections.",
+      "code": "openapi: 3.0.3\ninfo:\n  title: InvoiceBot API\n  version: 1.0.0\n  description: Generate and manage PDF invoices from Stripe charges.\n\npaths:\n  /api/invoices:\n    post:\n      summary: Create a new invoice\n      tags: [Invoices]\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema:\n              type: object\n              required: [charge_id, recipient_email]\n              properties:\n                charge_id:\n                  type: string\n                  example: ch_1N2abc\n                recipient_email:\n                  type: string\n                  format: email\n                due_date:\n                  type: string\n                  format: date\n      responses:\n        '201':\n          description: Invoice created\n          content:\n            application/json:\n              schema:\n                $ref: '#/components/schemas/Invoice'\n        '400':\n          description: Validation error\n        '404':\n          description: Stripe charge not found"
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Manual API Docs",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Hand-written API docs in markdown or a wiki. Easy to start but impossible to keep in sync with the code. Every time you change an endpoint, you have to remember to update the docs separately. You will forget."
+            },
+            {
+              "type": "list",
+              "items": [
+                "Pros: No tooling needed, familiar format, easy to customize",
+                "Cons: Goes stale instantly, no validation, no interactive testing",
+                "Best for: Internal tools with 5 or fewer endpoints"
+              ],
+              "ordered": false
+            }
+          ]
+        },
+        {
+          "label": "Auto-Generated (Swagger)",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Generate OpenAPI specs from your code using annotations or decorators. Swagger UI gives developers an interactive playground to test endpoints directly in the browser. The docs are always in sync because they come from the source code."
+            },
+            {
+              "type": "list",
+              "items": [
+                "Pros: Always accurate, interactive testing, generates client SDKs",
+                "Cons: Requires setup, annotations can clutter code",
+                "Best for: Any API with more than a handful of endpoints"
+              ],
+              "ordered": false
+            }
+          ]
+        },
+        {
+          "label": "Postman Collections",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Postman collections bundle API requests with examples, tests, and environment variables. They are great for sharing runnable API examples with your team and can be version-controlled as JSON files."
+            },
+            {
+              "type": "list",
+              "items": [
+                "Pros: Runnable examples, team collaboration, environment management",
+                "Cons: Separate from code, can go stale, vendor lock-in",
+                "Best for: Teams that already use Postman for API testing"
+              ],
+              "ordered": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "list",
+      "heading": "Every API Endpoint Doc Needs",
+      "items": [
+        "HTTP method and URL path (e.g., POST /api/invoices)",
+        "One-line description of what the endpoint does",
+        "Request body or query parameters with types and whether they are required",
+        "Response format with example JSON for success and error cases",
+        "Error codes and what they mean (400 vs 404 vs 422)",
+        "A working curl or fetch example that a developer can copy and run"
+      ],
+      "ordered": false
+    },
+    {
+      "type": "text",
+      "heading": "Architecture Decision Records (ADRs)",
+      "headingLevel": 2,
+      "body": "When you make a significant technical decision -- choosing a database, picking a framework, deciding on a folder structure -- write it down. Six months from now, someone (probably you) will ask \"why did we do it this way?\" and the answer should not be \"I think Dave knew but he left the company.\""
+    },
+    {
+      "type": "code",
+      "language": "markdown",
+      "filename": "docs/adr/template.md",
+      "description": "A simple ADR template. Keep it under one page. The goal is to capture the decision and the reasoning, not write a thesis.",
+      "code": "# ADR-NNN: Title of Decision\n\n**Date:** YYYY-MM-DD\n**Status:** Proposed | Accepted | Deprecated | Superseded by ADR-XXX\n\n## Context\n\nWhat is the problem or situation that requires a decision?\nKeep this to 2-3 sentences.\n\n## Decision\n\nWhat did we decide to do? State it clearly in one sentence,\nthen add 2-3 bullets of supporting detail if needed.\n\n## Consequences\n\n### Positive\n- What gets better because of this decision?\n\n### Negative\n- What trade-offs are we accepting?\n- What becomes harder?\n\n### Risks\n- What could go wrong?"
+    },
+    {
+      "type": "code",
+      "language": "markdown",
+      "filename": "docs/adr/001-json-file-database.md",
+      "description": "A real ADR example from this web development guide -- explaining why JSON files were chosen over a traditional database.",
+      "code": "# ADR-001: Use JSON File Database Instead of PostgreSQL\n\n**Date:** 2024-06-15\n**Status:** Accepted\n\n## Context\n\nThis project is a learning guide with static content. The data\n(sections, blocks, code examples) changes only when developers\nupdate the guide, not at runtime. We need to choose a storage\napproach.\n\n## Decision\n\nStore all content as JSON seed files that load into memory on\nserver start. No external database.\n\n## Consequences\n\n### Positive\n- Zero infrastructure: no database to provision, back up, or monitor\n- Content is version-controlled alongside code in git\n- New contributors can add sections by editing JSON, no SQL needed\n- Deployments are a single process, no database migrations\n\n### Negative\n- Cannot handle user-generated content (no write path)\n- All data must fit in memory (fine for hundreds of sections)\n- No query language -- filtering is done in application code\n\n### Risks\n- If the guide grows beyond thousands of sections, we will need\n  to migrate to a real database (see ADR-002 for the migration plan)"
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "ADRs Are Onboarding Gold",
+      "body": "ADRs are especially valuable when onboarding new team members. Instead of explaining every architectural choice verbally, point them to the docs/adr/ folder. They will understand not just what you built, but why you built it that way."
+    },
+    {
+      "type": "text",
+      "heading": "Changelog and Release Notes",
+      "headingLevel": 2,
+      "body": "Keep a changelog. When a user asks \"what changed in version 2.3?\" or a developer wonders \"when did we add dark mode?\", the changelog has the answer. Follow the Keep a Changelog format -- it groups changes into categories that make scanning easy."
+    },
+    {
+      "type": "code",
+      "language": "markdown",
+      "filename": "CHANGELOG.md",
+      "description": "A CHANGELOG.md following the Keep a Changelog format. Each release groups changes by type so readers can quickly find what they care about.",
+      "code": "# Changelog\n\nAll notable changes to this project will be documented in this file.\n\nThe format is based on [Keep a Changelog](https://keepachangelog.com/).\n\n## [2.3.0] - 2024-11-01\n\n### Added\n- Dark mode toggle in user settings\n- PDF export for invoices\n- Rate limiting on authentication endpoints (100 req/min)\n\n### Changed\n- Upgraded Stripe SDK from v12 to v14\n- Improved error messages for failed payments\n\n### Fixed\n- Invoice total rounding error on amounts over $10,000\n- Email notifications not sent for canceled subscriptions\n\n### Security\n- Patched XSS vulnerability in user profile bio field\n\n## [2.2.0] - 2024-09-15\n\n### Added\n- Webhook retry with exponential backoff\n- Admin dashboard for viewing failed payments\n\n### Deprecated\n- `GET /api/v1/charges` endpoint (use `/api/v2/payments` instead)\n\n### Removed\n- Legacy XML export format (deprecated in 2.0.0)"
+    },
+    {
+      "type": "accordion",
+      "title": "Automating Changelogs with Conventional Commits",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Conventional Commits is a commit message convention that makes it possible to auto-generate changelogs. Each commit message starts with a type prefix that maps to a changelog category. Tools like `standard-version` or `release-please` read these prefixes and generate the changelog for you."
+        },
+        {
+          "type": "code",
+          "language": "bash",
+          "filename": "terminal",
+          "description": "Conventional commit messages that auto-generate changelog entries. The type prefix (feat, fix, etc.) determines which category the change appears under.",
+          "code": "# These commit messages auto-generate changelog entries:\n\ngit commit -m \"feat: add dark mode toggle to settings page\"\n# -> Added: Dark mode toggle in settings page\n\ngit commit -m \"fix: correct rounding error in invoice totals\"\n# -> Fixed: Correct rounding error in invoice totals\n\ngit commit -m \"feat!: replace XML export with JSON export\"\n# -> BREAKING CHANGE: Replace XML export with JSON export\n\ngit commit -m \"chore: upgrade eslint to v9\"\n# -> Not included in changelog (chore is internal)\n\ngit commit -m \"docs: update API authentication guide\"\n# -> Not included in changelog (docs are internal)"
+        },
+        {
+          "type": "table",
+          "headers": ["Prefix", "Changelog Section", "When to Use"],
+          "rows": [
+            ["feat:", "Added", "A new feature visible to users"],
+            ["fix:", "Fixed", "A bug fix"],
+            ["perf:", "Changed", "A performance improvement"],
+            ["refactor:", "Not included", "Code restructuring with no behavior change"],
+            ["docs:", "Not included", "Documentation-only changes"],
+            ["chore:", "Not included", "Build scripts, CI, dependencies"],
+            ["BREAKING CHANGE:", "Removed/Changed", "Any change that breaks backward compatibility"]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Documentation as Code",
+      "headingLevel": 2,
+      "body": "Treat documentation like you treat code. Store it in version control. Review changes in pull requests. Test for broken links. Deploy it automatically. When documentation lives next to the code it describes, it is far more likely to stay up to date."
+    },
+    {
+      "type": "list",
+      "heading": "Docs-as-Code Practices",
+      "items": [
+        "Store docs in the same repo as the code they describe",
+        "Require doc updates in PRs that change public APIs",
+        "Use a linter like markdownlint to enforce consistent formatting",
+        "Run link checkers in CI to catch broken references",
+        "Deploy docs automatically on merge (GitHub Pages, Vercel, Netlify)"
+      ],
+      "ordered": false
+    },
+    {
+      "type": "cardGrid",
+      "columns": 2,
+      "cards": [
+        {
+          "title": "Docusaurus",
+          "body": "React-based docs framework from Meta. Versioning, search, and MDX support built in. Great for JavaScript/TypeScript projects.",
+          "icon": "MenuBook",
+          "chip": "React"
+        },
+        {
+          "title": "MkDocs + Material",
+          "body": "Python-based static site generator. Simple YAML config, beautiful Material theme. The go-to choice for Python projects.",
+          "icon": "AutoStories",
+          "chip": "Python"
+        },
+        {
+          "title": "Storybook",
+          "body": "Interactive component documentation. Renders your actual React, Vue, or Angular components with controls for props and states.",
+          "icon": "ViewQuilt",
+          "chip": "Components"
+        },
+        {
+          "title": "Swagger UI / Redoc",
+          "body": "Render OpenAPI specs as interactive API docs. Developers can test endpoints directly in the browser.",
+          "icon": "Api",
+          "chip": "APIs"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Runbooks and Troubleshooting Guides",
+      "headingLevel": 2,
+      "body": "When your production database stops responding at 2am, you do not want to figure things out from scratch. A runbook is a step-by-step checklist for diagnosing and resolving common incidents. Write it once, use it every time. Keep runbooks short, specific, and actionable -- this is not the time for explanations, it is the time for commands."
+    },
+    {
+      "type": "code",
+      "language": "markdown",
+      "filename": "docs/runbooks/database-connection-failures.md",
+      "description": "A runbook for database connection failures. Notice how every step has a specific command to run and a clear next action based on the result.",
+      "code": "# Runbook: Database Connection Failures\n\n**Severity:** High | **On-call team:** Backend\n**Last tested:** 2024-10-01 | **Owner:** @backend-team\n\n## Symptoms\n- Application logs show `ECONNREFUSED` or `connection timed out`\n- Health check endpoint returns 503\n- Users see \"Something went wrong\" on all pages\n\n## Diagnosis Steps\n\n### 1. Check if the database is running\n```bash\n# For managed databases (AWS RDS, Render, etc.)\naws rds describe-db-instances --db-instance-identifier prod-db \\\n  --query 'DBInstances[0].DBInstanceStatus'\n# Expected: \"available\"\n```\n\n### 2. Check connection from the application server\n```bash\n# SSH into the app server, then:\npg_isready -h $DATABASE_HOST -p 5432\n# Expected: accepting connections\n```\n\n### 3. Check connection pool exhaustion\n```bash\n# Query active connections\npsql -c \"SELECT count(*) FROM pg_stat_activity WHERE state = 'active';\"\n# If near max_connections (default 100), connections are exhausted\n```\n\n## Resolution\n\n| Cause | Fix |\n|-------|-----|\n| Database is stopped | Restart via cloud console or `aws rds start-db-instance` |\n| Connection pool full | Restart application to release stale connections |\n| Network/firewall | Check security group rules allow app server IP |\n| Credentials rotated | Update DATABASE_URL in environment variables and restart |"
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "Test Your Runbooks",
+      "body": "Have someone who did not write the runbook follow the steps during a fire drill. If they get stuck or confused at any point, the runbook needs improvement. A runbook that only works for the person who wrote it is not a runbook -- it is a personal note."
+    },
+    {
+      "type": "text",
+      "heading": "The Golden Rules of Documentation",
+      "headingLevel": 2,
+      "body": "After years of writing, reading, and cursing at documentation, these are the rules that actually matter. Print this table, tape it to your monitor, and follow it every time you write docs."
+    },
+    {
+      "type": "table",
+      "heading": "Golden Rules",
+      "headers": ["Rule", "Why", "Example"],
+      "rows": [
+        [
+          "Write for scanning, not reading",
+          "Developers do not read docs top to bottom. They scan for the heading or code block that answers their question.",
+          "Use headers, bullet points, and code blocks. Break walls of text into short paragraphs."
+        ],
+        [
+          "One source of truth",
+          "Duplicated information will diverge. One copy will be updated, the other will not.",
+          "Link to the canonical source instead of copying. If the API spec is in OpenAPI, do not also hand-write it in the wiki."
+        ],
+        [
+          "Keep docs close to the code",
+          "The further docs are from the code, the faster they go stale.",
+          "Put API docs in the route file as docstrings. Put component docs in Storybook. Put ADRs in the repo, not in Confluence."
+        ],
+        [
+          "Use examples liberally",
+          "A three-line code example communicates more than a three-paragraph explanation.",
+          "Every API endpoint should have a curl example. Every utility function should have a usage example in its JSDoc."
+        ],
+        [
+          "Document the edges",
+          "Happy-path behavior is usually obvious. The gotchas, limits, and error cases are what developers actually need.",
+          "Document that the function throws on empty input, that the API rate-limits at 100 req/min, that dates must be UTC."
+        ],
+        [
+          "Delete stale docs",
+          "Wrong documentation is worse than no documentation. It sends developers down the wrong path.",
+          "When you remove a feature, delete its docs. When you change an API, update the examples. Set a quarterly reminder to audit."
+        ],
+        [
+          "Automate what you can",
+          "Generated docs cannot go stale. If a tool can produce the docs from the code, let it.",
+          "Auto-generate API docs from OpenAPI, type docs from TypeScript, and changelogs from conventional commits."
+        ],
+        [
+          "Write the doc you wish existed",
+          "When you struggle with something and finally figure it out, write it down for the next person.",
+          "Spent 3 hours debugging CORS? Write a troubleshooting entry. Figured out the deploy process? Write a runbook."
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Caching Strategies",
+  "headingLevel": 2,
+  "body": "Caching is the single biggest performance lever in web applications. The goal is to avoid repeating expensive work -- database queries, API calls, or computations -- by storing the result and reusing it."
+}

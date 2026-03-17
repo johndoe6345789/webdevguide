@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Internationalization with next-intl",
+  "headingLevel": 3,
+  "body": "The guide uses next-intl for internationalization. The routing configuration defines supported locales (currently just `en`) with `localePrefix: 'as-needed'` so English URLs do not have a `/en/` prefix. Translation strings live in `frontend/src/messages/en.json` and are loaded server-side by the request config. The `NextIntlClientProvider` in the locale layout makes translations available to all client components via the `useTranslations` hook."
+}

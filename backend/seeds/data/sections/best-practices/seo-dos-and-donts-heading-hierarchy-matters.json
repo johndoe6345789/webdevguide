@@ -1,0 +1,6 @@
+{
+  "type": "alert",
+  "severity": "warning",
+  "title": "Heading Hierarchy Matters",
+  "body": "Every page should have exactly one h1 tag. Headings must follow a logical hierarchy: h1 then h2 then h3. Do not skip levels (h1 to h3 with no h2). Do not use heading tags just to make text bigger -- use CSS for that. Screen readers and search engines use headings to understand page structure."
+}

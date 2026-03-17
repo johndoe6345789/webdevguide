@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Container from '@mui/material/Container';
@@ -18,8 +19,9 @@ export default function GlossaryPage() {
     searchText, setSearch, activeCategory, setActiveCategory,
     categories, filtered, totalCount, loading,
   } = useGlossaryPage();
+  const t = useTranslations('glossary');
 
-  if (loading) return <LoadingSpinner message="Loading glossary..." />;
+  if (loading) return <LoadingSpinner message={t('loadingGlossary')} />;
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -32,9 +34,9 @@ export default function GlossaryPage() {
       <Divider sx={{ mb: 3 }} />
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="body2" color="text.secondary">
-          {filtered.length} term{filtered.length !== 1 ? 's' : ''} found
+          {filtered.length} {filtered.length !== 1 ? t('termsPlural') : t('termSingular')} {t('found')}
         </Typography>
-        <Chip label={`${totalCount} total terms`} size="small" variant="outlined" />
+        <Chip label={t('totalTerms', { count: totalCount })} size="small" variant="outlined" />
       </Box>
       {filtered.length === 0 ? <EmptyState /> : (
         <Grid container spacing={3}>

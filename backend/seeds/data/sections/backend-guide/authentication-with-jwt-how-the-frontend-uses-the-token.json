@@ -1,0 +1,6 @@
+{
+  "type": "step",
+  "step": 5,
+  "title": "How the Frontend Uses the Token",
+  "body": "Here is the flow from the frontend's perspective:"
+}

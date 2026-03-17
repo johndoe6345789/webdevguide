@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "The App Factory Pattern",
+  "headingLevel": 3,
+  "body": "Instead of creating the Flask app at the top of a file, the app factory pattern puts it inside a function. This makes testing easier and lets you create multiple versions of your app."
+}

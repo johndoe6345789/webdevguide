@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Database Types",
+  "headingLevel": 2,
+  "body": "The first architectural decision is choosing a database. There is no single best database -- each type excels at different workloads. Most production applications use more than one."
+}

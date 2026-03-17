@@ -1,0 +1,5 @@
+{
+  "type": "alert",
+  "severity": "info",
+  "body": "What is an interceptor? A checkpoint that every request passes through. Here we use it to automatically attach the JWT token."
+}

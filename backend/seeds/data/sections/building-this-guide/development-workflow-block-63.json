@@ -1,0 +1,7 @@
+{
+  "type": "code",
+  "language": "bash",
+  "filename": "terminal",
+  "description": "Start the full stack with Docker in development mode.",
+  "code": "# Development (with hot reload via volume mounts)\ndocker compose -f docker-compose.dev.yml up --build\n\n# Production (builds optimized images)\ndocker compose up --build\n\n# Stop everything\ndocker compose down"
+}

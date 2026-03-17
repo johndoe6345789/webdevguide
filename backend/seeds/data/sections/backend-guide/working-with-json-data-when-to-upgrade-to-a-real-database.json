@@ -1,0 +1,6 @@
+{
+  "type": "step",
+  "step": 3,
+  "title": "When to Upgrade to a Real Database",
+  "body": "JSON files work great for small applications, but consider a database when your needs grow."
+}

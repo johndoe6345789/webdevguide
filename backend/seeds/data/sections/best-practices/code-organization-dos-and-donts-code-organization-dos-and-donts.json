@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Code Organization Do's and Don'ts",
+  "headingLevel": 2,
+  "body": "How you organize your files and folders has a huge impact on how quickly new developers can understand your project. A messy structure forces people to hunt through directories guessing where things live. A clean structure makes the codebase self-documenting."
+}

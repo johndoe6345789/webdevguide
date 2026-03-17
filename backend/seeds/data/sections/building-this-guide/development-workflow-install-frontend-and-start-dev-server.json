@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 3,
+  "title": "Install frontend and start dev server",
+  "body": "In a separate terminal, install Node.js dependencies and start the Next.js development server with hot module replacement.",
+  "code": "cd frontend\nnpm install\nnpm run dev\n# Frontend is now running at http://localhost:3000",
+  "language": "bash"
+}

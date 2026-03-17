@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 2,
+  "title": "Seed the database and start the backend",
+  "body": "The seed command reads all JSON files, resolves $ref pointers, and writes the resolved data to `backend/data/`. Then start Flask in debug mode for auto-reload on code changes.",
+  "code": "cd backend\nexport FLASK_APP=app:create_app\nflask seed-db\nflask run --debug\n# Backend is now running at http://localhost:5000",
+  "language": "bash"
+}

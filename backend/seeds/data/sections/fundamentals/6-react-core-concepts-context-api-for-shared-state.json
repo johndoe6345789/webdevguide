@@ -1,0 +1,21 @@
+{
+  "type": "accordion",
+  "title": "Context API for Shared State",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "When many components at different nesting levels need the same data (theme, current user, language), passing props through every level becomes painful. **Context** lets you broadcast data to any component in the tree without explicit prop passing."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "ThemeContext.tsx",
+      "code": "import { createContext, useContext, useState, ReactNode } from 'react';\n\n// 1. Define the context type\ninterface ThemeContextType {\n  theme: 'light' | 'dark';\n  toggleTheme: () => void;\n}\n\n// 2. Create the context\nconst ThemeContext = createContext<ThemeContextType | null>(null);\n\n// 3. Create a provider component\nfunction ThemeProvider({ children }: { children: ReactNode }) {\n  const [theme, setTheme] = useState<'light' | 'dark'>('light');\n\n  function toggleTheme() {\n    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));\n  }\n\n  return (\n    <ThemeContext.Provider value={{ theme, toggleTheme }}>\n      {children}\n    </ThemeContext.Provider>\n  );\n}\n\n// 4. Create a custom hook for easy access\nfunction useTheme(): ThemeContextType {\n  const context = useContext(ThemeContext);\n  if (!context) {\n    throw new Error('useTheme must be used within a ThemeProvider');\n  }\n  return context;\n}\n\n// 5. Use it in any component\nfunction ThemeToggle() {\n  const { theme, toggleTheme } = useTheme();\n  return (\n    <button onClick={toggleTheme}>\n      Current theme: {theme}\n    </button>\n  );\n}\n\n// 6. Wrap your app with the provider\nfunction App() {\n  return (\n    <ThemeProvider>\n      <ThemeToggle />\n      {/* All children can access theme without props */}\n    </ThemeProvider>\n  );\n}\n\nexport { ThemeProvider, useTheme };"
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "body": "Context is great for low-frequency updates like theme, locale, and authentication. For frequently changing state (like form inputs or animations), prefer local `useState` or a state management library to avoid unnecessary re-renders."
+    }
+  ]
+}

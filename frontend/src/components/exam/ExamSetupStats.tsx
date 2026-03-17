@@ -10,7 +10,10 @@ interface ExamSetupStatsProps {
   avgScore: number;
 }
 
-export default function ExamSetupStats({ totalAttempts, bestScore, avgScore }: ExamSetupStatsProps) {
+export default function ExamSetupStats(
+  { totalAttempts, bestScore, avgScore }:
+  ExamSetupStatsProps
+) {
   const items = [
     { value: totalAttempts, label: 'Total Attempts', color: 'primary.main' },
     { value: `${bestScore}%`, label: 'Best Score', color: 'success.main' },

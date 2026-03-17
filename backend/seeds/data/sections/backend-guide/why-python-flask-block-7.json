@@ -1,0 +1,14 @@
+{
+  "type": "cardGrid",
+  "columns": 2,
+  "cards": [
+    {
+      "title": "What is Flask?",
+      "body": "Flask is a micro-framework for Python. \"Micro\" does not mean it is weak — it means it does not force you to use things you do not need. Think of Flask like a basic kitchen with a stove and a sink. You can cook a great meal with just that."
+    },
+    {
+      "title": "Why not Django, Express, etc.?",
+      "body": "Django comes with a lot of built-in features you may not need yet. Express.js uses JavaScript, but learning Python makes you more well-rounded. Flask is also easier to read for beginners."
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 2,
+  "title": "Create the renderer component",
+  "body": "Create `frontend/src/components/content/VideoBlockRenderer.tsx` that accepts the block props and renders the content.",
+  "code": "'use client';\n\nimport Box from '@mui/material/Box';\nimport Typography from '@mui/material/Typography';\nimport type { VideoBlock } from '@/types/content';\n\nexport default function VideoBlockRenderer({ src, title, caption }: VideoBlock) {\n  return (\n    <Box>\n      <Typography variant=\"h6\">{title}</Typography>\n      <video src={src} controls style={{ width: '100%' }} />\n      {caption && (\n        <Typography variant=\"caption\" color=\"text.secondary\">\n          {caption}\n        </Typography>\n      )}\n    </Box>\n  );\n}",
+  "language": "tsx"
+}

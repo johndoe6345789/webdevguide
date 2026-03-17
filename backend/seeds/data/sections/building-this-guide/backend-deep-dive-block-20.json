@@ -1,0 +1,7 @@
+{
+  "type": "code",
+  "language": "python",
+  "filename": "backend/entrypoint.py",
+  "description": "Seeds the database on startup, then starts gunicorn for production serving.",
+  "code": "#!/usr/bin/env python3\nimport os, subprocess, sys\n\ndef main():\n    # Seed the database on startup\n    print(\"Seeding database...\")\n    subprocess.run(\n        [sys.executable, \"-m\", \"flask\", \"seed-db\"],\n        check=True,\n        env={**os.environ, \"FLASK_APP\": \"app:create_app\"},\n    )\n    print(\"Database seeded successfully.\")\n\n    # Start gunicorn\n    host = os.environ.get(\"HOST\", \"0.0.0.0\")\n    port = os.environ.get(\"PORT\", \"5000\")\n    workers = os.environ.get(\"WEB_CONCURRENCY\", \"2\")\n    subprocess.run([\n        \"gunicorn\",\n        \"--bind\", f\"{host}:{port}\",\n        \"--workers\", workers,\n        \"app:create_app()\",\n    ], check=True)\n\nif __name__ == \"__main__\":\n    main()"
+}

@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "API Client",
+  "headingLevel": 3,
+  "body": "The API client is a thin wrapper around Axios. It creates a single axios instance with the base URL from the `NEXT_PUBLIC_API_URL` environment variable (defaulting to `http://localhost:5000/api`). Three API objects -- `guideApi`, `examApi`, and `glossaryApi` -- provide typed methods for every endpoint."
+}

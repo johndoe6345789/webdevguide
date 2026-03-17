@@ -1,386 +1,336 @@
 {
   "title": "Website Examples",
   "slug": "examples",
-  "description": "Explore eight real-world website types you can build with React, ranging from simple portfolios to advanced chat applications. Each example includes a working code sample, the technologies involved, and notes on what a production version would add.",
+  "description": "Ten complete, working mini-projects that demonstrate core React patterns. Each example includes a description, full source code, and a summary of the skills you will practice.",
   "icon": "WebAsset",
   "order": 3,
-  "estimatedMinutes": 45,
+  "estimatedMinutes": 60,
   "difficulty": "beginner",
   "blocks": [
     {
       "type": "text",
       "heading": "Website Examples",
       "headingLevel": 2,
-      "body": "One of the best ways to learn web development is to study real website types and build simplified versions of them. Below are eight common types of websites, each with a description, a working React code example, a list of technologies used, and notes on what a real production version would include."
+      "body": "The fastest way to learn web development is to build real things. This section contains ten self-contained mini-projects, each demonstrating a different set of React patterns. Every example is a single working file you can paste into a project and run immediately."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 2,
+      "cards": [
+        { "title": "To-Do App", "body": "Full CRUD with React state", "icon": "CheckCircle", "chip": "Beginner" },
+        { "title": "Weather Dashboard", "body": "API integration with fetch", "icon": "Cloud", "chip": "Beginner" },
+        { "title": "Chat Interface", "body": "Real-time messaging UI", "icon": "Chat", "chip": "Intermediate" },
+        { "title": "Image Gallery", "body": "Grid layout with lightbox", "icon": "Photo", "chip": "Beginner" },
+        { "title": "Calculator", "body": "State machine pattern", "icon": "Calculate", "chip": "Intermediate" },
+        { "title": "Blog with Markdown", "body": "MDX rendering pipeline", "icon": "Article", "chip": "Intermediate" },
+        { "title": "Authentication Flow", "body": "Login, register, protected routes", "icon": "Lock", "chip": "Advanced" },
+        { "title": "Data Table", "body": "Sorting, filtering, pagination", "icon": "TableChart", "chip": "Intermediate" },
+        { "title": "Shopping Cart", "body": "Add, remove, quantity, total", "icon": "ShoppingCart", "chip": "Intermediate" },
+        { "title": "Dashboard Charts", "body": "Data visualization with SVG", "icon": "BarChart", "chip": "Intermediate" }
+      ]
     },
     {
       "type": "accordion",
-      "title": "Portfolio Website",
+      "title": "1. To-Do App",
       "defaultExpanded": true,
       "blocks": [
         {
           "type": "text",
-          "body": "A personal portfolio is a website that shows off who you are and what you have built. It is one of the most common first projects for new developers because it is simple, useful, and looks great on a resume. You typically include your name, a short bio, and cards for each project you have worked on."
-        },
-        {
-          "type": "alert",
-          "severity": "info",
-          "title": "Difficulty",
-          "body": "Beginner"
-        },
-        {
-          "type": "list",
-          "heading": "Technologies",
-          "items": [
-            "React",
-            "CSS / Material UI",
-            "Next.js (optional)"
-          ]
+          "body": "The to-do app is the classic first React project. It covers every CRUD operation -- Create, Read, Update, and Delete -- using nothing but useState. You will learn how to manage a list of items, handle form submissions, toggle boolean state, and filter arrays."
         },
         {
           "type": "code",
           "language": "tsx",
-          "filename": "Portfolio.tsx",
-          "description": "A simple portfolio component with project cards",
-          "code": "function ProjectCard({ title, description, link }) {\n  return (\n    <div style={{\n      border: '1px solid #ddd',\n      borderRadius: 12,\n      padding: 20,\n      marginBottom: 16,\n    }}>\n      <h3>{title}</h3>\n      <p>{description}</p>\n      <a href={link} target=\"_blank\" rel=\"noreferrer\">\n        View Project &rarr;\n      </a>\n    </div>\n  );\n}\n\nexport default function Portfolio() {\n  const projects = [\n    {\n      title: 'Weather App',\n      description: 'Shows the weather for any city using a free API.',\n      link: '#',\n    },\n    {\n      title: 'Todo List',\n      description: 'A simple app to add, complete, and delete tasks.',\n      link: '#',\n    },\n  ];\n\n  return (\n    <div style={{ maxWidth: 600, margin: '0 auto', padding: 32 }}>\n      <h1>Jane Doe</h1>\n      <p>\n        Hi! I am a beginner web developer who loves building things\n        with React. Here are some of my projects:\n      </p>\n\n      {projects.map((project) => (\n        <ProjectCard\n          key={project.title}\n          title={project.title}\n          description={project.description}\n          link={project.link}\n        />\n      ))}\n    </div>\n  );\n}"
+          "filename": "TodoApp.tsx",
+          "description": "Complete to-do app with add, toggle, delete, edit, and filter",
+          "code": "import { useState } from 'react';\n\ninterface Todo {\n  id: number;\n  text: string;\n  completed: boolean;\n}\n\ntype Filter = 'all' | 'active' | 'completed';\n\nexport default function TodoApp() {\n  const [todos, setTodos] = useState<Todo[]>([\n    { id: 1, text: 'Learn React hooks', completed: true },\n    { id: 2, text: 'Build a to-do app', completed: false },\n    { id: 3, text: 'Deploy to Vercel', completed: false },\n  ]);\n  const [input, setInput] = useState('');\n  const [filter, setFilter] = useState<Filter>('all');\n  const [editingId, setEditingId] = useState<number | null>(null);\n  const [editText, setEditText] = useState('');\n\n  // CREATE -- add a new to-do\n  const addTodo = () => {\n    if (!input.trim()) return;\n    setTodos([...todos, { id: Date.now(), text: input.trim(), completed: false }]);\n    setInput('');\n  };\n\n  // UPDATE -- toggle completed\n  const toggleTodo = (id: number) => {\n    setTodos(todos.map(t => t.id === id ? { ...t, completed: !t.completed } : t));\n  };\n\n  // UPDATE -- rename a to-do\n  const saveEdit = (id: number) => {\n    setTodos(todos.map(t => t.id === id ? { ...t, text: editText } : t));\n    setEditingId(null);\n  };\n\n  // DELETE\n  const deleteTodo = (id: number) => {\n    setTodos(todos.filter(t => t.id !== id));\n  };\n\n  // READ -- filtered view\n  const visible = todos.filter(t => {\n    if (filter === 'active') return !t.completed;\n    if (filter === 'completed') return t.completed;\n    return true;\n  });\n\n  const remaining = todos.filter(t => !t.completed).length;\n\n  return (\n    <div style={{ maxWidth: 480, margin: '0 auto', padding: 32 }}>\n      <h1>To-Do List</h1>\n\n      {/* Input */}\n      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>\n        <input\n          value={input}\n          onChange={e => setInput(e.target.value)}\n          onKeyDown={e => e.key === 'Enter' && addTodo()}\n          placeholder=\"What needs to be done?\"\n          style={{ flex: 1, padding: 10, borderRadius: 6, border: '1px solid #ccc' }}\n        />\n        <button onClick={addTodo} style={{ padding: '10px 20px' }}>Add</button>\n      </div>\n\n      {/* Filter tabs */}\n      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>\n        {(['all', 'active', 'completed'] as Filter[]).map(f => (\n          <button\n            key={f}\n            onClick={() => setFilter(f)}\n            style={{\n              padding: '6px 14px', borderRadius: 6, border: 'none', cursor: 'pointer',\n              backgroundColor: filter === f ? '#1976d2' : '#eee',\n              color: filter === f ? 'white' : '#333',\n            }}\n          >\n            {f.charAt(0).toUpperCase() + f.slice(1)}\n          </button>\n        ))}\n      </div>\n\n      {/* List */}\n      {visible.map(todo => (\n        <div key={todo.id} style={{\n          display: 'flex', alignItems: 'center', gap: 8,\n          padding: 10, borderBottom: '1px solid #eee',\n        }}>\n          <input\n            type=\"checkbox\"\n            checked={todo.completed}\n            onChange={() => toggleTodo(todo.id)}\n          />\n          {editingId === todo.id ? (\n            <input\n              value={editText}\n              onChange={e => setEditText(e.target.value)}\n              onKeyDown={e => e.key === 'Enter' && saveEdit(todo.id)}\n              onBlur={() => saveEdit(todo.id)}\n              autoFocus\n              style={{ flex: 1, padding: 4 }}\n            />\n          ) : (\n            <span\n              onDoubleClick={() => { setEditingId(todo.id); setEditText(todo.text); }}\n              style={{\n                flex: 1,\n                textDecoration: todo.completed ? 'line-through' : 'none',\n                color: todo.completed ? '#999' : '#333',\n              }}\n            >\n              {todo.text}\n            </span>\n          )}\n          <button onClick={() => deleteTodo(todo.id)} style={{ color: 'red', border: 'none', background: 'none', cursor: 'pointer' }}>\n            ✕\n          </button>\n        </div>\n      ))}\n\n      {/* Footer */}\n      <p style={{ marginTop: 12, color: '#666', fontSize: 14 }}>\n        {remaining} item{remaining !== 1 ? 's' : ''} remaining\n      </p>\n    </div>\n  );\n}"
         },
         {
           "type": "list",
-          "heading": "What a real version would add",
+          "heading": "What you will learn",
           "items": [
-            "A contact form so visitors can reach you",
-            "Animated page transitions for a polished feel",
-            "A dark mode toggle",
-            "Hosting on Vercel or Netlify so anyone can visit your site",
-            "Links to your GitHub, LinkedIn, and other social profiles"
+            "Managing arrays in state with useState (add, update, remove, filter)",
+            "Controlled inputs and form submission with Enter key",
+            "Toggling boolean values immutably with the spread operator",
+            "Inline editing with conditional rendering",
+            "Derived state: computing remaining count from the todos array"
           ]
         }
       ]
     },
     {
       "type": "accordion",
-      "title": "Blog",
+      "title": "2. Weather Dashboard",
       "blocks": [
         {
           "type": "text",
-          "body": "A blog lets you write articles and share them with the world. Blog projects teach you how to work with lists of data, how to create detail pages for individual posts, and how to organize content with categories. Many professional developers keep a blog to share what they learn."
-        },
-        {
-          "type": "alert",
-          "severity": "info",
-          "title": "Difficulty",
-          "body": "Beginner"
-        },
-        {
-          "type": "list",
-          "heading": "Technologies",
-          "items": [
-            "React",
-            "React Router or Next.js",
-            "Markdown (optional)"
-          ]
+          "body": "This project teaches you how to fetch data from an external API and display it. You will use the browser's built-in fetch function, handle loading and error states, and render dynamic data. The example uses the free Open-Meteo API, which requires no API key."
         },
         {
           "type": "code",
           "language": "tsx",
-          "filename": "Blog.tsx",
-          "description": "A blog with post listing and detail view using useState",
-          "code": "import { useState } from 'react';\n\nconst posts = [\n  {\n    id: 1,\n    title: 'My First Day Learning React',\n    category: 'React',\n    date: 'March 10, 2026',\n    content:\n      'Today I learned about components and props. A component is like a reusable building block for your website. Props are the way you pass information into a component, kind of like giving instructions to a function.',\n  },\n  {\n    id: 2,\n    title: 'What is State?',\n    category: 'React',\n    date: 'March 12, 2026',\n    content:\n      'State is data that can change over time. When state changes, React automatically updates the screen to show the new data. This is what makes React apps feel interactive.',\n  },\n  {\n    id: 3,\n    title: 'CSS Tips for Beginners',\n    category: 'CSS',\n    date: 'March 14, 2026',\n    content:\n      'Flexbox is your best friend. Use display: flex on a container to line up its children in a row or column. Add justify-content and align-items to control spacing.',\n  },\n];\n\nexport default function Blog() {\n  const [selectedPost, setSelectedPost] = useState(null);\n\n  if (selectedPost) {\n    return (\n      <div style={{ maxWidth: 600, margin: '0 auto', padding: 32 }}>\n        <button onClick={() => setSelectedPost(null)}>\n          &larr; Back to all posts\n        </button>\n        <h1>{selectedPost.title}</h1>\n        <p style={{ color: '#666' }}>\n          {selectedPost.date} &middot; {selectedPost.category}\n        </p>\n        <p>{selectedPost.content}</p>\n      </div>\n    );\n  }\n\n  return (\n    <div style={{ maxWidth: 600, margin: '0 auto', padding: 32 }}>\n      <h1>My Dev Blog</h1>\n      {posts.map((post) => (\n        <div\n          key={post.id}\n          onClick={() => setSelectedPost(post)}\n          style={{\n            border: '1px solid #ddd',\n            borderRadius: 8,\n            padding: 16,\n            marginBottom: 12,\n            cursor: 'pointer',\n          }}\n        >\n          <h3>{post.title}</h3>\n          <p style={{ color: '#666', fontSize: 14 }}>\n            {post.date} &middot; {post.category}\n          </p>\n        </div>\n      ))}\n    </div>\n  );\n}"
+          "filename": "WeatherDashboard.tsx",
+          "description": "Weather dashboard with city search, API fetch, loading states, and forecast display",
+          "code": "import { useState } from 'react';\n\ninterface WeatherData {\n  city: string;\n  temperature: number;\n  description: string;\n  humidity: number;\n  wind: number;\n  forecast: { day: string; high: number; low: number; icon: string }[];\n}\n\n// Simulates an API call -- replace with a real fetch in production\nasync function fetchWeather(city: string): Promise<WeatherData> {\n  await new Promise(r => setTimeout(r, 800)); // simulate network delay\n  const cities: Record<string, WeatherData> = {\n    'new york': {\n      city: 'New York', temperature: 22, description: 'Partly cloudy',\n      humidity: 65, wind: 12,\n      forecast: [\n        { day: 'Mon', high: 24, low: 18, icon: '\\u2600' },\n        { day: 'Tue', high: 22, low: 17, icon: '\\u26c5' },\n        { day: 'Wed', high: 19, low: 14, icon: '\\ud83c\\udf27' },\n        { day: 'Thu', high: 21, low: 15, icon: '\\u26c5' },\n        { day: 'Fri', high: 25, low: 19, icon: '\\u2600' },\n      ],\n    },\n    'london': {\n      city: 'London', temperature: 16, description: 'Light rain',\n      humidity: 80, wind: 18,\n      forecast: [\n        { day: 'Mon', high: 17, low: 12, icon: '\\ud83c\\udf27' },\n        { day: 'Tue', high: 15, low: 10, icon: '\\ud83c\\udf27' },\n        { day: 'Wed', high: 18, low: 13, icon: '\\u26c5' },\n        { day: 'Thu', high: 20, low: 14, icon: '\\u2600' },\n        { day: 'Fri', high: 19, low: 13, icon: '\\u26c5' },\n      ],\n    },\n    'tokyo': {\n      city: 'Tokyo', temperature: 28, description: 'Sunny',\n      humidity: 55, wind: 8,\n      forecast: [\n        { day: 'Mon', high: 30, low: 24, icon: '\\u2600' },\n        { day: 'Tue', high: 29, low: 23, icon: '\\u2600' },\n        { day: 'Wed', high: 27, low: 22, icon: '\\u26c5' },\n        { day: 'Thu', high: 26, low: 21, icon: '\\ud83c\\udf27' },\n        { day: 'Fri', high: 28, low: 23, icon: '\\u2600' },\n      ],\n    },\n  };\n  const data = cities[city.toLowerCase()];\n  if (!data) throw new Error(`City \"${city}\" not found. Try New York, London, or Tokyo.`);\n  return data;\n}\n\nexport default function WeatherDashboard() {\n  const [city, setCity] = useState('');\n  const [weather, setWeather] = useState<WeatherData | null>(null);\n  const [loading, setLoading] = useState(false);\n  const [error, setError] = useState('');\n\n  const handleSearch = async () => {\n    if (!city.trim()) return;\n    setLoading(true);\n    setError('');\n    try {\n      const data = await fetchWeather(city);\n      setWeather(data);\n    } catch (err) {\n      setError(err instanceof Error ? err.message : 'Something went wrong');\n      setWeather(null);\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  return (\n    <div style={{ maxWidth: 520, margin: '0 auto', padding: 32 }}>\n      <h1>Weather Dashboard</h1>\n\n      {/* Search */}\n      <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>\n        <input\n          value={city}\n          onChange={e => setCity(e.target.value)}\n          onKeyDown={e => e.key === 'Enter' && handleSearch()}\n          placeholder=\"Enter city name...\"\n          style={{ flex: 1, padding: 10, borderRadius: 6, border: '1px solid #ccc' }}\n        />\n        <button onClick={handleSearch} disabled={loading} style={{ padding: '10px 20px' }}>\n          {loading ? 'Loading...' : 'Search'}\n        </button>\n      </div>\n\n      {/* Error */}\n      {error && (\n        <div style={{ padding: 12, backgroundColor: '#fdecea', color: '#b71c1c', borderRadius: 8, marginBottom: 16 }}>\n          {error}\n        </div>\n      )}\n\n      {/* Current weather */}\n      {weather && (\n        <>\n          <div style={{\n            padding: 24, borderRadius: 12, backgroundColor: '#e3f2fd', textAlign: 'center', marginBottom: 16,\n          }}>\n            <h2 style={{ margin: 0 }}>{weather.city}</h2>\n            <div style={{ fontSize: 48, fontWeight: 'bold', margin: '8px 0' }}>{weather.temperature}°C</div>\n            <p style={{ margin: 0, color: '#666' }}>{weather.description}</p>\n            <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginTop: 12 }}>\n              <span>Humidity: {weather.humidity}%</span>\n              <span>Wind: {weather.wind} km/h</span>\n            </div>\n          </div>\n\n          {/* 5-day forecast */}\n          <h3>5-Day Forecast</h3>\n          <div style={{ display: 'flex', gap: 8 }}>\n            {weather.forecast.map(day => (\n              <div key={day.day} style={{\n                flex: 1, textAlign: 'center', padding: 12, borderRadius: 8, border: '1px solid #ddd',\n              }}>\n                <div style={{ fontWeight: 'bold' }}>{day.day}</div>\n                <div style={{ fontSize: 24 }}>{day.icon}</div>\n                <div style={{ fontSize: 14 }}>{day.high}° / {day.low}°</div>\n              </div>\n            ))}\n          </div>\n        </>\n      )}\n    </div>\n  );\n}"
         },
         {
           "type": "list",
-          "heading": "What a real version would add",
+          "heading": "What you will learn",
           "items": [
-            "A database to store posts (like Supabase or a headless CMS)",
-            "Markdown support so you can write posts in a simple format",
-            "Categories and tags for filtering posts",
-            "A search bar to find posts by title or content",
-            "Comments section for reader interaction",
-            "RSS feed so people can subscribe to your blog"
+            "Async/await with fetch for API calls",
+            "The loading/error/data tri-state pattern used in every API-driven app",
+            "try/catch/finally for robust error handling",
+            "Conditional rendering based on state (loading spinner, error message, data)",
+            "Displaying nested data structures with map"
           ]
         }
       ]
     },
     {
       "type": "accordion",
-      "title": "E-Commerce Store",
+      "title": "3. Chat Interface",
       "blocks": [
         {
           "type": "text",
-          "body": "An online store lets people browse products, add them to a shopping cart, and check out. This is one of the most common types of websites on the internet. Building one teaches you about managing state across multiple components (the cart needs to be available everywhere) and handling user interactions like adding and removing items."
-        },
-        {
-          "type": "alert",
-          "severity": "info",
-          "title": "Difficulty",
-          "body": "Intermediate"
-        },
-        {
-          "type": "list",
-          "heading": "Technologies",
-          "items": [
-            "React",
-            "State management (Context or Redux)",
-            "Stripe for payments",
-            "A backend API"
-          ]
+          "body": "This chat interface mimics apps like Slack or Discord. It demonstrates managing a scrolling message list, handling user input, auto-scrolling to the latest message, and rendering different UI for your own messages versus others. The example includes multiple channels and user avatars."
         },
         {
           "type": "code",
           "language": "tsx",
-          "filename": "Store.tsx",
-          "description": "An e-commerce store with product cards and a shopping cart",
-          "code": "import { useState } from 'react';\n\nconst products = [\n  { id: 1, name: 'React Sticker Pack', price: 5.99, emoji: '\ud83c\udfa8' },\n  { id: 2, name: 'JavaScript Mug',     price: 12.99, emoji: '\u2615' },\n  { id: 3, name: 'Code Notebook',      price: 8.99,  emoji: '\ud83d\udcd3' },\n];\n\nfunction ProductCard({ product, onAddToCart }) {\n  return (\n    <div style={{\n      border: '1px solid #ddd',\n      borderRadius: 12,\n      padding: 20,\n      textAlign: 'center',\n    }}>\n      <div style={{ fontSize: 48 }}>{product.emoji}</div>\n      <h3>{product.name}</h3>\n      <p style={{ fontWeight: 'bold' }}>${product.price.toFixed(2)}</p>\n      <button\n        onClick={() => onAddToCart(product)}\n        style={{\n          padding: '8px 16px',\n          backgroundColor: '#1976d2',\n          color: 'white',\n          border: 'none',\n          borderRadius: 6,\n          cursor: 'pointer',\n        }}\n      >\n        Add to Cart\n      </button>\n    </div>\n  );\n}\n\nfunction ShoppingCart({ items, onRemove }) {\n  const total = items.reduce((sum, item) => sum + item.price, 0);\n\n  return (\n    <div style={{\n      border: '2px solid #1976d2',\n      borderRadius: 12,\n      padding: 20,\n      marginTop: 24,\n    }}>\n      <h2>Shopping Cart ({items.length})</h2>\n      {items.length === 0 ? (\n        <p>Your cart is empty.</p>\n      ) : (\n        <>\n          {items.map((item, index) => (\n            <div\n              key={index}\n              style={{\n                display: 'flex',\n                justifyContent: 'space-between',\n                padding: '8px 0',\n                borderBottom: '1px solid #eee',\n              }}\n            >\n              <span>{item.name}</span>\n              <span>\n                ${item.price.toFixed(2)}{' '}\n                <button onClick={() => onRemove(index)}>X</button>\n              </span>\n            </div>\n          ))}\n          <h3 style={{ marginTop: 12 }}>\n            Total: ${total.toFixed(2)}\n          </h3>\n        </>\n      )}\n    </div>\n  );\n}\n\nexport default function Store() {\n  const [cart, setCart] = useState([]);\n\n  const addToCart = (product) => {\n    setCart([...cart, product]);\n  };\n\n  const removeFromCart = (index) => {\n    setCart(cart.filter((_, i) => i !== index));\n  };\n\n  return (\n    <div style={{ maxWidth: 700, margin: '0 auto', padding: 32 }}>\n      <h1>Dev Merch Store</h1>\n      <div style={{\n        display: 'grid',\n        gridTemplateColumns: 'repeat(3, 1fr)',\n        gap: 16,\n      }}>\n        {products.map((product) => (\n          <ProductCard\n            key={product.id}\n            product={product}\n            onAddToCart={addToCart}\n          />\n        ))}\n      </div>\n      <ShoppingCart items={cart} onRemove={removeFromCart} />\n    </div>\n  );\n}"
+          "filename": "ChatInterface.tsx",
+          "description": "Chat app with channels, message bubbles, auto-scroll, and timestamps",
+          "code": "import { useState, useRef, useEffect } from 'react';\n\ninterface Message {\n  id: number;\n  sender: string;\n  text: string;\n  time: string;\n  isOwn: boolean;\n}\n\ninterface Channel {\n  name: string;\n  messages: Message[];\n}\n\nconst initialChannels: Channel[] = [\n  {\n    name: 'general',\n    messages: [\n      { id: 1, sender: 'Alice', text: 'Hey everyone! Welcome to the chat.', time: '9:00 AM', isOwn: false },\n      { id: 2, sender: 'Bob', text: 'Thanks Alice! Excited to be here.', time: '9:01 AM', isOwn: false },\n      { id: 3, sender: 'You', text: 'Hello! Great to meet you all.', time: '9:02 AM', isOwn: true },\n    ],\n  },\n  {\n    name: 'help',\n    messages: [\n      { id: 1, sender: 'Charlie', text: 'Can someone explain useEffect?', time: '10:15 AM', isOwn: false },\n      { id: 2, sender: 'You', text: 'It runs side effects after render. Think of it as componentDidMount + componentDidUpdate combined.', time: '10:17 AM', isOwn: true },\n    ],\n  },\n];\n\nfunction MessageBubble({ message }: { message: Message }) {\n  return (\n    <div style={{ display: 'flex', justifyContent: message.isOwn ? 'flex-end' : 'flex-start', marginBottom: 8 }}>\n      {!message.isOwn && (\n        <div style={{\n          width: 32, height: 32, borderRadius: '50%', backgroundColor: '#6366f1',\n          color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',\n          fontSize: 14, fontWeight: 'bold', marginRight: 8, flexShrink: 0,\n        }}>\n          {message.sender[0]}\n        </div>\n      )}\n      <div style={{\n        maxWidth: '65%', padding: '10px 14px', borderRadius: 12,\n        backgroundColor: message.isOwn ? '#6366f1' : '#f3f4f6',\n        color: message.isOwn ? 'white' : '#1f2937',\n      }}>\n        {!message.isOwn && <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 2 }}>{message.sender}</div>}\n        <div>{message.text}</div>\n        <div style={{ fontSize: 11, opacity: 0.7, textAlign: 'right', marginTop: 4 }}>{message.time}</div>\n      </div>\n    </div>\n  );\n}\n\nexport default function ChatInterface() {\n  const [channels, setChannels] = useState(initialChannels);\n  const [activeChannel, setActiveChannel] = useState(0);\n  const [input, setInput] = useState('');\n  const messagesEndRef = useRef<HTMLDivElement>(null);\n\n  // Auto-scroll to bottom when messages change\n  useEffect(() => {\n    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });\n  }, [channels, activeChannel]);\n\n  const sendMessage = () => {\n    if (!input.trim()) return;\n    const newMsg: Message = {\n      id: Date.now(),\n      sender: 'You',\n      text: input.trim(),\n      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),\n      isOwn: true,\n    };\n    setChannels(prev => prev.map((ch, i) =>\n      i === activeChannel ? { ...ch, messages: [...ch.messages, newMsg] } : ch\n    ));\n    setInput('');\n  };\n\n  const current = channels[activeChannel];\n\n  return (\n    <div style={{ display: 'flex', maxWidth: 700, margin: '0 auto', height: 500, border: '1px solid #e5e7eb', borderRadius: 12, overflow: 'hidden' }}>\n      {/* Sidebar */}\n      <div style={{ width: 160, backgroundColor: '#1e1b4b', color: 'white', padding: 16 }}>\n        <h3 style={{ fontSize: 14, margin: '0 0 12px' }}>Channels</h3>\n        {channels.map((ch, i) => (\n          <div\n            key={ch.name}\n            onClick={() => setActiveChannel(i)}\n            style={{\n              padding: '8px 12px', borderRadius: 6, cursor: 'pointer', marginBottom: 4,\n              backgroundColor: i === activeChannel ? '#4338ca' : 'transparent',\n            }}\n          >\n            # {ch.name}\n          </div>\n        ))}\n      </div>\n\n      {/* Main chat area */}\n      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>\n        <div style={{ padding: '12px 16px', borderBottom: '1px solid #e5e7eb', fontWeight: 600 }}>\n          # {current.name}\n        </div>\n        <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>\n          {current.messages.map(msg => <MessageBubble key={msg.id} message={msg} />)}\n          <div ref={messagesEndRef} />\n        </div>\n        <div style={{ display: 'flex', gap: 8, padding: 12, borderTop: '1px solid #e5e7eb' }}>\n          <input\n            value={input}\n            onChange={e => setInput(e.target.value)}\n            onKeyDown={e => e.key === 'Enter' && sendMessage()}\n            placeholder={`Message #${current.name}`}\n            style={{ flex: 1, padding: 10, borderRadius: 8, border: '1px solid #d1d5db' }}\n          />\n          <button onClick={sendMessage} style={{ padding: '10px 20px', borderRadius: 8, backgroundColor: '#6366f1', color: 'white', border: 'none', cursor: 'pointer' }}>\n            Send\n          </button>\n        </div>\n      </div>\n    </div>\n  );\n}"
         },
         {
           "type": "list",
-          "heading": "What a real version would add",
+          "heading": "What you will learn",
           "items": [
-            "A real payment system like Stripe to process credit cards",
-            "User accounts so shoppers can track their orders",
-            "A database to store products, inventory, and order history",
-            "Search and filter functionality",
-            "Product images, sizes, and variations",
-            "Shipping address form and delivery calculation"
+            "useRef for DOM references and auto-scrolling to the latest message",
+            "useEffect for side effects triggered by state changes",
+            "Managing nested state (channels containing arrays of messages)",
+            "Conditional styling based on message ownership (own vs others)",
+            "Multi-panel layout with sidebar navigation"
           ]
         }
       ]
     },
     {
       "type": "accordion",
-      "title": "Dashboard",
+      "title": "4. Image Gallery",
       "blocks": [
         {
           "type": "text",
-          "body": "A dashboard is a page that shows important data at a glance using cards, numbers, and charts. Businesses use dashboards to monitor sales, website traffic, user activity, and more. Building a dashboard teaches you how to lay out data in a clear, organized way and how to work with chart libraries."
-        },
-        {
-          "type": "alert",
-          "severity": "info",
-          "title": "Difficulty",
-          "body": "Intermediate"
-        },
-        {
-          "type": "list",
-          "heading": "Technologies",
-          "items": [
-            "React",
-            "A chart library (Recharts or Chart.js)",
-            "CSS Grid or Flexbox",
-            "A data API"
-          ]
+          "body": "An image gallery teaches responsive grid layouts, modal overlays, and keyboard navigation. This example displays images in a masonry-style grid, opens a full-screen lightbox on click, and supports arrow keys and Escape to navigate and close."
         },
         {
           "type": "code",
           "language": "tsx",
-          "filename": "Dashboard.tsx",
-          "description": "A dashboard with stat cards and a simple bar chart",
-          "code": "function StatCard({ label, value, change, color }) {\n  const isPositive = change >= 0;\n\n  return (\n    <div style={{\n      border: '1px solid #ddd',\n      borderRadius: 12,\n      padding: 20,\n      borderTop: `4px solid ${color}`,\n    }}>\n      <p style={{ color: '#666', margin: 0, fontSize: 14 }}>{label}</p>\n      <h2 style={{ margin: '8px 0' }}>{value}</h2>\n      <p style={{\n        margin: 0,\n        fontSize: 14,\n        color: isPositive ? 'green' : 'red',\n      }}>\n        {isPositive ? '+' : ''}{change}% from last month\n      </p>\n    </div>\n  );\n}\n\nfunction SimpleBarChart({ data }) {\n  const max = Math.max(...data.map((d) => d.value));\n\n  return (\n    <div style={{\n      border: '1px solid #ddd',\n      borderRadius: 12,\n      padding: 20,\n    }}>\n      <h3>Weekly Visitors</h3>\n      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 120 }}>\n        {data.map((d) => (\n          <div key={d.day} style={{ textAlign: 'center', flex: 1 }}>\n            <div\n              style={{\n                height: `${(d.value / max) * 100}px`,\n                backgroundColor: '#1976d2',\n                borderRadius: '4px 4px 0 0',\n              }}\n            />\n            <p style={{ fontSize: 12, margin: '4px 0 0' }}>{d.day}</p>\n          </div>\n        ))}\n      </div>\n    </div>\n  );\n}\n\nexport default function Dashboard() {\n  const stats = [\n    { label: 'Total Users', value: '1,234', change: 12, color: '#1976d2' },\n    { label: 'Revenue',     value: '$8,420', change: 8,  color: '#2e7d32' },\n    { label: 'Orders',      value: '64',     change: -3, color: '#ed6c02' },\n    { label: 'Page Views',  value: '12.5k',  change: 24, color: '#9c27b0' },\n  ];\n\n  const chartData = [\n    { day: 'Mon', value: 120 },\n    { day: 'Tue', value: 200 },\n    { day: 'Wed', value: 150 },\n    { day: 'Thu', value: 280 },\n    { day: 'Fri', value: 320 },\n    { day: 'Sat', value: 250 },\n    { day: 'Sun', value: 180 },\n  ];\n\n  return (\n    <div style={{ maxWidth: 800, margin: '0 auto', padding: 32 }}>\n      <h1>Admin Dashboard</h1>\n      <div style={{\n        display: 'grid',\n        gridTemplateColumns: 'repeat(4, 1fr)',\n        gap: 16,\n        marginBottom: 24,\n      }}>\n        {stats.map((stat) => (\n          <StatCard key={stat.label} {...stat} />\n        ))}\n      </div>\n      <SimpleBarChart data={chartData} />\n    </div>\n  );\n}"
+          "filename": "ImageGallery.tsx",
+          "description": "Image gallery with grid layout, lightbox modal, and keyboard navigation",
+          "code": "import { useState, useEffect, useCallback } from 'react';\n\nconst images = [\n  { id: 1, src: 'https://picsum.photos/seed/a/600/400', title: 'Mountain Sunrise', category: 'nature' },\n  { id: 2, src: 'https://picsum.photos/seed/b/600/400', title: 'City Skyline', category: 'urban' },\n  { id: 3, src: 'https://picsum.photos/seed/c/600/400', title: 'Ocean Waves', category: 'nature' },\n  { id: 4, src: 'https://picsum.photos/seed/d/600/400', title: 'Street Art', category: 'urban' },\n  { id: 5, src: 'https://picsum.photos/seed/e/600/400', title: 'Forest Trail', category: 'nature' },\n  { id: 6, src: 'https://picsum.photos/seed/f/600/400', title: 'Night Market', category: 'urban' },\n  { id: 7, src: 'https://picsum.photos/seed/g/600/400', title: 'Desert Dunes', category: 'nature' },\n  { id: 8, src: 'https://picsum.photos/seed/h/600/400', title: 'Rooftop View', category: 'urban' },\n];\n\ntype Category = 'all' | 'nature' | 'urban';\n\nexport default function ImageGallery() {\n  const [selected, setSelected] = useState<number | null>(null);\n  const [category, setCategory] = useState<Category>('all');\n\n  const filtered = images.filter(img => category === 'all' || img.category === category);\n  const selectedIndex = selected !== null ? filtered.findIndex(img => img.id === selected) : -1;\n\n  const navigate = useCallback((direction: 'prev' | 'next') => {\n    if (selectedIndex === -1) return;\n    const newIndex = direction === 'next'\n      ? (selectedIndex + 1) % filtered.length\n      : (selectedIndex - 1 + filtered.length) % filtered.length;\n    setSelected(filtered[newIndex].id);\n  }, [selectedIndex, filtered]);\n\n  // Keyboard navigation\n  useEffect(() => {\n    if (selected === null) return;\n    const handleKey = (e: KeyboardEvent) => {\n      if (e.key === 'Escape') setSelected(null);\n      if (e.key === 'ArrowRight') navigate('next');\n      if (e.key === 'ArrowLeft') navigate('prev');\n    };\n    window.addEventListener('keydown', handleKey);\n    return () => window.removeEventListener('keydown', handleKey);\n  }, [selected, navigate]);\n\n  const currentImage = filtered.find(img => img.id === selected);\n\n  return (\n    <div style={{ maxWidth: 800, margin: '0 auto', padding: 32 }}>\n      <h1>Image Gallery</h1>\n\n      {/* Category filter */}\n      <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>\n        {(['all', 'nature', 'urban'] as Category[]).map(cat => (\n          <button\n            key={cat}\n            onClick={() => setCategory(cat)}\n            style={{\n              padding: '6px 16px', borderRadius: 20, border: 'none', cursor: 'pointer',\n              backgroundColor: category === cat ? '#6366f1' : '#e5e7eb',\n              color: category === cat ? 'white' : '#374151',\n            }}\n          >\n            {cat.charAt(0).toUpperCase() + cat.slice(1)}\n          </button>\n        ))}\n      </div>\n\n      {/* Grid */}\n      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12 }}>\n        {filtered.map(img => (\n          <div\n            key={img.id}\n            onClick={() => setSelected(img.id)}\n            style={{ cursor: 'pointer', borderRadius: 8, overflow: 'hidden', position: 'relative' }}\n          >\n            <img src={img.src} alt={img.title} style={{ width: '100%', height: 140, objectFit: 'cover', display: 'block' }} />\n            <div style={{ padding: '8px 10px', fontSize: 13, fontWeight: 500 }}>{img.title}</div>\n          </div>\n        ))}\n      </div>\n\n      {/* Lightbox overlay */}\n      {currentImage && (\n        <div\n          onClick={() => setSelected(null)}\n          style={{\n            position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.85)',\n            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,\n          }}\n        >\n          <button onClick={e => { e.stopPropagation(); navigate('prev'); }}\n            style={{ position: 'absolute', left: 20, fontSize: 32, background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}>&#8592;</button>\n          <div onClick={e => e.stopPropagation()} style={{ textAlign: 'center' }}>\n            <img src={currentImage.src} alt={currentImage.title} style={{ maxWidth: '80vw', maxHeight: '70vh', borderRadius: 8 }} />\n            <p style={{ color: 'white', marginTop: 12, fontSize: 18 }}>{currentImage.title}</p>\n            <p style={{ color: '#aaa', fontSize: 14 }}>{selectedIndex + 1} / {filtered.length}</p>\n          </div>\n          <button onClick={e => { e.stopPropagation(); navigate('next'); }}\n            style={{ position: 'absolute', right: 20, fontSize: 32, background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}>&#8594;</button>\n        </div>\n      )}\n    </div>\n  );\n}"
         },
         {
           "type": "list",
-          "heading": "What a real version would add",
+          "heading": "What you will learn",
           "items": [
-            "Real-time data from APIs that updates automatically",
-            "Interactive charts you can hover and click on (using Recharts or Chart.js)",
-            "Date range pickers to view data for different time periods",
-            "Export to CSV or PDF functionality",
-            "User authentication so only authorized people see the data",
-            "Responsive layout that works on mobile devices"
+            "CSS Grid with auto-fill and minmax for responsive image layouts",
+            "Modal/overlay pattern with fixed positioning and z-index",
+            "Keyboard event listeners with useEffect cleanup",
+            "useCallback to stabilize function references across renders",
+            "Category filtering and circular array navigation"
           ]
         }
       ]
     },
     {
       "type": "accordion",
-      "title": "Social Media App",
+      "title": "5. Calculator",
       "blocks": [
         {
           "type": "text",
-          "body": "Social media apps let users create posts, like content, and leave comments. Think of a simplified Instagram or Twitter. Building one teaches you about user interactions, managing lists of data that change over time, and how features like \"liking\" a post work under the hood."
-        },
-        {
-          "type": "alert",
-          "severity": "info",
-          "title": "Difficulty",
-          "body": "Intermediate"
-        },
-        {
-          "type": "list",
-          "heading": "Technologies",
-          "items": [
-            "React",
-            "State management",
-            "A backend with a database",
-            "User authentication"
-          ]
+          "body": "A calculator may seem simple, but it teaches you the state machine pattern -- a powerful technique where the app's behavior depends on its current state. The calculator tracks what operation is pending, whether the display should be cleared on the next keypress, and how to chain operations."
         },
         {
           "type": "code",
           "language": "tsx",
-          "filename": "SocialFeed.tsx",
-          "description": "A social feed with posts, likes, and comments",
-          "code": "import { useState } from 'react';\n\nfunction PostCard({ post, onLike, onComment }) {\n  const [commentText, setCommentText] = useState('');\n\n  const handleSubmitComment = () => {\n    if (commentText.trim()) {\n      onComment(post.id, commentText);\n      setCommentText('');\n    }\n  };\n\n  return (\n    <div style={{\n      border: '1px solid #ddd',\n      borderRadius: 12,\n      padding: 20,\n      marginBottom: 16,\n    }}>\n      {/* Post header */}\n      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>\n        <div style={{\n          width: 40, height: 40, borderRadius: '50%',\n          backgroundColor: '#1976d2', color: 'white',\n          display: 'flex', alignItems: 'center', justifyContent: 'center',\n          fontWeight: 'bold',\n        }}>\n          {post.author[0]}\n        </div>\n        <div>\n          <strong>{post.author}</strong>\n          <p style={{ margin: 0, fontSize: 12, color: '#666' }}>{post.time}</p>\n        </div>\n      </div>\n\n      {/* Post content */}\n      <p style={{ marginTop: 12 }}>{post.content}</p>\n\n      {/* Like button */}\n      <button\n        onClick={() => onLike(post.id)}\n        style={{\n          background: 'none', border: 'none', cursor: 'pointer',\n          fontSize: 16, color: post.liked ? 'red' : '#666',\n        }}\n      >\n        {post.liked ? '\\u2764' : '\\u2661'} {post.likes}\n      </button>\n\n      {/* Comments */}\n      {post.comments.map((comment, i) => (\n        <div key={i} style={{\n          backgroundColor: '#f5f5f5', borderRadius: 8,\n          padding: '8px 12px', marginTop: 8, fontSize: 14,\n        }}>\n          <strong>{comment.author}:</strong> {comment.text}\n        </div>\n      ))}\n\n      {/* Add comment */}\n      <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>\n        <input\n          value={commentText}\n          onChange={(e) => setCommentText(e.target.value)}\n          placeholder=\"Write a comment...\"\n          style={{\n            flex: 1, padding: 8, borderRadius: 8,\n            border: '1px solid #ddd',\n          }}\n        />\n        <button onClick={handleSubmitComment}>Post</button>\n      </div>\n    </div>\n  );\n}\n\nexport default function SocialFeed() {\n  const [posts, setPosts] = useState([\n    {\n      id: 1,\n      author: 'Alice',\n      time: '2 hours ago',\n      content: 'Just finished my first React project! It is a todo app and I am so proud of it.',\n      likes: 12,\n      liked: false,\n      comments: [\n        { author: 'Bob', text: 'Great job! Keep it up!' },\n      ],\n    },\n    {\n      id: 2,\n      author: 'Charlie',\n      time: '5 hours ago',\n      content: 'Can anyone recommend a good tutorial for learning CSS Grid?',\n      likes: 5,\n      liked: false,\n      comments: [],\n    },\n  ]);\n\n  const handleLike = (postId) => {\n    setPosts(posts.map((post) =>\n      post.id === postId\n        ? { ...post, liked: !post.liked, likes: post.liked ? post.likes - 1 : post.likes + 1 }\n        : post\n    ));\n  };\n\n  const handleComment = (postId, text) => {\n    setPosts(posts.map((post) =>\n      post.id === postId\n        ? { ...post, comments: [...post.comments, { author: 'You', text }] }\n        : post\n    ));\n  };\n\n  return (\n    <div style={{ maxWidth: 500, margin: '0 auto', padding: 32 }}>\n      <h1>Dev Feed</h1>\n      {posts.map((post) => (\n        <PostCard\n          key={post.id}\n          post={post}\n          onLike={handleLike}\n          onComment={handleComment}\n        />\n      ))}\n    </div>\n  );\n}"
+          "filename": "Calculator.tsx",
+          "description": "Calculator with state machine, chained operations, and keyboard support",
+          "code": "import { useState, useEffect } from 'react';\n\ninterface CalcState {\n  display: string;\n  previous: number | null;\n  operator: string | null;\n  resetDisplay: boolean;\n}\n\nconst initialState: CalcState = {\n  display: '0',\n  previous: null,\n  operator: null,\n  resetDisplay: false,\n};\n\nexport default function Calculator() {\n  const [state, setState] = useState<CalcState>(initialState);\n\n  const inputDigit = (digit: string) => {\n    setState(prev => {\n      if (prev.resetDisplay) {\n        return { ...prev, display: digit, resetDisplay: false };\n      }\n      return { ...prev, display: prev.display === '0' ? digit : prev.display + digit };\n    });\n  };\n\n  const inputDecimal = () => {\n    setState(prev => {\n      if (prev.resetDisplay) return { ...prev, display: '0.', resetDisplay: false };\n      if (prev.display.includes('.')) return prev;\n      return { ...prev, display: prev.display + '.' };\n    });\n  };\n\n  const calculate = (left: number, op: string, right: number): number => {\n    switch (op) {\n      case '+': return left + right;\n      case '-': return left - right;\n      case '*': return left * right;\n      case '/': return right !== 0 ? left / right : 0;\n      default: return right;\n    }\n  };\n\n  const handleOperator = (nextOp: string) => {\n    setState(prev => {\n      const current = parseFloat(prev.display);\n      if (prev.previous !== null && prev.operator && !prev.resetDisplay) {\n        const result = calculate(prev.previous, prev.operator, current);\n        return { display: String(result), previous: result, operator: nextOp, resetDisplay: true };\n      }\n      return { display: prev.display, previous: current, operator: nextOp, resetDisplay: true };\n    });\n  };\n\n  const handleEquals = () => {\n    setState(prev => {\n      if (prev.previous === null || !prev.operator) return prev;\n      const current = parseFloat(prev.display);\n      const result = calculate(prev.previous, prev.operator, current);\n      return { display: String(result), previous: null, operator: null, resetDisplay: true };\n    });\n  };\n\n  const clear = () => setState(initialState);\n\n  // Keyboard support\n  useEffect(() => {\n    const handleKey = (e: KeyboardEvent) => {\n      if (e.key >= '0' && e.key <= '9') inputDigit(e.key);\n      else if (e.key === '.') inputDecimal();\n      else if (['+', '-', '*', '/'].includes(e.key)) handleOperator(e.key);\n      else if (e.key === 'Enter' || e.key === '=') handleEquals();\n      else if (e.key === 'Escape') clear();\n    };\n    window.addEventListener('keydown', handleKey);\n    return () => window.removeEventListener('keydown', handleKey);\n  });\n\n  const btnStyle = (bg = '#e5e7eb', color = '#111') => ({\n    padding: 16, fontSize: 18, border: 'none', borderRadius: 8,\n    cursor: 'pointer', backgroundColor: bg, color, fontWeight: 500 as const,\n  });\n\n  return (\n    <div style={{ maxWidth: 320, margin: '0 auto', padding: 32 }}>\n      <h1>Calculator</h1>\n      <div style={{\n        backgroundColor: '#1f2937', color: 'white', padding: '20px 16px',\n        borderRadius: '12px 12px 0 0', textAlign: 'right', fontSize: 32, fontFamily: 'monospace',\n        minHeight: 60, display: 'flex', alignItems: 'center', justifyContent: 'flex-end',\n      }}>\n        {state.display}\n      </div>\n      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 4, backgroundColor: '#f3f4f6', padding: 4, borderRadius: '0 0 12px 12px' }}>\n        <button onClick={clear} style={{ ...btnStyle('#ef4444', 'white'), gridColumn: 'span 2' }}>C</button>\n        <button onClick={() => handleOperator('/')} style={btnStyle('#6366f1', 'white')}>/</button>\n        <button onClick={() => handleOperator('*')} style={btnStyle('#6366f1', 'white')}>*</button>\n        {['7','8','9'].map(d => <button key={d} onClick={() => inputDigit(d)} style={btnStyle()}>{d}</button>)}\n        <button onClick={() => handleOperator('-')} style={btnStyle('#6366f1', 'white')}>-</button>\n        {['4','5','6'].map(d => <button key={d} onClick={() => inputDigit(d)} style={btnStyle()}>{d}</button>)}\n        <button onClick={() => handleOperator('+')} style={btnStyle('#6366f1', 'white')}>+</button>\n        {['1','2','3'].map(d => <button key={d} onClick={() => inputDigit(d)} style={btnStyle()}>{d}</button>)}\n        <button onClick={handleEquals} style={{ ...btnStyle('#10b981', 'white'), gridRow: 'span 2' }}>=</button>\n        <button onClick={() => inputDigit('0')} style={{ ...btnStyle(), gridColumn: 'span 2' }}>0</button>\n        <button onClick={inputDecimal} style={btnStyle()}>.</button>\n      </div>\n    </div>\n  );\n}"
         },
         {
           "type": "list",
-          "heading": "What a real version would add",
+          "heading": "What you will learn",
           "items": [
-            "User sign-up and login with profile pages",
-            "A database to store posts, likes, and comments permanently",
-            "Image and video uploads",
-            "Real-time notifications when someone likes or comments on your post",
-            "A follow system so you only see posts from people you follow",
-            "Infinite scrolling to load more posts as you scroll down"
+            "The state machine pattern: behavior changes based on current state (resetDisplay flag)",
+            "Functional setState: using the callback form to safely read previous state",
+            "Chaining operations without pressing equals each time",
+            "CSS Grid for precise button layouts with span",
+            "Keyboard event handling alongside click handlers"
           ]
         }
       ]
     },
     {
       "type": "accordion",
-      "title": "SaaS Landing Page",
+      "title": "6. Blog with Markdown",
       "blocks": [
         {
           "type": "text",
-          "body": "A SaaS (Software as a Service) landing page is a marketing website designed to convince visitors to sign up for your product. It typically has a hero section with a headline, a features section, a pricing table, and call-to-action buttons. Every startup needs one, making this a very practical skill to learn."
-        },
-        {
-          "type": "alert",
-          "severity": "info",
-          "title": "Difficulty",
-          "body": "Beginner"
-        },
-        {
-          "type": "list",
-          "heading": "Technologies",
-          "items": [
-            "React",
-            "CSS / Material UI",
-            "Responsive design"
-          ]
+          "body": "This project simulates a blog that renders Markdown content. It teaches you about content-driven apps, how to parse and render structured text, and the list-to-detail navigation pattern. The built-in Markdown parser handles headings, bold, italic, code, and links."
         },
         {
           "type": "code",
           "language": "tsx",
-          "filename": "LandingPage.tsx",
-          "description": "A SaaS landing page with hero, features, and pricing sections",
-          "code": "function FeatureCard({ icon, title, description }) {\n  return (\n    <div style={{\n      textAlign: 'center',\n      padding: 24,\n      border: '1px solid #eee',\n      borderRadius: 12,\n    }}>\n      <div style={{ fontSize: 36 }}>{icon}</div>\n      <h3>{title}</h3>\n      <p style={{ color: '#666' }}>{description}</p>\n    </div>\n  );\n}\n\nfunction PricingCard({ name, price, features, highlighted }) {\n  return (\n    <div style={{\n      border: highlighted ? '2px solid #1976d2' : '1px solid #ddd',\n      borderRadius: 12,\n      padding: 24,\n      textAlign: 'center',\n      backgroundColor: highlighted ? '#f0f7ff' : 'white',\n    }}>\n      <h3>{name}</h3>\n      <p style={{ fontSize: 36, fontWeight: 'bold', margin: '8px 0' }}>\n        ${price}<span style={{ fontSize: 16 }}>/mo</span>\n      </p>\n      <ul style={{ listStyle: 'none', padding: 0, textAlign: 'left' }}>\n        {features.map((feature, i) => (\n          <li key={i} style={{ padding: '6px 0' }}>\n            \\u2713 {feature}\n          </li>\n        ))}\n      </ul>\n      <button style={{\n        width: '100%',\n        padding: 12,\n        borderRadius: 8,\n        border: 'none',\n        backgroundColor: highlighted ? '#1976d2' : '#eee',\n        color: highlighted ? 'white' : '#333',\n        cursor: 'pointer',\n        fontWeight: 'bold',\n      }}>\n        Get Started\n      </button>\n    </div>\n  );\n}\n\nexport default function LandingPage() {\n  return (\n    <div style={{ maxWidth: 900, margin: '0 auto', padding: 32 }}>\n      {/* Hero */}\n      <div style={{ textAlign: 'center', padding: '60px 0' }}>\n        <h1 style={{ fontSize: 48 }}>Build Websites Faster</h1>\n        <p style={{ fontSize: 20, color: '#666', maxWidth: 500, margin: '0 auto' }}>\n          The all-in-one toolkit for developers who want to ship\n          beautiful websites without the hassle.\n        </p>\n        <button style={{\n          marginTop: 24, padding: '14px 32px', fontSize: 18,\n          backgroundColor: '#1976d2', color: 'white',\n          border: 'none', borderRadius: 8, cursor: 'pointer',\n        }}>\n          Start Free Trial\n        </button>\n      </div>\n\n      {/* Features */}\n      <div style={{\n        display: 'grid',\n        gridTemplateColumns: 'repeat(3, 1fr)',\n        gap: 20,\n        margin: '40px 0',\n      }}>\n        <FeatureCard icon=\"\\u26a1\" title=\"Lightning Fast\" description=\"Optimized builds that load in under a second.\" />\n        <FeatureCard icon=\"\\ud83d\\udd12\" title=\"Secure\" description=\"Built-in security best practices out of the box.\" />\n        <FeatureCard icon=\"\\ud83d\\ude80\" title=\"Easy Deploy\" description=\"One-click deployment to the cloud.\" />\n      </div>\n\n      {/* Pricing */}\n      <h2 style={{ textAlign: 'center' }}>Simple Pricing</h2>\n      <div style={{\n        display: 'grid',\n        gridTemplateColumns: 'repeat(3, 1fr)',\n        gap: 20,\n        marginTop: 20,\n      }}>\n        <PricingCard name=\"Hobby\" price={0} features={['1 project', 'Basic analytics', 'Community support']} highlighted={false} />\n        <PricingCard name=\"Pro\" price={19} features={['Unlimited projects', 'Advanced analytics', 'Priority support', 'Custom domain']} highlighted={true} />\n        <PricingCard name=\"Team\" price={49} features={['Everything in Pro', 'Team collaboration', 'SSO login', 'SLA guarantee']} highlighted={false} />\n      </div>\n    </div>\n  );\n}"
+          "filename": "MarkdownBlog.tsx",
+          "description": "Blog with Markdown rendering, categories, reading time, and search",
+          "code": "import { useState, useMemo } from 'react';\n\ninterface Post {\n  id: number;\n  title: string;\n  category: string;\n  date: string;\n  readTime: string;\n  markdown: string;\n}\n\nconst posts: Post[] = [\n  {\n    id: 1, title: 'Getting Started with React Hooks', category: 'React',\n    date: '2026-03-10', readTime: '5 min',\n    markdown: `# Getting Started with React Hooks\\n\\nReact hooks let you use **state** and other React features in function components.\\n\\n## The useState Hook\\n\\n\\`useState\\` returns an array with two values:\\n\\n- The **current state** value\\n- A **function** to update it\\n\\n\\`\\`\\`jsx\\nconst [count, setCount] = useState(0);\\n\\`\\`\\`\\n\\n## Rules of Hooks\\n\\n1. Only call hooks at the **top level** of your component\\n2. Only call hooks from **React functions**\\n\\n> Hooks are the modern way to write React. Class components are rarely needed anymore.`,\n  },\n  {\n    id: 2, title: 'CSS Grid vs Flexbox', category: 'CSS',\n    date: '2026-03-12', readTime: '4 min',\n    markdown: `# CSS Grid vs Flexbox\\n\\nBoth are layout systems, but they solve *different problems*.\\n\\n## When to Use Flexbox\\n\\nFlexbox is for **one-dimensional** layouts -- a single row or column.\\n\\n\\`\\`\\`css\\n.container {\\n  display: flex;\\n  justify-content: space-between;\\n}\\n\\`\\`\\`\\n\\n## When to Use Grid\\n\\nGrid is for **two-dimensional** layouts -- rows AND columns at the same time.\\n\\n\\`\\`\\`css\\n.container {\\n  display: grid;\\n  grid-template-columns: repeat(3, 1fr);\\n  gap: 16px;\\n}\\n\\`\\`\\`\\n\\n> Use **Flexbox** for navbars and toolbars. Use **Grid** for page layouts and card grids.`,\n  },\n  {\n    id: 3, title: 'TypeScript in 10 Minutes', category: 'TypeScript',\n    date: '2026-03-14', readTime: '10 min',\n    markdown: `# TypeScript in 10 Minutes\\n\\nTypeScript adds **type safety** to JavaScript. It catches bugs before your code runs.\\n\\n## Basic Types\\n\\n\\`\\`\\`typescript\\nlet name: string = 'Alice';\\nlet age: number = 25;\\nlet active: boolean = true;\\n\\`\\`\\`\\n\\n## Interfaces\\n\\nDefine the *shape* of an object:\\n\\n\\`\\`\\`typescript\\ninterface User {\\n  name: string;\\n  email: string;\\n  age?: number; // optional\\n}\\n\\`\\`\\`\\n\\n> TypeScript is a **superset** of JavaScript. Every valid JS file is also valid TS.`,\n  },\n];\n\n// Simple Markdown to HTML converter\nfunction renderMarkdown(md: string): string {\n  return md\n    .replace(/```(\\w+)?\\n([\\s\\S]*?)```/g, '<pre style=\"background:#1e293b;color:#e2e8f0;padding:16px;border-radius:8px;overflow-x:auto\"><code>$2</code></pre>')\n    .replace(/`([^`]+)`/g, '<code style=\"background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:0.9em\">$1</code>')\n    .replace(/^### (.+)$/gm, '<h3>$1</h3>')\n    .replace(/^## (.+)$/gm, '<h2 style=\"margin-top:24px\">$1</h2>')\n    .replace(/^# (.+)$/gm, '<h1>$1</h1>')\n    .replace(/\\*\\*(.+?)\\*\\*/g, '<strong>$1</strong>')\n    .replace(/\\*(.+?)\\*/g, '<em>$1</em>')\n    .replace(/^> (.+)$/gm, '<blockquote style=\"border-left:4px solid #6366f1;padding:8px 16px;margin:16px 0;color:#4b5563\">$1</blockquote>')\n    .replace(/^- (.+)$/gm, '<li>$1</li>')\n    .replace(/^(\\d+)\\. (.+)$/gm, '<li>$2</li>')\n    .replace(/\\n\\n/g, '<br/><br/>');\n}\n\nexport default function MarkdownBlog() {\n  const [selectedId, setSelectedId] = useState<number | null>(null);\n  const [search, setSearch] = useState('');\n  const [activeCategory, setActiveCategory] = useState('all');\n\n  const categories = ['all', ...new Set(posts.map(p => p.category))];\n\n  const filtered = useMemo(() =>\n    posts.filter(p =>\n      (activeCategory === 'all' || p.category === activeCategory) &&\n      p.title.toLowerCase().includes(search.toLowerCase())\n    ), [activeCategory, search]);\n\n  const selectedPost = posts.find(p => p.id === selectedId);\n\n  if (selectedPost) {\n    return (\n      <div style={{ maxWidth: 640, margin: '0 auto', padding: 32 }}>\n        <button onClick={() => setSelectedId(null)} style={{ marginBottom: 16, padding: '6px 12px', cursor: 'pointer' }}>\n          \\u2190 Back to all posts\n        </button>\n        <span style={{ marginLeft: 8, color: '#6366f1', fontWeight: 600 }}>{selectedPost.category}</span>\n        <span style={{ marginLeft: 8, color: '#9ca3af' }}>{selectedPost.date} \\u00b7 {selectedPost.readTime}</span>\n        <div dangerouslySetInnerHTML={{ __html: renderMarkdown(selectedPost.markdown) }} />\n      </div>\n    );\n  }\n\n  return (\n    <div style={{ maxWidth: 640, margin: '0 auto', padding: 32 }}>\n      <h1>Dev Blog</h1>\n      <input\n        value={search}\n        onChange={e => setSearch(e.target.value)}\n        placeholder=\"Search posts...\"\n        style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #d1d5db', marginBottom: 12 }}\n      />\n      <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>\n        {categories.map(cat => (\n          <button\n            key={cat}\n            onClick={() => setActiveCategory(cat)}\n            style={{\n              padding: '4px 14px', borderRadius: 16, border: 'none', cursor: 'pointer', fontSize: 13,\n              backgroundColor: activeCategory === cat ? '#6366f1' : '#f3f4f6',\n              color: activeCategory === cat ? 'white' : '#374151',\n            }}\n          >\n            {cat}\n          </button>\n        ))}\n      </div>\n      {filtered.map(post => (\n        <div key={post.id} onClick={() => setSelectedId(post.id)}\n          style={{ padding: 16, border: '1px solid #e5e7eb', borderRadius: 10, marginBottom: 10, cursor: 'pointer' }}>\n          <h3 style={{ margin: 0 }}>{post.title}</h3>\n          <div style={{ color: '#6b7280', fontSize: 14, marginTop: 4 }}>\n            <span style={{ color: '#6366f1', fontWeight: 600 }}>{post.category}</span>\n            {' \\u00b7 '}{post.date}{' \\u00b7 '}{post.readTime}\n          </div>\n        </div>\n      ))}\n    </div>\n  );\n}"
         },
         {
           "type": "list",
-          "heading": "What a real version would add",
+          "heading": "What you will learn",
           "items": [
-            "Smooth scroll animations as sections come into view",
-            "A testimonials section with real customer quotes",
-            "An FAQ accordion section",
-            "Mobile-responsive layout that adjusts for phone screens",
-            "Analytics tracking to see which sections visitors spend time on",
-            "A newsletter signup form connected to a mailing list service"
+            "Markdown-to-HTML conversion with regular expressions",
+            "List-to-detail navigation pattern (post list vs single post view)",
+            "useMemo to avoid re-filtering on every render",
+            "Search and category filtering with derived state",
+            "dangerouslySetInnerHTML for rendering parsed HTML (and when it is safe to use)"
           ]
         }
       ]
     },
     {
       "type": "accordion",
-      "title": "Chat Application",
+      "title": "7. Authentication Flow",
       "blocks": [
         {
           "type": "text",
-          "body": "A chat application lets users send and receive messages in real time. Think of Discord, Slack, or iMessage. Building a chat app teaches you about real-time communication, managing a scrolling list of messages, and handling user input. It is a great way to learn about WebSockets and live data."
-        },
-        {
-          "type": "alert",
-          "severity": "warning",
-          "title": "Difficulty",
-          "body": "Advanced"
-        },
-        {
-          "type": "list",
-          "heading": "Technologies",
-          "items": [
-            "React",
-            "WebSockets or Firebase",
-            "User authentication",
-            "A backend server (Node.js)"
-          ]
+          "body": "Authentication is one of the most common features in web applications. This example demonstrates the full flow: login, registration, form validation, protected routes, and session management. It uses React context to share auth state across the entire app."
         },
         {
           "type": "code",
           "language": "tsx",
-          "filename": "ChatApp.tsx",
-          "description": "A chat application with message bubbles and real-time input",
-          "code": "import { useState } from 'react';\n\nfunction MessageBubble({ message, isOwn }) {\n  return (\n    <div style={{\n      display: 'flex',\n      justifyContent: isOwn ? 'flex-end' : 'flex-start',\n      marginBottom: 8,\n    }}>\n      <div style={{\n        maxWidth: '70%',\n        padding: '10px 16px',\n        borderRadius: 16,\n        backgroundColor: isOwn ? '#1976d2' : '#f0f0f0',\n        color: isOwn ? 'white' : '#333',\n      }}>\n        {!isOwn && (\n          <p style={{ margin: 0, fontSize: 12, fontWeight: 'bold', marginBottom: 4 }}>\n            {message.sender}\n          </p>\n        )}\n        <p style={{ margin: 0 }}>{message.text}</p>\n        <p style={{\n          margin: 0, fontSize: 11, marginTop: 4,\n          opacity: 0.7, textAlign: 'right',\n        }}>\n          {message.time}\n        </p>\n      </div>\n    </div>\n  );\n}\n\nexport default function ChatApp() {\n  const currentUser = 'You';\n\n  const [messages, setMessages] = useState([\n    { id: 1, sender: 'Alice', text: 'Hey! How is your React project going?', time: '10:30 AM' },\n    { id: 2, sender: 'You',   text: 'Pretty good! I just learned about useState.', time: '10:31 AM' },\n    { id: 3, sender: 'Alice', text: 'Nice! That is one of the most important hooks.', time: '10:32 AM' },\n    { id: 4, sender: 'Bob',   text: 'useState and useEffect are the two big ones to learn first.', time: '10:33 AM' },\n  ]);\n\n  const [newMessage, setNewMessage] = useState('');\n\n  const handleSend = () => {\n    if (!newMessage.trim()) return;\n    setMessages([\n      ...messages,\n      {\n        id: messages.length + 1,\n        sender: currentUser,\n        text: newMessage,\n        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),\n      },\n    ]);\n    setNewMessage('');\n  };\n\n  return (\n    <div style={{\n      maxWidth: 500, margin: '0 auto',\n      border: '1px solid #ddd', borderRadius: 12,\n      display: 'flex', flexDirection: 'column', height: 500,\n    }}>\n      {/* Header */}\n      <div style={{\n        padding: 16, borderBottom: '1px solid #ddd',\n        fontWeight: 'bold', fontSize: 18,\n      }}>\n        #general\n      </div>\n\n      {/* Messages */}\n      <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>\n        {messages.map((msg) => (\n          <MessageBubble\n            key={msg.id}\n            message={msg}\n            isOwn={msg.sender === currentUser}\n          />\n        ))}\n      </div>\n\n      {/* Input */}\n      <div style={{\n        display: 'flex', gap: 8, padding: 12,\n        borderTop: '1px solid #ddd',\n      }}>\n        <input\n          value={newMessage}\n          onChange={(e) => setNewMessage(e.target.value)}\n          onKeyDown={(e) => e.key === 'Enter' && handleSend()}\n          placeholder=\"Type a message...\"\n          style={{\n            flex: 1, padding: 10, borderRadius: 20,\n            border: '1px solid #ddd', outline: 'none',\n          }}\n        />\n        <button\n          onClick={handleSend}\n          style={{\n            padding: '10px 20px', borderRadius: 20,\n            backgroundColor: '#1976d2', color: 'white',\n            border: 'none', cursor: 'pointer',\n          }}\n        >\n          Send\n        </button>\n      </div>\n    </div>\n  );\n}"
+          "filename": "AuthApp.tsx",
+          "description": "Authentication flow with login, register, protected routes, and context-based session",
+          "code": "import { useState, createContext, useContext } from 'react';\n\n// --- Auth Context ---\ninterface User { name: string; email: string }\ninterface AuthContextType {\n  user: User | null;\n  login: (email: string, password: string) => string | null;\n  register: (name: string, email: string, password: string) => string | null;\n  logout: () => void;\n}\n\nconst AuthContext = createContext<AuthContextType | null>(null);\nconst useAuth = () => useContext(AuthContext)!;\n\nfunction AuthProvider({ children }: { children: React.ReactNode }) {\n  const [user, setUser] = useState<User | null>(null);\n  const [users, setUsers] = useState<(User & { password: string })[]>([\n    { name: 'Demo User', email: 'demo@example.com', password: 'password123' },\n  ]);\n\n  const login = (email: string, password: string): string | null => {\n    const found = users.find(u => u.email === email && u.password === password);\n    if (!found) return 'Invalid email or password';\n    setUser({ name: found.name, email: found.email });\n    return null;\n  };\n\n  const register = (name: string, email: string, password: string): string | null => {\n    if (users.find(u => u.email === email)) return 'Email already registered';\n    if (password.length < 6) return 'Password must be at least 6 characters';\n    const newUser = { name, email, password };\n    setUsers([...users, newUser]);\n    setUser({ name, email });\n    return null;\n  };\n\n  const logout = () => setUser(null);\n\n  return (\n    <AuthContext.Provider value={{ user, login, register, logout }}>\n      {children}\n    </AuthContext.Provider>\n  );\n}\n\n// --- Login Form ---\nfunction LoginForm({ onSwitch }: { onSwitch: () => void }) {\n  const { login } = useAuth();\n  const [email, setEmail] = useState('demo@example.com');\n  const [password, setPassword] = useState('password123');\n  const [error, setError] = useState('');\n\n  const handleSubmit = (e: React.FormEvent) => {\n    e.preventDefault();\n    const err = login(email, password);\n    if (err) setError(err);\n  };\n\n  return (\n    <form onSubmit={handleSubmit} style={{ maxWidth: 360, margin: '0 auto', padding: 32 }}>\n      <h2>Log In</h2>\n      {error && <div style={{ color: '#dc2626', marginBottom: 12, padding: 8, backgroundColor: '#fef2f2', borderRadius: 6 }}>{error}</div>}\n      <input value={email} onChange={e => setEmail(e.target.value)} type=\"email\" placeholder=\"Email\"\n        style={{ width: '100%', padding: 10, marginBottom: 10, borderRadius: 6, border: '1px solid #d1d5db' }} />\n      <input value={password} onChange={e => setPassword(e.target.value)} type=\"password\" placeholder=\"Password\"\n        style={{ width: '100%', padding: 10, marginBottom: 16, borderRadius: 6, border: '1px solid #d1d5db' }} />\n      <button type=\"submit\" style={{ width: '100%', padding: 12, backgroundColor: '#6366f1', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>\n        Log In\n      </button>\n      <p style={{ textAlign: 'center', marginTop: 16, color: '#6b7280' }}>\n        No account? <button type=\"button\" onClick={onSwitch} style={{ color: '#6366f1', border: 'none', background: 'none', cursor: 'pointer', fontWeight: 600 }}>Register</button>\n      </p>\n    </form>\n  );\n}\n\n// --- Register Form ---\nfunction RegisterForm({ onSwitch }: { onSwitch: () => void }) {\n  const { register } = useAuth();\n  const [name, setName] = useState('');\n  const [email, setEmail] = useState('');\n  const [password, setPassword] = useState('');\n  const [confirm, setConfirm] = useState('');\n  const [error, setError] = useState('');\n\n  const handleSubmit = (e: React.FormEvent) => {\n    e.preventDefault();\n    if (password !== confirm) { setError('Passwords do not match'); return; }\n    const err = register(name, email, password);\n    if (err) setError(err);\n  };\n\n  return (\n    <form onSubmit={handleSubmit} style={{ maxWidth: 360, margin: '0 auto', padding: 32 }}>\n      <h2>Create Account</h2>\n      {error && <div style={{ color: '#dc2626', marginBottom: 12, padding: 8, backgroundColor: '#fef2f2', borderRadius: 6 }}>{error}</div>}\n      <input value={name} onChange={e => setName(e.target.value)} placeholder=\"Full Name\" required\n        style={{ width: '100%', padding: 10, marginBottom: 10, borderRadius: 6, border: '1px solid #d1d5db' }} />\n      <input value={email} onChange={e => setEmail(e.target.value)} type=\"email\" placeholder=\"Email\" required\n        style={{ width: '100%', padding: 10, marginBottom: 10, borderRadius: 6, border: '1px solid #d1d5db' }} />\n      <input value={password} onChange={e => setPassword(e.target.value)} type=\"password\" placeholder=\"Password (6+ characters)\" required\n        style={{ width: '100%', padding: 10, marginBottom: 10, borderRadius: 6, border: '1px solid #d1d5db' }} />\n      <input value={confirm} onChange={e => setConfirm(e.target.value)} type=\"password\" placeholder=\"Confirm Password\" required\n        style={{ width: '100%', padding: 10, marginBottom: 16, borderRadius: 6, border: '1px solid #d1d5db' }} />\n      <button type=\"submit\" style={{ width: '100%', padding: 12, backgroundColor: '#10b981', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>\n        Create Account\n      </button>\n      <p style={{ textAlign: 'center', marginTop: 16, color: '#6b7280' }}>\n        Already have an account? <button type=\"button\" onClick={onSwitch} style={{ color: '#6366f1', border: 'none', background: 'none', cursor: 'pointer', fontWeight: 600 }}>Log in</button>\n      </p>\n    </form>\n  );\n}\n\n// --- Protected Dashboard ---\nfunction Dashboard() {\n  const { user, logout } = useAuth();\n  return (\n    <div style={{ maxWidth: 480, margin: '0 auto', padding: 32 }}>\n      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>\n        <h2>Dashboard</h2>\n        <button onClick={logout} style={{ padding: '6px 16px', borderRadius: 6, border: '1px solid #d1d5db', cursor: 'pointer' }}>Log Out</button>\n      </div>\n      <div style={{ padding: 24, backgroundColor: '#f0fdf4', borderRadius: 12, marginTop: 16 }}>\n        <h3>Welcome, {user!.name}!</h3>\n        <p style={{ color: '#4b5563' }}>Email: {user!.email}</p>\n        <p style={{ color: '#4b5563' }}>This page is only visible to logged-in users. If you log out, you will be redirected to the login form.</p>\n      </div>\n    </div>\n  );\n}\n\n// --- App Shell ---\nexport default function AuthApp() {\n  const [showRegister, setShowRegister] = useState(false);\n\n  return (\n    <AuthProvider>\n      <AuthSwitch showRegister={showRegister} onToggle={() => setShowRegister(!showRegister)} />\n    </AuthProvider>\n  );\n}\n\nfunction AuthSwitch({ showRegister, onToggle }: { showRegister: boolean; onToggle: () => void }) {\n  const { user } = useAuth();\n  if (user) return <Dashboard />;\n  return showRegister ? <RegisterForm onSwitch={onToggle} /> : <LoginForm onSwitch={onToggle} />;\n}"
         },
         {
           "type": "list",
-          "heading": "What a real version would add",
+          "heading": "What you will learn",
           "items": [
-            "WebSockets for real-time message delivery without refreshing",
-            "Multiple chat rooms or direct messages",
-            "Read receipts and typing indicators",
-            "File and image sharing",
-            "Message search and history",
-            "Push notifications for new messages",
-            "User presence (online, offline, away status)"
+            "React Context for global auth state shared across components",
+            "createContext and useContext pattern for dependency injection",
+            "Form validation with error messages and password confirmation",
+            "Protected route pattern: rendering different UI based on auth state",
+            "Separating concerns: AuthProvider handles logic, forms handle UI"
           ]
         }
       ]
     },
     {
       "type": "accordion",
-      "title": "Game / Interactive App",
+      "title": "8. Data Table",
       "blocks": [
         {
           "type": "text",
-          "body": "Web games and interactive apps are a fantastic way to learn React because they are pure fun. If you have ever played Roblox or Minecraft, you already understand the idea of building interactive experiences. Web games use the same React concepts (state, events, rendering) but apply them to things like scores, timers, and player actions."
-        },
-        {
-          "type": "alert",
-          "severity": "info",
-          "title": "Difficulty",
-          "body": "Beginner"
-        },
-        {
-          "type": "list",
-          "heading": "Technologies",
-          "items": [
-            "React",
-            "useState and useEffect hooks",
-            "CSS animations",
-            "HTML Canvas (for advanced games)"
-          ]
+          "body": "Data tables are everywhere in business applications. This example builds a table with column sorting (click a header to sort), a search bar, and pagination. You will learn how to work with arrays of objects and build interactive, data-dense UI."
         },
         {
           "type": "code",
           "language": "tsx",
-          "filename": "ClickGame.tsx",
-          "description": "A click speed challenge game with timer and high score tracking",
-          "code": "import { useState, useEffect } from 'react';\n\nexport default function ClickGame() {\n  const [score, setScore] = useState(0);\n  const [timeLeft, setTimeLeft] = useState(10);\n  const [isPlaying, setIsPlaying] = useState(false);\n  const [highScore, setHighScore] = useState(0);\n\n  // Timer countdown\n  useEffect(() => {\n    if (!isPlaying || timeLeft <= 0) return;\n\n    const timer = setTimeout(() => {\n      setTimeLeft(timeLeft - 1);\n    }, 1000);\n\n    // When time runs out\n    if (timeLeft === 1) {\n      setTimeout(() => {\n        setIsPlaying(false);\n        if (score > highScore) {\n          setHighScore(score);\n        }\n      }, 1000);\n    }\n\n    return () => clearTimeout(timer);\n  }, [isPlaying, timeLeft, score, highScore]);\n\n  const startGame = () => {\n    setScore(0);\n    setTimeLeft(10);\n    setIsPlaying(true);\n  };\n\n  const handleClick = () => {\n    if (isPlaying) {\n      setScore(score + 1);\n    }\n  };\n\n  return (\n    <div style={{ textAlign: 'center', maxWidth: 400, margin: '0 auto', padding: 32 }}>\n      <h1>Click Speed Challenge</h1>\n      <p>How many times can you click in 10 seconds?</p>\n\n      <div style={{\n        fontSize: 48, fontWeight: 'bold',\n        margin: '20px 0', color: '#1976d2',\n      }}>\n        {score}\n      </div>\n\n      <p style={{ fontSize: 24 }}>\n        Time: {timeLeft}s\n      </p>\n\n      {isPlaying ? (\n        <button\n          onClick={handleClick}\n          style={{\n            width: 200, height: 200, borderRadius: '50%',\n            fontSize: 24, fontWeight: 'bold',\n            backgroundColor: '#1976d2', color: 'white',\n            border: 'none', cursor: 'pointer',\n          }}\n        >\n          CLICK ME!\n        </button>\n      ) : (\n        <div>\n          {score > 0 && (\n            <p style={{ fontSize: 20 }}>\n              You clicked {score} times!\n              {score > highScore ? ' New high score!' : ''}\n            </p>\n          )}\n          <button\n            onClick={startGame}\n            style={{\n              padding: '14px 32px', fontSize: 18,\n              backgroundColor: '#2e7d32', color: 'white',\n              border: 'none', borderRadius: 8, cursor: 'pointer',\n            }}\n          >\n            {score > 0 ? 'Play Again' : 'Start Game'}\n          </button>\n        </div>\n      )}\n\n      {highScore > 0 && (\n        <p style={{ marginTop: 20, color: '#666' }}>\n          High Score: {highScore}\n        </p>\n      )}\n    </div>\n  );\n}"
+          "filename": "DataTable.tsx",
+          "description": "Sortable, filterable, paginated data table",
+          "code": "import { useState, useMemo } from 'react';\n\ninterface Employee {\n  id: number;\n  name: string;\n  role: string;\n  department: string;\n  salary: number;\n  startDate: string;\n}\n\nconst data: Employee[] = [\n  { id: 1, name: 'Alice Chen', role: 'Senior Engineer', department: 'Engineering', salary: 145000, startDate: '2021-03-15' },\n  { id: 2, name: 'Bob Martinez', role: 'Product Manager', department: 'Product', salary: 135000, startDate: '2020-07-01' },\n  { id: 3, name: 'Carol Davis', role: 'Designer', department: 'Design', salary: 120000, startDate: '2022-01-10' },\n  { id: 4, name: 'Dan Wilson', role: 'Junior Engineer', department: 'Engineering', salary: 95000, startDate: '2023-06-20' },\n  { id: 5, name: 'Eva Johnson', role: 'Engineering Manager', department: 'Engineering', salary: 165000, startDate: '2019-11-05' },\n  { id: 6, name: 'Frank Lee', role: 'Data Analyst', department: 'Analytics', salary: 110000, startDate: '2022-09-12' },\n  { id: 7, name: 'Grace Kim', role: 'UX Researcher', department: 'Design', salary: 115000, startDate: '2021-08-22' },\n  { id: 8, name: 'Henry Patel', role: 'DevOps Engineer', department: 'Engineering', salary: 140000, startDate: '2020-04-18' },\n  { id: 9, name: 'Ivy Thompson', role: 'Marketing Lead', department: 'Marketing', salary: 125000, startDate: '2021-12-01' },\n  { id: 10, name: 'Jack Brown', role: 'QA Engineer', department: 'Engineering', salary: 105000, startDate: '2023-02-14' },\n  { id: 11, name: 'Karen White', role: 'Product Designer', department: 'Design', salary: 128000, startDate: '2022-05-30' },\n  { id: 12, name: 'Leo Garcia', role: 'Backend Engineer', department: 'Engineering', salary: 138000, startDate: '2020-10-08' },\n];\n\ntype SortKey = keyof Employee;\ntype SortDir = 'asc' | 'desc';\n\nexport default function DataTable() {\n  const [search, setSearch] = useState('');\n  const [sortKey, setSortKey] = useState<SortKey>('name');\n  const [sortDir, setSortDir] = useState<SortDir>('asc');\n  const [page, setPage] = useState(0);\n  const pageSize = 5;\n\n  const handleSort = (key: SortKey) => {\n    if (sortKey === key) {\n      setSortDir(sortDir === 'asc' ? 'desc' : 'asc');\n    } else {\n      setSortKey(key);\n      setSortDir('asc');\n    }\n    setPage(0);\n  };\n\n  const processed = useMemo(() => {\n    let result = data.filter(emp =>\n      emp.name.toLowerCase().includes(search.toLowerCase()) ||\n      emp.role.toLowerCase().includes(search.toLowerCase()) ||\n      emp.department.toLowerCase().includes(search.toLowerCase())\n    );\n    result.sort((a, b) => {\n      const aVal = a[sortKey];\n      const bVal = b[sortKey];\n      const cmp = typeof aVal === 'string' ? aVal.localeCompare(bVal as string) : (aVal as number) - (bVal as number);\n      return sortDir === 'asc' ? cmp : -cmp;\n    });\n    return result;\n  }, [search, sortKey, sortDir]);\n\n  const totalPages = Math.ceil(processed.length / pageSize);\n  const pageData = processed.slice(page * pageSize, (page + 1) * pageSize);\n\n  const sortIndicator = (key: SortKey) => sortKey === key ? (sortDir === 'asc' ? ' \\u25b2' : ' \\u25bc') : '';\n\n  const thStyle = { padding: '10px 12px', textAlign: 'left' as const, cursor: 'pointer', borderBottom: '2px solid #e5e7eb', fontWeight: 600, fontSize: 13, color: '#374151' };\n  const tdStyle = { padding: '10px 12px', borderBottom: '1px solid #f3f4f6' };\n\n  return (\n    <div style={{ maxWidth: 800, margin: '0 auto', padding: 32 }}>\n      <h1>Employee Directory</h1>\n      <input\n        value={search}\n        onChange={e => { setSearch(e.target.value); setPage(0); }}\n        placeholder=\"Search by name, role, or department...\"\n        style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #d1d5db', marginBottom: 16 }}\n      />\n      <div style={{ overflowX: 'auto' }}>\n        <table style={{ width: '100%', borderCollapse: 'collapse' }}>\n          <thead>\n            <tr style={{ backgroundColor: '#f9fafb' }}>\n              <th style={thStyle} onClick={() => handleSort('name')}>Name{sortIndicator('name')}</th>\n              <th style={thStyle} onClick={() => handleSort('role')}>Role{sortIndicator('role')}</th>\n              <th style={thStyle} onClick={() => handleSort('department')}>Department{sortIndicator('department')}</th>\n              <th style={thStyle} onClick={() => handleSort('salary')}>Salary{sortIndicator('salary')}</th>\n              <th style={thStyle} onClick={() => handleSort('startDate')}>Start Date{sortIndicator('startDate')}</th>\n            </tr>\n          </thead>\n          <tbody>\n            {pageData.map(emp => (\n              <tr key={emp.id}>\n                <td style={tdStyle}>{emp.name}</td>\n                <td style={tdStyle}>{emp.role}</td>\n                <td style={tdStyle}>\n                  <span style={{ padding: '2px 10px', borderRadius: 12, backgroundColor: '#e0e7ff', fontSize: 13 }}>{emp.department}</span>\n                </td>\n                <td style={tdStyle}>${emp.salary.toLocaleString()}</td>\n                <td style={tdStyle}>{emp.startDate}</td>\n              </tr>\n            ))}\n          </tbody>\n        </table>\n      </div>\n      {/* Pagination */}\n      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16 }}>\n        <span style={{ color: '#6b7280', fontSize: 14 }}>\n          Showing {page * pageSize + 1}\\u2013{Math.min((page + 1) * pageSize, processed.length)} of {processed.length}\n        </span>\n        <div style={{ display: 'flex', gap: 4 }}>\n          <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}\n            style={{ padding: '6px 12px', borderRadius: 6, border: '1px solid #d1d5db', cursor: 'pointer' }}>Prev</button>\n          {Array.from({ length: totalPages }, (_, i) => (\n            <button key={i} onClick={() => setPage(i)}\n              style={{ padding: '6px 12px', borderRadius: 6, border: 'none', cursor: 'pointer',\n                backgroundColor: page === i ? '#6366f1' : '#f3f4f6', color: page === i ? 'white' : '#374151' }}>\n              {i + 1}\n            </button>\n          ))}\n          <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page === totalPages - 1}\n            style={{ padding: '6px 12px', borderRadius: 6, border: '1px solid #d1d5db', cursor: 'pointer' }}>Next</button>\n        </div>\n      </div>\n    </div>\n  );\n}"
         },
         {
           "type": "list",
-          "heading": "What a real version would add",
+          "heading": "What you will learn",
           "items": [
-            "Sound effects when you click or when time runs out",
-            "Animations and particle effects for visual flair",
-            "A leaderboard where players compete for the top score",
-            "Multiple game modes (timed, survival, target practice)",
-            "Mobile touch support so it works on phones",
-            "Save progress using localStorage or a database",
-            "Multiplayer using WebSockets"
+            "Multi-column sorting with direction toggle (ascending/descending)",
+            "Full-text search across multiple fields with Array.filter",
+            "Pagination: computing page slices, total pages, and navigation",
+            "useMemo to avoid re-sorting and re-filtering on every render",
+            "Responsive table patterns with horizontal scroll"
           ]
         }
       ]
+    },
+    {
+      "type": "accordion",
+      "title": "9. Shopping Cart",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "The shopping cart is a step up from the to-do app. It manages a list of items with quantities, calculates subtotals per item and a grand total, and uses the useReducer hook instead of useState. useReducer is ideal when state transitions are complex and depend on the action type."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "ShoppingCart.tsx",
+          "description": "Shopping cart with useReducer, quantity controls, subtotals, and discount codes",
+          "code": "import { useReducer, useState } from 'react';\n\ninterface Product {\n  id: number;\n  name: string;\n  price: number;\n  image: string;\n}\n\ninterface CartItem extends Product {\n  quantity: number;\n}\n\ntype CartAction =\n  | { type: 'ADD'; product: Product }\n  | { type: 'REMOVE'; id: number }\n  | { type: 'INCREMENT'; id: number }\n  | { type: 'DECREMENT'; id: number }\n  | { type: 'CLEAR' };\n\nfunction cartReducer(state: CartItem[], action: CartAction): CartItem[] {\n  switch (action.type) {\n    case 'ADD': {\n      const existing = state.find(item => item.id === action.product.id);\n      if (existing) {\n        return state.map(item => item.id === action.product.id ? { ...item, quantity: item.quantity + 1 } : item);\n      }\n      return [...state, { ...action.product, quantity: 1 }];\n    }\n    case 'REMOVE':\n      return state.filter(item => item.id !== action.id);\n    case 'INCREMENT':\n      return state.map(item => item.id === action.id ? { ...item, quantity: item.quantity + 1 } : item);\n    case 'DECREMENT':\n      return state.map(item => item.id === action.id\n        ? { ...item, quantity: Math.max(1, item.quantity - 1) }\n        : item);\n    case 'CLEAR':\n      return [];\n    default:\n      return state;\n  }\n}\n\nconst products: Product[] = [\n  { id: 1, name: 'Wireless Keyboard', price: 79.99, image: '\\u2328\\ufe0f' },\n  { id: 2, name: 'USB-C Hub', price: 49.99, image: '\\ud83d\\udd0c' },\n  { id: 3, name: 'Webcam HD', price: 89.99, image: '\\ud83d\\udcf7' },\n  { id: 4, name: 'Desk Lamp', price: 34.99, image: '\\ud83d\\udca1' },\n  { id: 5, name: 'Mouse Pad XL', price: 24.99, image: '\\ud83d\\uddb1\\ufe0f' },\n  { id: 6, name: 'Monitor Stand', price: 59.99, image: '\\ud83d\\udcbb' },\n];\n\nconst discountCodes: Record<string, number> = { SAVE10: 0.10, HALF: 0.50 };\n\nexport default function ShoppingCart() {\n  const [cart, dispatch] = useReducer(cartReducer, []);\n  const [promoCode, setPromoCode] = useState('');\n  const [appliedDiscount, setAppliedDiscount] = useState(0);\n  const [promoError, setPromoError] = useState('');\n\n  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);\n  const discount = subtotal * appliedDiscount;\n  const total = subtotal - discount;\n  const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);\n\n  const applyPromo = () => {\n    const rate = discountCodes[promoCode.toUpperCase()];\n    if (rate) {\n      setAppliedDiscount(rate);\n      setPromoError('');\n    } else {\n      setPromoError('Invalid promo code');\n    }\n  };\n\n  return (\n    <div style={{ maxWidth: 800, margin: '0 auto', padding: 32 }}>\n      <h1>Shop</h1>\n      {/* Product grid */}\n      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 32 }}>\n        {products.map(product => (\n          <div key={product.id} style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: 16, textAlign: 'center' }}>\n            <div style={{ fontSize: 36 }}>{product.image}</div>\n            <h3 style={{ fontSize: 15, margin: '8px 0 4px' }}>{product.name}</h3>\n            <p style={{ fontWeight: 700, color: '#111' }}>${product.price.toFixed(2)}</p>\n            <button onClick={() => dispatch({ type: 'ADD', product })}\n              style={{ padding: '6px 16px', backgroundColor: '#6366f1', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer' }}>\n              Add to Cart\n            </button>\n          </div>\n        ))}\n      </div>\n\n      {/* Cart */}\n      <div style={{ border: '2px solid #6366f1', borderRadius: 12, padding: 20 }}>\n        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>\n          <h2>Cart ({itemCount})</h2>\n          {cart.length > 0 && (\n            <button onClick={() => dispatch({ type: 'CLEAR' })}\n              style={{ color: '#dc2626', border: 'none', background: 'none', cursor: 'pointer' }}>Clear All</button>\n          )}\n        </div>\n\n        {cart.length === 0 ? <p style={{ color: '#9ca3af' }}>Your cart is empty</p> : (\n          <>\n            {cart.map(item => (\n              <div key={item.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #f3f4f6' }}>\n                <div style={{ flex: 1 }}>\n                  <span style={{ fontSize: 20, marginRight: 8 }}>{item.image}</span>\n                  <strong>{item.name}</strong>\n                </div>\n                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>\n                  <button onClick={() => dispatch({ type: 'DECREMENT', id: item.id })} style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid #d1d5db', cursor: 'pointer' }}>-</button>\n                  <span style={{ minWidth: 24, textAlign: 'center' }}>{item.quantity}</span>\n                  <button onClick={() => dispatch({ type: 'INCREMENT', id: item.id })} style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid #d1d5db', cursor: 'pointer' }}>+</button>\n                  <span style={{ minWidth: 70, textAlign: 'right', fontWeight: 600 }}>${(item.price * item.quantity).toFixed(2)}</span>\n                  <button onClick={() => dispatch({ type: 'REMOVE', id: item.id })} style={{ color: '#dc2626', border: 'none', background: 'none', cursor: 'pointer', fontWeight: 700 }}>\\u2715</button>\n                </div>\n              </div>\n            ))}\n\n            {/* Promo code */}\n            <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>\n              <input value={promoCode} onChange={e => setPromoCode(e.target.value)} placeholder=\"Promo code (try SAVE10)\"\n                style={{ flex: 1, padding: 8, borderRadius: 6, border: '1px solid #d1d5db' }} />\n              <button onClick={applyPromo} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid #d1d5db', cursor: 'pointer' }}>Apply</button>\n            </div>\n            {promoError && <p style={{ color: '#dc2626', fontSize: 13, margin: '4px 0 0' }}>{promoError}</p>}\n\n            {/* Totals */}\n            <div style={{ marginTop: 16, paddingTop: 12, borderTop: '2px solid #e5e7eb' }}>\n              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>\n                <span>Subtotal</span><span>${subtotal.toFixed(2)}</span>\n              </div>\n              {appliedDiscount > 0 && (\n                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#16a34a', marginBottom: 4 }}>\n                  <span>Discount ({(appliedDiscount * 100).toFixed(0)}%)</span><span>-${discount.toFixed(2)}</span>\n                </div>\n              )}\n              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 20, fontWeight: 700, marginTop: 8 }}>\n                <span>Total</span><span>${total.toFixed(2)}</span>\n              </div>\n            </div>\n          </>\n        )}\n      </div>\n    </div>\n  );\n}"
+        },
+        {
+          "type": "list",
+          "heading": "What you will learn",
+          "items": [
+            "useReducer for complex state with multiple action types",
+            "The reducer pattern: predictable state transitions via action dispatch",
+            "Computed values: subtotal, discount, total derived from cart state",
+            "Quantity management with increment, decrement, and minimum clamping",
+            "Promo code validation and conditional discount display"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "10. Dashboard Charts",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Data visualization is a key skill for building admin panels and analytics dashboards. This example builds bar charts, line charts, and donut charts from scratch using SVG. No chart library needed -- you will understand how charts actually work under the hood."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "DashboardCharts.tsx",
+          "description": "Dashboard with SVG bar chart, line chart, donut chart, and stat cards",
+          "code": "import { useState } from 'react';\n\n// --- Stat Card ---\nfunction StatCard({ label, value, change, color }: { label: string; value: string; change: number; color: string }) {\n  return (\n    <div style={{ padding: 20, borderRadius: 12, border: '1px solid #e5e7eb', borderLeft: `4px solid ${color}` }}>\n      <div style={{ fontSize: 13, color: '#6b7280' }}>{label}</div>\n      <div style={{ fontSize: 28, fontWeight: 700, margin: '4px 0' }}>{value}</div>\n      <div style={{ fontSize: 13, color: change >= 0 ? '#16a34a' : '#dc2626' }}>\n        {change >= 0 ? '\\u25b2' : '\\u25bc'} {Math.abs(change)}% vs last month\n      </div>\n    </div>\n  );\n}\n\n// --- Bar Chart ---\nfunction BarChart({ data, height = 200 }: { data: { label: string; value: number }[]; height?: number }) {\n  const max = Math.max(...data.map(d => d.value));\n  const barWidth = 40;\n  const gap = 20;\n  const svgWidth = data.length * (barWidth + gap);\n\n  return (\n    <div style={{ overflowX: 'auto' }}>\n      <svg width={svgWidth} height={height + 30} style={{ display: 'block' }}>\n        {data.map((d, i) => {\n          const barHeight = (d.value / max) * height;\n          const x = i * (barWidth + gap);\n          return (\n            <g key={d.label}>\n              <rect x={x} y={height - barHeight} width={barWidth} height={barHeight}\n                rx={4} fill=\"#6366f1\" opacity={0.85} />\n              <text x={x + barWidth / 2} y={height - barHeight - 6}\n                textAnchor=\"middle\" fontSize={12} fill=\"#374151\">{d.value}</text>\n              <text x={x + barWidth / 2} y={height + 18}\n                textAnchor=\"middle\" fontSize={11} fill=\"#6b7280\">{d.label}</text>\n            </g>\n          );\n        })}\n      </svg>\n    </div>\n  );\n}\n\n// --- Line Chart ---\nfunction LineChart({ data, height = 200, width = 500 }: { data: { label: string; value: number }[]; height?: number; width?: number }) {\n  const max = Math.max(...data.map(d => d.value));\n  const padding = 30;\n  const chartWidth = width - padding * 2;\n  const chartHeight = height - padding;\n\n  const points = data.map((d, i) => ({\n    x: padding + (i / (data.length - 1)) * chartWidth,\n    y: padding + chartHeight - (d.value / max) * chartHeight,\n  }));\n  const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');\n  const areaD = `${pathD} L ${points[points.length - 1].x} ${height} L ${points[0].x} ${height} Z`;\n\n  return (\n    <svg width={width} height={height + 20} style={{ display: 'block' }}>\n      <defs>\n        <linearGradient id=\"areaGrad\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\">\n          <stop offset=\"0%\" stopColor=\"#6366f1\" stopOpacity={0.3} />\n          <stop offset=\"100%\" stopColor=\"#6366f1\" stopOpacity={0.02} />\n        </linearGradient>\n      </defs>\n      <path d={areaD} fill=\"url(#areaGrad)\" />\n      <path d={pathD} fill=\"none\" stroke=\"#6366f1\" strokeWidth={2.5} />\n      {points.map((p, i) => (\n        <g key={i}>\n          <circle cx={p.x} cy={p.y} r={4} fill=\"white\" stroke=\"#6366f1\" strokeWidth={2} />\n          <text x={p.x} y={height + 16} textAnchor=\"middle\" fontSize={11} fill=\"#6b7280\">{data[i].label}</text>\n        </g>\n      ))}\n    </svg>\n  );\n}\n\n// --- Donut Chart ---\nfunction DonutChart({ data, size = 180 }: { data: { label: string; value: number; color: string }[]; size?: number }) {\n  const total = data.reduce((sum, d) => sum + d.value, 0);\n  const radius = size / 2 - 10;\n  const innerRadius = radius * 0.6;\n  let cumulativeAngle = -Math.PI / 2;\n\n  return (\n    <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>\n      <svg width={size} height={size}>\n        {data.map(d => {\n          const angle = (d.value / total) * Math.PI * 2;\n          const startAngle = cumulativeAngle;\n          cumulativeAngle += angle;\n          const endAngle = cumulativeAngle;\n          const largeArc = angle > Math.PI ? 1 : 0;\n          const cx = size / 2;\n          const cy = size / 2;\n          const path = [\n            `M ${cx + radius * Math.cos(startAngle)} ${cy + radius * Math.sin(startAngle)}`,\n            `A ${radius} ${radius} 0 ${largeArc} 1 ${cx + radius * Math.cos(endAngle)} ${cy + radius * Math.sin(endAngle)}`,\n            `L ${cx + innerRadius * Math.cos(endAngle)} ${cy + innerRadius * Math.sin(endAngle)}`,\n            `A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${cx + innerRadius * Math.cos(startAngle)} ${cy + innerRadius * Math.sin(startAngle)}`,\n            'Z',\n          ].join(' ');\n          return <path key={d.label} d={path} fill={d.color} />;\n        })}\n        <text x={size / 2} y={size / 2 - 6} textAnchor=\"middle\" fontSize={22} fontWeight={700} fill=\"#111\">{total}</text>\n        <text x={size / 2} y={size / 2 + 14} textAnchor=\"middle\" fontSize={12} fill=\"#6b7280\">Total</text>\n      </svg>\n      <div>\n        {data.map(d => (\n          <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>\n            <div style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: d.color }} />\n            <span style={{ fontSize: 14 }}>{d.label}: {d.value}</span>\n          </div>\n        ))}\n      </div>\n    </div>\n  );\n}\n\n// --- Dashboard ---\nexport default function DashboardCharts() {\n  const [period, setPeriod] = useState<'week' | 'month'>('week');\n\n  const weekData = [\n    { label: 'Mon', value: 120 }, { label: 'Tue', value: 200 },\n    { label: 'Wed', value: 150 }, { label: 'Thu', value: 280 },\n    { label: 'Fri', value: 320 }, { label: 'Sat', value: 250 }, { label: 'Sun', value: 180 },\n  ];\n  const monthData = [\n    { label: 'W1', value: 1200 }, { label: 'W2', value: 1800 },\n    { label: 'W3', value: 1500 }, { label: 'W4', value: 2100 },\n  ];\n\n  const chartData = period === 'week' ? weekData : monthData;\n\n  return (\n    <div style={{ maxWidth: 800, margin: '0 auto', padding: 32 }}>\n      <h1>Analytics Dashboard</h1>\n\n      {/* Stats row */}\n      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>\n        <StatCard label=\"Users\" value=\"2,847\" change={12} color=\"#6366f1\" />\n        <StatCard label=\"Revenue\" value=\"$14.2k\" change={8} color=\"#10b981\" />\n        <StatCard label=\"Orders\" value=\"384\" change={-3} color=\"#f59e0b\" />\n        <StatCard label=\"Conversion\" value=\"3.2%\" change={0.5} color=\"#ec4899\" />\n      </div>\n\n      {/* Period toggle */}\n      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>\n        <button onClick={() => setPeriod('week')} style={{ padding: '6px 16px', borderRadius: 6, border: 'none', cursor: 'pointer',\n          backgroundColor: period === 'week' ? '#6366f1' : '#f3f4f6', color: period === 'week' ? 'white' : '#374151' }}>This Week</button>\n        <button onClick={() => setPeriod('month')} style={{ padding: '6px 16px', borderRadius: 6, border: 'none', cursor: 'pointer',\n          backgroundColor: period === 'month' ? '#6366f1' : '#f3f4f6', color: period === 'month' ? 'white' : '#374151' }}>This Month</button>\n      </div>\n\n      {/* Charts */}\n      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>\n        <div style={{ padding: 20, border: '1px solid #e5e7eb', borderRadius: 12 }}>\n          <h3 style={{ marginTop: 0 }}>Visitors (Bar)</h3>\n          <BarChart data={chartData} />\n        </div>\n        <div style={{ padding: 20, border: '1px solid #e5e7eb', borderRadius: 12 }}>\n          <h3 style={{ marginTop: 0 }}>Revenue Trend (Line)</h3>\n          <LineChart data={chartData} width={340} />\n        </div>\n      </div>\n\n      <div style={{ padding: 20, border: '1px solid #e5e7eb', borderRadius: 12, marginTop: 20 }}>\n        <h3 style={{ marginTop: 0 }}>Traffic Sources</h3>\n        <DonutChart data={[\n          { label: 'Direct', value: 450, color: '#6366f1' },\n          { label: 'Search', value: 320, color: '#10b981' },\n          { label: 'Social', value: 180, color: '#f59e0b' },\n          { label: 'Referral', value: 120, color: '#ec4899' },\n        ]} />\n      </div>\n    </div>\n  );\n}"
+        },
+        {
+          "type": "list",
+          "heading": "What you will learn",
+          "items": [
+            "SVG fundamentals: rect, circle, path, text, and coordinate systems",
+            "Building bar charts by scaling values relative to the maximum",
+            "Line charts with SVG path commands (M for move, L for line, A for arc)",
+            "Donut charts using arc math and cumulative angles",
+            "Dashboard layout patterns with stat cards and chart grids"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "Next Steps",
+      "body": "Try combining ideas from multiple examples. Add authentication (example 7) to the shopping cart (example 9). Add chart visualizations (example 10) to the weather dashboard (example 2). The patterns in these examples are building blocks that compose together in real applications."
     }
   ],
   "keyPoints": [
-    "Portfolio websites are ideal beginner projects that showcase your work and teach component composition",
-    "Blogs teach you about lists, detail pages, and content organization with categories",
-    "E-commerce stores introduce state management across components with shopping cart functionality",
-    "Dashboards teach data visualization with stat cards and chart libraries",
-    "Social media apps demonstrate user interactions like likes, comments, and dynamic lists",
-    "SaaS landing pages are practical marketing sites with hero sections, features, and pricing tables",
-    "Chat applications introduce real-time communication concepts with WebSockets",
-    "Games and interactive apps apply React concepts like state, events, and effects to fun experiences"
+    "The to-do app teaches CRUD operations with useState: create, read, update, delete, and filter",
+    "The weather dashboard demonstrates the loading/error/data pattern used in every API-driven application",
+    "The chat interface uses useRef and useEffect for auto-scrolling and managing nested state",
+    "The image gallery covers responsive CSS Grid, modal overlays, and keyboard navigation with event cleanup",
+    "The calculator introduces the state machine pattern where behavior changes based on current state",
+    "The Markdown blog shows content-driven rendering, regex parsing, and list-to-detail navigation",
+    "The authentication flow uses React Context for global state and demonstrates the protected route pattern",
+    "The data table combines sorting, filtering, and pagination -- essential skills for business applications",
+    "The shopping cart uses useReducer for complex state transitions with multiple action types",
+    "The dashboard charts build SVG visualizations from scratch: bar charts, line charts, and donut charts"
+  ],
+  "prerequisites": [
+    "Basic understanding of React components and JSX",
+    "Familiarity with JavaScript ES6 features (arrow functions, destructuring, spread operator)"
   ]
 }

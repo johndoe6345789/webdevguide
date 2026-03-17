@@ -1,0 +1,45 @@
+{
+  "type": "accordion",
+  "title": "TCP/IP and the Network Stack",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "Once your browser knows the IP address, it needs to establish a connection. The internet uses a layered model called **TCP/IP** to send data reliably across networks."
+    },
+    {
+      "type": "table",
+      "heading": "The four layers of TCP/IP",
+      "headers": [
+        "Layer",
+        "Protocol",
+        "What it does"
+      ],
+      "rows": [
+        [
+          "Application",
+          "HTTP, HTTPS, FTP, SMTP",
+          "Defines how applications communicate (web pages, email, file transfers)"
+        ],
+        [
+          "Transport",
+          "TCP, UDP",
+          "Ensures data arrives reliably (TCP) or quickly (UDP). Breaks data into packets"
+        ],
+        [
+          "Internet",
+          "IP",
+          "Addresses and routes packets across networks using IP addresses"
+        ],
+        [
+          "Link",
+          "Ethernet, Wi-Fi",
+          "Handles the physical transmission of data over cables or wireless signals"
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "body": "Before any HTTP data is sent, TCP performs a **three-way handshake**: the client sends a SYN packet, the server responds with SYN-ACK, and the client replies with ACK. This establishes a reliable connection. For HTTPS, a TLS handshake follows, negotiating encryption keys so all data is transmitted securely."
+    }
+  ]
+}

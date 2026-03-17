@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 1,
+  "title": "Audit your codebase",
+  "body": "Run static analysis tools (ESLint, SonarQube) and generate reports. Check test coverage. Run npm audit for dependency vulnerabilities. List everything in a spreadsheet with severity and estimated effort.",
+  "code": "# Generate an ESLint report\nnpx eslint . --format json --output-file eslint-report.json\n\n# Check test coverage\nnpx jest --coverage\n\n# Audit dependencies for vulnerabilities\nnpm audit\n\n# Check for outdated packages\nnpm outdated",
+  "language": "bash"
+}

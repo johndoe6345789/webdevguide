@@ -1,0 +1,4 @@
+{
+  "type": "text",
+  "body": "As your API grows, you might have endpoints for users, items, authentication, and more. Blueprints let you create separate \"sections\" of your API."
+}

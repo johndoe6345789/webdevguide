@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Why Python Flask?",
+  "headingLevel": 2,
+  "body": "There are many backend frameworks. We are using Flask because it is the simplest way to get started."
+}

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -11,7 +12,11 @@ import ClearAllButton from '@/components/bookmarks/ClearAllButton';
 import { useBookmarksPage } from '@/hooks/useBookmarksPage';
 
 export default function BookmarksPage() {
-  const { bookmarks, showConfirm, setShowConfirm, handleClearAll } = useBookmarksPage();
+  const {
+    bookmarks, showConfirm,
+    setShowConfirm, handleClearAll,
+  } = useBookmarksPage();
+  const t = useTranslations('bookmarks');
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -19,7 +24,11 @@ export default function BookmarksPage() {
 
       {bookmarks.length > 0 && (
         <Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-end' }}>
-          <ClearAllButton showConfirm={showConfirm} setShowConfirm={setShowConfirm} onClear={handleClearAll} />
+          <ClearAllButton
+            showConfirm={showConfirm}
+            setShowConfirm={setShowConfirm}
+            onClear={handleClearAll}
+          />
         </Box>
       )}
 
@@ -37,7 +46,7 @@ export default function BookmarksPage() {
 
       {bookmarks.length > 0 && (
         <Alert severity="info" sx={{ mt: 4 }}>
-          Your bookmarks are saved in your browser. Clearing browser data will remove them.
+          {t('browserSaveNotice')}
         </Alert>
       )}
     </Container>

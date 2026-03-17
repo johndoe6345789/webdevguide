@@ -1,0 +1,7 @@
+{
+  "type": "code",
+  "language": "python",
+  "filename": "app/routes/health.py",
+  "description": "Every production application needs a health check endpoint. Load balancers use it to know if your app is alive, and monitoring tools use it to alert you when it is not.",
+  "code": "from flask import Blueprint, jsonify\nimport time\n\nhealth_bp = Blueprint(\"health\", __name__)\n\n@health_bp.route(\"/api/health\")\ndef health_check():\n    \"\"\"Basic health check endpoint for load balancers and monitoring.\"\"\"\n    checks = {\n        \"status\": \"healthy\",\n        \"timestamp\": time.time(),\n        \"checks\": {},\n    }\n\n    # Check database connectivity\n    try:\n        db.session.execute(\"SELECT 1\")\n        checks[\"checks\"][\"database\"] = \"connected\"\n    except Exception as e:\n        checks[\"status\"] = \"unhealthy\"\n        checks[\"checks\"][\"database\"] = str(e)\n\n    # Check Redis connectivity\n    try:\n        redis_client.ping()\n        checks[\"checks\"][\"redis\"] = \"connected\"\n    except Exception as e:\n        checks[\"status\"] = \"unhealthy\"\n        checks[\"checks\"][\"redis\"] = str(e)\n\n    status_code = 200 if checks[\"status\"] == \"healthy\" else 503\n    return jsonify(checks), status_code"
+}

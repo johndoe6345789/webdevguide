@@ -1,0 +1,14 @@
+{
+  "type": "list",
+  "heading": "Common Authentication Mistakes",
+  "ordered": false,
+  "items": [
+    "Storing passwords in plaintext or with weak hashing (MD5, SHA-1). Use bcrypt, scrypt, or argon2 with a high work factor.",
+    "Storing JWTs in localStorage where any XSS attack can steal them. Use httpOnly cookies with the Secure and SameSite flags instead.",
+    "No rate limiting on login endpoints. Attackers can brute-force passwords with thousands of attempts per second. Add rate limiting (e.g., Flask-Limiter, express-rate-limit).",
+    "Predictable session tokens or password reset tokens. Use cryptographically secure random generators (secrets.token_urlsafe in Python, crypto.randomUUID in Node).",
+    "Not invalidating sessions on password change. When a user changes their password, revoke all existing sessions.",
+    "Missing CSRF protection on state-changing endpoints. Use anti-CSRF tokens for form submissions.",
+    "Overly permissive JWT expiration times. Access tokens should expire in 15 minutes, not 30 days. Use refresh tokens for longer sessions."
+  ]
+}

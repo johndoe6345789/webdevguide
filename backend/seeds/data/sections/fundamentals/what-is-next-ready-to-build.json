@@ -1,0 +1,6 @@
+{
+  "type": "alert",
+  "severity": "success",
+  "title": "Ready to build",
+  "body": "The best way to solidify these fundamentals is to build something. Pick a project -- a task manager, a weather dashboard, a blog -- and apply what you have learned. Refer back to this guide whenever you need a refresher on a specific concept."
+}

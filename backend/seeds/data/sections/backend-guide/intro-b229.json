@@ -1,0 +1,5 @@
+{
+  "type": "code",
+  "language": "python",
+  "code": "@items_bp.route(\"/items\", methods=[\"POST\"])\n@jwt_required()\ndef create_item():\n    try:\n        data = request.get_json()\n\n        if not data or \"name\" not in data:\n            return jsonify({\"error\": \"Name is required\"}), 400\n\n        if len(data[\"name\"]) > 200:\n            return jsonify({\"error\": \"Name must be under 200 characters\"}), 400\n\n        items = read_items()\n        new_item = {\n            \"id\": get_next_id(items),\n            \"name\": data[\"name\"],\n            \"completed\": data.get(\"completed\", False)\n        }\n        items.append(new_item)\n        write_items(items)\n\n        return jsonify(new_item), 201\n\n    except Exception as e:\n        # Log the real error for debugging\n        print(f\"Error creating item: {e}\")\n        # Send a safe message to the frontend\n        return jsonify({\"error\": \"Failed to create item\"}), 500"
+}

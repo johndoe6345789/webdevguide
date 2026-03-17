@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 4,
+  "title": "Refactor incrementally",
+  "body": "Never rewrite a working system from scratch. Improve it piece by piece. When you touch a file for a feature, leave it cleaner than you found it (the Boy Scout Rule). Extract one function, rename one variable, add one test.",
+  "code": "# The Boy Scout Rule in practice:\n# You are adding a feature to UserProfile.tsx.\n# While you are there, you notice:\n#   - A variable named 'd' that should be 'daysUntilExpiry'\n#   - A duplicated validation function\n#   - No test file exists\n#\n# Fix the naming and duplication as part of your feature PR.\n# Create the test file with tests for your new feature.\n# Do NOT rewrite the entire component -- just leave it better.",
+  "language": "text"
+}

@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 2,
+  "title": "Register it in index.json",
+  "body": "Add one line to `backend/seeds/data/index.json` in the sections object. The key must match the slug in your JSON file.",
+  "code": "\"my-new-section\": { \"$ref\": \"sections/my-new-section.json\" }",
+  "language": "json"
+}

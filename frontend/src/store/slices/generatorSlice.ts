@@ -1,4 +1,8 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import type {
+  ProjectDomain, FrameworkOption, StylingOption,
+  StateOption, AuthOption, DatabaseOption,
+} from '@/lib/scaffolder/types';
 
 export interface PropDefinition {
   name: string;
@@ -18,9 +22,37 @@ export interface GeneratorConfig {
   features: string[];
 }
 
+export interface ScaffolderConfig {
+  step: 'domain' | 'configure' | 'output';
+  domain: ProjectDomain | null;
+  projectName: string;
+  framework: FrameworkOption;
+  styling: StylingOption;
+  stateManagement: StateOption;
+  auth: AuthOption;
+  database: DatabaseOption;
+  features: string[];
+  selectedFile: string | null;
+}
+
 interface GeneratorState {
   config: GeneratorConfig;
+  scaffolder: ScaffolderConfig;
+  activeMode: 'quick' | 'scaffolder';
 }
+
+const initialScaffolder: ScaffolderConfig = {
+  step: 'domain',
+  domain: null,
+  projectName: 'my-project',
+  framework: 'nextjs',
+  styling: 'mui',
+  stateManagement: 'redux-toolkit',
+  auth: 'none',
+  database: 'postgresql',
+  features: [],
+  selectedFile: null,
+};
 
 const initialState: GeneratorState = {
   config: {
@@ -33,6 +65,8 @@ const initialState: GeneratorState = {
     props: [],
     features: [],
   },
+  scaffolder: initialScaffolder,
+  activeMode: 'quick',
 };
 
 const generatorSlice = createSlice({
@@ -59,8 +93,41 @@ const generatorSlice = createSlice({
     resetConfig() {
       return initialState;
     },
+    setActiveMode(state, action: PayloadAction<'quick' | 'scaffolder'>) {
+      state.activeMode = action.payload;
+    },
+    updateScaffolder(state, action: PayloadAction<Partial<ScaffolderConfig>>) {
+      state.scaffolder = { ...state.scaffolder, ...action.payload };
+    },
+    setScaffolderDomain(state, action: PayloadAction<ProjectDomain>) {
+      state.scaffolder.domain = action.payload;
+      state.scaffolder.step = 'configure';
+      state.scaffolder.features = [];
+    },
+    toggleScaffolderFeature(state, action: PayloadAction<string>) {
+      const idx = state.scaffolder.features.indexOf(action.payload);
+      if (idx >= 0) {
+        state.scaffolder.features.splice(idx, 1);
+      } else {
+        state.scaffolder.features.push(action.payload);
+      }
+    },
+    setScaffolderStep(state, action: PayloadAction<ScaffolderConfig['step']>) {
+      state.scaffolder.step = action.payload;
+    },
+    selectScaffolderFile(state, action: PayloadAction<string | null>) {
+      state.scaffolder.selectedFile = action.payload;
+    },
+    resetScaffolder(state) {
+      state.scaffolder = initialScaffolder;
+    },
   },
 });
 
-export const { updateConfig, addProp, removeProp, toggleFeature, resetConfig } = generatorSlice.actions;
+export const {
+  updateConfig, addProp, removeProp, toggleFeature, resetConfig,
+  setActiveMode, updateScaffolder, setScaffolderDomain,
+  toggleScaffolderFeature, setScaffolderStep, selectScaffolderFile,
+  resetScaffolder,
+} = generatorSlice.actions;
 export default generatorSlice.reducer;

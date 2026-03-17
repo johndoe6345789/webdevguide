@@ -1,0 +1,65 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "PostgreSQL",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "PostgreSQL is the most feature-rich open-source relational database. It supports JSON columns, full-text search, geographic queries (PostGIS), and advanced indexing. If you are unsure which database to pick, PostgreSQL is almost always a safe default."
+        },
+        {
+          "type": "code",
+          "language": "sql",
+          "filename": "Creating tables in PostgreSQL",
+          "code": "-- Users table with constraints\nCREATE TABLE users (\n  id            SERIAL PRIMARY KEY,\n  email         VARCHAR(255) UNIQUE NOT NULL,\n  username      VARCHAR(50) UNIQUE NOT NULL,\n  password_hash VARCHAR(255) NOT NULL,\n  role          VARCHAR(20) DEFAULT 'user' CHECK (role IN ('user', 'admin', 'moderator')),\n  created_at    TIMESTAMP DEFAULT NOW(),\n  updated_at    TIMESTAMP DEFAULT NOW()\n);\n\n-- Posts table with a foreign key to users\nCREATE TABLE posts (\n  id         SERIAL PRIMARY KEY,\n  author_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  title      VARCHAR(200) NOT NULL,\n  slug       VARCHAR(200) UNIQUE NOT NULL,\n  body       TEXT NOT NULL,\n  published  BOOLEAN DEFAULT FALSE,\n  created_at TIMESTAMP DEFAULT NOW()\n);\n\n-- Index for fast lookups by author\nCREATE INDEX idx_posts_author ON posts(author_id);\n\n-- Index for finding published posts quickly\nCREATE INDEX idx_posts_published ON posts(published) WHERE published = TRUE;"
+        }
+      ]
+    },
+    {
+      "label": "MongoDB",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "MongoDB stores data as flexible JSON-like documents (BSON). There is no fixed schema, so each document in a collection can have different fields. This makes it excellent for rapidly evolving data models and deeply nested structures."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "filename": "MongoDB document and queries",
+          "code": "// A MongoDB document -- notice the nested address and array of tags\nconst user = {\n  _id: ObjectId('507f1f77bcf86cd799439011'),\n  email: 'alice@example.com',\n  username: 'alice',\n  profile: {\n    bio: 'Full-stack developer',\n    avatar: '/avatars/alice.webp',\n    socialLinks: {\n      github: 'https://github.com/alice',\n      twitter: 'https://twitter.com/alice'\n    }\n  },\n  tags: ['javascript', 'react', 'node'],\n  createdAt: new Date()\n};\n\n// Insert\nawait db.collection('users').insertOne(user);\n\n// Query with filter\nconst jsDevs = await db.collection('users')\n  .find({ tags: 'javascript' })\n  .sort({ createdAt: -1 })\n  .limit(20)\n  .toArray();\n\n// Aggregation pipeline\nconst postsByAuthor = await db.collection('posts').aggregate([\n  { $match: { published: true } },\n  { $group: { _id: '$authorId', count: { $sum: 1 } } },\n  { $sort: { count: -1 } }\n]).toArray();"
+        }
+      ]
+    },
+    {
+      "label": "Redis",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Redis is an in-memory data store used primarily for caching, sessions, rate limiting, and real-time features like leaderboards and pub/sub messaging. Data is stored as key-value pairs with optional expiration."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "filename": "Redis common patterns",
+          "code": "import Redis from 'ioredis';\nconst redis = new Redis(process.env.REDIS_URL);\n\n// Simple key-value with expiration (cache for 5 minutes)\nawait redis.set('user:123', JSON.stringify(userData), 'EX', 300);\nconst cached = JSON.parse(await redis.get('user:123'));\n\n// Session storage\nawait redis.set(`session:${sessionId}`, JSON.stringify(session), 'EX', 86400);\n\n// Rate limiting (allow 100 requests per minute)\nconst key = `ratelimit:${userId}:${currentMinute}`;\nconst count = await redis.incr(key);\nif (count === 1) await redis.expire(key, 60);\nif (count > 100) throw new Error('Rate limit exceeded');\n\n// Sorted set for leaderboard\nawait redis.zadd('leaderboard', score, `user:${userId}`);\nconst topTen = await redis.zrevrange('leaderboard', 0, 9, 'WITHSCORES');\n\n// Pub/Sub for real-time events\nawait redis.publish('notifications', JSON.stringify({ userId, message }));"
+        }
+      ]
+    },
+    {
+      "label": "SQLite",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "SQLite is a self-contained database stored in a single file. It requires no server process and is embedded directly into your application. It has become popular for local-first apps, edge computing (Cloudflare D1, Turso/libSQL), and as an alternative to PostgreSQL for smaller workloads."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "filename": "SQLite with better-sqlite3",
+          "code": "import Database from 'better-sqlite3';\n\nconst db = new Database('app.db');\n\n// Create table\ndb.exec(`\n  CREATE TABLE IF NOT EXISTS bookmarks (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    url TEXT NOT NULL,\n    title TEXT NOT NULL,\n    tags TEXT DEFAULT '[]',\n    created_at TEXT DEFAULT (datetime('now'))\n  )\n`);\n\n// Prepared statements (safe from SQL injection)\nconst insert = db.prepare(\n  'INSERT INTO bookmarks (url, title, tags) VALUES (?, ?, ?)'\n);\ninsert.run('https://example.com', 'Example', JSON.stringify(['reference']));\n\n// Transaction for bulk inserts\nconst insertMany = db.transaction((bookmarks) => {\n  for (const b of bookmarks) {\n    insert.run(b.url, b.title, JSON.stringify(b.tags));\n  }\n});\ninsertMany(bookmarkArray);"
+        }
+      ]
+    }
+  ]
+}

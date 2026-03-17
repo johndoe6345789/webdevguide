@@ -63,7 +63,13 @@ const examSlice = createSlice({
   name: 'exam',
   initialState,
   reducers: {
-    startExam(state, action: PayloadAction<{ questions: ExamQuestion[]; timeLimit: number }>) {
+    startExam(
+      state,
+      action: PayloadAction<{
+        questions: ExamQuestion[];
+        timeLimit: number;
+      }>,
+    ) {
       state.activeExam = {
         questions: action.payload.questions,
         currentIndex: 0,
@@ -74,23 +80,42 @@ const examSlice = createSlice({
       state.result = null;
       state.reviewMode = false;
     },
-    setAnswer(state, action: PayloadAction<{ questionId: string; optionId: string }>) {
+    setAnswer(
+      state,
+      action: PayloadAction<{
+        questionId: string; optionId: string;
+      }>,
+    ) {
       if (state.activeExam) {
-        state.activeExam.answers[action.payload.questionId] = action.payload.optionId;
+        state.activeExam.answers[
+          action.payload.questionId
+        ] = action.payload.optionId;
       }
     },
     nextQuestion(state) {
-      if (state.activeExam && state.activeExam.currentIndex < state.activeExam.questions.length - 1) {
+      if (
+        state.activeExam
+        && state.activeExam.currentIndex
+          < state.activeExam.questions.length - 1
+      ) {
         state.activeExam.currentIndex += 1;
       }
     },
     previousQuestion(state) {
-      if (state.activeExam && state.activeExam.currentIndex > 0) {
+      if (
+        state.activeExam
+        && state.activeExam.currentIndex > 0
+      ) {
         state.activeExam.currentIndex -= 1;
       }
     },
     goToQuestion(state, action: PayloadAction<number>) {
-      if (state.activeExam && action.payload >= 0 && action.payload < state.activeExam.questions.length) {
+      if (
+        state.activeExam
+        && action.payload >= 0
+        && action.payload
+          < state.activeExam.questions.length
+      ) {
         state.activeExam.currentIndex = action.payload;
       }
     },
@@ -98,7 +123,9 @@ const examSlice = createSlice({
       if (!state.activeExam) return;
       const { questions, answers, startedAt } = state.activeExam;
       let correct = 0;
-      const categoryBreakdown: Record<string, { correct: number; total: number }> = {};
+      const categoryBreakdown: Record<
+        string, { correct: number; total: number }
+      > = {};
 
       questions.forEach((q) => {
         if (!categoryBreakdown[q.category]) {
@@ -146,9 +173,20 @@ const examSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchExamQuestions.pending, (state) => { state.loading = true; state.error = null; })
-      .addCase(fetchExamQuestions.fulfilled, (state, action) => { state.loading = false; state.questionBank = action.payload; })
-      .addCase(fetchExamQuestions.rejected, (state, action) => { state.loading = false; state.error = action.error.message ?? 'Failed to load questions'; });
+      .addCase(fetchExamQuestions.pending, (s) => {
+        s.loading = true; s.error = null;
+      })
+      .addCase(fetchExamQuestions.fulfilled,
+        (s, action) => {
+          s.loading = false;
+          s.questionBank = action.payload;
+        })
+      .addCase(fetchExamQuestions.rejected,
+        (s, action) => {
+          s.loading = false;
+          s.error = action.error.message
+            ?? 'Failed to load questions';
+        });
   },
 });
 

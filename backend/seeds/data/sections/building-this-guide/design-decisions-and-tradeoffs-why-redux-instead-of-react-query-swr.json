@@ -1,0 +1,11 @@
+{
+  "type": "accordion",
+  "title": "Why Redux instead of React Query / SWR?",
+  "defaultExpanded": false,
+  "blocks": [
+    {
+      "type": "text",
+      "body": "The guide needs client-side persistence for bookmarks, progress tracking, exam history, and theme preference. Redux with redux-persist handles both state management and persistence in one library. React Query excels at server-state caching but would require a separate persistence solution for client state. Using Redux for everything keeps the architecture simpler and the dependency count lower."
+    }
+  ]
+}

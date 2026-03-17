@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Glossary System",
+  "headingLevel": 3,
+  "body": "The glossary is a searchable list of web development terms. The backend serves all terms sorted alphabetically, supports category filtering, and provides case-insensitive search across both term names and definitions. The frontend glossarySlice fetches and stores terms for client-side filtering."
+}

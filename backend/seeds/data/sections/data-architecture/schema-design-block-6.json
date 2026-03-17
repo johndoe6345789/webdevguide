@@ -1,0 +1,6 @@
+{
+  "type": "code",
+  "language": "sql",
+  "filename": "All three relationship types in SQL",
+  "code": "-- ONE-TO-ONE: user <-> profile\nCREATE TABLE profiles (\n  id      SERIAL PRIMARY KEY,\n  user_id INTEGER UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  bio     TEXT,\n  avatar  VARCHAR(255),\n  website VARCHAR(255)\n);\n\n-- ONE-TO-MANY: user -> many posts\nCREATE TABLE posts (\n  id        SERIAL PRIMARY KEY,\n  author_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  title     VARCHAR(200) NOT NULL,\n  body      TEXT NOT NULL\n);\n\n-- MANY-TO-MANY: posts <-> tags (junction table)\nCREATE TABLE tags (\n  id   SERIAL PRIMARY KEY,\n  name VARCHAR(50) UNIQUE NOT NULL\n);\n\nCREATE TABLE post_tags (\n  post_id INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,\n  tag_id  INTEGER NOT NULL REFERENCES tags(id) ON DELETE CASCADE,\n  PRIMARY KEY (post_id, tag_id)\n);\n\n-- Query: get all tags for a post\nSELECT t.name\nFROM tags t\nJOIN post_tags pt ON t.id = pt.tag_id\nWHERE pt.post_id = 42;"
+}

@@ -1,0 +1,17 @@
+{
+  "type": "list",
+  "heading": "From JSON File to Rendered Page",
+  "ordered": true,
+  "items": [
+    "You create a JSON file in backend/seeds/data/sections/ with a title, slug, description, and an array of content blocks",
+    "You add a $ref entry in backend/seeds/data/index.json pointing to your new file",
+    "You run `flask seed-db` which reads index.json, resolves all $ref pointers recursively, and writes the resolved data into the JsonDatabase as guide_sections.json",
+    "The seed command also derives a navigation list from the sections (id, title, slug, order, icon) and writes it as navigation.json",
+    "The Flask API serves the data at GET /api/guide/sections (list without blocks), GET /api/guide/sections/<slug> (full content), and GET /api/guide/navigation",
+    "The Next.js page dispatches the fetchSectionBySlug async thunk, which calls guideApi.getSectionBySlug(slug) using Axios",
+    "The Redux guideSlice stores the response in state.guide.currentSection",
+    "GuidePageLayout reads currentSection from the store and passes the blocks array to SectionRenderer",
+    "SectionRenderer maps over the blocks array and passes each block to BlockRenderer",
+    "BlockRenderer switches on block.type and delegates to the correct renderer component -- TextBlockRenderer, CodeBlockRenderer, TabsBlockRenderer, etc."
+  ]
+}

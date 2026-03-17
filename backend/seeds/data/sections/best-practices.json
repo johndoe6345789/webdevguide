@@ -1,0 +1,196 @@
+{
+  "title": "Best Practices, Pitfalls & Technical Debt",
+  "slug": "best-practices",
+  "description": "Essential do's and don'ts for building maintainable websites, avoiding common mistakes, and preventing technical debt",
+  "icon": "Checklist",
+  "order": 26,
+  "estimatedMinutes": 35,
+  "difficulty": "intermediate",
+  "prerequisites": [
+    "fundamentals"
+  ],
+  "keyPoints": [
+    "Code organization and architecture",
+    "Security best practices",
+    "Performance optimization",
+    "Technical debt prevention",
+    "Accessibility and SEO"
+  ],
+  "blocks": [
+    {
+      "$ref": "best-practices/what-is-technical-debt-what-is-technical-debt.json"
+    },
+    {
+      "type": "text",
+      "body": "Not all technical debt is bad. Sometimes you deliberately take on debt to ship a feature faster and meet a deadline. The key is to recognize it, document it, and schedule time to pay it back. The dangerous kind is accidental debt -- shortcuts you did not even realize you were taking."
+    },
+    {
+      "$ref": "best-practices/what-is-technical-debt-types-of-technical-debt.json"
+    },
+    {
+      "$ref": "best-practices/what-is-technical-debt-3.json"
+    },
+    {
+      "$ref": "best-practices/code-organization-dos-and-donts-code-organization-dos-and-donts.json"
+    },
+    {
+      "$ref": "best-practices/code-organization-dos-and-donts-block-1.json"
+    },
+    {
+      "$ref": "best-practices/code-organization-dos-and-donts-naming-conventions-dos-and-donts.json"
+    },
+    {
+      "$ref": "best-practices/code-organization-dos-and-donts-dry-principle-dont-repeat-yourself.json"
+    },
+    {
+      "$ref": "best-practices/code-organization-dos-and-donts-block-4.json"
+    },
+    {
+      "$ref": "best-practices/code-organization-dos-and-donts-single-responsibility-principle.json"
+    },
+    {
+      "$ref": "best-practices/code-organization-dos-and-donts-block-6.json"
+    },
+    {
+      "$ref": "best-practices/code-organization-dos-and-donts-block-7.json"
+    },
+    {
+      "$ref": "best-practices/security-dos-and-donts-security-dos-and-donts.json"
+    },
+    {
+      "$ref": "best-practices/security-dos-and-donts-never-trust-user-input.json"
+    },
+    {
+      "$ref": "best-practices/security-dos-and-donts-block-2.json"
+    },
+    {
+      "$ref": "best-practices/security-dos-and-donts-block-3.json"
+    },
+    {
+      "$ref": "best-practices/security-dos-and-donts-common-authentication-mistakes.json"
+    },
+    {
+      "$ref": "best-practices/security-dos-and-donts-block-5.json"
+    },
+    {
+      "$ref": "best-practices/security-dos-and-donts-never-commit-env-files.json"
+    },
+    {
+      "$ref": "best-practices/security-dos-and-donts-block-7.json"
+    },
+    {
+      "$ref": "best-practices/security-dos-and-donts-supply-chain-attacks.json"
+    },
+    {
+      "$ref": "best-practices/performance-dos-and-donts-performance-dos-and-donts.json"
+    },
+    {
+      "$ref": "best-practices/performance-dos-and-donts-block-1.json"
+    },
+    {
+      "$ref": "best-practices/performance-dos-and-donts-block-2.json"
+    },
+    {
+      "$ref": "best-practices/performance-dos-and-donts-block-3.json"
+    },
+    {
+      "$ref": "best-practices/performance-dos-and-donts-block-4.json"
+    },
+    {
+      "$ref": "best-practices/performance-dos-and-donts-block-5.json"
+    },
+    {
+      "$ref": "best-practices/accessibility-a11y-dos-and-donts-accessibility-a11y-dos-and-donts.json"
+    },
+    {
+      "$ref": "best-practices/accessibility-a11y-dos-and-donts-block-1.json"
+    },
+    {
+      "$ref": "best-practices/accessibility-a11y-dos-and-donts-block-2.json"
+    },
+    {
+      "$ref": "best-practices/accessibility-a11y-dos-and-donts-block-12.json"
+    },
+    {
+      "$ref": "best-practices/accessibility-a11y-dos-and-donts-color-contrast-minimums-wcag.json"
+    },
+    {
+      "$ref": "best-practices/seo-dos-and-donts-seo-dos-and-donts.json"
+    },
+    {
+      "$ref": "best-practices/seo-dos-and-donts-block-14.json"
+    },
+    {
+      "$ref": "best-practices/seo-dos-and-donts-heading-hierarchy-matters.json"
+    },
+    {
+      "$ref": "best-practices/seo-dos-and-donts-core-web-vitals-performance-targets.json"
+    },
+    {
+      "$ref": "best-practices/seo-dos-and-donts-url-structure-bad-vs-good.json"
+    },
+    {
+      "$ref": "best-practices/git-collaboration-dos-and-donts-git-collaboration-dos-and-donts.json"
+    },
+    {
+      "$ref": "best-practices/git-collaboration-dos-and-donts-commit-messages-bad-vs-good.json"
+    },
+    {
+      "$ref": "best-practices/git-collaboration-dos-and-donts-block-17.json"
+    },
+    {
+      "$ref": "best-practices/git-collaboration-dos-and-donts-code-review-checklist.json"
+    },
+    {
+      "$ref": "best-practices/git-collaboration-dos-and-donts-keep-pull-requests-small.json"
+    },
+    {
+      "$ref": "best-practices/deployment-dos-and-donts-deployment-dos-and-donts.json"
+    },
+    {
+      "$ref": "best-practices/deployment-dos-and-donts-environment-parity.json"
+    },
+    {
+      "$ref": "best-practices/deployment-dos-and-donts-block-22.json"
+    },
+    {
+      "$ref": "best-practices/deployment-dos-and-donts-rollback-strategy-always-have-one.json"
+    },
+    {
+      "$ref": "best-practices/deployment-dos-and-donts-never-deploy-manually.json"
+    },
+    {
+      "$ref": "best-practices/common-beginner-pitfalls-common-beginner-pitfalls.json"
+    },
+    {
+      "$ref": "best-practices/common-beginner-pitfalls-1.json"
+    },
+    {
+      "$ref": "best-practices/common-beginner-pitfalls-paying-down-technical-debt.json"
+    },
+    {
+      "$ref": "best-practices/common-beginner-pitfalls-audit-your-codebase.json"
+    },
+    {
+      "$ref": "best-practices/common-beginner-pitfalls-prioritize-by-impact-and-risk.json"
+    },
+    {
+      "$ref": "best-practices/common-beginner-pitfalls-allocate-time-every-sprint.json"
+    },
+    {
+      "$ref": "best-practices/common-beginner-pitfalls-refactor-incrementally.json"
+    },
+    {
+      "$ref": "best-practices/common-beginner-pitfalls-add-tests-retroactively-to-critical-paths.json"
+    },
+    {
+      "$ref": "best-practices/common-beginner-pitfalls-update-dependencies-regularly.json"
+    },
+    {
+      "$ref": "best-practices/common-beginner-pitfalls-the-rewrite-trap-why-full-rewrites-almost-always-fail.json"
+    },
+    {
+      "$ref": "best-practices/common-beginner-pitfalls-the-golden-rule.json"
+    }
+  ]
+}

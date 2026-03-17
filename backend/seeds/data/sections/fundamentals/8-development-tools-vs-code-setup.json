@@ -1,0 +1,30 @@
+{
+  "type": "accordion",
+  "title": "VS Code Setup",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "Visual Studio Code is the most popular editor for web development. A well-configured VS Code setup catches errors as you type, formats code automatically, and provides intelligent autocompletion."
+    },
+    {
+      "type": "list",
+      "heading": "Essential VS Code extensions",
+      "items": [
+        "**ESLint** -- Highlights code problems and enforces coding standards in real time",
+        "**Prettier** -- Auto-formats your code on save so you never argue about tabs vs spaces",
+        "**TypeScript Vue Plugin / ES7+ React snippets** -- Framework-specific snippets and support",
+        "**GitLens** -- See who changed each line of code and when, inline blame annotations",
+        "**Error Lens** -- Shows errors and warnings inline next to the problematic code",
+        "**Auto Rename Tag** -- When you rename an opening HTML/JSX tag, the closing tag updates too",
+        "**Path Intellisense** -- Autocompletes file paths as you type import statements"
+      ]
+    },
+    {
+      "type": "code",
+      "language": "json",
+      "filename": ".vscode/settings.json",
+      "description": "Recommended VS Code workspace settings",
+      "code": "{\n  \"editor.formatOnSave\": true,\n  \"editor.defaultFormatter\": \"esbenp.prettier-vscode\",\n  \"editor.codeActionsOnSave\": {\n    \"source.fixAll.eslint\": \"explicit\"\n  },\n  \"editor.tabSize\": 2,\n  \"editor.wordWrap\": \"on\",\n  \"editor.bracketPairColorization.enabled\": true,\n  \"editor.guides.bracketPairs\": \"active\",\n  \"typescript.preferences.importModuleSpecifier\": \"non-relative\",\n  \"emmet.includeLanguages\": {\n    \"javascript\": \"javascriptreact\",\n    \"typescript\": \"typescriptreact\"\n  },\n  \"files.exclude\": {\n    \"**/node_modules\": true,\n    \"**/.next\": true\n  }\n}"
+    }
+  ]
+}

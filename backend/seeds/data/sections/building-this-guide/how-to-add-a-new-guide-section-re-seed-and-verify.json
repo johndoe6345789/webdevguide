@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 5,
+  "title": "Re-seed and verify",
+  "body": "Run the seed command to load your new section into the database. The navigation list is derived from sections at seed time, so it updates automatically. Then start the dev server and visit your new page.",
+  "code": "cd backend && FLASK_APP=app:create_app flask seed-db\ncd ../frontend && npm run dev\n# Visit http://localhost:3000/my-new-section",
+  "language": "bash"
+}

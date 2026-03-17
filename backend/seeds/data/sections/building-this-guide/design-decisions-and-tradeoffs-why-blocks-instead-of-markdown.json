@@ -1,0 +1,11 @@
+{
+  "type": "accordion",
+  "title": "Why blocks instead of Markdown?",
+  "defaultExpanded": false,
+  "blocks": [
+    {
+      "type": "text",
+      "body": "The block-based system gives precise control over rendering. Each block type maps to a specific React component, enabling interactive features like tabs, accordions, and card grids that would be impossible or awkward in Markdown. Markdown would be simpler to write but harder to render with the level of interactivity and visual consistency this guide requires. Blocks also enable strong type checking -- the TypeScript ContentBlock union type ensures every block is well-structured at compile time."
+    }
+  ]
+}

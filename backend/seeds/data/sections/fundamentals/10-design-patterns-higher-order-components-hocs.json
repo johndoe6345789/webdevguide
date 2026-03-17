@@ -1,0 +1,21 @@
+{
+  "type": "accordion",
+  "title": "Higher-Order Components (HOCs)",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "A **Higher-Order Component** is a function that takes a component and returns a new component with additional behavior. It is the component equivalent of a decorator. While hooks have replaced most HOC use cases, you will encounter them in older codebases and some libraries."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "hoc-example.tsx",
+      "code": "import { useState, useEffect, ComponentType } from 'react';\n\n// HOC that adds loading behavior to any component\nfunction withLoading<P extends object>(\n  WrappedComponent: ComponentType<P>,\n  fetchData: () => Promise<Partial<P>>\n) {\n  return function WithLoadingComponent(props: Omit<P, keyof Awaited<ReturnType<typeof fetchData>>>) {\n    const [data, setData] = useState<Partial<P> | null>(null);\n    const [loading, setLoading] = useState(true);\n\n    useEffect(() => {\n      fetchData()\n        .then(setData)\n        .finally(() => setLoading(false));\n    }, []);\n\n    if (loading) return <p>Loading...</p>;\n    if (!data) return <p>Failed to load data.</p>;\n\n    return <WrappedComponent {...(props as P)} {...data} />;\n  };\n}\n\n// Usage\ninterface UserListProps {\n  users: User[];\n}\n\nfunction UserList({ users }: UserListProps) {\n  return (\n    <ul>\n      {users.map((u) => <li key={u.id}>{u.name}</li>)}\n    </ul>\n  );\n}\n\nconst UserListWithLoading = withLoading(UserList, () =>\n  fetch('/api/users').then((r) => r.json()).then((users) => ({ users }))\n);\n\n// Now <UserListWithLoading /> automatically fetches and shows loading state"
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "body": "HOCs add a layer of indirection that makes debugging harder. Prefer custom hooks for new code. The main place you still see HOCs is in older React codebases and a few libraries like Redux's `connect()` function."
+    }
+  ]
+}

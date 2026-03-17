@@ -1,0 +1,41 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "routing.ts",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "frontend/src/i18n/routing.ts",
+          "description": "Defines supported locales and prefix strategy.",
+          "code": "import { defineRouting } from 'next-intl/routing';\n\nexport const routing = defineRouting({\n  locales: ['en'],\n  defaultLocale: 'en',\n  localePrefix: 'as-needed',\n});"
+        }
+      ]
+    },
+    {
+      "label": "request.ts",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "frontend/src/i18n/request.ts",
+          "description": "Server-side locale loading. Dynamically imports the message file for the requested locale.",
+          "code": "import { getRequestConfig } from 'next-intl/server';\nimport { routing } from './routing';\n\nexport default getRequestConfig(async ({ requestLocale }) => {\n  let locale = await requestLocale;\n  if (!locale || !routing.locales.includes(locale as 'en')) {\n    locale = routing.defaultLocale;\n  }\n  return {\n    locale,\n    messages: (await import(`../messages/${locale}.json`)).default,\n  };\n});"
+        }
+      ]
+    },
+    {
+      "label": "next.config.ts",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "frontend/next.config.ts",
+          "description": "Next.js config with the next-intl plugin. The output: 'standalone' setting enables optimized Docker builds.",
+          "code": "import type { NextConfig } from 'next';\nimport createNextIntlPlugin from 'next-intl/plugin';\n\nconst withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');\n\nconst nextConfig: NextConfig = {\n  output: 'standalone',\n};\n\nexport default withNextIntl(nextConfig);"
+        }
+      ]
+    }
+  ]
+}

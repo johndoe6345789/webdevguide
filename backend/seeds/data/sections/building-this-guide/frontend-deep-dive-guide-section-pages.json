@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Guide Section Pages",
+  "headingLevel": 3,
+  "body": "Each guide section has its own page.tsx file that follows a simple, consistent pattern. The only thing that changes between pages is the slug string passed to `fetchSectionBySlug`. The page dispatches the async thunk on mount, reads the state from Redux, and passes it to `GuidePageLayout`."
+}

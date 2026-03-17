@@ -1,0 +1,29 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "DON'T: N+1 Queries",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "python",
+          "filename": "app/routes/orders.py",
+          "description": "For 100 orders, this executes 101 database queries -- one for the order list and one for each order's customer. This is the classic N+1 problem.",
+          "code": "@app.route(\"/api/orders\")\ndef get_orders():\n    orders = db.execute(\"SELECT * FROM orders LIMIT 100\").fetchall()\n\n    result = []\n    for order in orders:\n        # BAD: one query per order to get the customer name\n        customer = db.execute(\n            \"SELECT name FROM customers WHERE id = ?\",\n            (order[\"customer_id\"],)\n        ).fetchone()\n        result.append({\n            \"id\": order[\"id\"],\n            \"total\": order[\"total\"],\n            \"customer_name\": customer[\"name\"],\n        })\n\n    return jsonify(result)  # 101 queries for 100 orders!"
+        }
+      ]
+    },
+    {
+      "label": "DO: JOIN Query",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "python",
+          "filename": "app/routes/orders.py",
+          "description": "A single JOIN query replaces 101 queries with 1. Always think about how many queries your endpoint actually executes.",
+          "code": "@app.route(\"/api/orders\")\ndef get_orders():\n    # GOOD: one query gets everything with a JOIN\n    rows = db.execute(\"\"\"\n        SELECT orders.id, orders.total, customers.name AS customer_name\n        FROM orders\n        JOIN customers ON customers.id = orders.customer_id\n        ORDER BY orders.created_at DESC\n        LIMIT 100\n    \"\"\").fetchall()\n\n    return jsonify([\n        {\n            \"id\": row[\"id\"],\n            \"total\": row[\"total\"],\n            \"customer_name\": row[\"customer_name\"],\n        }\n        for row in rows\n    ])  # 1 query for 100 orders!"
+        }
+      ]
+    }
+  ]
+}

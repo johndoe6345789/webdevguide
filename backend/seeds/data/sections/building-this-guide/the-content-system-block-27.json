@@ -1,0 +1,7 @@
+{
+  "type": "code",
+  "language": "json",
+  "filename": "backend/seeds/data/index.json",
+  "description": "The root index file. Every section, exam, and glossary reference points to a file that will be resolved at seed time.",
+  "code": "{\n  \"sections\": {\n    \"getting-started\":      { \"$ref\": \"sections/getting-started.json\" },\n    \"fundamentals\":         { \"$ref\": \"sections/fundamentals.json\" },\n    \"examples\":             { \"$ref\": \"sections/examples.json\" },\n    \"features\":             { \"$ref\": \"sections/features.json\" },\n    \"backend-guide\":        { \"$ref\": \"sections/backend-guide.json\" },\n    \"docker-guide\":         { \"$ref\": \"sections/docker-guide.json\" },\n    \"testing-qa\":           { \"$ref\": \"sections/testing-qa.json\" },\n    \"ci-cd-github-actions\": { \"$ref\": \"sections/ci-cd-github-actions.json\" },\n    \"building-this-guide\":  { \"$ref\": \"sections/building-this-guide.json\" },\n    \"resources\":            { \"$ref\": \"sections/resources.json\" }\n  },\n  \"exam\":     { \"$ref\": \"exam_questions.json\" },\n  \"glossary\": { \"$ref\": \"glossary_terms.json\" }\n}"
+}

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
@@ -10,11 +11,13 @@ interface ScoreCircleProps {
 }
 
 export default function ScoreCircle({ score, passed }: ScoreCircleProps) {
+  const t = useTranslations('exam');
+  const label = `${score}${t('percentSign')}`;
   return (
     <Box sx={{ position: 'relative', display: 'inline-flex', my: 3 }}>
       <CircularProgress variant="determinate" value={score} size={120} thickness={6} color={passed ? 'success' : 'error'} />
       <Box sx={{ position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Typography variant="h4" fontWeight={700}>{score}%</Typography>
+        <Typography variant="h4" fontWeight={700}>{label}</Typography>
       </Box>
     </Box>
   );

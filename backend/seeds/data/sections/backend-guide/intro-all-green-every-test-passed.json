@@ -1,0 +1,5 @@
+{
+  "type": "alert",
+  "severity": "success",
+  "body": "All green. Every test passed. Get into the habit of running tests after every change."
+}

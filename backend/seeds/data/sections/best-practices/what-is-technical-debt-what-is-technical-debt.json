@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "What is Technical Debt?",
+  "headingLevel": 2,
+  "body": "Technical debt is exactly like financial debt. When you take a shortcut in your code -- skipping tests, copying and pasting instead of abstracting, hardcoding values -- you are borrowing time from your future self. And just like a credit card, that debt accumulates interest. The longer you wait to pay it off, the more expensive it becomes. A quick hack that saves you 30 minutes today can cost your team 30 hours six months from now when nobody remembers why the code works that way."
+}

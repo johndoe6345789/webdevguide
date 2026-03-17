@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Configuration Classes",
+  "headingLevel": 3,
+  "body": "Flask configuration is handled by three classes that inherit from BaseConfig. The `config_by_name` dictionary maps environment names to classes. The DATA_DIR setting controls where JsonDatabase stores its files -- development and production use `backend/data/`, testing uses a separate `backend/test_data/` directory."
+}

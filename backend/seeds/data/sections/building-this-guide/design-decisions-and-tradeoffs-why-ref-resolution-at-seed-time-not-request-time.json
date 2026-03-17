@@ -1,0 +1,11 @@
+{
+  "type": "accordion",
+  "title": "Why $ref resolution at seed time, not request time?",
+  "defaultExpanded": false,
+  "blocks": [
+    {
+      "type": "text",
+      "body": "Resolving $ref pointers at seed time keeps request handling fast and avoids filesystem access during web requests. The Flask API serves pre-resolved JSON directly from the JsonDatabase. The tradeoff is that you must re-seed after content changes -- but since seeding takes under a second for 30+ sections, this is negligible. In production, the Docker entrypoint re-seeds automatically on every container start."
+    }
+  ]
+}

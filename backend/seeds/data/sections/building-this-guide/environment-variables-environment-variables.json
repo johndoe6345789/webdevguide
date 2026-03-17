@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Environment Variables",
+  "headingLevel": 2,
+  "body": "The project uses a small number of environment variables to configure runtime behavior."
+}

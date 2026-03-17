@@ -1,0 +1,26 @@
+{
+  "type": "cardGrid",
+  "columns": 2,
+  "cards": [
+    {
+      "title": "Row-Level Security",
+      "body": "Users should only see their own data. Always filter queries by the authenticated user's ID. Never trust a user-provided ID without checking ownership.",
+      "chip": "Authorization"
+    },
+    {
+      "title": "Role-Based Access Control",
+      "body": "Define roles (user, admin, moderator) and check permissions before allowing operations. Use middleware to enforce access control at the API layer.",
+      "chip": "Authorization"
+    },
+    {
+      "title": "GDPR: Right to Deletion",
+      "body": "Users must be able to request deletion of all their personal data. Use CASCADE deletes on foreign keys and implement a data export endpoint.",
+      "chip": "Compliance"
+    },
+    {
+      "title": "GDPR: Data Minimization",
+      "body": "Only collect data you actually need. Do not store IP addresses, browser fingerprints, or location data unless your application requires it.",
+      "chip": "Compliance"
+    }
+  ]
+}

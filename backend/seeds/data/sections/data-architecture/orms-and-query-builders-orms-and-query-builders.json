@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "ORMs and Query Builders",
+  "headingLevel": 2,
+  "body": "An ORM (Object-Relational Mapper) lets you interact with your database using JavaScript/TypeScript objects instead of raw SQL strings. Query builders sit between raw SQL and full ORMs, giving you more control while still providing type safety."
+}

@@ -1,0 +1,34 @@
+{
+  "type": "accordion",
+  "title": "Custom Hooks Pattern (The Modern Approach)",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "Custom hooks have largely replaced render props and HOCs as the preferred way to share stateful logic. They are simpler to write, easier to compose, and do not add extra nesting to your component tree."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "custom-hooks-pattern.tsx",
+      "code": "import { useState, useEffect, useCallback } from 'react';\n\n// Pattern: encapsulate complex state logic\nfunction useToggle(initial: boolean = false) {\n  const [value, setValue] = useState(initial);\n  const toggle = useCallback(() => setValue((v) => !v), []);\n  const setTrue = useCallback(() => setValue(true), []);\n  const setFalse = useCallback(() => setValue(false), []);\n  return { value, toggle, setTrue, setFalse };\n}\n\n// Pattern: window event listener\nfunction useWindowSize() {\n  const [size, setSize] = useState({ width: 0, height: 0 });\n\n  useEffect(() => {\n    function handleResize() {\n      setSize({ width: window.innerWidth, height: window.innerHeight });\n    }\n\n    handleResize(); // Set initial size\n    window.addEventListener('resize', handleResize);\n    return () => window.removeEventListener('resize', handleResize);\n  }, []);\n\n  return size;\n}\n\n// Pattern: media query hook\nfunction useMediaQuery(query: string): boolean {\n  const [matches, setMatches] = useState(false);\n\n  useEffect(() => {\n    const mediaQuery = window.matchMedia(query);\n    setMatches(mediaQuery.matches);\n\n    function handler(event: MediaQueryListEvent) {\n      setMatches(event.matches);\n    }\n\n    mediaQuery.addEventListener('change', handler);\n    return () => mediaQuery.removeEventListener('change', handler);\n  }, [query]);\n\n  return matches;\n}\n\n// Usage: compose hooks together in components\nfunction ResponsiveLayout() {\n  const isMobile = useMediaQuery('(max-width: 768px)');\n  const { width, height } = useWindowSize();\n  const sidebar = useToggle(true);\n\n  return (\n    <div>\n      <button onClick={sidebar.toggle}>\n        {sidebar.value ? 'Hide' : 'Show'} Sidebar\n      </button>\n      <p>Window: {width} x {height}</p>\n      {isMobile ? <MobileLayout /> : <DesktopLayout showSidebar={sidebar.value} />}\n    </div>\n  );\n}"
+    },
+    {
+      "type": "cardGrid",
+      "columns": 2,
+      "cards": [
+        {
+          "title": "When to use custom hooks",
+          "body": "Logic is reused across multiple components\nA component has too much stateful logic\nYou need to compose multiple behaviors\nYou want to test logic separately from UI",
+          "icon": "CheckCircle",
+          "chip": "Good fit"
+        },
+        {
+          "title": "When NOT to use custom hooks",
+          "body": "The logic is used in only one component and is simple\nYou are just wrapping a single useState or useEffect\nThe hook does not actually reuse any logic\nYou are prematurely abstracting",
+          "icon": "Cancel",
+          "chip": "Avoid"
+        }
+      ]
+    }
+  ]
+}

@@ -9,7 +9,9 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import type { TableBlock } from '@/types/content';
 
-export default function TableBlockRenderer({ headers, rows, heading }: TableBlock) {
+export default function TableBlockRenderer(
+  { headers, rows, heading }: TableBlock,
+) {
   return (
     <Box>
       {heading && <Typography variant="h6" fontWeight={600} gutterBottom>{heading}</Typography>}

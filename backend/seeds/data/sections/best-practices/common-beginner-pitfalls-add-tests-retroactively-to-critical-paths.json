@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 5,
+  "title": "Add tests retroactively to critical paths",
+  "body": "You cannot test everything at once. Start with the code that would cause the most damage if it broke: payment processing, authentication, data validation. Write integration tests first (more value per test) then add unit tests for complex logic.",
+  "code": "// Focus testing on code where bugs cause real damage\ndescribe(\"Payment Processing\", () => {\n  test(\"calculates tax correctly for all US states\", () => {\n    expect(calculateTax(10000, \"CA\")).toBe(725); // 7.25%\n    expect(calculateTax(10000, \"OR\")).toBe(0);   // No sales tax\n    expect(calculateTax(10000, \"TX\")).toBe(625); // 6.25%\n  });\n\n  test(\"rejects negative amounts\", () => {\n    expect(() => processPayment(-100)).toThrow(\"Invalid amount\");\n  });\n\n  test(\"handles network timeout gracefully\", async () => {\n    jest.spyOn(global, \"fetch\").mockRejectedValue(new Error(\"Timeout\"));\n    const result = await processPayment(5000);\n    expect(result.status).toBe(\"failed\");\n    expect(result.error).toBe(\"Payment service unavailable\");\n  });\n});",
+  "language": "typescript"
+}

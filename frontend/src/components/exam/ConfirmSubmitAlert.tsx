@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -11,7 +12,11 @@ interface ConfirmSubmitAlertProps {
   onConfirm: () => void;
 }
 
-export default function ConfirmSubmitAlert({ answeredCount, totalCount, onCancel, onConfirm }: ConfirmSubmitAlertProps) {
+export default function ConfirmSubmitAlert(
+  { answeredCount, totalCount,
+    onCancel, onConfirm }: ConfirmSubmitAlertProps
+) {
+  const t = useTranslations('exam');
   const allAnswered = answeredCount >= totalCount;
   return (
     <Alert
@@ -19,14 +24,14 @@ export default function ConfirmSubmitAlert({ answeredCount, totalCount, onCancel
       sx={{ mt: 3 }}
       action={
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button color="inherit" size="small" onClick={onCancel}>Cancel</Button>
-          <Button color="error" size="small" variant="contained" onClick={onConfirm}>Confirm Submit</Button>
+          <Button color="inherit" size="small" onClick={onCancel}>{t('cancel')}</Button>
+          <Button color="error" size="small" variant="contained" onClick={onConfirm}>{t('confirmSubmit')}</Button>
         </Box>
       }
     >
       {allAnswered
-        ? 'Are you sure you want to submit your exam? This action cannot be undone.'
-        : `You have answered ${answeredCount} of ${totalCount} questions. Unanswered questions will be marked incorrect.`}
+        ? t('confirmAllAnswered')
+        : t('confirmPartial', { answered: answeredCount, total: totalCount })}
     </Alert>
   );
 }

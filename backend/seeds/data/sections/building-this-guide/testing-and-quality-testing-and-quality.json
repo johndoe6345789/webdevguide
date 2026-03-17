@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Testing and Quality",
+  "headingLevel": 2,
+  "body": "The project uses multiple layers of quality assurance: Python linting with flake8, TypeScript checking with tsc, JavaScript linting with ESLint, unit testing with Jest, and end-to-end testing with Playwright."
+}

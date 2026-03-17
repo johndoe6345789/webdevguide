@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 6,
+  "title": "Update dependencies regularly",
+  "body": "Do not let dependencies fall years behind. Update monthly or use Dependabot/Renovate for automated PRs. Run your test suite after every update. Pin major versions in package.json and review changelogs for breaking changes before upgrading.",
+  "code": "# Update all dependencies to latest compatible versions\nnpm update\n\n# Check what is outdated\nnpm outdated\n\n# Update a specific package to latest major version\nnpm install react@latest react-dom@latest\n\n# Run tests after updating to catch breaking changes\nnpm test",
+  "language": "bash"
+}

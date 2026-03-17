@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "The Content System",
+  "headingLevel": 2,
+  "body": "The heart of this guide is the block-based content system. Instead of storing content as raw HTML or Markdown, every section is a flat array of typed blocks. Each block has a `type` field that tells the frontend which React component to use for rendering. This gives you precise control over layout and interactivity while keeping content authoring simple -- you just write JSON."
+}

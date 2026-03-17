@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 2,
+  "title": "Create an API Helper",
+  "body": "Set up Axios with your backend's URL:",
+  "code": "import axios from \"axios\";\n\n// Create an axios instance pointed at your Flask backend\nconst api = axios.create({\n  baseURL: \"http://127.0.0.1:5000/api\",\n  headers: {\n    \"Content-Type\": \"application/json\",\n  },\n});\n\n// Automatically add the JWT token to every request\napi.interceptors.request.use((config) => {\n  const token = localStorage.getItem(\"access_token\");\n  if (token) {\n    config.headers.Authorization = `Bearer ${token}`;\n  }\n  return config;\n});\n\nexport default api;",
+  "language": "typescript"
+}

@@ -1,0 +1,6 @@
+{
+  "type": "alert",
+  "severity": "info",
+  "title": "Index rules of thumb",
+  "body": "Index columns that appear in WHERE, JOIN, and ORDER BY clauses. Do not index columns that are rarely queried or have very low cardinality (like a boolean column with only two values). Every index speeds up reads but slows down writes, so index thoughtfully."
+}

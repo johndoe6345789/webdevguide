@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "API Versioning",
+  "headingLevel": 3,
+  "body": "When your API evolves and you need to make breaking changes, versioning prevents existing clients from breaking."
+}

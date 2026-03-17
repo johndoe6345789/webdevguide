@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "9. Web APIs",
+  "headingLevel": 2,
+  "body": "Browsers provide built-in APIs that let JavaScript interact with the network, store data locally, communicate in real time, and run heavy computations in the background."
+}

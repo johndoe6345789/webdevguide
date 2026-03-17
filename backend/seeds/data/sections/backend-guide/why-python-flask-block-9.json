@@ -1,0 +1,6 @@
+{
+  "type": "code",
+  "language": "python",
+  "filename": "app.py",
+  "code": "from flask import Flask\n\napp = Flask(__name__)\n\n@app.route(\"/\")\ndef hello():\n    return \"Hello, World!\""
+}

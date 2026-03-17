@@ -33,7 +33,11 @@ export default function FeaturesGrid({ t }: Props) {
       <Grid container spacing={4}>
         {FEATURES.map(({ icon, titleKey, descKey }) => (
           <Grid size={{ xs: 12, sm: 6, md: 4 }} key={titleKey}>
-            <FeatureCard icon={icon} title={t(titleKey)} description={t(descKey)} />
+            <FeatureCard
+              icon={icon}
+              title={t(titleKey)}
+              description={t(descKey)}
+            />
           </Grid>
         ))}
       </Grid>

@@ -17,852 +17,331 @@
   ],
   "blocks": [
     {
-      "type": "alert",
-      "severity": "info",
-      "body": "Prerequisites: You should have completed the Getting Started guide so you have a React frontend already running. This guide teaches you how to build the backend that powers it. No Python experience is needed."
+      "$ref": "backend-guide/intro-prerequisites-you-should-have.json"
     },
     {
-      "type": "text",
-      "heading": "What is a Backend?",
-      "headingLevel": 2,
-      "body": "Before we write any code, let us understand what a backend actually is and why you need one."
+      "$ref": "backend-guide/what-is-a-backend-what-is-a-backend.json"
     },
     {
-      "type": "text",
-      "body": "Imagine a restaurant. When you walk in and sit down, you see the dining room — the tables, the menus, the decorations. This is the frontend. It is everything the customer sees and interacts with."
+      "$ref": "backend-guide/intro-imagine-a-restaurant-when-you.json"
     },
     {
-      "type": "text",
-      "body": "Behind the swinging doors is the kitchen. The customer never sees the kitchen, but that is where all the real work happens — cooking the food, storing ingredients, managing recipes. This is the backend."
+      "$ref": "backend-guide/intro-behind-the-swinging-doors-is-t.json"
     },
     {
-      "type": "text",
-      "body": "And connecting the two is the waiter. The customer tells the waiter what they want, the waiter carries that request to the kitchen, the kitchen prepares it, and the waiter brings the finished dish back. In web development, the waiter is called an API (Application Programming Interface)."
-    },
-    {
-      "type": "cardGrid",
-      "columns": 3,
-      "cards": [
-        {
-          "title": "Frontend (Dining Room)",
-          "body": "What the user sees — buttons, text, images, forms. Built with React, HTML, and CSS. Runs in the user's browser.",
-          "icon": "Restaurant"
-        },
-        {
-          "title": "Backend (Kitchen)",
-          "body": "Where data is stored and processed — user accounts, saved items, calculations. Runs on a server. The user never sees this code.",
-          "icon": "Storage"
-        },
-        {
-          "title": "API (Waiter)",
-          "body": "The messenger between frontend and backend. The frontend sends a request, the backend processes it, and the API carries the response back.",
-          "icon": "Sync"
-        }
-      ]
-    },
-    {
-      "type": "alert",
-      "severity": "info",
-      "title": "Why not do everything in the frontend?",
-      "body": "Some things must happen on a server. You cannot safely store passwords in the browser (anyone could see them). You cannot let the browser directly edit a database (anyone could delete everything). The backend is your secure, trusted layer that controls what is allowed."
-    },
-    {
-      "type": "text",
-      "heading": "Why Python Flask?",
-      "headingLevel": 2,
-      "body": "There are many backend frameworks. We are using Flask because it is the simplest way to get started."
-    },
-    {
-      "type": "cardGrid",
-      "columns": 2,
-      "cards": [
-        {
-          "title": "What is Flask?",
-          "body": "Flask is a micro-framework for Python. \"Micro\" does not mean it is weak — it means it does not force you to use things you do not need. Think of Flask like a basic kitchen with a stove and a sink. You can cook a great meal with just that."
-        },
-        {
-          "title": "Why not Django, Express, etc.?",
-          "body": "Django comes with a lot of built-in features you may not need yet. Express.js uses JavaScript, but learning Python makes you more well-rounded. Flask is also easier to read for beginners."
-        }
-      ]
-    },
-    {
-      "type": "text",
-      "heading": "Your First Flask App — Just 5 Lines",
-      "headingLevel": 3,
-      "body": "Here is a complete, working Flask application:"
-    },
-    {
-      "type": "code",
-      "language": "python",
-      "filename": "app.py",
-      "code": "from flask import Flask\n\napp = Flask(__name__)\n\n@app.route(\"/\")\ndef hello():\n    return \"Hello, World!\""
-    },
-    {
-      "type": "text",
-      "body": "Let us break down each line:"
-    },
-    {
-      "type": "list",
-      "ordered": true,
-      "items": [
-        "from flask import Flask — This loads the Flask library into your file so you can use it.",
-        "app = Flask(__name__) — This creates your application. Think of it as opening your restaurant for business.",
-        "@app.route(\"/\") — This is a decorator. It tells Flask: \"When someone visits the home page (/), run the function below.\"",
-        "def hello(): — This defines a function called \"hello\". A function is a reusable block of code.",
-        "return \"Hello, World!\" — This is what gets sent back to whoever made the request. The browser will display this text."
-      ]
-    },
-    {
-      "type": "alert",
-      "severity": "success",
-      "body": "That is it. Five lines of meaningful code to create a working web server."
-    },
+      "$ref": "backend-guide/intro-and-connecting-the-two-is-the.json"
+    },
+    {
+      "$ref": "backend-guide/what-is-a-backend-block-4.json"
+    },
+    {
+      "$ref": "backend-guide/what-is-a-backend-why-not-do-everything-in-the-frontend.json"
+    },
+    {
+      "$ref": "backend-guide/why-python-flask-why-python-flask.json"
+    },
+    {
+      "$ref": "backend-guide/why-python-flask-block-7.json"
+    },
+    {
+      "$ref": "backend-guide/why-python-flask-your-first-flask-app-just-5-lines.json"
+    },
+    {
+      "$ref": "backend-guide/why-python-flask-block-9.json"
+    },
+    {
+      "$ref": "backend-guide/intro-let-us-break-down-each-line.json"
+    },
+    {
+      "$ref": "backend-guide/why-python-flask-block-11.json"
+    },
+    {
+      "$ref": "backend-guide/intro-that-is-it-five-lines-of-mean.json"
+    },
+    {
+      "$ref": "backend-guide/setting-up-flask-setting-up-flask.json"
+    },
+    {
+      "$ref": "backend-guide/setting-up-flask-block-1.json"
+    },
+    {
+      "$ref": "backend-guide/your-first-api-endpoint-your-first-api-endpoint.json"
+    },
+    {
+      "$ref": "backend-guide/intro-in-the-hello-world-example-th.json"
+    },
+    {
+      "$ref": "backend-guide/your-first-api-endpoint-create-a-get-endpoint.json"
+    },
+    {
+      "$ref": "backend-guide/intro-there-are-two-new-things-here.json"
+    },
+    {
+      "$ref": "backend-guide/your-first-api-endpoint-block-18.json"
+    },
+    {
+      "$ref": "backend-guide/your-first-api-endpoint-understand-the-request-response-cycle.json"
+    },
+    {
+      "$ref": "backend-guide/your-first-api-endpoint-block-20.json"
+    },
+    {
+      "$ref": "backend-guide/your-first-api-endpoint-test-it-in-your-browser.json"
+    },
+    {
+      "$ref": "backend-guide/intro-b208.json"
+    },
+    {
+      "$ref": "backend-guide/intro-you-should-see-json-data.json"
+    },
+    {
+      "$ref": "backend-guide/intro-b210.json"
+    },
+    {
+      "$ref": "backend-guide/intro-your-first-api-endpoint-is-wor.json"
+    },
+    {
+      "$ref": "backend-guide/project-structure-project-structure.json"
+    },
+    {
+      "$ref": "backend-guide/intro-putting-everything-in-one-file.json"
+    },
+    {
+      "$ref": "backend-guide/project-structure-recommended-project-structure.json"
+    },
+    {
+      "$ref": "backend-guide/project-structure-the-app-factory-pattern.json"
+    },
+    {
+      "$ref": "backend-guide/project-structure-block-30.json"
+    },
+    {
+      "$ref": "backend-guide/project-structure-block-31.json"
+    },
+    {
+      "$ref": "backend-guide/intro-debugtrue-makes-flask-automat.json"
+    },
+    {
+      "$ref": "backend-guide/blueprints-organizing-routes-blueprints-organizing-routes.json"
+    },
+    {
+      "$ref": "backend-guide/intro-as-your-api-grows-you-might-h.json"
+    },
+    {
+      "$ref": "backend-guide/blueprints-organizing-routes-block-35.json"
+    },
+    {
+      "$ref": "backend-guide/blueprints-organizing-routes-creating-a-blueprint.json"
+    },
+    {
+      "$ref": "backend-guide/blueprints-organizing-routes-block-37.json"
+    },
+    {
+      "$ref": "backend-guide/intro-let-us-break-this-down.json"
+    },
+    {
+      "$ref": "backend-guide/blueprints-organizing-routes-block-39.json"
+    },
+    {
+      "$ref": "backend-guide/blueprints-organizing-routes-registering-the-blueprint.json"
+    },
+    {
+      "$ref": "backend-guide/blueprints-organizing-routes-block-41.json"
+    },
+    {
+      "$ref": "backend-guide/intro-the-urlprefixapi-means-al.json"
+    },
+    {
+      "$ref": "backend-guide/working-with-json-data-working-with-json-data.json"
+    },
+    {
+      "$ref": "backend-guide/intro-many-small-applications-store.json"
+    },
+    {
+      "$ref": "backend-guide/working-with-json-data-create-a-data-file.json"
+    },
+    {
+      "$ref": "backend-guide/working-with-json-data-create-a-service-to-read-and-write-data.json"
+    },
+    {
+      "$ref": "backend-guide/working-with-json-data-block-47.json"
+    },
+    {
+      "$ref": "backend-guide/intro-there-are-some-important-conce.json"
+    },
+    {
+      "$ref": "backend-guide/working-with-json-data-block-49.json"
+    },
+    {
+      "$ref": "backend-guide/working-with-json-data-when-to-upgrade-to-a-real-database.json"
+    },
+    {
+      "$ref": "backend-guide/working-with-json-data-block-51.json"
+    },
+    {
+      "$ref": "backend-guide/intro-popular-database-options-sqli.json"
+    },
+    {
+      "$ref": "backend-guide/crud-operations-crud-operations.json"
+    },
+    {
+      "$ref": "backend-guide/crud-operations-block-1.json"
+    },
+    {
+      "$ref": "backend-guide/intro-here-is-a-complete-blueprint-t.json"
+    },
+    {
+      "$ref": "backend-guide/crud-operations-block-55.json"
+    },
+    {
+      "$ref": "backend-guide/crud-operations-understanding-each-part.json"
+    },
+    {
+      "$ref": "backend-guide/crud-operations-block-57.json"
+    },
+    {
+      "$ref": "backend-guide/intro-http-methods-summary-get-g.json"
+    },
+    {
+      "$ref": "backend-guide/authentication-with-jwt-authentication-with-jwt.json"
+    },
+    {
+      "$ref": "backend-guide/intro-imagine-you-go-to-a-concert-a.json"
+    },
+    {
+      "$ref": "backend-guide/intro-a-jwt-token-json-web-token-w.json"
+    },
+    {
+      "$ref": "backend-guide/authentication-with-jwt-install-the-jwt-library.json"
+    },
+    {
+      "$ref": "backend-guide/authentication-with-jwt-configure-jwt-in-your-app-factory.json"
+    },
+    {
+      "$ref": "backend-guide/intro-important-the-jwtsecretkey.json"
+    },
+    {
+      "$ref": "backend-guide/authentication-with-jwt-create-the-auth-blueprint.json"
+    },
+    {
+      "$ref": "backend-guide/authentication-with-jwt-protect-routes-with-jwtrequired.json"
+    },
+    {
+      "$ref": "backend-guide/authentication-with-jwt-block-67.json"
+    },
+    {
+      "$ref": "backend-guide/authentication-with-jwt-how-the-frontend-uses-the-token.json"
+    },
+    {
+      "$ref": "backend-guide/authentication-with-jwt-block-69.json"
+    },
+    {
+      "$ref": "backend-guide/connecting-frontend-to-backend-connecting-frontend-to-backend.json"
+    },
+    {
+      "$ref": "backend-guide/connecting-frontend-to-backend-install-axios-in-your-react-project.json"
+    },
+    {
+      "$ref": "backend-guide/connecting-frontend-to-backend-create-an-api-helper.json"
+    },
+    {
+      "$ref": "backend-guide/intro-what-is-an-interceptor-a-chec.json"
+    },
     {
-      "type": "text",
-      "heading": "Setting Up Flask",
-      "headingLevel": 2,
-      "body": "Let us install Python and Flask on your computer so you can run your own backend."
-    },
-    {
-      "type": "tabs",
-      "tabs": [
-        {
-          "label": "Windows",
-          "blocks": [
-            {
-              "type": "step",
-              "step": 1,
-              "title": "Install Python",
-              "body": "Download Python from python.org and run the installer. Make sure to check \"Add Python to PATH\". Then verify:",
-              "code": "python --version\npip --version",
-              "language": "bash"
-            },
-            {
-              "type": "step",
-              "step": 2,
-              "title": "Create a Project Folder",
-              "body": "Create a new folder for your backend project.",
-              "code": "mkdir my-flask-backend\ncd my-flask-backend",
-              "language": "bash"
-            },
-            {
-              "type": "step",
-              "step": 3,
-              "title": "Create a Virtual Environment",
-              "body": "A virtual environment keeps your project's dependencies separate from other Python projects.",
-              "code": "python -m venv venv\nvenv\\Scripts\\activate",
-              "language": "bash"
-            },
-            {
-              "type": "step",
-              "step": 4,
-              "title": "Install Flask",
-              "body": "With the virtual environment activated, install Flask.",
-              "code": "pip install flask",
-              "language": "bash"
-            },
-            {
-              "type": "step",
-              "step": 5,
-              "title": "Create and Run Your App",
-              "body": "Create an app.py file with the Hello World example above, then start the server.",
-              "code": "flask run",
-              "language": "bash"
-            }
-          ]
-        },
-        {
-          "label": "Mac",
-          "blocks": [
-            {
-              "type": "step",
-              "step": 1,
-              "title": "Install Python",
-              "body": "Install Python using Homebrew, then verify the installation.",
-              "code": "brew install python\npython3 --version\npip3 --version",
-              "language": "bash"
-            },
-            {
-              "type": "step",
-              "step": 2,
-              "title": "Create a Project Folder",
-              "body": "Create a new folder for your backend project.",
-              "code": "mkdir my-flask-backend\ncd my-flask-backend",
-              "language": "bash"
-            },
-            {
-              "type": "step",
-              "step": 3,
-              "title": "Create a Virtual Environment",
-              "body": "A virtual environment keeps your project's dependencies separate.",
-              "code": "python3 -m venv venv\nsource venv/bin/activate",
-              "language": "bash"
-            },
-            {
-              "type": "step",
-              "step": 4,
-              "title": "Install Flask and Run",
-              "body": "Install Flask and start the server.",
-              "code": "pip install flask\nflask run",
-              "language": "bash"
-            }
-          ]
-        },
-        {
-          "label": "Linux",
-          "blocks": [
-            {
-              "type": "step",
-              "step": 1,
-              "title": "Install Python",
-              "body": "Check if Python is installed, or install it with apt.",
-              "code": "python3 --version\nsudo apt update\nsudo apt install -y python3 python3-pip python3-venv",
-              "language": "bash"
-            },
-            {
-              "type": "step",
-              "step": 2,
-              "title": "Create a Project Folder",
-              "body": "Create a new folder for your backend project.",
-              "code": "mkdir my-flask-backend\ncd my-flask-backend",
-              "language": "bash"
-            },
-            {
-              "type": "step",
-              "step": 3,
-              "title": "Create a Virtual Environment",
-              "body": "A virtual environment keeps your project's dependencies separate.",
-              "code": "python3 -m venv venv\nsource venv/bin/activate",
-              "language": "bash"
-            },
-            {
-              "type": "step",
-              "step": 4,
-              "title": "Install Flask and Run",
-              "body": "Install Flask and start the server.",
-              "code": "pip install flask\nflask run",
-              "language": "bash"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "text",
-      "heading": "Your First API Endpoint",
-      "headingLevel": 2,
-      "body": "An endpoint is a specific URL that your backend listens on. When someone visits that URL, your code runs and sends back a response."
-    },
-    {
-      "type": "text",
-      "body": "In the Hello World example, the / route is an endpoint. Let us create a proper API endpoint that returns structured data instead of plain text."
-    },
-    {
-      "type": "step",
-      "step": 1,
-      "title": "Create a GET Endpoint",
-      "body": "Update your app.py file:",
-      "code": "from flask import Flask, jsonify\n\napp = Flask(__name__)\n\n@app.route(\"/api/hello\", methods=[\"GET\"])\ndef api_hello():\n    return jsonify({\n        \"message\": \"Hello from the backend!\",\n        \"status\": \"success\"\n    })",
-      "language": "python"
-    },
-    {
-      "type": "text",
-      "body": "There are two new things here:"
-    },
-    {
-      "type": "list",
-      "ordered": false,
-      "items": [
-        "jsonify() — This converts a Python dictionary (the data inside the curly braces) into JSON format. JSON is the universal language that frontends and backends use to talk to each other.",
-        "methods=[\"GET\"] — This tells Flask that this endpoint only responds to GET requests. A GET request means \"give me some data.\" When you type a URL in your browser and press Enter, that is a GET request."
-      ]
-    },
-    {
-      "type": "step",
-      "step": 2,
-      "title": "Understand the Request / Response Cycle",
-      "body": "Every time someone interacts with your API, this cycle happens:"
-    },
-    {
-      "type": "list",
-      "ordered": true,
-      "items": [
-        "The frontend (or browser) sends a message to your backend. This message includes: the URL they want (/api/hello), the method (GET, POST, etc.), and sometimes extra data.",
-        "Your Flask code receives the request, runs your function, and prepares a response.",
-        "Your backend sends back data (usually JSON) along with a status code. 200 means \"everything went fine.\" 404 means \"not found.\" 500 means \"something went wrong on the server.\""
-      ]
-    },
-    {
-      "type": "step",
-      "step": 3,
-      "title": "Test It in Your Browser",
-      "body": "Start your Flask server, then visit:"
-    },
-    {
-      "type": "code",
-      "language": "text",
-      "code": "http://127.0.0.1:5000/api/hello"
-    },
-    {
-      "type": "text",
-      "body": "You should see JSON data:"
-    },
-    {
-      "type": "code",
-      "language": "json",
-      "code": "{\n  \"message\": \"Hello from the backend!\",\n  \"status\": \"success\"\n}"
-    },
-    {
-      "type": "alert",
-      "severity": "success",
-      "body": "Your first API endpoint is working. The browser made a GET request, your Flask code ran the api_hello function, and it sent back JSON data."
-    },
-    {
-      "type": "text",
-      "heading": "Project Structure",
-      "headingLevel": 2,
-      "body": "As your backend grows, you need to organize your code. Here is a professional pattern used in real projects."
-    },
-    {
-      "type": "text",
-      "body": "Putting everything in one file works for tiny projects, but once you have more than a few endpoints, it becomes a mess. We organize code into folders for the same reason restaurants have separate rooms."
-    },
-    {
-      "type": "list",
-      "heading": "Recommended Project Structure",
-      "ordered": false,
-      "items": [
-        "my-flask-backend/ — Your project root folder.",
-        "app/ — All of your application code lives here.",
-        "app/__init__.py — The app factory. This file creates and configures your Flask app. Python uses this file to recognize the folder as a package.",
-        "app/api/ — Your route blueprints (endpoints). Each file handles a group of related URLs.",
-        "app/services/ — Business logic. Functions that do the actual work (reading files, calculating things, processing data).",
-        "app/utils/ — Helper functions that are used across multiple parts of your app.",
-        "data/ — JSON files or other data storage. This is where you keep your application data.",
-        "venv/ — Your virtual environment (created automatically, never edit this).",
-        "requirements.txt — A list of all the Python libraries your project needs. Like package.json for Python.",
-        "run.py — The entry point that starts your application."
-      ]
-    },
-    {
-      "type": "text",
-      "heading": "The App Factory Pattern",
-      "headingLevel": 3,
-      "body": "Instead of creating the Flask app at the top of a file, the app factory pattern puts it inside a function. This makes testing easier and lets you create multiple versions of your app."
-    },
-    {
-      "type": "code",
-      "language": "python",
-      "filename": "app/__init__.py",
-      "code": "from flask import Flask\nfrom flask_cors import CORS\n\ndef create_app():\n    app = Flask(__name__)\n\n    # Allow your React frontend to talk to this backend\n    CORS(app)\n\n    # Load configuration\n    app.config[\"SECRET_KEY\"] = \"your-secret-key-here\"\n\n    # Register blueprints (we will create these next)\n    from app.api.items import items_bp\n    app.register_blueprint(items_bp, url_prefix=\"/api\")\n\n    return app"
-    },
-    {
-      "type": "code",
-      "language": "python",
-      "filename": "run.py",
-      "code": "from app import create_app\n\napp = create_app()\n\nif __name__ == \"__main__\":\n    app.run(debug=True)"
-    },
-    {
-      "type": "alert",
-      "severity": "info",
-      "body": "debug=True makes Flask automatically restart when you save changes (just like React's hot reload). Only use this during development, never in production."
-    },
-    {
-      "type": "text",
-      "heading": "Blueprints (Organizing Routes)",
-      "headingLevel": 2,
-      "body": "Blueprints let you group related endpoints together, just like how Next.js uses folders to organize pages."
-    },
-    {
-      "type": "text",
-      "body": "As your API grows, you might have endpoints for users, items, authentication, and more. Blueprints let you create separate \"sections\" of your API."
-    },
-    {
-      "type": "cardGrid",
-      "columns": 2,
-      "cards": [
-        {
-          "title": "Next.js (What You Know)",
-          "body": "src/app/ has folders like users/, products/, settings/ — each folder becomes a route automatically."
-        },
-        {
-          "title": "Flask (What We Are Learning)",
-          "body": "app/api/ has files like users.py, products.py, settings.py — each file is a blueprint that you register with the app."
-        }
-      ]
-    },
-    {
-      "type": "text",
-      "heading": "Creating a Blueprint",
-      "headingLevel": 3,
-      "body": ""
-    },
-    {
-      "type": "code",
-      "language": "python",
-      "filename": "app/api/items.py",
-      "code": "from flask import Blueprint, jsonify\n\n# Create a blueprint named \"items\"\nitems_bp = Blueprint(\"items\", __name__)\n\n@items_bp.route(\"/items\", methods=[\"GET\"])\ndef get_items():\n    return jsonify({\n        \"items\": [\n            {\"id\": 1, \"name\": \"First item\"},\n            {\"id\": 2, \"name\": \"Second item\"}\n        ]\n    })\n\n@items_bp.route(\"/items/<int:item_id>\", methods=[\"GET\"])\ndef get_item(item_id):\n    return jsonify({\n        \"id\": item_id,\n        \"name\": f\"Item {item_id}\"\n    })"
-    },
-    {
-      "type": "text",
-      "body": "Let us break this down:"
-    },
-    {
-      "type": "list",
-      "ordered": false,
-      "items": [
-        "Blueprint(\"items\", __name__) — Creates a new blueprint with the name \"items\". The name is used internally by Flask.",
-        "@items_bp.route(...) — Notice we use items_bp instead of app. The routes belong to the blueprint, not directly to the app.",
-        "<int:item_id> — This is a URL parameter. Flask will capture whatever number is in the URL and pass it to your function. So /api/items/42 would set item_id to 42."
-      ]
-    },
-    {
-      "type": "text",
-      "heading": "Registering the Blueprint",
-      "headingLevel": 3,
-      "body": "Creating a blueprint does not do anything by itself. You need to tell your app about it:"
-    },
-    {
-      "type": "code",
-      "language": "python",
-      "filename": "app/__init__.py",
-      "code": "from app.api.items import items_bp\napp.register_blueprint(items_bp, url_prefix=\"/api\")"
-    },
-    {
-      "type": "alert",
-      "severity": "info",
-      "body": "The url_prefix=\"/api\" means all routes in this blueprint will start with /api. So /items becomes /api/items."
-    },
-    {
-      "type": "text",
-      "heading": "Working with JSON Data",
-      "headingLevel": 2,
-      "body": "Instead of a database, we will store data in JSON files. This is simpler to set up and perfect for learning."
-    },
-    {
-      "type": "text",
-      "body": "Many small applications store their data in JSON files instead of a database. JSON files are just text files that contain structured data."
-    },
-    {
-      "type": "step",
-      "step": 1,
-      "title": "Create a Data File",
-      "body": "Create a data folder and add a JSON file:",
-      "code": "[\n  {\n    \"id\": 1,\n    \"name\": \"Learn HTML\",\n    \"completed\": true\n  },\n  {\n    \"id\": 2,\n    \"name\": \"Learn CSS\",\n    \"completed\": true\n  },\n  {\n    \"id\": 3,\n    \"name\": \"Learn Flask\",\n    \"completed\": false\n  }\n]",
-      "language": "json"
-    },
-    {
-      "type": "step",
-      "step": 2,
-      "title": "Create a Service to Read and Write Data",
-      "body": "Services contain the actual logic for working with data. We keep this separate from the routes so the code stays organized."
-    },
-    {
-      "type": "code",
-      "language": "python",
-      "filename": "app/services/item_service.py",
-      "code": "import json\nimport os\nimport threading\n\n# This lock prevents two requests from writing to the file at the same time\nfile_lock = threading.Lock()\n\nDATA_FILE = os.path.join(os.path.dirname(__file__), \"../../data/items.json\")\n\ndef read_items():\n    \"\"\"Read all items from the JSON file.\"\"\"\n    with file_lock:\n        with open(DATA_FILE, \"r\") as f:\n            return json.load(f)\n\ndef write_items(items):\n    \"\"\"Write the full list of items to the JSON file.\"\"\"\n    with file_lock:\n        with open(DATA_FILE, \"w\") as f:\n            json.dump(items, f, indent=2)\n\ndef get_next_id(items):\n    \"\"\"Find the highest ID and add 1.\"\"\"\n    if not items:\n        return 1\n    return max(item[\"id\"] for item in items) + 1"
-    },
-    {
-      "type": "text",
-      "body": "There are some important concepts here:"
-    },
-    {
-      "type": "list",
-      "ordered": false,
-      "items": [
-        "threading.Lock() — Imagine two customers ordering at the same time. Without a lock, both orders might try to write to the file simultaneously, corrupting the data. The lock makes them take turns. This is called thread safety.",
-        "with open(DATA_FILE, \"r\") as f — Opens the file for reading (\"r\"). The with keyword automatically closes the file when done, even if an error occurs.",
-        "json.load(f) / json.dump(items, f) — These convert between Python data and JSON format. load reads JSON from a file into Python. dump writes Python data as JSON to a file."
-      ]
-    },
-    {
-      "type": "step",
-      "step": 3,
-      "title": "When to Upgrade to a Real Database",
-      "body": "JSON files work great for small applications, but consider a database when your needs grow."
-    },
-    {
-      "type": "cardGrid",
-      "columns": 2,
-      "cards": [
-        {
-          "title": "JSON files are fine for:",
-          "body": "Small projects with less than 1000 records. Single-user applications. Prototyping and learning. Configuration data."
-        },
-        {
-          "title": "Use a database when you need:",
-          "body": "Multiple users accessing data at the same time. Thousands of records. Complex queries (like searching or filtering). Data relationships (users have posts, posts have comments)."
-        }
-      ]
-    },
-    {
-      "type": "alert",
-      "severity": "info",
-      "body": "Popular database options: SQLite (simplest), PostgreSQL (production), and MongoDB (JSON-like documents)."
-    },
-    {
-      "type": "text",
-      "heading": "CRUD Operations",
-      "headingLevel": 2,
-      "body": "CRUD stands for Create, Read, Update, Delete. These are the four basic things you can do with data."
-    },
-    {
-      "type": "table",
-      "headers": ["Letter", "Operation", "Description", "HTTP Method"],
-      "rows": [
-        ["C", "Create", "Add new data", "POST"],
-        ["R", "Read", "Get existing data", "GET"],
-        ["U", "Update", "Change existing data", "PUT"],
-        ["D", "Delete", "Remove data", "DELETE"]
-      ]
-    },
-    {
-      "type": "text",
-      "body": "Here is a complete blueprint that implements all four operations:"
-    },
-    {
-      "type": "code",
-      "language": "python",
-      "filename": "app/api/items.py",
-      "code": "from flask import Blueprint, jsonify, request\nfrom app.services.item_service import read_items, write_items, get_next_id\n\nitems_bp = Blueprint(\"items\", __name__)\n\n\n# ---- READ all items ----\n@items_bp.route(\"/items\", methods=[\"GET\"])\ndef get_all_items():\n    items = read_items()\n    return jsonify(items), 200\n\n\n# ---- READ one item by ID ----\n@items_bp.route(\"/items/<int:item_id>\", methods=[\"GET\"])\ndef get_one_item(item_id):\n    items = read_items()\n    item = next((i for i in items if i[\"id\"] == item_id), None)\n\n    if item is None:\n        return jsonify({\"error\": \"Item not found\"}), 404\n\n    return jsonify(item), 200\n\n\n# ---- CREATE a new item ----\n@items_bp.route(\"/items\", methods=[\"POST\"])\ndef create_item():\n    data = request.get_json()\n\n    # Validate: make sure the request includes a \"name\" field\n    if not data or \"name\" not in data:\n        return jsonify({\"error\": \"Name is required\"}), 400\n\n    items = read_items()\n    new_item = {\n        \"id\": get_next_id(items),\n        \"name\": data[\"name\"],\n        \"completed\": data.get(\"completed\", False)\n    }\n    items.append(new_item)\n    write_items(items)\n\n    return jsonify(new_item), 201\n\n\n# ---- UPDATE an existing item ----\n@items_bp.route(\"/items/<int:item_id>\", methods=[\"PUT\"])\ndef update_item(item_id):\n    data = request.get_json()\n    items = read_items()\n    item = next((i for i in items if i[\"id\"] == item_id), None)\n\n    if item is None:\n        return jsonify({\"error\": \"Item not found\"}), 404\n\n    # Update only the fields that were sent\n    if \"name\" in data:\n        item[\"name\"] = data[\"name\"]\n    if \"completed\" in data:\n        item[\"completed\"] = data[\"completed\"]\n\n    write_items(items)\n    return jsonify(item), 200\n\n\n# ---- DELETE an item ----\n@items_bp.route(\"/items/<int:item_id>\", methods=[\"DELETE\"])\ndef delete_item(item_id):\n    items = read_items()\n    item = next((i for i in items if i[\"id\"] == item_id), None)\n\n    if item is None:\n        return jsonify({\"error\": \"Item not found\"}), 404\n\n    items = [i for i in items if i[\"id\"] != item_id]\n    write_items(items)\n\n    return jsonify({\"message\": \"Item deleted\"}), 200"
-    },
-    {
-      "type": "text",
-      "heading": "Understanding Each Part",
-      "headingLevel": 3,
-      "body": ""
-    },
-    {
-      "type": "list",
-      "ordered": false,
-      "items": [
-        "request.get_json() — When the frontend sends data (like a new item to create), it arrives as JSON in the request body. This function extracts it into a Python dictionary you can work with.",
-        "return jsonify(data), 201 — The number after the comma is the HTTP status code. 200 means OK, 201 means Created, 400 means Bad Request, 404 means Not Found.",
-        "next((i for i in items if i[\"id\"] == item_id), None) — This searches through the list to find the item with the matching ID. If no match is found, it returns None (Python's way of saying \"nothing\").",
-        "data.get(\"completed\", False) — This tries to get the \"completed\" value from the data. If it does not exist, it uses False as a default."
-      ]
-    },
-    {
-      "type": "alert",
-      "severity": "info",
-      "body": "HTTP methods summary: GET = \"give me data\", POST = \"here is new data, save it\", PUT = \"here is updated data, replace the old version\", DELETE = \"remove this data.\""
-    },
-    {
-      "type": "text",
-      "heading": "Authentication with JWT",
-      "headingLevel": 2,
-      "body": "Authentication is how your backend knows who is making a request. We will use JWT tokens, which work like wristbands at a concert."
-    },
-    {
-      "type": "text",
-      "body": "Imagine you go to a concert. At the entrance, you show your ticket (your password). The security guard checks it and puts a wristband on you. For the rest of the night, you just show your wristband — you do not need to show your ticket again."
-    },
-    {
-      "type": "text",
-      "body": "A JWT token (JSON Web Token) works exactly like that wristband. When a user logs in, the backend checks the credentials and sends back a token. The frontend stores this token and includes it in every future request."
-    },
-    {
-      "type": "step",
-      "step": 1,
-      "title": "Install the JWT Library",
-      "body": "Install flask-jwt-extended:",
-      "code": "pip install flask-jwt-extended",
-      "language": "bash"
-    },
-    {
-      "type": "step",
-      "step": 2,
-      "title": "Configure JWT in Your App Factory",
-      "body": "Add JWT configuration to your app factory:",
-      "code": "from flask import Flask\nfrom flask_cors import CORS\nfrom flask_jwt_extended import JWTManager\n\ndef create_app():\n    app = Flask(__name__)\n    CORS(app)\n\n    # JWT configuration\n    app.config[\"JWT_SECRET_KEY\"] = \"your-super-secret-key-change-this\"\n    jwt = JWTManager(app)\n\n    # Register blueprints\n    from app.api.items import items_bp\n    from app.api.auth import auth_bp\n    app.register_blueprint(items_bp, url_prefix=\"/api\")\n    app.register_blueprint(auth_bp, url_prefix=\"/api\")\n\n    return app",
-      "language": "python"
-    },
-    {
-      "type": "alert",
-      "severity": "warning",
-      "body": "Important: The JWT_SECRET_KEY should be a long, random string. In a real application, you would store this in an environment variable, not in your code."
-    },
-    {
-      "type": "step",
-      "step": 3,
-      "title": "Create the Auth Blueprint",
-      "body": "This blueprint handles user login and gives out JWT tokens:",
-      "code": "from flask import Blueprint, jsonify, request\nfrom flask_jwt_extended import create_access_token\n\nauth_bp = Blueprint(\"auth\", __name__)\n\n# In a real app, you would store users in a database.\n# For learning, we use a simple dictionary.\nUSERS = {\n    \"admin\": \"password123\",\n    \"student\": \"learning456\"\n}\n\n@auth_bp.route(\"/login\", methods=[\"POST\"])\ndef login():\n    data = request.get_json()\n\n    if not data or \"username\" not in data or \"password\" not in data:\n        return jsonify({\"error\": \"Username and password are required\"}), 400\n\n    username = data[\"username\"]\n    password = data[\"password\"]\n\n    # Check if the username exists and the password matches\n    if username not in USERS or USERS[username] != password:\n        return jsonify({\"error\": \"Invalid username or password\"}), 401\n\n    # Create a JWT token for this user\n    access_token = create_access_token(identity=username)\n\n    return jsonify({\n        \"message\": \"Login successful\",\n        \"access_token\": access_token\n    }), 200",
-      "language": "python"
-    },
-    {
-      "type": "step",
-      "step": 4,
-      "title": "Protect Routes with @jwt_required",
-      "body": "Make certain endpoints accessible only to logged-in users:",
-      "code": "from flask_jwt_extended import jwt_required, get_jwt_identity\n\n# This endpoint is PUBLIC - anyone can read items\n@items_bp.route(\"/items\", methods=[\"GET\"])\ndef get_all_items():\n    items = read_items()\n    return jsonify(items), 200\n\n\n# This endpoint is PROTECTED - only logged-in users can create items\n@items_bp.route(\"/items\", methods=[\"POST\"])\n@jwt_required()\ndef create_item():\n    # You can find out who is making the request:\n    current_user = get_jwt_identity()\n    print(f\"Item created by: {current_user}\")\n\n    data = request.get_json()\n    # ... rest of the create logic ...",
-      "language": "python"
-    },
-    {
-      "type": "list",
-      "ordered": false,
-      "items": [
-        "@jwt_required() — This decorator tells Flask: \"Before running this function, check that the request includes a valid JWT token. If it does not, automatically return a 401 error.\"",
-        "get_jwt_identity() — This extracts the username from the token, so you know who is making the request."
-      ]
-    },
-    {
-      "type": "step",
-      "step": 5,
-      "title": "How the Frontend Uses the Token",
-      "body": "Here is the flow from the frontend's perspective:"
-    },
-    {
-      "type": "list",
-      "ordered": true,
-      "items": [
-        "User types their username and password into a login form.",
-        "React sends a POST request to /api/login with the credentials.",
-        "Flask checks the credentials and returns a JWT token.",
-        "React stores the token (usually in memory or localStorage).",
-        "For all future requests that need authentication, React includes the token in the request headers: Authorization: Bearer your-token-here"
-      ]
-    },
-    {
-      "type": "text",
-      "heading": "Connecting Frontend to Backend",
-      "headingLevel": 2,
-      "body": "Now let us make your React frontend actually talk to your Flask backend."
-    },
-    {
-      "type": "step",
-      "step": 1,
-      "title": "Install Axios in Your React Project",
-      "body": "Axios is a popular library for making HTTP requests from JavaScript.",
-      "code": "npm install axios",
-      "language": "bash"
-    },
-    {
-      "type": "step",
-      "step": 2,
-      "title": "Create an API Helper",
-      "body": "Set up Axios with your backend's URL:",
-      "code": "import axios from \"axios\";\n\n// Create an axios instance pointed at your Flask backend\nconst api = axios.create({\n  baseURL: \"http://127.0.0.1:5000/api\",\n  headers: {\n    \"Content-Type\": \"application/json\",\n  },\n});\n\n// Automatically add the JWT token to every request\napi.interceptors.request.use((config) => {\n  const token = localStorage.getItem(\"access_token\");\n  if (token) {\n    config.headers.Authorization = `Bearer ${token}`;\n  }\n  return config;\n});\n\nexport default api;",
-      "language": "typescript"
-    },
-    {
-      "type": "alert",
-      "severity": "info",
-      "body": "What is an interceptor? A checkpoint that every request passes through. Here we use it to automatically attach the JWT token."
-    },
-    {
-      "type": "step",
-      "step": 3,
-      "title": "Use the API in a React Component",
-      "body": "Here is a complete component that fetches, adds, and deletes items:",
-      "code": "\"use client\";\n\nimport { useState, useEffect } from \"react\";\nimport api from \"@/lib/api\";\n\ninterface Item {\n  id: number;\n  name: string;\n  completed: boolean;\n}\n\nexport default function ItemList() {\n  const [items, setItems] = useState<Item[]>([]);\n  const [loading, setLoading] = useState(true);\n  const [error, setError] = useState(\"\");\n\n  // Fetch items when the component first appears on screen\n  useEffect(() => {\n    async function fetchItems() {\n      try {\n        const response = await api.get(\"/items\");\n        setItems(response.data);\n      } catch (err) {\n        setError(\"Failed to load items from the backend.\");\n      } finally {\n        setLoading(false);\n      }\n    }\n    fetchItems();\n  }, []);\n\n  // Function to add a new item\n  async function addItem(name: string) {\n    try {\n      const response = await api.post(\"/items\", { name });\n      setItems([...items, response.data]);\n    } catch (err) {\n      setError(\"Failed to add item.\");\n    }\n  }\n\n  // Function to delete an item\n  async function deleteItem(id: number) {\n    try {\n      await api.delete(`/items/${id}`);\n      setItems(items.filter((item) => item.id !== id));\n    } catch (err) {\n      setError(\"Failed to delete item.\");\n    }\n  }\n\n  if (loading) return <p>Loading...</p>;\n  if (error) return <p style={{ color: \"red\" }}>{error}</p>;\n\n  return (\n    <div>\n      <h2>My Items</h2>\n      <ul>\n        {items.map((item) => (\n          <li key={item.id}>\n            {item.name}\n            <button onClick={() => deleteItem(item.id)}>Delete</button>\n          </li>\n        ))}\n      </ul>\n      <button onClick={() => addItem(\"New item\")}>Add Item</button>\n    </div>\n  );\n}",
-      "language": "tsx"
+      "$ref": "backend-guide/connecting-frontend-to-backend-use-the-api-in-a-react-component.json"
     },
     {
-      "type": "step",
-      "step": 4,
-      "title": "Understanding CORS",
-      "body": "CORS (Cross-Origin Resource Sharing) is a security feature. By default, a website on one address is not allowed to make requests to a different address. To fix this:"
+      "$ref": "backend-guide/connecting-frontend-to-backend-understanding-cors.json"
     },
     {
-      "type": "code",
-      "language": "bash",
-      "code": "pip install flask-cors"
+      "$ref": "backend-guide/intro-b226.json"
     },
     {
-      "type": "code",
-      "language": "python",
-      "filename": "app/__init__.py",
-      "code": "from flask_cors import CORS\n\ndef create_app():\n    app = Flask(__name__)\n\n    # Allow requests from your React development server\n    CORS(app, origins=[\"http://localhost:3000\"])"
+      "$ref": "backend-guide/connecting-frontend-to-backend-block-77.json"
     },
     {
-      "type": "alert",
-      "severity": "warning",
-      "body": "Security note: In production, never use CORS(app) without specifying allowed origins. That would let any website access your API."
+      "$ref": "backend-guide/intro-security-note-in-production.json"
     },
     {
-      "type": "text",
-      "heading": "Error Handling",
-      "headingLevel": 2,
-      "body": "Things will go wrong. Good error handling means your API tells the frontend exactly what happened instead of crashing silently."
+      "$ref": "backend-guide/error-handling-error-handling.json"
     },
     {
-      "type": "text",
-      "body": "When a restaurant makes a mistake with your order, a good waiter explains what happened. Your API should do the same — return clear error messages that help the frontend understand what went wrong."
+      "$ref": "backend-guide/intro-when-a-restaurant-makes-a-mist.json"
     },
     {
-      "type": "text",
-      "heading": "Common HTTP Status Codes",
-      "headingLevel": 3,
-      "body": ""
+      "$ref": "backend-guide/error-handling-common-http-status-codes.json"
     },
     {
-      "type": "table",
-      "heading": "Success Codes",
-      "headers": ["Status Code", "Description"],
-      "rows": [
-        ["200 OK", "Everything worked."],
-        ["201 Created", "A new item was successfully created."],
-        ["204 No Content", "Success, but nothing to send back."]
-      ]
+      "$ref": "backend-guide/error-handling-success-codes.json"
     },
     {
-      "type": "table",
-      "heading": "Error Codes",
-      "headers": ["Status Code", "Description"],
-      "rows": [
-        ["400 Bad Request", "The request was malformed or missing data."],
-        ["401 Unauthorized", "Not logged in or invalid token."],
-        ["404 Not Found", "The requested item does not exist."],
-        ["500 Server Error", "Something broke on the backend."]
-      ]
+      "$ref": "backend-guide/error-handling-error-codes.json"
     },
     {
-      "type": "text",
-      "heading": "Creating an Error Handler",
-      "headingLevel": 3,
-      "body": "Flask lets you define global error handlers:"
+      "$ref": "backend-guide/error-handling-creating-an-error-handler.json"
     },
     {
-      "type": "code",
-      "language": "python",
-      "filename": "app/utils/error_handlers.py",
-      "code": "from flask import jsonify\n\ndef register_error_handlers(app):\n    \"\"\"Register error handlers with the Flask app.\"\"\"\n\n    @app.errorhandler(400)\n    def bad_request(error):\n        return jsonify({\n            \"error\": \"Bad Request\",\n            \"message\": \"The server could not understand your request. Check that you are sending valid JSON data.\"\n        }), 400\n\n    @app.errorhandler(401)\n    def unauthorized(error):\n        return jsonify({\n            \"error\": \"Unauthorized\",\n            \"message\": \"You need to log in to access this resource.\"\n        }), 401\n\n    @app.errorhandler(404)\n    def not_found(error):\n        return jsonify({\n            \"error\": \"Not Found\",\n            \"message\": \"The resource you are looking for does not exist.\"\n        }), 404\n\n    @app.errorhandler(500)\n    def server_error(error):\n        return jsonify({\n            \"error\": \"Internal Server Error\",\n            \"message\": \"Something went wrong on our end. Please try again later.\"\n        }), 500"
+      "$ref": "backend-guide/error-handling-block-83.json"
     },
     {
-      "type": "text",
-      "heading": "Register the Error Handlers",
-      "headingLevel": 3,
-      "body": ""
+      "$ref": "backend-guide/error-handling-register-the-error-handlers.json"
     },
     {
-      "type": "code",
-      "language": "python",
-      "filename": "app/__init__.py (add to create_app)",
-      "code": "from app.utils.error_handlers import register_error_handlers\n\ndef create_app():\n    app = Flask(__name__)\n    # ... other setup ...\n\n    register_error_handlers(app)\n\n    return app"
+      "$ref": "backend-guide/error-handling-block-85.json"
     },
     {
-      "type": "text",
-      "heading": "Using Try/Except in Your Routes",
-      "headingLevel": 3,
-      "body": "For errors you can anticipate, use Python's try/except blocks:"
+      "$ref": "backend-guide/error-handling-using-tryexcept-in-your-routes.json"
     },
     {
-      "type": "code",
-      "language": "python",
-      "code": "@items_bp.route(\"/items\", methods=[\"POST\"])\n@jwt_required()\ndef create_item():\n    try:\n        data = request.get_json()\n\n        if not data or \"name\" not in data:\n            return jsonify({\"error\": \"Name is required\"}), 400\n\n        if len(data[\"name\"]) > 200:\n            return jsonify({\"error\": \"Name must be under 200 characters\"}), 400\n\n        items = read_items()\n        new_item = {\n            \"id\": get_next_id(items),\n            \"name\": data[\"name\"],\n            \"completed\": data.get(\"completed\", False)\n        }\n        items.append(new_item)\n        write_items(items)\n\n        return jsonify(new_item), 201\n\n    except Exception as e:\n        # Log the real error for debugging\n        print(f\"Error creating item: {e}\")\n        # Send a safe message to the frontend\n        return jsonify({\"error\": \"Failed to create item\"}), 500"
+      "$ref": "backend-guide/intro-b229.json"
     },
     {
-      "type": "alert",
-      "severity": "info",
-      "body": "Golden rule: Never send raw error details to the frontend in production. Log the real error on the server and send a generic message to the user."
+      "$ref": "backend-guide/intro-golden-rule-never-send-raw-er.json"
     },
     {
-      "type": "text",
-      "heading": "Testing Your API",
-      "headingLevel": 2,
-      "body": "Tests are like a checklist that automatically verifies your code works correctly."
+      "$ref": "backend-guide/testing-your-api-testing-your-api.json"
     },
     {
-      "type": "text",
-      "body": "Automated tests verify your code works correctly every time you make changes."
+      "$ref": "backend-guide/intro-automated-tests-verify-your-co.json"
     },
     {
-      "type": "step",
-      "step": 1,
-      "title": "Install pytest",
-      "body": "Install the Python testing framework.",
-      "code": "pip install pytest",
-      "language": "bash"
+      "$ref": "backend-guide/testing-your-api-install-pytest.json"
     },
     {
-      "type": "step",
-      "step": 2,
-      "title": "Create a Test Configuration",
-      "body": "Set up test fixtures that create a test version of your app.",
-      "code": "import pytest\nfrom app import create_app\n\n@pytest.fixture\ndef app():\n    \"\"\"Create a test version of the application.\"\"\"\n    app = create_app()\n    app.config[\"TESTING\"] = True\n    return app\n\n@pytest.fixture\ndef client(app):\n    \"\"\"Create a test client that can make requests to the app.\"\"\"\n    return app.test_client()",
-      "language": "python"
+      "$ref": "backend-guide/testing-your-api-create-a-test-configuration.json"
     },
     {
-      "type": "list",
-      "ordered": false,
-      "items": [
-        "@pytest.fixture — A fixture is something that gets set up before each test runs. Think of it as setting the table before a meal.",
-        "app.test_client() — This creates a fake \"browser\" that can make requests to your app without actually starting a server. This makes tests fast."
-      ]
+      "$ref": "backend-guide/testing-your-api-block-93.json"
     },
     {
-      "type": "step",
-      "step": 3,
-      "title": "Write Your First Tests",
-      "body": "Create test functions that verify each endpoint works correctly.",
-      "code": "import json\n\ndef test_get_items_returns_list(client):\n    \"\"\"Test that GET /api/items returns a list.\"\"\"\n    response = client.get(\"/api/items\")\n\n    assert response.status_code == 200\n    data = json.loads(response.data)\n    assert isinstance(data, list)\n\n\ndef test_create_item(client):\n    \"\"\"Test that POST /api/items creates a new item.\"\"\"\n    new_item = {\"name\": \"Test item\"}\n\n    response = client.post(\n        \"/api/items\",\n        data=json.dumps(new_item),\n        content_type=\"application/json\"\n    )\n\n    assert response.status_code == 201\n    data = json.loads(response.data)\n    assert data[\"name\"] == \"Test item\"\n    assert \"id\" in data\n\n\ndef test_create_item_without_name_fails(client):\n    \"\"\"Test that creating an item without a name returns 400.\"\"\"\n    response = client.post(\n        \"/api/items\",\n        data=json.dumps({}),\n        content_type=\"application/json\"\n    )\n\n    assert response.status_code == 400\n\n\ndef test_get_nonexistent_item_returns_404(client):\n    \"\"\"Test that requesting a missing item returns 404.\"\"\"\n    response = client.get(\"/api/items/99999\")\n\n    assert response.status_code == 404\n\n\ndef test_delete_item(client):\n    \"\"\"Test that DELETE /api/items/<id> removes the item.\"\"\"\n    # First, create an item\n    create_response = client.post(\n        \"/api/items\",\n        data=json.dumps({\"name\": \"Item to delete\"}),\n        content_type=\"application/json\"\n    )\n    item_id = json.loads(create_response.data)[\"id\"]\n\n    # Then, delete it\n    delete_response = client.delete(f\"/api/items/{item_id}\")\n\n    assert delete_response.status_code == 200\n\n    # Verify it is gone\n    get_response = client.get(f\"/api/items/{item_id}\")\n    assert get_response.status_code == 404",
-      "language": "python"
+      "$ref": "backend-guide/testing-your-api-write-your-first-tests.json"
     },
     {
-      "type": "step",
-      "step": 4,
-      "title": "Run the Tests",
-      "body": "From your project root, run pytest:"
+      "$ref": "backend-guide/testing-your-api-run-the-tests.json"
     },
     {
-      "type": "code",
-      "language": "bash",
-      "code": "pytest -v"
+      "$ref": "backend-guide/intro-b232.json"
     },
     {
-      "type": "text",
-      "body": "You should see output like:"
+      "$ref": "backend-guide/intro-you-should-see-output-like.json"
     },
     {
-      "type": "code",
-      "language": "text",
-      "code": "tests/test_items.py::test_get_items_returns_list PASSED\ntests/test_items.py::test_create_item PASSED\ntests/test_items.py::test_create_item_without_name_fails PASSED\ntests/test_items.py::test_get_nonexistent_item_returns_404 PASSED\ntests/test_items.py::test_delete_item PASSED\n\n===== 5 passed in 0.15s ====="
+      "$ref": "backend-guide/intro-b234.json"
     },
     {
-      "type": "alert",
-      "severity": "success",
-      "body": "All green. Every test passed. Get into the habit of running tests after every change."
+      "$ref": "backend-guide/intro-all-green-every-test-passed.json"
     },
     {
-      "type": "text",
-      "heading": "What Makes a Good Test?",
-      "headingLevel": 3,
-      "body": ""
+      "$ref": "backend-guide/testing-your-api-what-makes-a-good-test.json"
     },
     {
-      "type": "cardGrid",
-      "columns": 2,
-      "cards": [
-        {
-          "title": "Test the happy path",
-          "body": "Does it work when you give it correct data? If you create an item with a valid name, does it come back with an ID?"
-        },
-        {
-          "title": "Test the sad path",
-          "body": "Does it fail gracefully with bad data? If you create an item without a name, does it return a 400 error instead of crashing?"
-        },
-        {
-          "title": "Test edge cases",
-          "body": "What about unusual inputs? An empty string? An extremely long name? A number where a string is expected?"
-        },
-        {
-          "title": "Keep tests independent",
-          "body": "Each test should work on its own. It should not depend on another test running first or leaving data behind."
-        }
-      ]
+      "$ref": "backend-guide/testing-your-api-block-12.json"
     },
     {
-      "type": "text",
-      "heading": "You Built a Complete Backend!",
-      "headingLevel": 2,
-      "body": "You now know how to create a Flask API, organize it with blueprints, store data in JSON files, protect routes with JWT authentication, connect it to a React frontend, handle errors properly, and write tests to keep everything working."
+      "$ref": "backend-guide/you-built-a-complete-backend-you-built-a-complete-backend.json"
     },
     {
-      "type": "text",
-      "body": "Next steps: Try adding more features to your API. Create a users blueprint. Add search and filtering. Replace JSON storage with SQLite. Every real project is just these same patterns repeated and combined."
+      "$ref": "backend-guide/intro-next-steps-try-adding-more-fe.json"
     }
   ]
 }

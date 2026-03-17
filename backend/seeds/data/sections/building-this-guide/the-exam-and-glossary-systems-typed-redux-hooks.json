@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Typed Redux Hooks",
+  "headingLevel": 3,
+  "body": "The `hooks.ts` file exports typed versions of `useDispatch` and `useSelector`. Using these typed hooks throughout the app means you get full autocomplete and type checking for the store state and dispatch actions without importing RootState and AppDispatch everywhere."
+}

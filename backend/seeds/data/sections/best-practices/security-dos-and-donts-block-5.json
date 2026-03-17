@@ -1,0 +1,29 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "DON'T: Hardcoded Secrets",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "python",
+          "filename": "app/config.py",
+          "description": "Secrets hardcoded in source code end up in Git history forever. Even if you delete them later, anyone who clones the repo can find them.",
+          "code": "# NEVER DO THIS -- these secrets are now in your Git history forever\nDATABASE_URL = \"postgresql://admin:supersecret123@db.example.com:5432/myapp\"\nSECRET_KEY = \"my-super-secret-flask-key\"\nSTRIPE_API_KEY = \"sk_live_51ABC123DEF456\"\nSENDGRID_API_KEY = \"SG.abc123def456.xyz789\"\nAWS_ACCESS_KEY = \"AKIAIOSFODNN7EXAMPLE\"\nAWS_SECRET_KEY = \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\""
+        }
+      ]
+    },
+    {
+      "label": "DO: Environment Variables",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "python",
+          "filename": "app/config.py",
+          "description": "Load secrets from environment variables. Use python-dotenv for local development and your platform's secret manager in production.",
+          "code": "import os\nfrom dotenv import load_dotenv\n\nload_dotenv()  # Loads .env file in development\n\nclass Config:\n    DATABASE_URL = os.environ[\"DATABASE_URL\"]\n    SECRET_KEY = os.environ[\"SECRET_KEY\"]\n    STRIPE_API_KEY = os.environ[\"STRIPE_API_KEY\"]\n    SENDGRID_API_KEY = os.environ[\"SENDGRID_API_KEY\"]\n\n# --- .env (never committed to Git) ---\n# DATABASE_URL=postgresql://admin:supersecret123@localhost:5432/myapp\n# SECRET_KEY=generate-a-random-string-here\n# STRIPE_API_KEY=sk_test_...\n# SENDGRID_API_KEY=SG...\n\n# --- .gitignore (MUST include .env) ---\n# .env\n# .env.local\n# .env.production"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "type": "cardGrid",
+  "columns": 2,
+  "cards": [
+    {
+      "title": "Next.js (What You Know)",
+      "body": "src/app/ has folders like users/, products/, settings/ — each folder becomes a route automatically."
+    },
+    {
+      "title": "Flask (What We Are Learning)",
+      "body": "app/api/ has files like users.py, products.py, settings.py — each file is a blueprint that you register with the app."
+    }
+  ]
+}

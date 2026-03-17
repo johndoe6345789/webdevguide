@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "The Guide That Explains Itself",
+  "headingLevel": 2,
+  "body": "You are reading a web development guide that was built using the exact technologies it teaches. The backend is Flask. The frontend is Next.js 15 with Material UI. The content is stored as JSON. The whole thing runs in Docker. This section pulls back the curtain and shows you how every piece fits together, in enough detail that you could rebuild it from scratch."
+}

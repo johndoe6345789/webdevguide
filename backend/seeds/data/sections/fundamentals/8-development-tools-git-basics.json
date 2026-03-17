@@ -1,0 +1,22 @@
+{
+  "type": "accordion",
+  "title": "Git Basics",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "**Git** is the version control system used by virtually every software project. It tracks changes to your files over time, lets you create branches for new features, and enables collaboration without overwriting each other's work."
+    },
+    {
+      "type": "code",
+      "language": "bash",
+      "filename": "essential-git-commands.sh",
+      "code": "# Configure Git (do this once)\ngit config --global user.name \"Your Name\"\ngit config --global user.email \"your@email.com\"\n\n# Start a new repository\ngit init\n\n# Clone an existing repository\ngit clone https://github.com/user/repo.git\n\n# Check what has changed\ngit status          # Show modified, staged, and untracked files\ngit diff            # Show unstaged changes line by line\ngit diff --staged   # Show staged changes\n\n# Stage and commit changes\ngit add index.html style.css   # Stage specific files\ngit add .                      # Stage everything (be careful)\ngit commit -m \"Add landing page layout and styling\"\n\n# Branching\ngit branch feature/login       # Create a new branch\ngit checkout feature/login     # Switch to it\ngit checkout -b feature/login  # Create and switch in one command\n\n# Merging\ngit checkout main              # Switch to the branch you want to merge INTO\ngit merge feature/login        # Merge the feature branch into main\n\n# Syncing with a remote\ngit push origin main           # Push your commits to the remote\ngit pull origin main           # Fetch and merge remote changes\n\n# Viewing history\ngit log --oneline --graph      # Visual commit history\ngit log -5                     # Last 5 commits with details\n\n# Undoing things\ngit checkout -- file.txt       # Discard unstaged changes to a file\ngit reset HEAD file.txt        # Unstage a file\ngit stash                      # Temporarily save uncommitted changes\ngit stash pop                  # Restore stashed changes"
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "Commit messages matter",
+      "body": "Write commit messages that explain **why** you made a change, not just what you changed. Bad: `fix bug`. Good: `Fix login form failing silently when server returns 500`. Your future self will thank you."
+    }
+  ]
+}

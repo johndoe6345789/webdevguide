@@ -1,0 +1,6 @@
+{
+  "type": "alert",
+  "severity": "warning",
+  "title": "When to use SQL vs NoSQL",
+  "body": "Use SQL (PostgreSQL, MySQL, SQLite) when your data has clear relationships, you need transactions, or you want strong consistency. Use NoSQL (MongoDB) when your schema changes frequently, data is deeply nested, or you need horizontal scaling. Most teams start with PostgreSQL and add Redis for caching."
+}

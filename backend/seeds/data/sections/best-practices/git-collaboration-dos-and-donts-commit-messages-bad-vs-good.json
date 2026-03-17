@@ -1,0 +1,41 @@
+{
+  "type": "table",
+  "heading": "Commit Messages: Bad vs Good",
+  "headers": [
+    "DON'T",
+    "DO",
+    "Why"
+  ],
+  "rows": [
+    [
+      "fix stuff",
+      "fix: prevent duplicate form submission on double-click",
+      "Future you needs to know what was fixed and why"
+    ],
+    [
+      "updates",
+      "feat: add email verification to signup flow",
+      "Describe the feature, not the action of coding"
+    ],
+    [
+      "wip",
+      "refactor: extract payment validation into shared utility",
+      "WIP commits should be squashed before merging"
+    ],
+    [
+      "asdfasdf",
+      "docs: add API authentication examples to README",
+      "Commit messages are permanent project documentation"
+    ],
+    [
+      "fixed the thing john mentioned",
+      "fix: handle null user profile in dashboard header (#142)",
+      "Reference the issue number so the fix is traceable"
+    ],
+    [
+      "final fix (for real this time)",
+      "test: add edge case coverage for cart total calculation",
+      "Every commit should be a complete, working change"
+    ]
+  ]
+}

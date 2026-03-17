@@ -1,0 +1,5 @@
+{
+  "type": "alert",
+  "severity": "warning",
+  "body": "Security note: In production, never use CORS(app) without specifying allowed origins. That would let any website access your API."
+}

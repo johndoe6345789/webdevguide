@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 3,
+  "title": "Add to BlockRenderer",
+  "body": "Import your new renderer and add a case to the switch statement in `BlockRenderer.tsx`.",
+  "code": "// In BlockRenderer.tsx\nimport VideoBlockRenderer from './VideoBlockRenderer';\n\n// Add case:\ncase 'video': return <VideoBlockRenderer {...block} />;",
+  "language": "tsx"
+}

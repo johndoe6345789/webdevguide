@@ -1,0 +1,7 @@
+{
+  "type": "code",
+  "language": "json",
+  "filename": "backend/seeds/data/sections/my-section.json (template)",
+  "description": "The complete template for a section JSON file showing all metadata fields and several block types.",
+  "code": "{\n  \"title\": \"My Section Title\",\n  \"slug\": \"my-section-title\",\n  \"description\": \"A one-sentence description shown on the section list page.\",\n  \"icon\": \"School\",\n  \"order\": 15,\n  \"estimatedMinutes\": 30,\n  \"difficulty\": \"beginner\",\n  \"prerequisites\": [\"getting-started\"],\n  \"keyPoints\": [\n    \"Key takeaway one\",\n    \"Key takeaway two\"\n  ],\n  \"blocks\": [\n    {\n      \"type\": \"text\",\n      \"heading\": \"Introduction\",\n      \"headingLevel\": 2,\n      \"body\": \"Paragraph text. Supports **bold** and *italic* markdown.\"\n    },\n    {\n      \"type\": \"code\",\n      \"language\": \"python\",\n      \"filename\": \"example.py\",\n      \"description\": \"Shown above the code block as context.\",\n      \"code\": \"print('hello world')\"\n    },\n    {\n      \"type\": \"alert\",\n      \"severity\": \"warning\",\n      \"title\": \"Heads up\",\n      \"body\": \"Important warning text.\"\n    }\n  ]\n}"
+}

@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Blueprints (Organizing Routes)",
+  "headingLevel": 2,
+  "body": "Blueprints let you group related endpoints together, just like how Next.js uses folders to organize pages."
+}

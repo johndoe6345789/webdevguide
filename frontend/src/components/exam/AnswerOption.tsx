@@ -16,8 +16,12 @@ interface AnswerOptionProps {
   onSelect: (optionId: string) => void;
 }
 
-export default function AnswerOption({ option, selected, correct, reviewMode = false, onSelect }: AnswerOptionProps) {
-  const { borderColor, bgColor } = useAnswerStyles(selected, correct, reviewMode);
+export default function AnswerOption(
+  { option, selected, correct,
+    reviewMode = false, onSelect }: AnswerOptionProps
+) {
+  const { borderColor, bgColor } =
+    useAnswerStyles(selected, correct, reviewMode);
 
   return (
     <Paper variant="outlined" onClick={() => !reviewMode && onSelect(option.id)} sx={{ p: 2, mb: 1.5, cursor: reviewMode ? 'default' : 'pointer', borderColor, bgcolor: bgColor, borderWidth: selected || (reviewMode && correct) ? 2 : 1, transition: 'all 0.2s', '&:hover': reviewMode ? {} : { borderColor: 'primary.main', bgcolor: 'action.hover' } }}>

@@ -1,0 +1,11 @@
+{
+  "type": "list",
+  "ordered": true,
+  "items": [
+    "User types their username and password into a login form.",
+    "React sends a POST request to /api/login with the credentials.",
+    "Flask checks the credentials and returns a JWT token.",
+    "React stores the token (usually in memory or localStorage).",
+    "For all future requests that need authentication, React includes the token in the request headers: Authorization: Bearer your-token-here"
+  ]
+}

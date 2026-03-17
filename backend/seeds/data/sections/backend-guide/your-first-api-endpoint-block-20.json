@@ -1,0 +1,9 @@
+{
+  "type": "list",
+  "ordered": true,
+  "items": [
+    "The frontend (or browser) sends a message to your backend. This message includes: the URL they want (/api/hello), the method (GET, POST, etc.), and sometimes extra data.",
+    "Your Flask code receives the request, runs your function, and prepares a response.",
+    "Your backend sends back data (usually JSON) along with a status code. 200 means \"everything went fine.\" 404 means \"not found.\" 500 means \"something went wrong on the server.\""
+  ]
+}

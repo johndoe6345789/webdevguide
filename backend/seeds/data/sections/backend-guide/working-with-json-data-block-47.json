@@ -1,0 +1,6 @@
+{
+  "type": "code",
+  "language": "python",
+  "filename": "app/services/item_service.py",
+  "code": "import json\nimport os\nimport threading\n\n# This lock prevents two requests from writing to the file at the same time\nfile_lock = threading.Lock()\n\nDATA_FILE = os.path.join(os.path.dirname(__file__), \"../../data/items.json\")\n\ndef read_items():\n    \"\"\"Read all items from the JSON file.\"\"\"\n    with file_lock:\n        with open(DATA_FILE, \"r\") as f:\n            return json.load(f)\n\ndef write_items(items):\n    \"\"\"Write the full list of items to the JSON file.\"\"\"\n    with file_lock:\n        with open(DATA_FILE, \"w\") as f:\n            json.dump(items, f, indent=2)\n\ndef get_next_id(items):\n    \"\"\"Find the highest ID and add 1.\"\"\"\n    if not items:\n        return 1\n    return max(item[\"id\"] for item in items) + 1"
+}

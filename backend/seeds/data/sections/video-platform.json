@@ -1,0 +1,422 @@
+{
+  "title": "Building a Video Platform",
+  "slug": "video-platform",
+  "description": "Build a full-featured video streaming platform with uploads, transcoding, playlists, and real-time engagement",
+  "icon": "VideoLibrary",
+  "order": 21,
+  "estimatedMinutes": 50,
+  "difficulty": "advanced",
+  "prerequisites": ["fundamentals", "backend-guide", "docker-deployment"],
+  "keyPoints": [
+    "Video upload and storage",
+    "Transcoding pipeline",
+    "Adaptive streaming (HLS)",
+    "Comments and engagement",
+    "Recommendation engine basics"
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "heading": "Video Platform Architecture",
+      "headingLevel": 2,
+      "body": "A video platform handles some of the most demanding workloads on the web: large file uploads, CPU-intensive transcoding, high-bandwidth streaming, and real-time engagement features. This guide walks through every layer, from ingesting raw uploads to delivering adaptive bitrate streams to a custom React player."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        { "title": "Upload Service", "body": "Chunked uploads with progress tracking, format validation, and metadata extraction.", "icon": "CloudUpload", "chip": "Backend" },
+        { "title": "Transcoding Pipeline", "body": "FFmpeg-based worker that converts uploads into multiple resolutions and HLS segments.", "icon": "Transform", "chip": "Backend" },
+        { "title": "Streaming Server", "body": "HLS manifest and segment delivery with CDN integration for global reach.", "icon": "Stream", "chip": "Infrastructure" },
+        { "title": "Video Player", "body": "React component with hls.js for adaptive streaming, quality selection, and custom controls.", "icon": "PlayCircle", "chip": "Frontend" },
+        { "title": "Engagement Layer", "body": "Comments, likes, view counts, subscriptions, and real-time notifications.", "icon": "ThumbUp", "chip": "Full-Stack" },
+        { "title": "Discovery Engine", "body": "Full-text search, trending algorithms, category browsing, and basic recommendations.", "icon": "Explore", "chip": "Full-Stack" }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Database Schema",
+      "headingLevel": 2,
+      "body": "The schema supports users with channels, video metadata with transcoding status, hierarchical comments, playlists, subscriptions, and watch history for analytics."
+    },
+    {
+      "type": "code",
+      "language": "sql",
+      "filename": "schema.sql",
+      "description": "Complete PostgreSQL schema for the video platform covering users, channels, videos, comments, playlists, and analytics.",
+      "code": "CREATE TABLE users (\n  id SERIAL PRIMARY KEY,\n  username VARCHAR(40) UNIQUE NOT NULL,\n  email VARCHAR(255) UNIQUE NOT NULL,\n  password_hash VARCHAR(255) NOT NULL,\n  display_name VARCHAR(100) NOT NULL,\n  avatar_url TEXT,\n  created_at TIMESTAMP DEFAULT NOW()\n);\n\nCREATE TABLE channels (\n  id SERIAL PRIMARY KEY,\n  user_id INTEGER UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  name VARCHAR(100) NOT NULL,\n  slug VARCHAR(120) UNIQUE NOT NULL,\n  description TEXT DEFAULT '',\n  banner_url TEXT,\n  subscriber_count INTEGER DEFAULT 0,\n  created_at TIMESTAMP DEFAULT NOW()\n);\nCREATE INDEX idx_channels_slug ON channels(slug);\n\nCREATE TABLE videos (\n  id SERIAL PRIMARY KEY,\n  channel_id INTEGER NOT NULL REFERENCES channels(id) ON DELETE CASCADE,\n  title VARCHAR(200) NOT NULL,\n  slug VARCHAR(220) UNIQUE NOT NULL,\n  description TEXT DEFAULT '',\n  tags TEXT[] DEFAULT '{}',\n  category VARCHAR(60),\n  duration_seconds INTEGER,\n  original_filename VARCHAR(255),\n  original_path TEXT,\n  hls_master_url TEXT,\n  thumbnail_url TEXT,\n  status VARCHAR(30) DEFAULT 'uploading',\n  visibility VARCHAR(20) DEFAULT 'public',\n  view_count INTEGER DEFAULT 0,\n  like_count INTEGER DEFAULT 0,\n  dislike_count INTEGER DEFAULT 0,\n  comment_count INTEGER DEFAULT 0,\n  file_size_bytes BIGINT,\n  created_at TIMESTAMP DEFAULT NOW(),\n  published_at TIMESTAMP\n);\nCREATE INDEX idx_videos_channel ON videos(channel_id);\nCREATE INDEX idx_videos_status ON videos(status);\nCREATE INDEX idx_videos_category ON videos(category);\nCREATE INDEX idx_videos_published ON videos(published_at DESC);\nCREATE INDEX idx_videos_tags ON videos USING GIN(tags);\n\nCREATE TABLE video_renditions (\n  id SERIAL PRIMARY KEY,\n  video_id INTEGER NOT NULL REFERENCES videos(id) ON DELETE CASCADE,\n  resolution VARCHAR(10) NOT NULL,\n  width INTEGER NOT NULL,\n  height INTEGER NOT NULL,\n  bitrate_kbps INTEGER NOT NULL,\n  hls_playlist_url TEXT,\n  file_size_bytes BIGINT,\n  status VARCHAR(20) DEFAULT 'pending',\n  created_at TIMESTAMP DEFAULT NOW()\n);\nCREATE INDEX idx_renditions_video ON video_renditions(video_id);\n\nCREATE TABLE comments (\n  id SERIAL PRIMARY KEY,\n  video_id INTEGER NOT NULL REFERENCES videos(id) ON DELETE CASCADE,\n  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  parent_id INTEGER REFERENCES comments(id) ON DELETE CASCADE,\n  body TEXT NOT NULL,\n  like_count INTEGER DEFAULT 0,\n  created_at TIMESTAMP DEFAULT NOW(),\n  updated_at TIMESTAMP DEFAULT NOW()\n);\nCREATE INDEX idx_comments_video ON comments(video_id);\nCREATE INDEX idx_comments_parent ON comments(parent_id);\n\nCREATE TABLE likes (\n  id SERIAL PRIMARY KEY,\n  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  video_id INTEGER REFERENCES videos(id) ON DELETE CASCADE,\n  comment_id INTEGER REFERENCES comments(id) ON DELETE CASCADE,\n  value SMALLINT NOT NULL CHECK (value IN (-1, 1)),\n  created_at TIMESTAMP DEFAULT NOW(),\n  CONSTRAINT likes_target CHECK (\n    (video_id IS NOT NULL AND comment_id IS NULL) OR\n    (video_id IS NULL AND comment_id IS NOT NULL)\n  ),\n  UNIQUE (user_id, video_id),\n  UNIQUE (user_id, comment_id)\n);\n\nCREATE TABLE subscriptions (\n  id SERIAL PRIMARY KEY,\n  subscriber_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  channel_id INTEGER NOT NULL REFERENCES channels(id) ON DELETE CASCADE,\n  notify BOOLEAN DEFAULT TRUE,\n  created_at TIMESTAMP DEFAULT NOW(),\n  UNIQUE (subscriber_id, channel_id)\n);\nCREATE INDEX idx_subs_channel ON subscriptions(channel_id);\n\nCREATE TABLE playlists (\n  id SERIAL PRIMARY KEY,\n  channel_id INTEGER NOT NULL REFERENCES channels(id) ON DELETE CASCADE,\n  title VARCHAR(200) NOT NULL,\n  slug VARCHAR(220) NOT NULL,\n  description TEXT DEFAULT '',\n  visibility VARCHAR(20) DEFAULT 'public',\n  video_count INTEGER DEFAULT 0,\n  created_at TIMESTAMP DEFAULT NOW(),\n  UNIQUE (channel_id, slug)\n);\n\nCREATE TABLE playlist_items (\n  id SERIAL PRIMARY KEY,\n  playlist_id INTEGER NOT NULL REFERENCES playlists(id) ON DELETE CASCADE,\n  video_id INTEGER NOT NULL REFERENCES videos(id) ON DELETE CASCADE,\n  position INTEGER NOT NULL,\n  added_at TIMESTAMP DEFAULT NOW(),\n  UNIQUE (playlist_id, video_id)\n);\nCREATE INDEX idx_playlist_items_order ON playlist_items(playlist_id, position);\n\nCREATE TABLE watch_history (\n  id SERIAL PRIMARY KEY,\n  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n  video_id INTEGER NOT NULL REFERENCES videos(id) ON DELETE CASCADE,\n  watch_seconds INTEGER DEFAULT 0,\n  total_duration INTEGER,\n  completed BOOLEAN DEFAULT FALSE,\n  watched_at TIMESTAMP DEFAULT NOW()\n);\nCREATE INDEX idx_watch_user ON watch_history(user_id, watched_at DESC);\n\nCREATE TABLE reports (\n  id SERIAL PRIMARY KEY,\n  reporter_id INTEGER NOT NULL REFERENCES users(id),\n  video_id INTEGER REFERENCES videos(id) ON DELETE CASCADE,\n  comment_id INTEGER REFERENCES comments(id) ON DELETE CASCADE,\n  reason VARCHAR(50) NOT NULL,\n  details TEXT DEFAULT '',\n  status VARCHAR(20) DEFAULT 'pending',\n  reviewed_by INTEGER REFERENCES users(id),\n  created_at TIMESTAMP DEFAULT NOW()\n);"
+    },
+    {
+      "type": "table",
+      "heading": "Video Processing Status Flow",
+      "headers": ["Status", "Description", "Triggered By"],
+      "rows": [
+        ["uploading", "File chunks are being received from the client", "Upload initiation"],
+        ["uploaded", "All chunks received and assembled into a single file", "Final chunk received"],
+        ["processing", "Transcoding into multiple resolutions and HLS segments", "Transcode worker picks up job"],
+        ["ready", "All renditions complete, HLS master playlist generated", "Worker finishes all renditions"],
+        ["failed", "Transcoding encountered an error", "FFmpeg error or timeout"],
+        ["removed", "Video was deleted by owner or moderation", "User or admin action"]
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Video Upload System",
+      "headingLevel": 2,
+      "body": "Large video files need chunked uploads so users can resume interrupted transfers and see real-time progress. The client splits the file into chunks (e.g., 5 MB each) and sends them sequentially or in parallel. The server reassembles them."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/upload.py",
+      "description": "Flask endpoints for initializing a chunked upload, receiving individual chunks, and finalizing the assembled file.",
+      "code": "import os\nimport uuid\nimport hashlib\nfrom flask import Blueprint, request, jsonify, g\nfrom werkzeug.utils import secure_filename\nfrom auth import login_required\nfrom db import get_db\n\nupload_bp = Blueprint(\"upload\", __name__)\n\nUPLOAD_DIR = os.environ.get(\"UPLOAD_DIR\", \"/data/uploads\")\nCHUNK_DIR = os.path.join(UPLOAD_DIR, \"chunks\")\nALLOWED_EXTENSIONS = {\".mp4\", \".mov\", \".avi\", \".mkv\", \".webm\", \".flv\"}\nMAX_FILE_SIZE = 5 * 1024 * 1024 * 1024  # 5 GB\n\nos.makedirs(CHUNK_DIR, exist_ok=True)\n\n\n@upload_bp.route(\"/init\", methods=[\"POST\"])\n@login_required\ndef init_upload():\n    \"\"\"Start a new upload session. Returns an upload_id for chunk uploads.\"\"\"\n    data = request.get_json()\n    filename = data.get(\"filename\", \"\")\n    file_size = data.get(\"fileSize\", 0)\n    total_chunks = data.get(\"totalChunks\", 1)\n    title = data.get(\"title\", filename)\n\n    ext = os.path.splitext(filename)[1].lower()\n    if ext not in ALLOWED_EXTENSIONS:\n        return jsonify(error=f\"File type {ext} not allowed\"), 400\n    if file_size > MAX_FILE_SIZE:\n        return jsonify(error=\"File exceeds 5 GB limit\"), 400\n\n    upload_id = uuid.uuid4().hex\n    chunk_path = os.path.join(CHUNK_DIR, upload_id)\n    os.makedirs(chunk_path, exist_ok=True)\n\n    db = get_db()\n    cur = db.cursor()\n    slug = f\"{secure_filename(title)}-{upload_id[:8]}\".lower()\n    cur.execute(\"\"\"\n        INSERT INTO videos (channel_id, title, slug, original_filename,\n                            file_size_bytes, status)\n        SELECT c.id, %s, %s, %s, %s, 'uploading'\n        FROM channels c WHERE c.user_id = %s\n        RETURNING id\n    \"\"\", (title, slug, filename, file_size, g.user_id))\n    video_id = cur.fetchone()[0]\n    db.commit()\n\n    return jsonify(\n        uploadId=upload_id,\n        videoId=video_id,\n        chunkSize=5 * 1024 * 1024,\n        totalChunks=total_chunks\n    ), 201\n\n\n@upload_bp.route(\"/<upload_id>/chunk\", methods=[\"POST\"])\n@login_required\ndef upload_chunk(upload_id):\n    \"\"\"Receive a single chunk. Client sends chunkIndex and the binary data.\"\"\"\n    chunk_index = request.form.get(\"chunkIndex\", type=int)\n    if chunk_index is None:\n        return jsonify(error=\"chunkIndex required\"), 400\n\n    chunk_file = request.files.get(\"chunk\")\n    if not chunk_file:\n        return jsonify(error=\"No chunk data\"), 400\n\n    chunk_path = os.path.join(CHUNK_DIR, upload_id)\n    if not os.path.isdir(chunk_path):\n        return jsonify(error=\"Invalid upload_id\"), 404\n\n    dest = os.path.join(chunk_path, f\"{chunk_index:06d}\")\n    chunk_file.save(dest)\n\n    received = len(os.listdir(chunk_path))\n    return jsonify(chunkIndex=chunk_index, received=received), 200\n\n\n@upload_bp.route(\"/<upload_id>/complete\", methods=[\"POST\"])\n@login_required\ndef complete_upload(upload_id):\n    \"\"\"Assemble chunks into the final file and queue transcoding.\"\"\"\n    data = request.get_json()\n    video_id = data.get(\"videoId\")\n    total_chunks = data.get(\"totalChunks\", 1)\n    checksum = data.get(\"checksum\", \"\")\n\n    chunk_path = os.path.join(CHUNK_DIR, upload_id)\n    chunks = sorted(os.listdir(chunk_path))\n\n    if len(chunks) != total_chunks:\n        return jsonify(error=f\"Expected {total_chunks} chunks, got {len(chunks)}\"), 400\n\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"SELECT original_filename FROM videos WHERE id = %s\", (video_id,))\n    row = cur.fetchone()\n    if not row:\n        return jsonify(error=\"Video not found\"), 404\n\n    ext = os.path.splitext(row[0])[1]\n    final_name = f\"{upload_id}{ext}\"\n    final_path = os.path.join(UPLOAD_DIR, \"raw\", final_name)\n    os.makedirs(os.path.dirname(final_path), exist_ok=True)\n\n    sha256 = hashlib.sha256()\n    with open(final_path, \"wb\") as out:\n        for c in chunks:\n            cp = os.path.join(chunk_path, c)\n            data_bytes = open(cp, \"rb\").read()\n            sha256.update(data_bytes)\n            out.write(data_bytes)\n\n    if checksum and sha256.hexdigest() != checksum:\n        os.remove(final_path)\n        return jsonify(error=\"Checksum mismatch\"), 400\n\n    # Clean up chunk directory\n    import shutil\n    shutil.rmtree(chunk_path)\n\n    cur.execute(\"\"\"\n        UPDATE videos SET original_path = %s, status = 'uploaded'\n        WHERE id = %s\n    \"\"\", (final_path, video_id))\n    db.commit()\n\n    # Queue transcoding (see next section)\n    from tasks import queue_transcode\n    queue_transcode(video_id, final_path)\n\n    return jsonify(videoId=video_id, status=\"uploaded\"), 200"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "hooks/useChunkedUpload.ts",
+      "description": "React hook for chunked file upload with progress tracking and abort support.",
+      "code": "import { useState, useRef, useCallback } from \"react\";\n\nconst CHUNK_SIZE = 5 * 1024 * 1024; // 5 MB\n\ninterface UploadProgress {\n  phase: \"idle\" | \"uploading\" | \"finalizing\" | \"done\" | \"error\";\n  percent: number;\n  uploadedChunks: number;\n  totalChunks: number;\n  videoId: number | null;\n  error: string | null;\n}\n\nexport function useChunkedUpload() {\n  const [progress, setProgress] = useState<UploadProgress>({\n    phase: \"idle\", percent: 0, uploadedChunks: 0,\n    totalChunks: 0, videoId: null, error: null,\n  });\n  const abortRef = useRef(false);\n\n  const upload = useCallback(async (file: File, title: string) => {\n    abortRef.current = false;\n    const totalChunks = Math.ceil(file.size / CHUNK_SIZE);\n\n    setProgress({ phase: \"uploading\", percent: 0, uploadedChunks: 0,\n      totalChunks, videoId: null, error: null });\n\n    // 1. Init upload session\n    const initRes = await fetch(\"/api/upload/init\", {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({\n        filename: file.name,\n        fileSize: file.size,\n        totalChunks,\n        title,\n      }),\n    });\n    if (!initRes.ok) {\n      const err = await initRes.json();\n      setProgress(p => ({ ...p, phase: \"error\", error: err.error }));\n      return;\n    }\n    const { uploadId, videoId } = await initRes.json();\n\n    // 2. Upload chunks sequentially\n    for (let i = 0; i < totalChunks; i++) {\n      if (abortRef.current) {\n        setProgress(p => ({ ...p, phase: \"error\", error: \"Cancelled\" }));\n        return;\n      }\n      const start = i * CHUNK_SIZE;\n      const end = Math.min(start + CHUNK_SIZE, file.size);\n      const chunk = file.slice(start, end);\n\n      const form = new FormData();\n      form.append(\"chunkIndex\", String(i));\n      form.append(\"chunk\", chunk);\n\n      const res = await fetch(`/api/upload/${uploadId}/chunk`, {\n        method: \"POST\",\n        body: form,\n      });\n      if (!res.ok) {\n        setProgress(p => ({ ...p, phase: \"error\", error: \"Chunk upload failed\" }));\n        return;\n      }\n      setProgress(p => ({\n        ...p,\n        uploadedChunks: i + 1,\n        percent: Math.round(((i + 1) / totalChunks) * 100),\n      }));\n    }\n\n    // 3. Finalize\n    setProgress(p => ({ ...p, phase: \"finalizing\" }));\n    const completeRes = await fetch(`/api/upload/${uploadId}/complete`, {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({ videoId, totalChunks }),\n    });\n    if (!completeRes.ok) {\n      setProgress(p => ({ ...p, phase: \"error\", error: \"Finalization failed\" }));\n      return;\n    }\n    setProgress(p => ({ ...p, phase: \"done\", percent: 100, videoId }));\n  }, []);\n\n  const cancel = useCallback(() => { abortRef.current = true; }, []);\n\n  return { progress, upload, cancel };\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Video Transcoding Pipeline",
+      "headingLevel": 2,
+      "body": "After a raw upload is assembled, a background worker transcodes it into multiple resolutions and generates HLS segments. This is the most CPU-intensive part of the platform."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "tasks/transcode.py",
+      "description": "Background transcoding worker using FFmpeg to produce multiple renditions and HLS segments with a thread-pool executor.",
+      "code": "import os\nimport json\nimport subprocess\nimport logging\nfrom concurrent.futures import ThreadPoolExecutor\nfrom db import get_db\n\nlogger = logging.getLogger(__name__)\n\nOUTPUT_DIR = os.environ.get(\"HLS_OUTPUT_DIR\", \"/data/hls\")\n\nRENDITIONS = [\n    {\"name\": \"360p\",  \"width\": 640,  \"height\": 360,  \"bitrate\": \"800k\",  \"audio\": \"96k\"},\n    {\"name\": \"720p\",  \"width\": 1280, \"height\": 720,  \"bitrate\": \"2500k\", \"audio\": \"128k\"},\n    {\"name\": \"1080p\", \"width\": 1920, \"height\": 1080, \"bitrate\": \"5000k\", \"audio\": \"192k\"},\n]\n\nexecutor = ThreadPoolExecutor(max_workers=2)\n\n\ndef queue_transcode(video_id: int, input_path: str):\n    \"\"\"Submit a transcoding job to the thread pool.\"\"\"\n    executor.submit(_transcode_video, video_id, input_path)\n\n\ndef _get_duration(input_path: str) -> int:\n    \"\"\"Probe video duration in seconds using ffprobe.\"\"\"\n    cmd = [\n        \"ffprobe\", \"-v\", \"quiet\", \"-print_format\", \"json\",\n        \"-show_format\", input_path\n    ]\n    result = subprocess.run(cmd, capture_output=True, text=True)\n    info = json.loads(result.stdout)\n    return int(float(info[\"format\"].get(\"duration\", 0)))\n\n\ndef _transcode_rendition(input_path: str, output_dir: str, r: dict) -> str:\n    \"\"\"Transcode a single rendition to HLS segments.\"\"\"\n    rend_dir = os.path.join(output_dir, r[\"name\"])\n    os.makedirs(rend_dir, exist_ok=True)\n    playlist = os.path.join(rend_dir, \"playlist.m3u8\")\n    segment_pattern = os.path.join(rend_dir, \"seg_%04d.ts\")\n\n    cmd = [\n        \"ffmpeg\", \"-i\", input_path,\n        \"-vf\", f\"scale={r['width']}:{r['height']}\",\n        \"-c:v\", \"libx264\", \"-preset\", \"fast\", \"-b:v\", r[\"bitrate\"],\n        \"-c:a\", \"aac\", \"-b:a\", r[\"audio\"],\n        \"-hls_time\", \"6\",\n        \"-hls_playlist_type\", \"vod\",\n        \"-hls_segment_filename\", segment_pattern,\n        \"-f\", \"hls\",\n        playlist,\n        \"-y\"\n    ]\n    logger.info(\"Running: %s\", \" \".join(cmd))\n    result = subprocess.run(cmd, capture_output=True, text=True, timeout=7200)\n    if result.returncode != 0:\n        raise RuntimeError(f\"FFmpeg error for {r['name']}: {result.stderr[-500:]}\")\n\n    size = sum(\n        os.path.getsize(os.path.join(rend_dir, f))\n        for f in os.listdir(rend_dir)\n    )\n    return playlist, size\n\n\ndef _build_master_playlist(output_dir: str, completed: list[dict]) -> str:\n    \"\"\"Generate the HLS master playlist referencing each rendition.\"\"\"\n    master_path = os.path.join(output_dir, \"master.m3u8\")\n    lines = [\"#EXTM3U\"]\n    for r in completed:\n        bw = int(r[\"bitrate\"].replace(\"k\", \"\")) * 1000\n        lines.append(\n            f'#EXT-X-STREAM-INF:BANDWIDTH={bw},RESOLUTION={r[\"width\"]}x{r[\"height\"]}'\n        )\n        lines.append(f'{r[\"name\"]}/playlist.m3u8')\n    with open(master_path, \"w\") as f:\n        f.write(\"\\n\".join(lines) + \"\\n\")\n    return master_path\n\n\ndef _transcode_video(video_id: int, input_path: str):\n    \"\"\"Full transcoding pipeline for a single video.\"\"\"\n    db = get_db()\n    cur = db.cursor()\n\n    try:\n        cur.execute(\"UPDATE videos SET status = 'processing' WHERE id = %s\", (video_id,))\n        db.commit()\n\n        duration = _get_duration(input_path)\n        cur.execute(\"UPDATE videos SET duration_seconds = %s WHERE id = %s\",\n                    (duration, video_id))\n        db.commit()\n\n        output_dir = os.path.join(OUTPUT_DIR, str(video_id))\n        os.makedirs(output_dir, exist_ok=True)\n\n        completed = []\n        for r in RENDITIONS:\n            cur.execute(\"\"\"\n                INSERT INTO video_renditions\n                    (video_id, resolution, width, height, bitrate_kbps, status)\n                VALUES (%s, %s, %s, %s, %s, 'processing')\n                RETURNING id\n            \"\"\", (video_id, r[\"name\"], r[\"width\"], r[\"height\"],\n                  int(r[\"bitrate\"].replace(\"k\", \"\"))))\n            rend_id = cur.fetchone()[0]\n            db.commit()\n\n            try:\n                playlist_path, size = _transcode_rendition(input_path, output_dir, r)\n                hls_url = f\"/hls/{video_id}/{r['name']}/playlist.m3u8\"\n                cur.execute(\"\"\"\n                    UPDATE video_renditions\n                    SET status = 'ready', hls_playlist_url = %s, file_size_bytes = %s\n                    WHERE id = %s\n                \"\"\", (hls_url, size, rend_id))\n                db.commit()\n                completed.append(r)\n            except Exception as e:\n                logger.error(\"Rendition %s failed: %s\", r[\"name\"], e)\n                cur.execute(\"UPDATE video_renditions SET status = 'failed' WHERE id = %s\",\n                            (rend_id,))\n                db.commit()\n\n        if not completed:\n            raise RuntimeError(\"All renditions failed\")\n\n        _build_master_playlist(output_dir, completed)\n        master_url = f\"/hls/{video_id}/master.m3u8\"\n\n        # Generate thumbnail\n        from tasks.thumbnails import generate_thumbnails\n        thumb_url = generate_thumbnails(video_id, input_path, duration)\n\n        cur.execute(\"\"\"\n            UPDATE videos\n            SET status = 'ready', hls_master_url = %s, thumbnail_url = %s,\n                published_at = NOW()\n            WHERE id = %s\n        \"\"\", (master_url, thumb_url, video_id))\n        db.commit()\n        logger.info(\"Video %d transcoding complete\", video_id)\n\n    except Exception as e:\n        logger.exception(\"Transcoding failed for video %d\", video_id)\n        cur.execute(\"UPDATE videos SET status = 'failed' WHERE id = %s\", (video_id,))\n        db.commit()"
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "FFmpeg Must Be Installed",
+      "body": "The transcoding pipeline requires FFmpeg and ffprobe on the system PATH. On Ubuntu: apt install ffmpeg. On macOS: brew install ffmpeg. For production, consider running transcode workers in dedicated Docker containers with FFmpeg pre-installed to isolate CPU-heavy work from the API server."
+    },
+    {
+      "type": "text",
+      "heading": "Adaptive Bitrate Streaming (HLS)",
+      "headingLevel": 2,
+      "body": "HTTP Live Streaming (HLS) lets the player switch between quality levels based on the viewer's bandwidth. The master playlist lists available renditions, and each rendition has its own playlist pointing to 6-second .ts segment files."
+    },
+    {
+      "type": "code",
+      "language": "text",
+      "filename": "master.m3u8",
+      "description": "Example HLS master playlist referencing three quality levels. The player picks the highest quality the connection can sustain.",
+      "code": "#EXTM3U\n#EXT-X-STREAM-INF:BANDWIDTH=800000,RESOLUTION=640x360\n360p/playlist.m3u8\n#EXT-X-STREAM-INF:BANDWIDTH=2500000,RESOLUTION=1280x720\n720p/playlist.m3u8\n#EXT-X-STREAM-INF:BANDWIDTH=5000000,RESOLUTION=1920x1080\n1080p/playlist.m3u8"
+    },
+    {
+      "type": "code",
+      "language": "text",
+      "filename": "720p/playlist.m3u8",
+      "description": "Example rendition playlist for 720p. Each segment is approximately 6 seconds of video.",
+      "code": "#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-TARGETDURATION:6\n#EXT-X-MEDIA-SEQUENCE:0\n#EXT-X-PLAYLIST-TYPE:VOD\n#EXTINF:6.006,\nseg_0000.ts\n#EXTINF:6.006,\nseg_0001.ts\n#EXTINF:6.006,\nseg_0002.ts\n#EXTINF:6.006,\nseg_0003.ts\n#EXTINF:4.838,\nseg_0004.ts\n#EXT-X-ENDLIST"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/streaming.py",
+      "description": "Flask route to serve HLS playlists and segments from disk with proper CORS and content-type headers.",
+      "code": "import os\nfrom flask import Blueprint, send_file, abort\n\nstreaming_bp = Blueprint(\"streaming\", __name__)\n\nHLS_DIR = os.environ.get(\"HLS_OUTPUT_DIR\", \"/data/hls\")\n\n\n@streaming_bp.route(\"/hls/<int:video_id>/<path:filename>\")\ndef serve_hls(video_id, filename):\n    \"\"\"Serve HLS manifests and segments with correct MIME types.\"\"\"\n    file_path = os.path.join(HLS_DIR, str(video_id), filename)\n    if not os.path.isfile(file_path):\n        abort(404)\n\n    if filename.endswith(\".m3u8\"):\n        mimetype = \"application/vnd.apple.mpegurl\"\n    elif filename.endswith(\".ts\"):\n        mimetype = \"video/mp2t\"\n    else:\n        mimetype = \"application/octet-stream\"\n\n    response = send_file(file_path, mimetype=mimetype)\n    response.headers[\"Access-Control-Allow-Origin\"] = \"*\"\n    response.headers[\"Cache-Control\"] = \"public, max-age=31536000\"\n    return response"
+    },
+    {
+      "type": "text",
+      "heading": "Video Player Component",
+      "headingLevel": 2,
+      "body": "The frontend player uses hls.js to handle adaptive streaming in browsers that lack native HLS support (everything except Safari). The component includes custom controls for play/pause, seek, volume, quality selection, and fullscreen."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "hls.js Player",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "typescript",
+              "filename": "components/VideoPlayer.tsx",
+              "description": "Full video player component with hls.js integration, quality selector, and custom controls.",
+              "code": "import React, { useRef, useEffect, useState, useCallback } from \"react\";\nimport Hls from \"hls.js\";\n\ninterface VideoPlayerProps {\n  src: string; // HLS master playlist URL\n  poster?: string;\n  autoPlay?: boolean;\n  onTimeUpdate?: (currentTime: number, duration: number) => void;\n}\n\nexport default function VideoPlayer({ src, poster, autoPlay, onTimeUpdate }: VideoPlayerProps) {\n  const videoRef = useRef<HTMLVideoElement>(null);\n  const hlsRef = useRef<Hls | null>(null);\n  const [playing, setPlaying] = useState(false);\n  const [currentTime, setCurrentTime] = useState(0);\n  const [duration, setDuration] = useState(0);\n  const [volume, setVolume] = useState(1);\n  const [quality, setQuality] = useState(-1); // -1 = auto\n  const [levels, setLevels] = useState<{ height: number; index: number }[]>([]);\n  const [isFullscreen, setIsFullscreen] = useState(false);\n  const containerRef = useRef<HTMLDivElement>(null);\n\n  useEffect(() => {\n    const video = videoRef.current;\n    if (!video) return;\n\n    if (Hls.isSupported()) {\n      const hls = new Hls({\n        enableWorker: true,\n        lowLatencyMode: false,\n        startLevel: -1, // auto\n      });\n      hls.loadSource(src);\n      hls.attachMedia(video);\n\n      hls.on(Hls.Events.MANIFEST_PARSED, (_event, data) => {\n        setLevels(\n          data.levels.map((lvl, i) => ({ height: lvl.height, index: i }))\n        );\n        if (autoPlay) video.play();\n      });\n\n      hlsRef.current = hls;\n      return () => { hls.destroy(); };\n    } else if (video.canPlayType(\"application/vnd.apple.mpegurl\")) {\n      // Safari native HLS\n      video.src = src;\n      if (autoPlay) video.play();\n    }\n  }, [src, autoPlay]);\n\n  const handleTimeUpdate = useCallback(() => {\n    const video = videoRef.current;\n    if (!video) return;\n    setCurrentTime(video.currentTime);\n    setDuration(video.duration || 0);\n    onTimeUpdate?.(video.currentTime, video.duration);\n  }, [onTimeUpdate]);\n\n  const togglePlay = () => {\n    const video = videoRef.current;\n    if (!video) return;\n    if (video.paused) { video.play(); setPlaying(true); }\n    else { video.pause(); setPlaying(false); }\n  };\n\n  const seek = (e: React.ChangeEvent<HTMLInputElement>) => {\n    const time = parseFloat(e.target.value);\n    if (videoRef.current) videoRef.current.currentTime = time;\n    setCurrentTime(time);\n  };\n\n  const changeVolume = (e: React.ChangeEvent<HTMLInputElement>) => {\n    const v = parseFloat(e.target.value);\n    if (videoRef.current) videoRef.current.volume = v;\n    setVolume(v);\n  };\n\n  const changeQuality = (levelIndex: number) => {\n    if (hlsRef.current) {\n      hlsRef.current.currentLevel = levelIndex; // -1 for auto\n    }\n    setQuality(levelIndex);\n  };\n\n  const toggleFullscreen = () => {\n    if (!containerRef.current) return;\n    if (!document.fullscreenElement) {\n      containerRef.current.requestFullscreen();\n      setIsFullscreen(true);\n    } else {\n      document.exitFullscreen();\n      setIsFullscreen(false);\n    }\n  };\n\n  const formatTime = (sec: number) => {\n    const m = Math.floor(sec / 60);\n    const s = Math.floor(sec % 60);\n    return `${m}:${s.toString().padStart(2, \"0\")}`;\n  };\n\n  return (\n    <div ref={containerRef} className=\"video-player\">\n      <video\n        ref={videoRef}\n        poster={poster}\n        onTimeUpdate={handleTimeUpdate}\n        onPlay={() => setPlaying(true)}\n        onPause={() => setPlaying(false)}\n        onClick={togglePlay}\n        style={{ width: \"100%\", display: \"block\", background: \"#000\" }}\n      />\n      <div className=\"controls\">\n        <button onClick={togglePlay}>{playing ? \"Pause\" : \"Play\"}</button>\n        <span>{formatTime(currentTime)}</span>\n        <input\n          type=\"range\" min={0} max={duration || 0} step={0.1}\n          value={currentTime} onChange={seek}\n          style={{ flex: 1 }}\n        />\n        <span>{formatTime(duration)}</span>\n        <input\n          type=\"range\" min={0} max={1} step={0.05}\n          value={volume} onChange={changeVolume}\n          style={{ width: 80 }}\n        />\n        <select\n          value={quality}\n          onChange={(e) => changeQuality(parseInt(e.target.value))}\n        >\n          <option value={-1}>Auto</option>\n          {levels.map((l) => (\n            <option key={l.index} value={l.index}>{l.height}p</option>\n          ))}\n        </select>\n        <button onClick={toggleFullscreen}>\n          {isFullscreen ? \"Exit FS\" : \"Fullscreen\"}\n        </button>\n      </div>\n    </div>\n  );\n}"
+            }
+          ]
+        },
+        {
+          "label": "video.js Player",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "typescript",
+              "filename": "components/VideoJsPlayer.tsx",
+              "description": "Alternative player using video.js with its built-in HLS support and skinnable UI.",
+              "code": "import React, { useRef, useEffect } from \"react\";\nimport videojs from \"video.js\";\nimport Player from \"video.js/dist/types/player\";\nimport \"video.js/dist/video-js.css\";\n\ninterface VideoJsPlayerProps {\n  src: string;\n  poster?: string;\n  onReady?: (player: Player) => void;\n}\n\nexport default function VideoJsPlayer({ src, poster, onReady }: VideoJsPlayerProps) {\n  const videoRef = useRef<HTMLDivElement>(null);\n  const playerRef = useRef<Player | null>(null);\n\n  useEffect(() => {\n    if (!videoRef.current) return;\n\n    const videoElement = document.createElement(\"video-js\");\n    videoElement.classList.add(\"vjs-big-play-centered\");\n    videoRef.current.appendChild(videoElement);\n\n    const player = videojs(videoElement, {\n      autoplay: false,\n      controls: true,\n      responsive: true,\n      fluid: true,\n      poster,\n      sources: [{ src, type: \"application/x-mpegURL\" }],\n      html5: {\n        vhs: {\n          overrideNative: true,\n          enableLowInitialPlaylist: true,\n        },\n      },\n    });\n\n    player.qualityLevels();\n    playerRef.current = player;\n    onReady?.(player);\n\n    return () => {\n      if (playerRef.current) {\n        playerRef.current.dispose();\n        playerRef.current = null;\n      }\n    };\n  }, [src, poster, onReady]);\n\n  return <div ref={videoRef} data-vjs-player />;\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Thumbnail Generation",
+      "headingLevel": 2,
+      "body": "Automatically generating thumbnails gives creators a set of options to choose from. We capture frames at evenly spaced timestamps throughout the video."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "tasks/thumbnails.py",
+      "description": "Generate multiple thumbnail images from a video at evenly spaced timestamps using FFmpeg.",
+      "code": "import os\nimport subprocess\nimport logging\n\nlogger = logging.getLogger(__name__)\n\nTHUMB_DIR = os.environ.get(\"THUMBNAIL_DIR\", \"/data/thumbnails\")\nTHUMB_COUNT = 4\nTHUMB_WIDTH = 640\n\n\ndef generate_thumbnails(video_id: int, input_path: str, duration: int) -> str:\n    \"\"\"Generate thumbnails at evenly spaced intervals.\n\n    Returns the URL of the first thumbnail (used as default).\n    \"\"\"\n    out_dir = os.path.join(THUMB_DIR, str(video_id))\n    os.makedirs(out_dir, exist_ok=True)\n\n    if duration < 2:\n        timestamps = [0]\n    else:\n        interval = duration / (THUMB_COUNT + 1)\n        timestamps = [int(interval * (i + 1)) for i in range(THUMB_COUNT)]\n\n    for i, ts in enumerate(timestamps):\n        output_path = os.path.join(out_dir, f\"thumb_{i}.jpg\")\n        cmd = [\n            \"ffmpeg\", \"-ss\", str(ts), \"-i\", input_path,\n            \"-vframes\", \"1\",\n            \"-vf\", f\"scale={THUMB_WIDTH}:-1\",\n            \"-q:v\", \"2\",\n            output_path,\n            \"-y\"\n        ]\n        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)\n        if result.returncode != 0:\n            logger.warning(\"Thumbnail at %ds failed: %s\", ts, result.stderr[-200:])\n        else:\n            logger.info(\"Generated thumbnail %d at %ds for video %d\", i, ts, video_id)\n\n    default_thumb = f\"/thumbnails/{video_id}/thumb_0.jpg\"\n    return default_thumb\n\n\ndef generate_preview_sprite(video_id: int, input_path: str, duration: int) -> str:\n    \"\"\"Generate a sprite sheet for seek-preview thumbnails (one frame per 10s).\"\"\"\n    out_dir = os.path.join(THUMB_DIR, str(video_id))\n    os.makedirs(out_dir, exist_ok=True)\n    sprite_path = os.path.join(out_dir, \"sprite.jpg\")\n\n    interval = max(10, duration // 30)  # ~30 frames max\n    cmd = [\n        \"ffmpeg\", \"-i\", input_path,\n        \"-vf\", f\"fps=1/{interval},scale=160:-1,tile=10x3\",\n        \"-q:v\", \"5\",\n        sprite_path,\n        \"-y\"\n    ]\n    subprocess.run(cmd, capture_output=True, text=True, timeout=120)\n    return f\"/thumbnails/{video_id}/sprite.jpg\""
+    },
+    {
+      "type": "text",
+      "heading": "Channel and Subscription System",
+      "headingLevel": 2,
+      "body": "Each user gets one channel. Other users can subscribe to channels and optionally receive notifications when new videos are published."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/channels.py",
+      "description": "Channel and subscription API endpoints for viewing channels, subscribing, and listing subscriber feeds.",
+      "code": "from flask import Blueprint, request, jsonify, g\nfrom auth import login_required\nfrom db import get_db\n\nchannels_bp = Blueprint(\"channels\", __name__)\n\n\n@channels_bp.route(\"/<slug>\", methods=[\"GET\"])\ndef get_channel(slug):\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT c.id, c.name, c.slug, c.description, c.banner_url,\n               c.subscriber_count, c.created_at,\n               u.display_name, u.avatar_url\n        FROM channels c\n        JOIN users u ON u.id = c.user_id\n        WHERE c.slug = %s\n    \"\"\", (slug,))\n    row = cur.fetchone()\n    if not row:\n        return jsonify(error=\"Channel not found\"), 404\n    cols = [d[0] for d in cur.description]\n    channel = dict(zip(cols, row))\n    channel[\"created_at\"] = channel[\"created_at\"].isoformat()\n    return jsonify(channel)\n\n\n@channels_bp.route(\"/<int:channel_id>/videos\", methods=[\"GET\"])\ndef channel_videos(channel_id):\n    page = request.args.get(\"page\", 1, type=int)\n    per_page = 20\n    sort = request.args.get(\"sort\", \"newest\")\n    order = \"published_at DESC\" if sort == \"newest\" else \"view_count DESC\"\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(f\"\"\"\n        SELECT id, title, slug, thumbnail_url, duration_seconds,\n               view_count, published_at\n        FROM videos\n        WHERE channel_id = %s AND status = 'ready' AND visibility = 'public'\n        ORDER BY {order}\n        LIMIT %s OFFSET %s\n    \"\"\", (channel_id, per_page, (page - 1) * per_page))\n    cols = [d[0] for d in cur.description]\n    videos = [dict(zip(cols, r)) for r in cur.fetchall()]\n    return jsonify(videos=videos)\n\n\n@channels_bp.route(\"/<int:channel_id>/subscribe\", methods=[\"POST\"])\n@login_required\ndef subscribe(channel_id):\n    db = get_db()\n    cur = db.cursor()\n    try:\n        cur.execute(\"\"\"\n            INSERT INTO subscriptions (subscriber_id, channel_id)\n            VALUES (%s, %s)\n        \"\"\", (g.user_id, channel_id))\n        cur.execute(\"\"\"\n            UPDATE channels SET subscriber_count = subscriber_count + 1\n            WHERE id = %s\n        \"\"\", (channel_id,))\n        db.commit()\n        return jsonify(subscribed=True), 201\n    except Exception:\n        db.rollback()\n        return jsonify(error=\"Already subscribed\"), 409\n\n\n@channels_bp.route(\"/<int:channel_id>/subscribe\", methods=[\"DELETE\"])\n@login_required\ndef unsubscribe(channel_id):\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        DELETE FROM subscriptions\n        WHERE subscriber_id = %s AND channel_id = %s\n    \"\"\", (g.user_id, channel_id))\n    if cur.rowcount:\n        cur.execute(\"\"\"\n            UPDATE channels SET subscriber_count = subscriber_count - 1\n            WHERE id = %s AND subscriber_count > 0\n        \"\"\", (channel_id,))\n    db.commit()\n    return jsonify(subscribed=False), 200\n\n\n@channels_bp.route(\"/feed\", methods=[\"GET\"])\n@login_required\ndef subscription_feed():\n    \"\"\"Videos from all channels the current user subscribes to.\"\"\"\n    page = request.args.get(\"page\", 1, type=int)\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT v.id, v.title, v.slug, v.thumbnail_url, v.duration_seconds,\n               v.view_count, v.published_at,\n               c.name AS channel_name, c.slug AS channel_slug\n        FROM videos v\n        JOIN channels c ON c.id = v.channel_id\n        JOIN subscriptions s ON s.channel_id = c.id\n        WHERE s.subscriber_id = %s AND v.status = 'ready'\n              AND v.visibility = 'public'\n        ORDER BY v.published_at DESC\n        LIMIT 20 OFFSET %s\n    \"\"\", (g.user_id, (page - 1) * 20))\n    cols = [d[0] for d in cur.description]\n    videos = [dict(zip(cols, r)) for r in cur.fetchall()]\n    return jsonify(videos=videos)"
+    },
+    {
+      "type": "text",
+      "heading": "Comments and Engagement",
+      "headingLevel": 2,
+      "body": "The engagement layer includes nested comments with replies, a like/dislike system for both videos and comments, debounced view counting, and share functionality."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/engagement.py",
+      "description": "API endpoints for comments (with nesting), likes/dislikes, and debounced view counting.",
+      "code": "import time\nfrom flask import Blueprint, request, jsonify, g\nfrom auth import login_required\nfrom db import get_db\n\nengagement_bp = Blueprint(\"engagement\", __name__)\n\n# Simple in-memory view debounce (use Redis in production)\n_view_cache: dict[str, float] = {}\nVIEW_DEBOUNCE_SECONDS = 30\n\n\n@engagement_bp.route(\"/videos/<int:video_id>/views\", methods=[\"POST\"])\ndef record_view(video_id):\n    \"\"\"Increment view count with debouncing per IP.\"\"\"\n    ip = request.remote_addr or \"unknown\"\n    cache_key = f\"{video_id}:{ip}\"\n    now = time.time()\n\n    if cache_key in _view_cache:\n        if now - _view_cache[cache_key] < VIEW_DEBOUNCE_SECONDS:\n            return jsonify(counted=False), 200\n\n    _view_cache[cache_key] = now\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\n        \"UPDATE videos SET view_count = view_count + 1 WHERE id = %s RETURNING view_count\",\n        (video_id,)\n    )\n    new_count = cur.fetchone()[0]\n    db.commit()\n    return jsonify(counted=True, viewCount=new_count), 200\n\n\n@engagement_bp.route(\"/videos/<int:video_id>/comments\", methods=[\"GET\"])\ndef list_comments(video_id):\n    \"\"\"Fetch top-level comments with one level of replies.\"\"\"\n    page = request.args.get(\"page\", 1, type=int)\n    sort = request.args.get(\"sort\", \"newest\")\n    order = \"c.created_at DESC\" if sort == \"newest\" else \"c.like_count DESC\"\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(f\"\"\"\n        SELECT c.id, c.body, c.like_count, c.created_at,\n               u.display_name, u.avatar_url\n        FROM comments c\n        JOIN users u ON u.id = c.user_id\n        WHERE c.video_id = %s AND c.parent_id IS NULL\n        ORDER BY {order}\n        LIMIT 20 OFFSET %s\n    \"\"\", (video_id, (page - 1) * 20))\n    cols = [d[0] for d in cur.description]\n    comments = [dict(zip(cols, r)) for r in cur.fetchall()]\n\n    # Fetch replies for each comment\n    for comment in comments:\n        cur.execute(\"\"\"\n            SELECT c.id, c.body, c.like_count, c.created_at,\n                   u.display_name, u.avatar_url\n            FROM comments c\n            JOIN users u ON u.id = c.user_id\n            WHERE c.parent_id = %s\n            ORDER BY c.created_at ASC\n            LIMIT 10\n        \"\"\", (comment[\"id\"],))\n        rcols = [d[0] for d in cur.description]\n        comment[\"replies\"] = [dict(zip(rcols, r)) for r in cur.fetchall()]\n\n    return jsonify(comments=comments)\n\n\n@engagement_bp.route(\"/videos/<int:video_id>/comments\", methods=[\"POST\"])\n@login_required\ndef add_comment(video_id):\n    data = request.get_json()\n    body = data.get(\"body\", \"\").strip()\n    parent_id = data.get(\"parentId\")\n\n    if not body or len(body) > 2000:\n        return jsonify(error=\"Comment must be 1-2000 characters\"), 400\n\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        INSERT INTO comments (video_id, user_id, parent_id, body)\n        VALUES (%s, %s, %s, %s)\n        RETURNING id, created_at\n    \"\"\", (video_id, g.user_id, parent_id, body))\n    row = cur.fetchone()\n    cur.execute(\n        \"UPDATE videos SET comment_count = comment_count + 1 WHERE id = %s\",\n        (video_id,)\n    )\n    db.commit()\n    return jsonify(id=row[0], createdAt=row[1].isoformat()), 201\n\n\n@engagement_bp.route(\"/videos/<int:video_id>/like\", methods=[\"POST\"])\n@login_required\ndef like_video(video_id):\n    \"\"\"Like (value=1) or dislike (value=-1) a video.\"\"\"\n    data = request.get_json()\n    value = data.get(\"value\", 1)\n    if value not in (1, -1):\n        return jsonify(error=\"value must be 1 or -1\"), 400\n\n    db = get_db()\n    cur = db.cursor()\n\n    # Upsert: remove old vote, insert new\n    cur.execute(\n        \"SELECT value FROM likes WHERE user_id = %s AND video_id = %s\",\n        (g.user_id, video_id)\n    )\n    existing = cur.fetchone()\n\n    if existing:\n        old_value = existing[0]\n        cur.execute(\n            \"DELETE FROM likes WHERE user_id = %s AND video_id = %s\",\n            (g.user_id, video_id)\n        )\n        if old_value == 1:\n            cur.execute(\"UPDATE videos SET like_count = like_count - 1 WHERE id = %s\", (video_id,))\n        else:\n            cur.execute(\"UPDATE videos SET dislike_count = dislike_count - 1 WHERE id = %s\", (video_id,))\n\n        if old_value == value:\n            db.commit()\n            return jsonify(liked=None), 200  # toggled off\n\n    cur.execute(\"\"\"\n        INSERT INTO likes (user_id, video_id, value) VALUES (%s, %s, %s)\n    \"\"\", (g.user_id, video_id, value))\n\n    if value == 1:\n        cur.execute(\"UPDATE videos SET like_count = like_count + 1 WHERE id = %s\", (video_id,))\n    else:\n        cur.execute(\"UPDATE videos SET dislike_count = dislike_count + 1 WHERE id = %s\", (video_id,))\n\n    db.commit()\n    return jsonify(liked=value), 200"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "components/CommentSection.tsx",
+      "description": "React comment section with nested replies, like buttons, and a reply form.",
+      "code": "import React, { useState, useEffect } from \"react\";\n\ninterface Comment {\n  id: number;\n  body: string;\n  like_count: number;\n  created_at: string;\n  display_name: string;\n  avatar_url: string | null;\n  replies?: Comment[];\n}\n\ninterface Props {\n  videoId: number;\n}\n\nexport default function CommentSection({ videoId }: Props) {\n  const [comments, setComments] = useState<Comment[]>([]);\n  const [newComment, setNewComment] = useState(\"\");\n  const [replyTo, setReplyTo] = useState<number | null>(null);\n  const [replyText, setReplyText] = useState(\"\");\n  const [sort, setSort] = useState<\"newest\" | \"top\">(\"newest\");\n\n  useEffect(() => {\n    fetch(`/api/videos/${videoId}/comments?sort=${sort}`)\n      .then((r) => r.json())\n      .then((data) => setComments(data.comments));\n  }, [videoId, sort]);\n\n  const submitComment = async (parentId?: number) => {\n    const body = parentId ? replyText : newComment;\n    if (!body.trim()) return;\n\n    const res = await fetch(`/api/videos/${videoId}/comments`, {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({ body, parentId }),\n    });\n    if (res.ok) {\n      setNewComment(\"\");\n      setReplyText(\"\");\n      setReplyTo(null);\n      // Refresh comments\n      const data = await fetch(`/api/videos/${videoId}/comments?sort=${sort}`).then(r => r.json());\n      setComments(data.comments);\n    }\n  };\n\n  const likeComment = async (commentId: number) => {\n    await fetch(`/api/comments/${commentId}/like`, { method: \"POST\" });\n  };\n\n  const timeAgo = (dateStr: string) => {\n    const diff = Date.now() - new Date(dateStr).getTime();\n    const hours = Math.floor(diff / 3600000);\n    if (hours < 1) return \"just now\";\n    if (hours < 24) return `${hours}h ago`;\n    const days = Math.floor(hours / 24);\n    if (days < 30) return `${days}d ago`;\n    return `${Math.floor(days / 30)}mo ago`;\n  };\n\n  return (\n    <div className=\"comment-section\">\n      <div className=\"comment-header\">\n        <h3>{comments.length} Comments</h3>\n        <select value={sort} onChange={(e) => setSort(e.target.value as \"newest\" | \"top\")}>\n          <option value=\"newest\">Newest</option>\n          <option value=\"top\">Top</option>\n        </select>\n      </div>\n\n      <div className=\"comment-form\">\n        <textarea\n          value={newComment}\n          onChange={(e) => setNewComment(e.target.value)}\n          placeholder=\"Add a comment...\"\n          maxLength={2000}\n        />\n        <button onClick={() => submitComment()} disabled={!newComment.trim()}>\n          Comment\n        </button>\n      </div>\n\n      {comments.map((c) => (\n        <div key={c.id} className=\"comment\">\n          <div className=\"comment-meta\">\n            <strong>{c.display_name}</strong>\n            <span>{timeAgo(c.created_at)}</span>\n          </div>\n          <p>{c.body}</p>\n          <div className=\"comment-actions\">\n            <button onClick={() => likeComment(c.id)}>Like ({c.like_count})</button>\n            <button onClick={() => setReplyTo(replyTo === c.id ? null : c.id)}>Reply</button>\n          </div>\n\n          {replyTo === c.id && (\n            <div className=\"reply-form\">\n              <textarea\n                value={replyText}\n                onChange={(e) => setReplyText(e.target.value)}\n                placeholder=\"Write a reply...\"\n                maxLength={2000}\n              />\n              <button onClick={() => submitComment(c.id)}>Reply</button>\n            </div>\n          )}\n\n          {c.replies?.map((r) => (\n            <div key={r.id} className=\"comment reply\">\n              <div className=\"comment-meta\">\n                <strong>{r.display_name}</strong>\n                <span>{timeAgo(r.created_at)}</span>\n              </div>\n              <p>{r.body}</p>\n              <button onClick={() => likeComment(r.id)}>Like ({r.like_count})</button>\n            </div>\n          ))}\n        </div>\n      ))}\n    </div>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Playlists",
+      "headingLevel": 2,
+      "body": "Playlists allow users to organize videos into ordered collections. The API supports creating, updating, reordering items, and a playlist player that auto-advances to the next video."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/playlists.py",
+      "description": "CRUD endpoints for playlists including adding, removing, and reordering videos.",
+      "code": "from flask import Blueprint, request, jsonify, g\nfrom auth import login_required\nfrom db import get_db\n\nplaylists_bp = Blueprint(\"playlists\", __name__)\n\n\n@playlists_bp.route(\"\", methods=[\"POST\"])\n@login_required\ndef create_playlist():\n    data = request.get_json()\n    title = data.get(\"title\", \"\").strip()\n    if not title:\n        return jsonify(error=\"Title required\"), 400\n\n    db = get_db()\n    cur = db.cursor()\n    slug = title.lower().replace(\" \", \"-\")[:200]\n    cur.execute(\"\"\"\n        INSERT INTO playlists (channel_id, title, slug, description, visibility)\n        SELECT c.id, %s, %s, %s, %s\n        FROM channels c WHERE c.user_id = %s\n        RETURNING id\n    \"\"\", (title, slug, data.get(\"description\", \"\"),\n          data.get(\"visibility\", \"public\"), g.user_id))\n    playlist_id = cur.fetchone()[0]\n    db.commit()\n    return jsonify(id=playlist_id, title=title), 201\n\n\n@playlists_bp.route(\"/<int:playlist_id>\", methods=[\"GET\"])\ndef get_playlist(playlist_id):\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT p.id, p.title, p.description, p.visibility, p.video_count,\n               c.name AS channel_name, c.slug AS channel_slug\n        FROM playlists p\n        JOIN channels c ON c.id = p.channel_id\n        WHERE p.id = %s\n    \"\"\", (playlist_id,))\n    row = cur.fetchone()\n    if not row:\n        return jsonify(error=\"Playlist not found\"), 404\n    cols = [d[0] for d in cur.description]\n    playlist = dict(zip(cols, row))\n\n    cur.execute(\"\"\"\n        SELECT pi.position, v.id, v.title, v.slug, v.thumbnail_url,\n               v.duration_seconds, v.view_count\n        FROM playlist_items pi\n        JOIN videos v ON v.id = pi.video_id\n        WHERE pi.playlist_id = %s AND v.status = 'ready'\n        ORDER BY pi.position\n    \"\"\", (playlist_id,))\n    vcols = [d[0] for d in cur.description]\n    playlist[\"videos\"] = [dict(zip(vcols, r)) for r in cur.fetchall()]\n    return jsonify(playlist)\n\n\n@playlists_bp.route(\"/<int:playlist_id>/items\", methods=[\"POST\"])\n@login_required\ndef add_to_playlist(playlist_id):\n    data = request.get_json()\n    video_id = data.get(\"videoId\")\n    if not video_id:\n        return jsonify(error=\"videoId required\"), 400\n\n    db = get_db()\n    cur = db.cursor()\n\n    # Get next position\n    cur.execute(\n        \"SELECT COALESCE(MAX(position), -1) + 1 FROM playlist_items WHERE playlist_id = %s\",\n        (playlist_id,)\n    )\n    position = cur.fetchone()[0]\n\n    try:\n        cur.execute(\"\"\"\n            INSERT INTO playlist_items (playlist_id, video_id, position)\n            VALUES (%s, %s, %s)\n        \"\"\", (playlist_id, video_id, position))\n        cur.execute(\"\"\"\n            UPDATE playlists SET video_count = video_count + 1 WHERE id = %s\n        \"\"\", (playlist_id,))\n        db.commit()\n        return jsonify(position=position), 201\n    except Exception:\n        db.rollback()\n        return jsonify(error=\"Video already in playlist\"), 409\n\n\n@playlists_bp.route(\"/<int:playlist_id>/items/<int:video_id>\", methods=[\"DELETE\"])\n@login_required\ndef remove_from_playlist(playlist_id, video_id):\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        DELETE FROM playlist_items WHERE playlist_id = %s AND video_id = %s\n    \"\"\", (playlist_id, video_id))\n    if cur.rowcount:\n        cur.execute(\"\"\"\n            UPDATE playlists SET video_count = video_count - 1\n            WHERE id = %s AND video_count > 0\n        \"\"\", (playlist_id,))\n    db.commit()\n    return \"\", 204\n\n\n@playlists_bp.route(\"/<int:playlist_id>/reorder\", methods=[\"PUT\"])\n@login_required\ndef reorder_playlist(playlist_id):\n    \"\"\"Receive a list of video IDs in desired order.\"\"\"\n    data = request.get_json()\n    video_ids = data.get(\"videoIds\", [])\n\n    db = get_db()\n    cur = db.cursor()\n    for pos, vid in enumerate(video_ids):\n        cur.execute(\"\"\"\n            UPDATE playlist_items SET position = %s\n            WHERE playlist_id = %s AND video_id = %s\n        \"\"\", (pos, playlist_id, vid))\n    db.commit()\n    return jsonify(reordered=True), 200"
+    },
+    {
+      "type": "text",
+      "heading": "Search and Discovery",
+      "headingLevel": 2,
+      "body": "Discovery features help users find content through full-text search, category browsing, trending rankings, and basic recommendations based on watch history."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/discovery.py",
+      "description": "Search, trending, and recommendation endpoints using PostgreSQL full-text search and a simple trending score formula.",
+      "code": "import math\nimport time\nfrom flask import Blueprint, request, jsonify, g\nfrom db import get_db\n\ndiscovery_bp = Blueprint(\"discovery\", __name__)\n\nVIDEO_COLUMNS = \"\"\"v.id, v.title, v.slug, v.thumbnail_url, v.duration_seconds,\n    v.view_count, v.like_count, v.published_at,\n    c.name AS channel_name, c.slug AS channel_slug\"\"\"\n\n\n@discovery_bp.route(\"/search\", methods=[\"GET\"])\ndef search_videos():\n    \"\"\"Full-text search on video title, description, and tags.\"\"\"\n    q = request.args.get(\"q\", \"\").strip()\n    page = request.args.get(\"page\", 1, type=int)\n    category = request.args.get(\"category\")\n\n    if not q:\n        return jsonify(error=\"Search query required\"), 400\n\n    db = get_db()\n    cur = db.cursor()\n\n    where = [\"v.status = 'ready'\", \"v.visibility = 'public'\"]\n    params = []\n\n    # PostgreSQL full-text search\n    where.append(\"\"\"\n        (to_tsvector('english', v.title || ' ' || v.description)\n         @@ plainto_tsquery('english', %s)\n         OR v.title ILIKE %s\n         OR %s = ANY(v.tags))\n    \"\"\")\n    params.extend([q, f\"%{q}%\", q.lower()])\n\n    if category:\n        where.append(\"v.category = %s\")\n        params.append(category)\n\n    where_sql = \" AND \".join(where)\n    cur.execute(f\"\"\"\n        SELECT {VIDEO_COLUMNS},\n               ts_rank(to_tsvector('english', v.title || ' ' || v.description),\n                       plainto_tsquery('english', %s)) AS relevance\n        FROM videos v\n        JOIN channels c ON c.id = v.channel_id\n        WHERE {where_sql}\n        ORDER BY relevance DESC, v.view_count DESC\n        LIMIT 20 OFFSET %s\n    \"\"\", [q] + params + [(page - 1) * 20])\n    cols = [d[0] for d in cur.description]\n    results = [dict(zip(cols, r)) for r in cur.fetchall()]\n    return jsonify(results=results)\n\n\n@discovery_bp.route(\"/trending\", methods=[\"GET\"])\ndef trending_videos():\n    \"\"\"Trending videos scored by views weighted by recency.\n\n    Score = view_count / (hours_since_publish + 2) ^ 1.5\n    This favors recent videos with high view velocity.\n    \"\"\"\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(f\"\"\"\n        SELECT {VIDEO_COLUMNS},\n               v.view_count::float /\n               POWER(EXTRACT(EPOCH FROM (NOW() - v.published_at)) / 3600 + 2, 1.5)\n               AS trend_score\n        FROM videos v\n        JOIN channels c ON c.id = v.channel_id\n        WHERE v.status = 'ready' AND v.visibility = 'public'\n              AND v.published_at > NOW() - INTERVAL '7 days'\n        ORDER BY trend_score DESC\n        LIMIT 30\n    \"\"\")\n    cols = [d[0] for d in cur.description]\n    videos = [dict(zip(cols, r)) for r in cur.fetchall()]\n    return jsonify(videos=videos)\n\n\n@discovery_bp.route(\"/recommended\", methods=[\"GET\"])\ndef recommended_videos():\n    \"\"\"Simple content-based recommendations.\n\n    Finds videos in the same categories and with overlapping tags\n    as the user's recent watch history.\n    \"\"\"\n    user_id = getattr(g, \"user_id\", None)\n    if not user_id:\n        # Fall back to popular videos for anonymous users\n        db = get_db()\n        cur = db.cursor()\n        cur.execute(f\"\"\"\n            SELECT {VIDEO_COLUMNS}\n            FROM videos v JOIN channels c ON c.id = v.channel_id\n            WHERE v.status = 'ready' AND v.visibility = 'public'\n            ORDER BY v.view_count DESC LIMIT 20\n        \"\"\")\n        cols = [d[0] for d in cur.description]\n        return jsonify(videos=[dict(zip(cols, r)) for r in cur.fetchall()])\n\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(f\"\"\"\n        WITH recent AS (\n            SELECT DISTINCT v.category, unnest(v.tags) AS tag\n            FROM watch_history wh\n            JOIN videos v ON v.id = wh.video_id\n            WHERE wh.user_id = %s\n            ORDER BY tag\n            LIMIT 50\n        ),\n        watched AS (\n            SELECT video_id FROM watch_history WHERE user_id = %s\n        )\n        SELECT {VIDEO_COLUMNS},\n               COUNT(*) AS match_score\n        FROM videos v\n        JOIN channels c ON c.id = v.channel_id\n        LEFT JOIN recent r ON (v.category = r.category OR r.tag = ANY(v.tags))\n        WHERE v.status = 'ready' AND v.visibility = 'public'\n              AND v.id NOT IN (SELECT video_id FROM watched)\n        GROUP BY v.id, c.name, c.slug\n        HAVING COUNT(*) > 0\n        ORDER BY match_score DESC, v.view_count DESC\n        LIMIT 20\n    \"\"\", (user_id, user_id))\n    cols = [d[0] for d in cur.description]\n    videos = [dict(zip(cols, r)) for r in cur.fetchall()]\n    return jsonify(videos=videos)"
+    },
+    {
+      "type": "text",
+      "heading": "Video Analytics",
+      "headingLevel": 2,
+      "body": "Analytics let creators understand their audience. We track watch time, view counts over time, and audience retention to show which parts of a video keep or lose viewers."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/analytics.py",
+      "description": "Analytics endpoints for tracking watch progress and providing creator dashboard stats.",
+      "code": "from flask import Blueprint, request, jsonify, g\nfrom auth import login_required\nfrom db import get_db\n\nanalytics_bp = Blueprint(\"analytics\", __name__)\n\n\n@analytics_bp.route(\"/watch-progress\", methods=[\"POST\"])\ndef track_watch_progress():\n    \"\"\"Called periodically by the player to record watch time.\"\"\"\n    data = request.get_json()\n    video_id = data.get(\"videoId\")\n    watch_seconds = data.get(\"watchSeconds\", 0)\n    total_duration = data.get(\"totalDuration\", 0)\n    user_id = getattr(g, \"user_id\", None)\n\n    if not user_id or not video_id:\n        return jsonify(ok=True), 200  # silently skip for anonymous\n\n    completed = watch_seconds >= total_duration * 0.9 if total_duration else False\n\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        INSERT INTO watch_history (user_id, video_id, watch_seconds, total_duration, completed)\n        VALUES (%s, %s, %s, %s, %s)\n        ON CONFLICT (id) DO NOTHING\n    \"\"\", (user_id, video_id, watch_seconds, total_duration, completed))\n    db.commit()\n    return jsonify(ok=True), 200\n\n\n@analytics_bp.route(\"/dashboard\", methods=[\"GET\"])\n@login_required\ndef creator_dashboard():\n    \"\"\"Aggregate stats for the creator's channel.\"\"\"\n    period = request.args.get(\"period\", \"7d\")\n    interval_map = {\"7d\": \"7 days\", \"30d\": \"30 days\", \"90d\": \"90 days\"}\n    interval = interval_map.get(period, \"7 days\")\n\n    db = get_db()\n    cur = db.cursor()\n\n    # Overall stats\n    cur.execute(\"\"\"\n        SELECT\n            COUNT(*) AS total_videos,\n            COALESCE(SUM(view_count), 0) AS total_views,\n            COALESCE(SUM(like_count), 0) AS total_likes,\n            c.subscriber_count\n        FROM videos v\n        JOIN channels c ON c.id = v.channel_id\n        WHERE c.user_id = %s AND v.status = 'ready'\n        GROUP BY c.subscriber_count\n    \"\"\", (g.user_id,))\n    row = cur.fetchone()\n    if not row:\n        return jsonify(error=\"No channel found\"), 404\n    stats = {\n        \"totalVideos\": row[0], \"totalViews\": row[1],\n        \"totalLikes\": row[2], \"subscribers\": row[3]\n    }\n\n    # Views over time\n    cur.execute(f\"\"\"\n        SELECT DATE(wh.watched_at) AS day,\n               COUNT(*) AS views,\n               SUM(wh.watch_seconds) / 3600.0 AS watch_hours\n        FROM watch_history wh\n        JOIN videos v ON v.id = wh.video_id\n        JOIN channels c ON c.id = v.channel_id\n        WHERE c.user_id = %s AND wh.watched_at > NOW() - INTERVAL '{interval}'\n        GROUP BY day\n        ORDER BY day\n    \"\"\", (g.user_id,))\n    cols = [d[0] for d in cur.description]\n    stats[\"viewsByDay\"] = [dict(zip(cols, r)) for r in cur.fetchall()]\n\n    # Top videos\n    cur.execute(\"\"\"\n        SELECT v.id, v.title, v.view_count, v.like_count, v.comment_count\n        FROM videos v\n        JOIN channels c ON c.id = v.channel_id\n        WHERE c.user_id = %s AND v.status = 'ready'\n        ORDER BY v.view_count DESC\n        LIMIT 10\n    \"\"\", (g.user_id,))\n    cols = [d[0] for d in cur.description]\n    stats[\"topVideos\"] = [dict(zip(cols, r)) for r in cur.fetchall()]\n\n    return jsonify(stats)"
+    },
+    {
+      "type": "accordion",
+      "title": "Audience Retention Analysis",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Retention data shows what percentage of viewers are still watching at each point in a video. Collect this by having the player report the furthest timestamp reached in 10-second buckets. Then calculate the percentage of total views that reached each bucket."
+        },
+        {
+          "type": "code",
+          "language": "python",
+          "filename": "routes/analytics.py",
+          "description": "Retention endpoint that computes what percentage of viewers reached each 10-second interval.",
+          "code": "@analytics_bp.route(\"/retention/<int:video_id>\", methods=[\"GET\"])\n@login_required\ndef video_retention(video_id):\n    \"\"\"Return retention data as percentage of viewers at each 10s bucket.\"\"\"\n    db = get_db()\n    cur = db.cursor()\n\n    cur.execute(\"SELECT duration_seconds FROM videos WHERE id = %s\", (video_id,))\n    row = cur.fetchone()\n    if not row:\n        return jsonify(error=\"Video not found\"), 404\n    duration = row[0] or 0\n\n    cur.execute(\"\"\"\n        SELECT COUNT(*) FROM watch_history WHERE video_id = %s\n    \"\"\", (video_id,))\n    total_views = cur.fetchone()[0]\n    if total_views == 0:\n        return jsonify(retention=[], totalViews=0)\n\n    bucket_size = 10\n    buckets = []\n    for t in range(0, duration, bucket_size):\n        cur.execute(\"\"\"\n            SELECT COUNT(*) FROM watch_history\n            WHERE video_id = %s AND watch_seconds >= %s\n        \"\"\", (video_id, t))\n        count = cur.fetchone()[0]\n        buckets.append({\n            \"timestamp\": t,\n            \"percentage\": round(count / total_views * 100, 1)\n        })\n\n    return jsonify(retention=buckets, totalViews=total_views)"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Content Moderation",
+      "headingLevel": 2,
+      "body": "Even a small platform needs basic moderation tools. A report system lets users flag inappropriate content, and admins can review and act on reports."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/moderation.py",
+      "description": "Report submission and admin review queue for content moderation.",
+      "code": "from flask import Blueprint, request, jsonify, g\nfrom auth import login_required, admin_required\nfrom db import get_db\n\nmoderation_bp = Blueprint(\"moderation\", __name__)\n\nREPORT_REASONS = [\n    \"spam\", \"harassment\", \"hate_speech\", \"violence\",\n    \"misinformation\", \"copyright\", \"inappropriate\", \"other\"\n]\n\n\n@moderation_bp.route(\"/report\", methods=[\"POST\"])\n@login_required\ndef submit_report():\n    data = request.get_json()\n    reason = data.get(\"reason\", \"\")\n    video_id = data.get(\"videoId\")\n    comment_id = data.get(\"commentId\")\n    details = data.get(\"details\", \"\")\n\n    if reason not in REPORT_REASONS:\n        return jsonify(error=f\"Invalid reason. Must be one of: {REPORT_REASONS}\"), 400\n    if not video_id and not comment_id:\n        return jsonify(error=\"Must report a video or comment\"), 400\n\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        INSERT INTO reports (reporter_id, video_id, comment_id, reason, details)\n        VALUES (%s, %s, %s, %s, %s)\n        RETURNING id\n    \"\"\", (g.user_id, video_id, comment_id, reason, details))\n    report_id = cur.fetchone()[0]\n    db.commit()\n    return jsonify(reportId=report_id), 201\n\n\n@moderation_bp.route(\"/reports\", methods=[\"GET\"])\n@admin_required\ndef list_reports():\n    status = request.args.get(\"status\", \"pending\")\n    page = request.args.get(\"page\", 1, type=int)\n\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT r.id, r.reason, r.details, r.status, r.created_at,\n               u.display_name AS reporter,\n               v.title AS video_title, v.id AS video_id,\n               c.body AS comment_body, c.id AS comment_id\n        FROM reports r\n        JOIN users u ON u.id = r.reporter_id\n        LEFT JOIN videos v ON v.id = r.video_id\n        LEFT JOIN comments c ON c.id = r.comment_id\n        WHERE r.status = %s\n        ORDER BY r.created_at DESC\n        LIMIT 20 OFFSET %s\n    \"\"\", (status, (page - 1) * 20))\n    cols = [d[0] for d in cur.description]\n    reports = [dict(zip(cols, r)) for r in cur.fetchall()]\n    return jsonify(reports=reports)\n\n\n@moderation_bp.route(\"/reports/<int:report_id>/resolve\", methods=[\"POST\"])\n@admin_required\ndef resolve_report(report_id):\n    data = request.get_json()\n    action = data.get(\"action\")  # \"dismiss\", \"remove_content\", \"warn_user\"\n\n    db = get_db()\n    cur = db.cursor()\n\n    cur.execute(\"\"\"\n        UPDATE reports SET status = 'resolved', reviewed_by = %s\n        WHERE id = %s RETURNING video_id, comment_id\n    \"\"\", (g.user_id, report_id))\n    row = cur.fetchone()\n    if not row:\n        return jsonify(error=\"Report not found\"), 404\n\n    if action == \"remove_content\":\n        video_id, comment_id = row\n        if video_id:\n            cur.execute(\"UPDATE videos SET status = 'removed' WHERE id = %s\", (video_id,))\n        if comment_id:\n            cur.execute(\"DELETE FROM comments WHERE id = %s\", (comment_id,))\n\n    db.commit()\n    return jsonify(resolved=True), 200"
+    },
+    {
+      "type": "list",
+      "heading": "Moderation Best Practices",
+      "ordered": false,
+      "items": [
+        "Establish clear community guidelines and display them on the upload page",
+        "Use rate limiting on report submissions to prevent abuse of the report system",
+        "Log all moderation actions for accountability and audit trails",
+        "Consider automated pre-screening using cloud services for NSFW detection before publishing",
+        "Allow creators to appeal moderation decisions with a separate review workflow",
+        "Implement shadow-banning for repeat offenders to reduce disruption"
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Performance and CDN",
+      "headingLevel": 2,
+      "body": "Video platforms are bandwidth-intensive. A CDN caches .ts segments close to viewers, lazy loading defers off-screen thumbnails, and infinite scroll fetches video feeds page by page."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Self-Hosted Storage",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Self-hosting means storing raw uploads and HLS output on your own servers or attached block storage. You control the pipeline end to end but must handle disk provisioning, backups, and serving infrastructure yourself."
+            },
+            {
+              "type": "list",
+              "ordered": false,
+              "items": [
+                "Attach large block volumes (e.g., 1 TB+ NVMe) for raw uploads and transcoded output",
+                "Use Nginx to serve /hls/ paths directly from disk with sendfile enabled",
+                "Set Cache-Control: public, max-age=31536000 on .ts segments (they never change)",
+                "Place a CDN like Cloudflare or Fastly in front of Nginx for global edge caching",
+                "Monitor disk usage and set up alerts when approaching capacity"
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Cloud Storage (S3)",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Cloud object storage like AWS S3 removes capacity limits. Upload raw files to one bucket, write transcoded HLS output to a public bucket, and front it with CloudFront for low-latency global delivery."
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "filename": "storage/s3.py",
+              "description": "S3 upload helper for transferring transcoded HLS output to cloud storage.",
+              "code": "import os\nimport boto3\nfrom botocore.config import Config\n\ns3 = boto3.client(\"s3\", config=Config(signature_version=\"s3v4\"))\nBUCKET = os.environ.get(\"S3_BUCKET\", \"my-video-platform-hls\")\n\n\ndef upload_hls_to_s3(video_id: int, local_dir: str) -> str:\n    \"\"\"Upload all HLS files for a video to S3.\n\n    Returns the S3 URL for the master playlist.\n    \"\"\"\n    prefix = f\"hls/{video_id}\"\n\n    for root, _dirs, files in os.walk(local_dir):\n        for fname in files:\n            local_path = os.path.join(root, fname)\n            relative = os.path.relpath(local_path, local_dir)\n            s3_key = f\"{prefix}/{relative}\"\n\n            content_type = \"application/vnd.apple.mpegurl\"\n            if fname.endswith(\".ts\"):\n                content_type = \"video/mp2t\"\n\n            s3.upload_file(\n                local_path, BUCKET, s3_key,\n                ExtraArgs={\n                    \"ContentType\": content_type,\n                    \"CacheControl\": \"public, max-age=31536000\",\n                }\n            )\n\n    return f\"https://{BUCKET}.s3.amazonaws.com/{prefix}/master.m3u8\"\n\n\ndef generate_presigned_upload_url(key: str, content_type: str, expires: int = 3600) -> str:\n    \"\"\"Generate a presigned URL for direct client-to-S3 uploads.\"\"\"\n    return s3.generate_presigned_url(\n        \"put_object\",\n        Params={\"Bucket\": BUCKET, \"Key\": key, \"ContentType\": content_type},\n        ExpiresIn=expires\n    )"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "components/InfiniteVideoFeed.tsx",
+      "description": "Infinite scroll video feed with lazy-loaded thumbnails using Intersection Observer.",
+      "code": "import React, { useState, useEffect, useRef, useCallback } from \"react\";\n\ninterface VideoCard {\n  id: number;\n  title: string;\n  slug: string;\n  thumbnail_url: string;\n  duration_seconds: number;\n  view_count: number;\n  channel_name: string;\n  published_at: string;\n}\n\nexport default function InfiniteVideoFeed({ endpoint }: { endpoint: string }) {\n  const [videos, setVideos] = useState<VideoCard[]>([]);\n  const [page, setPage] = useState(1);\n  const [hasMore, setHasMore] = useState(true);\n  const [loading, setLoading] = useState(false);\n  const observerRef = useRef<HTMLDivElement>(null);\n\n  const fetchPage = useCallback(async (p: number) => {\n    setLoading(true);\n    const res = await fetch(`${endpoint}?page=${p}`);\n    const data = await res.json();\n    const newVideos: VideoCard[] = data.videos ?? data.results ?? [];\n    setVideos((prev) => [...prev, ...newVideos]);\n    setHasMore(newVideos.length === 20);\n    setLoading(false);\n  }, [endpoint]);\n\n  useEffect(() => { fetchPage(1); }, [fetchPage]);\n\n  useEffect(() => {\n    if (!observerRef.current || !hasMore) return;\n    const observer = new IntersectionObserver(\n      ([entry]) => {\n        if (entry.isIntersecting && !loading) {\n          setPage((p) => {\n            const next = p + 1;\n            fetchPage(next);\n            return next;\n          });\n        }\n      },\n      { threshold: 0.1 }\n    );\n    observer.observe(observerRef.current);\n    return () => observer.disconnect();\n  }, [hasMore, loading, fetchPage]);\n\n  const formatDuration = (sec: number) => {\n    const m = Math.floor(sec / 60);\n    const s = sec % 60;\n    return `${m}:${s.toString().padStart(2, \"0\")}`;\n  };\n\n  const formatViews = (n: number) => {\n    if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M views`;\n    if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K views`;\n    return `${n} views`;\n  };\n\n  return (\n    <div className=\"video-grid\">\n      {videos.map((v) => (\n        <a key={v.id} href={`/watch/${v.slug}`} className=\"video-card\">\n          <div className=\"thumbnail\">\n            <img loading=\"lazy\" src={v.thumbnail_url} alt={v.title} />\n            <span className=\"duration\">{formatDuration(v.duration_seconds)}</span>\n          </div>\n          <div className=\"video-info\">\n            <h3>{v.title}</h3>\n            <p className=\"channel\">{v.channel_name}</p>\n            <p className=\"meta\">{formatViews(v.view_count)}</p>\n          </div>\n        </a>\n      ))}\n      {hasMore && <div ref={observerRef} className=\"loading-sentinel\" />}\n      {loading && <p>Loading more videos...</p>}\n    </div>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Deployment Considerations",
+      "headingLevel": 2,
+      "body": "Video platforms have unique deployment challenges compared to typical web apps. Storage, bandwidth, and CPU for transcoding are the primary cost drivers."
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "Cost Warning: Video Hosting Is Expensive",
+      "body": "A single 1080p video at 5 Mbps uses about 2.25 GB per hour of content. Storing 1,000 hours of video across three renditions requires roughly 10 TB. Bandwidth costs compound quickly: 10,000 views of a 10-minute video at 720p equals approximately 3 TB of transfer. Use a CDN with bandwidth-based pricing, enable caching aggressively, and consider cloud storage tiers (e.g., S3 Intelligent-Tiering) for infrequently accessed older content."
+    },
+    {
+      "type": "table",
+      "heading": "Infrastructure Cost Estimates",
+      "headers": ["Component", "Small Scale (100 videos)", "Medium Scale (10K videos)", "Key Cost Driver"],
+      "rows": [
+        ["Storage", "~50 GB ($1-2/mo)", "~5 TB ($100-150/mo)", "Raw + transcoded files per video"],
+        ["Bandwidth/CDN", "~$5-10/mo", "~$200-500/mo", "Views x resolution x duration"],
+        ["Transcoding CPU", "Minimal (shared server)", "Dedicated workers ($50-100/mo)", "Number of uploads per day"],
+        ["Database", "Shared PostgreSQL", "Dedicated instance ($30-50/mo)", "Comment and analytics volume"],
+        ["Object Storage", "S3 Standard ($0.023/GB)", "S3 IA for old content ($0.0125/GB)", "Lifecycle policies reduce cost"]
+      ]
+    },
+    {
+      "type": "list",
+      "heading": "Deployment Checklist",
+      "ordered": true,
+      "items": [
+        "Separate the API server from transcoding workers so uploads do not block requests",
+        "Use a task queue (Celery + Redis or a simple threading pool) for all video processing",
+        "Store raw uploads and HLS output on object storage (S3, GCS, or MinIO) rather than local disk",
+        "Put a CDN in front of HLS segment delivery with long cache TTLs on .ts files",
+        "Set up health checks and auto-restart for transcoding workers",
+        "Configure Nginx to proxy the Flask API and serve static HLS directly with sendfile",
+        "Implement rate limiting on upload endpoints to prevent abuse",
+        "Set up monitoring for disk usage, transcoding queue depth, and error rates",
+        "Use database connection pooling (pgBouncer) for high-traffic analytics writes",
+        "Back up the database daily and store raw uploads in a separate durable storage tier"
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Nginx Configuration for HLS Serving",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "code",
+          "language": "nginx",
+          "filename": "nginx.conf",
+          "description": "Nginx server block for serving HLS segments with proper caching headers and CORS.",
+          "code": "server {\n    listen 80;\n    server_name video.example.com;\n\n    # HLS segment serving with aggressive caching\n    location /hls/ {\n        alias /data/hls/;\n        add_header Access-Control-Allow-Origin *;\n        add_header Cache-Control \"public, max-age=31536000, immutable\";\n\n        types {\n            application/vnd.apple.mpegurl m3u8;\n            video/mp2t ts;\n        }\n\n        # Enable sendfile for zero-copy serving\n        sendfile on;\n        tcp_nopush on;\n        tcp_nodelay on;\n    }\n\n    # Thumbnail serving\n    location /thumbnails/ {\n        alias /data/thumbnails/;\n        add_header Cache-Control \"public, max-age=86400\";\n        expires 1d;\n    }\n\n    # Proxy API requests to Flask\n    location /api/ {\n        proxy_pass http://127.0.0.1:5000/;\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n        client_max_body_size 50M;  # For chunk uploads\n    }\n}"
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Docker Compose for Local Development",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "code",
+          "language": "yaml",
+          "filename": "docker-compose.yml",
+          "description": "Docker Compose file for running the full video platform stack locally.",
+          "code": "version: \"3.8\"\n\nservices:\n  db:\n    image: postgres:16-alpine\n    environment:\n      POSTGRES_DB: videoplatform\n      POSTGRES_USER: app\n      POSTGRES_PASSWORD: devpass\n    volumes:\n      - pgdata:/var/lib/postgresql/data\n      - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql\n    ports:\n      - \"5432:5432\"\n\n  redis:\n    image: redis:7-alpine\n    ports:\n      - \"6379:6379\"\n\n  api:\n    build: ./backend\n    environment:\n      DATABASE_URL: postgresql://app:devpass@db:5432/videoplatform\n      REDIS_URL: redis://redis:6379/0\n      UPLOAD_DIR: /data/uploads\n      HLS_OUTPUT_DIR: /data/hls\n      THUMBNAIL_DIR: /data/thumbnails\n    volumes:\n      - ./backend:/app\n      - media_data:/data\n    ports:\n      - \"5000:5000\"\n    depends_on:\n      - db\n      - redis\n\n  worker:\n    build: ./backend\n    command: python -m tasks.worker\n    environment:\n      DATABASE_URL: postgresql://app:devpass@db:5432/videoplatform\n      REDIS_URL: redis://redis:6379/0\n      UPLOAD_DIR: /data/uploads\n      HLS_OUTPUT_DIR: /data/hls\n      THUMBNAIL_DIR: /data/thumbnails\n    volumes:\n      - media_data:/data\n    depends_on:\n      - db\n      - redis\n\n  frontend:\n    build: ./frontend\n    ports:\n      - \"3000:3000\"\n    environment:\n      NEXT_PUBLIC_API_URL: http://localhost:5000\n    depends_on:\n      - api\n\nvolumes:\n  pgdata:\n  media_data:"
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "Congratulations",
+      "body": "You now have a blueprint for a full video platform: chunked uploads, FFmpeg transcoding to multiple resolutions, HLS adaptive streaming, a React player with quality selection, engagement features, search and discovery, analytics, and moderation. Start with local development using Docker Compose, then move to cloud storage and a CDN as your audience grows."
+    }
+  ]
+}

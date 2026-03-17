@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Local Setup (Without Docker)",
+  "headingLevel": 3,
+  "body": "For the fastest development feedback loop, run the backend and frontend directly on your machine without Docker."
+}

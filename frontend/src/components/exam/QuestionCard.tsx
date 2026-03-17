@@ -8,7 +8,10 @@ import Typography from '@mui/material/Typography';
 import AnswerOption from './AnswerOption';
 
 interface QuestionCardProps {
-  question: { id: string; text: string; options: { id: string; text: string }[] };
+  question: {
+    id: string; text: string;
+    options: { id: string; text: string }[];
+  };
   questionNumber: number;
   selectedOptionId?: string;
   onSelectOption: (optionId: string) => void;
@@ -16,7 +19,12 @@ interface QuestionCardProps {
   correctOptionId?: string;
 }
 
-export default function QuestionCard({ question, questionNumber, selectedOptionId, onSelectOption, reviewMode = false, correctOptionId }: QuestionCardProps) {
+export default function QuestionCard(
+  { question, questionNumber,
+    selectedOptionId, onSelectOption,
+    reviewMode = false,
+    correctOptionId }: QuestionCardProps
+) {
   return (
     <Card>
       <CardContent sx={{ p: 3 }}>
@@ -26,7 +34,13 @@ export default function QuestionCard({ question, questionNumber, selectedOptionI
         <Typography variant="h6" component="p" sx={{ mb: 3, fontWeight: 500 }}>{question.text}</Typography>
         <Box>
           {question.options.map((option) => (
-            <AnswerOption key={option.id} option={option} selected={selectedOptionId === option.id} correct={reviewMode && correctOptionId ? option.id === correctOptionId : null} reviewMode={reviewMode} onSelect={onSelectOption} />
+            <AnswerOption key={option.id}
+              option={option}
+              selected={selectedOptionId === option.id}
+              correct={reviewMode && correctOptionId
+                ? option.id === correctOptionId : null}
+              reviewMode={reviewMode}
+              onSelect={onSelectOption} />
           ))}
         </Box>
       </CardContent>

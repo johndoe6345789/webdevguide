@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Architecture Overview",
+  "headingLevel": 2,
+  "body": "The guide follows a three-layer architecture with strict separation between content authoring, API serving, and frontend rendering. No layer knows the internal details of another -- they communicate through well-defined JSON interfaces."
+}

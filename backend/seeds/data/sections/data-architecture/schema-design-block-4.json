@@ -1,0 +1,21 @@
+{
+  "type": "cardGrid",
+  "columns": 3,
+  "cards": [
+    {
+      "title": "One-to-One (1:1)",
+      "body": "Each user has exactly one profile. Use a foreign key with a UNIQUE constraint, or embed the data in the same table if it is always accessed together.",
+      "icon": "Person"
+    },
+    {
+      "title": "One-to-Many (1:N)",
+      "body": "One author writes many articles. The 'many' side holds the foreign key. This is the most common relationship type in web applications.",
+      "icon": "Article"
+    },
+    {
+      "title": "Many-to-Many (N:N)",
+      "body": "Articles can have many tags, and tags belong to many articles. Requires a junction table (article_tags) with two foreign keys.",
+      "icon": "Label"
+    }
+  ]
+}

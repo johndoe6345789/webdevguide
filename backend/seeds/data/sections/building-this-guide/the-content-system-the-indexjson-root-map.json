@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "The index.json Root Map",
+  "headingLevel": 3,
+  "body": "The `index.json` file is the single source of truth for what content exists. It maps every section slug to a file via `$ref`, and also references the exam questions and glossary terms. When you add a new section, you add exactly one line here. The order of keys in the sections object determines the order they are processed during seeding (each section gets an incrementing id)."
+}

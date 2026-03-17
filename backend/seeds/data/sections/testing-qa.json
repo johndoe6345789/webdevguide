@@ -1,0 +1,317 @@
+{
+  "title": "Testing Web Applications",
+  "slug": "testing-qa",
+  "description": "Learn how to test every layer of your web application -- from individual functions to full user workflows -- so you can ship with confidence.",
+  "icon": "BugReport",
+  "order": 18,
+  "estimatedMinutes": 60,
+  "difficulty": "intermediate",
+  "prerequisites": ["fundamentals", "backend-guide"],
+  "keyPoints": [
+    "Unit tests verify that individual functions return the correct output for a given input -- they are fast and cheap to write",
+    "Component tests render React components in a fake browser and simulate user interactions like clicking and typing",
+    "End-to-end tests drive a real browser through complete user workflows like signing up or placing an order",
+    "Test-driven development (TDD) means writing the test before the code -- it forces you to think about what the code should do",
+    "Mocking replaces real dependencies (API calls, databases, timers) with fake versions you control during tests",
+    "Code coverage measures what percentage of your code is executed during tests -- aim for 80% but do not chase 100%"
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "heading": "Why Testing Matters",
+      "headingLevel": 2,
+      "body": "Every developer has experienced the terror of pushing a change to production and immediately breaking something. Tests are your safety net. They catch bugs before users do, give you confidence to refactor code, and serve as living documentation of how your code is supposed to behave."
+    },
+    {
+      "type": "text",
+      "body": "Think of tests like a car's dashboard warning lights. You could drive without them, but you would not know your engine is overheating until smoke pours out of the hood. Tests tell you something is wrong before it becomes a disaster."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "Unit Tests",
+          "body": "Test individual functions and modules in isolation. They run in milliseconds and catch logic errors early.",
+          "icon": "Functions",
+          "chip": "Fast"
+        },
+        {
+          "title": "Component Tests",
+          "body": "Render React components and simulate user interactions. They verify your UI behaves correctly.",
+          "icon": "Widgets",
+          "chip": "Medium"
+        },
+        {
+          "title": "End-to-End Tests",
+          "body": "Drive a real browser through complete workflows. They catch integration issues between frontend and backend.",
+          "icon": "OpenInBrowser",
+          "chip": "Slow"
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "The Testing Pyramid",
+      "body": "Write many unit tests (fast, cheap), fewer component tests (medium speed), and a handful of E2E tests (slow, expensive). This pyramid shape gives you the best balance of confidence and speed. If your test suite takes 30 minutes to run, nobody will run it."
+    },
+    {
+      "type": "text",
+      "heading": "Unit Testing with Jest",
+      "headingLevel": 2,
+      "body": "Unit tests verify that a single function does what it should. You give it an input, and you assert what the output should be. Jest is the most popular JavaScript testing framework -- it comes built into most React projects."
+    },
+    {
+      "type": "step",
+      "step": 1,
+      "title": "Install Jest and configure it",
+      "body": "If you are using Next.js or Create React App, Jest is already included. For a standalone project, install it manually.",
+      "code": "npm install --save-dev jest @types/jest ts-jest\n\n# Add to package.json scripts:\n# \"test\": \"jest\",\n# \"test:watch\": \"jest --watch\",\n# \"test:coverage\": \"jest --coverage\"",
+      "language": "bash"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "src/utils/formatters.ts",
+      "description": "A utility module with pure functions that we will test. Pure functions are the easiest to test because they always return the same output for the same input.",
+      "code": "/**\n * Format a number as USD currency.\n * formatCurrency(1234.5) => \"$1,234.50\"\n */\nexport function formatCurrency(amount: number): string {\n  return new Intl.NumberFormat('en-US', {\n    style: 'currency',\n    currency: 'USD',\n  }).format(amount);\n}\n\n/**\n * Truncate a string to maxLength and add ellipsis.\n * truncate(\"Hello World\", 5) => \"Hello...\"\n */\nexport function truncate(str: string, maxLength: number): string {\n  if (str.length <= maxLength) return str;\n  return str.slice(0, maxLength) + '...';\n}\n\n/**\n * Calculate a percentage, clamped between 0 and 100.\n * percentage(3, 10) => 30\n */\nexport function percentage(part: number, total: number): number {\n  if (total === 0) return 0;\n  return Math.min(100, Math.max(0, Math.round((part / total) * 100)));\n}\n\n/**\n * Parse a query string into an object.\n * parseQuery(\"?page=2&sort=name\") => { page: \"2\", sort: \"name\" }\n */\nexport function parseQuery(queryString: string): Record<string, string> {\n  const params = new URLSearchParams(queryString);\n  const result: Record<string, string> = {};\n  params.forEach((value, key) => { result[key] = value; });\n  return result;\n}"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "src/utils/__tests__/formatters.test.ts",
+      "description": "Unit tests for the formatter functions. Each test follows the Arrange-Act-Assert pattern.",
+      "code": "import { formatCurrency, truncate, percentage, parseQuery } from '../formatters';\n\ndescribe('formatCurrency', () => {\n  it('formats a whole number with cents', () => {\n    expect(formatCurrency(1234)).toBe('$1,234.00');\n  });\n\n  it('formats a decimal number', () => {\n    expect(formatCurrency(99.9)).toBe('$99.90');\n  });\n\n  it('handles zero', () => {\n    expect(formatCurrency(0)).toBe('$0.00');\n  });\n\n  it('handles negative numbers', () => {\n    expect(formatCurrency(-50)).toBe('-$50.00');\n  });\n});\n\ndescribe('truncate', () => {\n  it('returns the full string if shorter than maxLength', () => {\n    expect(truncate('Hi', 10)).toBe('Hi');\n  });\n\n  it('truncates and adds ellipsis', () => {\n    expect(truncate('Hello World', 5)).toBe('Hello...');\n  });\n\n  it('returns exact length string without truncating', () => {\n    expect(truncate('Hello', 5)).toBe('Hello');\n  });\n});\n\ndescribe('percentage', () => {\n  it('calculates a basic percentage', () => {\n    expect(percentage(3, 10)).toBe(30);\n  });\n\n  it('returns 0 when total is 0', () => {\n    expect(percentage(5, 0)).toBe(0);\n  });\n\n  it('clamps to 100 when part exceeds total', () => {\n    expect(percentage(15, 10)).toBe(100);\n  });\n\n  it('rounds to nearest integer', () => {\n    expect(percentage(1, 3)).toBe(33);\n  });\n});\n\ndescribe('parseQuery', () => {\n  it('parses a query string into an object', () => {\n    expect(parseQuery('?page=2&sort=name')).toEqual({ page: '2', sort: 'name' });\n  });\n\n  it('handles an empty query string', () => {\n    expect(parseQuery('')).toEqual({});\n  });\n\n  it('handles a query without the leading question mark', () => {\n    expect(parseQuery('key=value')).toEqual({ key: 'value' });\n  });\n});"
+    },
+    {
+      "type": "text",
+      "heading": "Testing React Hooks",
+      "headingLevel": 3,
+      "body": "Custom hooks need a special wrapper because they can only run inside a React component. The renderHook utility from React Testing Library solves this."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "src/hooks/__tests__/useDebounce.test.ts",
+      "description": "Testing a custom debounce hook that delays value updates. We use Jest's fake timers to control time.",
+      "code": "import { renderHook, act } from '@testing-library/react';\nimport { useDebounce } from '../useDebounce';\n\n// Tell Jest to use fake timers so we can control time\nbeforeEach(() => jest.useFakeTimers());\nafterEach(() => jest.useRealTimers());\n\ndescribe('useDebounce', () => {\n  it('returns the initial value immediately', () => {\n    const { result } = renderHook(() => useDebounce('hello', 500));\n    expect(result.current).toBe('hello');\n  });\n\n  it('does not update the value before the delay', () => {\n    const { result, rerender } = renderHook(\n      ({ value, delay }) => useDebounce(value, delay),\n      { initialProps: { value: 'hello', delay: 500 } }\n    );\n\n    // Change the value\n    rerender({ value: 'world', delay: 500 });\n\n    // Advance time by 300ms (less than the 500ms delay)\n    act(() => jest.advanceTimersByTime(300));\n\n    // Should still be the old value\n    expect(result.current).toBe('hello');\n  });\n\n  it('updates the value after the delay', () => {\n    const { result, rerender } = renderHook(\n      ({ value, delay }) => useDebounce(value, delay),\n      { initialProps: { value: 'hello', delay: 500 } }\n    );\n\n    rerender({ value: 'world', delay: 500 });\n\n    // Advance time by the full delay\n    act(() => jest.advanceTimersByTime(500));\n\n    expect(result.current).toBe('world');\n  });\n});"
+    },
+    {
+      "type": "text",
+      "heading": "Component Testing with React Testing Library",
+      "headingLevel": 2,
+      "body": "Component tests render your React components in a simulated browser environment (jsdom) and interact with them the way a real user would -- finding elements by their visible text, clicking buttons, and typing into inputs. The philosophy is: test what the user sees, not implementation details."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/components/__tests__/SearchBar.test.tsx",
+      "description": "Testing a search bar component that calls an onSearch callback when the user types and submits.",
+      "code": "import { render, screen, fireEvent, waitFor } from '@testing-library/react';\nimport userEvent from '@testing-library/user-event';\nimport SearchBar from '../SearchBar';\n\ndescribe('SearchBar', () => {\n  it('renders an input with placeholder text', () => {\n    render(<SearchBar onSearch={jest.fn()} />);\n    expect(screen.getByPlaceholderText('Search...')).toBeInTheDocument();\n  });\n\n  it('calls onSearch when the form is submitted', async () => {\n    const mockOnSearch = jest.fn();\n    const user = userEvent.setup();\n\n    render(<SearchBar onSearch={mockOnSearch} />);\n\n    const input = screen.getByPlaceholderText('Search...');\n    await user.type(input, 'react testing');\n    await user.keyboard('{Enter}');\n\n    expect(mockOnSearch).toHaveBeenCalledWith('react testing');\n  });\n\n  it('clears the input when the clear button is clicked', async () => {\n    const user = userEvent.setup();\n    render(<SearchBar onSearch={jest.fn()} />);\n\n    const input = screen.getByPlaceholderText('Search...');\n    await user.type(input, 'hello');\n\n    const clearButton = screen.getByRole('button', { name: /clear/i });\n    await user.click(clearButton);\n\n    expect(input).toHaveValue('');\n  });\n\n  it('disables the submit button when input is empty', () => {\n    render(<SearchBar onSearch={jest.fn()} />);\n    const submitButton = screen.getByRole('button', { name: /search/i });\n    expect(submitButton).toBeDisabled();\n  });\n});"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/components/__tests__/UserList.test.tsx",
+      "description": "Testing an async component that fetches data from an API and renders a list. We mock the fetch call to control the response.",
+      "code": "import { render, screen, waitFor } from '@testing-library/react';\nimport UserList from '../UserList';\n\n// Mock the global fetch function\nglobal.fetch = jest.fn();\n\nconst mockUsers = [\n  { id: '1', name: 'Alice', email: 'alice@example.com' },\n  { id: '2', name: 'Bob', email: 'bob@example.com' },\n];\n\nbeforeEach(() => {\n  (fetch as jest.Mock).mockReset();\n});\n\ndescribe('UserList', () => {\n  it('shows a loading spinner while fetching', () => {\n    // Return a promise that never resolves to keep loading state\n    (fetch as jest.Mock).mockReturnValue(new Promise(() => {}));\n    render(<UserList />);\n    expect(screen.getByText('Loading...')).toBeInTheDocument();\n  });\n\n  it('renders users after successful fetch', async () => {\n    (fetch as jest.Mock).mockResolvedValue({\n      ok: true,\n      json: async () => mockUsers,\n    });\n\n    render(<UserList />);\n\n    // Wait for users to appear\n    await waitFor(() => {\n      expect(screen.getByText('Alice')).toBeInTheDocument();\n      expect(screen.getByText('Bob')).toBeInTheDocument();\n    });\n  });\n\n  it('shows an error message when fetch fails', async () => {\n    (fetch as jest.Mock).mockRejectedValue(new Error('Network error'));\n\n    render(<UserList />);\n\n    await waitFor(() => {\n      expect(screen.getByText(/failed to load users/i)).toBeInTheDocument();\n    });\n  });\n\n  it('shows empty state when no users exist', async () => {\n    (fetch as jest.Mock).mockResolvedValue({\n      ok: true,\n      json: async () => [],\n    });\n\n    render(<UserList />);\n\n    await waitFor(() => {\n      expect(screen.getByText(/no users found/i)).toBeInTheDocument();\n    });\n  });\n});"
+    },
+    {
+      "type": "text",
+      "heading": "End-to-End Testing with Playwright",
+      "headingLevel": 2,
+      "body": "End-to-end (E2E) tests launch a real browser and navigate your application like a real user. They are the most realistic type of test, but also the slowest. Use them for critical user journeys -- the paths through your app that, if broken, would lose you money or users."
+    },
+    {
+      "type": "step",
+      "step": 1,
+      "title": "Install and configure Playwright",
+      "body": "Playwright supports Chromium, Firefox, and WebKit. The init command creates a configuration file and example tests.",
+      "code": "npm init playwright@latest\n\n# This creates:\n# playwright.config.ts  -- configuration\n# tests/               -- test directory\n# tests/example.spec.ts -- example test",
+      "language": "bash"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "playwright.config.ts",
+      "description": "Playwright configuration that sets up the base URL, browsers, and a local dev server.",
+      "code": "import { defineConfig, devices } from '@playwright/test';\n\nexport default defineConfig({\n  testDir: './tests/e2e',\n  timeout: 30_000,\n  retries: process.env.CI ? 2 : 0,\n  use: {\n    baseURL: 'http://localhost:3000',\n    trace: 'on-first-retry',      // Capture trace on failure for debugging\n    screenshot: 'only-on-failure', // Screenshot failed tests\n  },\n  projects: [\n    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },\n    { name: 'firefox',  use: { ...devices['Desktop Firefox'] } },\n    { name: 'mobile',   use: { ...devices['iPhone 13'] } },\n  ],\n  webServer: {\n    command: 'npm run dev',\n    port: 3000,\n    reuseExistingServer: !process.env.CI,\n  },\n});"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "tests/e2e/login.spec.ts",
+      "description": "An E2E test that walks through the login flow, verifying that users can sign in and see their dashboard.",
+      "code": "import { test, expect } from '@playwright/test';\n\ntest.describe('Login flow', () => {\n  test('user can log in with valid credentials', async ({ page }) => {\n    await page.goto('/login');\n\n    // Fill in the login form\n    await page.getByLabel('Email').fill('alice@example.com');\n    await page.getByLabel('Password').fill('securePassword123');\n    await page.getByRole('button', { name: 'Sign In' }).click();\n\n    // Should redirect to dashboard\n    await expect(page).toHaveURL('/dashboard');\n    await expect(page.getByText('Welcome, Alice')).toBeVisible();\n  });\n\n  test('shows error for invalid credentials', async ({ page }) => {\n    await page.goto('/login');\n\n    await page.getByLabel('Email').fill('wrong@example.com');\n    await page.getByLabel('Password').fill('wrongpassword');\n    await page.getByRole('button', { name: 'Sign In' }).click();\n\n    // Should show error message, not redirect\n    await expect(page.getByText('Invalid credentials')).toBeVisible();\n    await expect(page).toHaveURL('/login');\n  });\n\n  test('redirects unauthenticated users to login', async ({ page }) => {\n    // Try to access a protected page directly\n    await page.goto('/dashboard');\n\n    // Should redirect to login\n    await expect(page).toHaveURL('/login');\n  });\n});"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "tests/e2e/search.spec.ts",
+      "description": "An E2E test for search functionality covering typing, results display, and empty states.",
+      "code": "import { test, expect } from '@playwright/test';\n\ntest.describe('Search functionality', () => {\n  test.beforeEach(async ({ page }) => {\n    await page.goto('/');\n  });\n\n  test('displays search results as user types', async ({ page }) => {\n    const searchInput = page.getByPlaceholder('Search...');\n    await searchInput.fill('React');\n\n    // Wait for results to appear (debounced search)\n    const results = page.getByTestId('search-results');\n    await expect(results).toBeVisible();\n\n    // Should have at least one result\n    const items = results.getByRole('listitem');\n    await expect(items).not.toHaveCount(0);\n  });\n\n  test('shows empty state for no results', async ({ page }) => {\n    const searchInput = page.getByPlaceholder('Search...');\n    await searchInput.fill('xyznonexistentterm');\n\n    await expect(page.getByText('No results found')).toBeVisible();\n  });\n\n  test('navigates to result on click', async ({ page }) => {\n    const searchInput = page.getByPlaceholder('Search...');\n    await searchInput.fill('React');\n\n    // Click the first result\n    const firstResult = page.getByTestId('search-results').getByRole('listitem').first();\n    await firstResult.click();\n\n    // Should navigate away from the home page\n    await expect(page).not.toHaveURL('/');\n  });\n});"
+    },
+    {
+      "type": "text",
+      "heading": "API Testing with pytest",
+      "headingLevel": 2,
+      "body": "Your Flask backend needs tests too. pytest is Python's most popular testing framework. We use Flask's built-in test client to send fake HTTP requests to our API without starting a real server."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "backend/tests/conftest.py",
+      "description": "pytest fixtures that create a test app and client. These run automatically before each test.",
+      "code": "import pytest\nfrom app import create_app\nfrom app.utils.db import get_db\n\n\n@pytest.fixture\ndef app():\n    \"\"\"Create a test app with a temporary database.\"\"\"\n    app = create_app(\"testing\")\n    yield app\n\n\n@pytest.fixture\ndef client(app):\n    \"\"\"A test client for sending requests to the app.\"\"\"\n    return app.test_client()\n\n\n@pytest.fixture\ndef seeded_client(client, app):\n    \"\"\"A client with seed data already loaded.\"\"\"\n    with app.app_context():\n        from flask import current_app\n        # Run the seed command\n        runner = current_app.test_cli_runner()\n        runner.invoke(args=[\"seed-db\"])\n    return client"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "backend/tests/test_guide_api.py",
+      "description": "Tests for the guide API endpoints covering listing sections, fetching by slug, and handling missing sections.",
+      "code": "def test_health_check(client):\n    \"\"\"The health endpoint should always return 200.\"\"\"\n    response = client.get(\"/api/health\")\n    assert response.status_code == 200\n    assert response.get_json()[\"status\"] == \"healthy\"\n\n\ndef test_list_sections_returns_array(seeded_client):\n    \"\"\"GET /api/guide/sections should return a list of sections.\"\"\"\n    response = seeded_client.get(\"/api/guide/sections\")\n    assert response.status_code == 200\n    data = response.get_json()\n    assert isinstance(data, list)\n    assert len(data) > 0\n\n\ndef test_section_has_required_fields(seeded_client):\n    \"\"\"Each section summary should include title, slug, and order.\"\"\"\n    response = seeded_client.get(\"/api/guide/sections\")\n    section = response.get_json()[0]\n    assert \"title\" in section\n    assert \"slug\" in section\n    assert \"order\" in section\n\n\ndef test_get_section_by_slug(seeded_client):\n    \"\"\"GET /api/guide/sections/<slug> should return full section content.\"\"\"\n    response = seeded_client.get(\"/api/guide/sections/getting-started\")\n    assert response.status_code == 200\n    data = response.get_json()\n    assert data[\"slug\"] == \"getting-started\"\n    assert \"blocks\" in data\n    assert isinstance(data[\"blocks\"], list)\n\n\ndef test_missing_section_returns_404(seeded_client):\n    \"\"\"Requesting a non-existent section should return 404.\"\"\"\n    response = seeded_client.get(\"/api/guide/sections/does-not-exist\")\n    assert response.status_code == 404\n    assert \"error\" in response.get_json()\n\n\ndef test_navigation_returns_ordered_list(seeded_client):\n    \"\"\"GET /api/guide/navigation should return items sorted by order.\"\"\"\n    response = seeded_client.get(\"/api/guide/navigation\")\n    data = response.get_json()\n    orders = [item[\"order\"] for item in data]\n    assert orders == sorted(orders)"
+    },
+    {
+      "type": "text",
+      "heading": "Mocking Strategies",
+      "headingLevel": 2,
+      "body": "Real applications depend on external services -- APIs, databases, timers, and random number generators. In tests, you replace these with mocks: fake versions that you control. This makes your tests fast, deterministic, and independent of external systems."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Mocking API Calls",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "typescript",
+              "filename": "src/lib/__tests__/api.test.ts",
+              "description": "Mock the fetch function to test API client code without hitting a real server.",
+              "code": "import { fetchUsers, createUser } from '../api';\n\n// Replace the global fetch with a Jest mock\nglobal.fetch = jest.fn();\n\nafterEach(() => {\n  (fetch as jest.Mock).mockReset();\n});\n\ntest('fetchUsers sends GET request and returns parsed data', async () => {\n  const mockUsers = [{ id: '1', name: 'Alice' }];\n\n  (fetch as jest.Mock).mockResolvedValue({\n    ok: true,\n    json: async () => mockUsers,\n  });\n\n  const result = await fetchUsers();\n\n  expect(fetch).toHaveBeenCalledWith('/api/users', expect.objectContaining({\n    method: 'GET',\n  }));\n  expect(result).toEqual(mockUsers);\n});\n\ntest('createUser sends POST with body and returns new user', async () => {\n  const newUser = { id: '2', name: 'Bob' };\n\n  (fetch as jest.Mock).mockResolvedValue({\n    ok: true,\n    json: async () => newUser,\n  });\n\n  const result = await createUser({ name: 'Bob', email: 'bob@test.com' });\n\n  expect(fetch).toHaveBeenCalledWith('/api/users', expect.objectContaining({\n    method: 'POST',\n    body: JSON.stringify({ name: 'Bob', email: 'bob@test.com' }),\n  }));\n  expect(result).toEqual(newUser);\n});"
+            }
+          ]
+        },
+        {
+          "label": "Mocking Modules",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "typescript",
+              "filename": "src/services/__tests__/analytics.test.ts",
+              "description": "Mock an entire module (like an analytics SDK) so your tests do not send real tracking events.",
+              "code": "// Tell Jest to replace the entire analytics module with mocks\njest.mock('../analytics', () => ({\n  trackEvent: jest.fn(),\n  trackPageView: jest.fn(),\n  identifyUser: jest.fn(),\n}));\n\nimport { trackEvent, trackPageView } from '../analytics';\nimport { handleButtonClick, handlePageLoad } from '../eventHandlers';\n\ntest('handleButtonClick tracks the correct event', () => {\n  handleButtonClick('signup');\n\n  expect(trackEvent).toHaveBeenCalledWith('button_click', {\n    buttonName: 'signup',\n  });\n});\n\ntest('handlePageLoad tracks a page view with the path', () => {\n  handlePageLoad('/dashboard');\n\n  expect(trackPageView).toHaveBeenCalledWith('/dashboard');\n  expect(trackPageView).toHaveBeenCalledTimes(1);\n});"
+            }
+          ]
+        },
+        {
+          "label": "Mocking Timers",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "typescript",
+              "filename": "src/utils/__tests__/retry.test.ts",
+              "description": "Use fake timers to test functions that use setTimeout or setInterval without actually waiting.",
+              "code": "import { retryWithBackoff } from '../retry';\n\nbeforeEach(() => jest.useFakeTimers());\nafterEach(() => jest.useRealTimers());\n\ntest('retries a failed operation with exponential backoff', async () => {\n  const operation = jest.fn()\n    .mockRejectedValueOnce(new Error('fail 1'))  // 1st call fails\n    .mockRejectedValueOnce(new Error('fail 2'))  // 2nd call fails\n    .mockResolvedValue('success');                 // 3rd call succeeds\n\n  const promise = retryWithBackoff(operation, { maxRetries: 3, initialDelay: 1000 });\n\n  // First retry after 1000ms\n  await jest.advanceTimersByTimeAsync(1000);\n  // Second retry after 2000ms (exponential backoff)\n  await jest.advanceTimersByTimeAsync(2000);\n\n  const result = await promise;\n  expect(result).toBe('success');\n  expect(operation).toHaveBeenCalledTimes(3);\n});"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Test-Driven Development Workflow",
+      "headingLevel": 2,
+      "body": "Test-driven development (TDD) flips the usual workflow. Instead of writing code first and tests later, you write the test first, watch it fail, then write just enough code to make it pass. This cycle is called Red-Green-Refactor."
+    },
+    {
+      "type": "list",
+      "heading": "The Red-Green-Refactor Cycle",
+      "ordered": true,
+      "items": [
+        "RED: Write a test that describes the behavior you want. Run it. It should fail because the code does not exist yet.",
+        "GREEN: Write the minimum amount of code needed to make the test pass. Do not worry about elegance.",
+        "REFACTOR: Clean up your code -- remove duplication, improve naming, simplify logic. Run the tests again to make sure nothing broke.",
+        "Repeat: Move on to the next behavior and start the cycle again."
+      ]
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "src/utils/__tests__/validator.test.ts",
+      "description": "TDD example: we write tests first for an email validator, then implement the function to make them pass.",
+      "code": "import { validateEmail } from '../validator';\n\n// Step 1: Write the tests FIRST (these will fail initially)\ndescribe('validateEmail', () => {\n  it('returns true for a valid email', () => {\n    expect(validateEmail('user@example.com')).toBe(true);\n  });\n\n  it('returns false for missing @ symbol', () => {\n    expect(validateEmail('userexample.com')).toBe(false);\n  });\n\n  it('returns false for missing domain', () => {\n    expect(validateEmail('user@')).toBe(false);\n  });\n\n  it('returns false for empty string', () => {\n    expect(validateEmail('')).toBe(false);\n  });\n\n  it('returns true for email with subdomain', () => {\n    expect(validateEmail('user@mail.example.com')).toBe(true);\n  });\n\n  it('returns false for email with spaces', () => {\n    expect(validateEmail('user @example.com')).toBe(false);\n  });\n});\n\n// Step 2: Write the minimal implementation (in ../validator.ts)\n// export function validateEmail(email: string): boolean {\n//   return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);\n// }"
+    },
+    {
+      "type": "text",
+      "heading": "Code Coverage Configuration",
+      "headingLevel": 2,
+      "body": "Code coverage tells you what percentage of your code is executed during tests. Jest can generate coverage reports with a single flag. You can also set thresholds so your CI pipeline fails if coverage drops below a certain level."
+    },
+    {
+      "type": "code",
+      "language": "json",
+      "filename": "jest.config.json",
+      "description": "Jest configuration with coverage thresholds. If any metric drops below the threshold, the test run fails.",
+      "code": "{\n  \"preset\": \"ts-jest\",\n  \"testEnvironment\": \"jsdom\",\n  \"setupFilesAfterSetup\": [\"@testing-library/jest-dom\"],\n  \"moduleNameMapper\": {\n    \"^@/(.*)$\": \"<rootDir>/src/$1\"\n  },\n  \"collectCoverageFrom\": [\n    \"src/**/*.{ts,tsx}\",\n    \"!src/**/*.d.ts\",\n    \"!src/**/index.ts\",\n    \"!src/types/**\"\n  ],\n  \"coverageThresholds\": {\n    \"global\": {\n      \"branches\": 70,\n      \"functions\": 80,\n      \"lines\": 80,\n      \"statements\": 80\n    }\n  }\n}"
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "Do not chase 100% coverage",
+      "body": "100% code coverage does not mean your code is bug-free. It means every line was executed, not that every edge case was tested. Aim for 80% coverage on meaningful code. Spending hours testing getter functions and CSS class toggling is a poor use of time. Focus on business logic, data transformations, and error handling."
+    },
+    {
+      "type": "text",
+      "heading": "CI Test Integration",
+      "headingLevel": 2,
+      "body": "Tests are most valuable when they run automatically on every pull request. Here is how to add your test suite to a GitHub Actions workflow so that broken code can never be merged."
+    },
+    {
+      "type": "code",
+      "language": "yaml",
+      "filename": ".github/workflows/test.yml",
+      "description": "A GitHub Actions workflow that runs unit tests, component tests, and E2E tests on every pull request.",
+      "code": "name: Tests\n\non:\n  pull_request:\n    branches: [main]\n\njobs:\n  unit-and-component:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: '22'\n          cache: 'npm'\n          cache-dependency-path: frontend/package-lock.json\n      - run: npm ci\n        working-directory: frontend\n      - run: npm test -- --coverage --ci\n        working-directory: frontend\n      - uses: actions/upload-artifact@v4\n        with:\n          name: coverage-report\n          path: frontend/coverage/\n\n  e2e:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: '22'\n          cache: 'npm'\n          cache-dependency-path: frontend/package-lock.json\n      - run: npm ci\n        working-directory: frontend\n      - run: npx playwright install --with-deps\n        working-directory: frontend\n      - run: npx playwright test\n        working-directory: frontend\n      - uses: actions/upload-artifact@v4\n        if: failure()\n        with:\n          name: playwright-report\n          path: frontend/playwright-report/\n\n  backend:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-python@v5\n        with:\n          python-version: '3.12'\n      - run: pip install -r requirements.txt && pip install pytest\n        working-directory: backend\n      - run: pytest -v --tb=short\n        working-directory: backend"
+    },
+    {
+      "type": "table",
+      "heading": "Testing Tool Comparison",
+      "headers": ["Tool", "Type", "Speed", "What It Tests", "When to Use"],
+      "rows": [
+        ["Jest", "Unit / Component", "Very fast (ms)", "Functions, hooks, component rendering", "Every function with logic, every component with interactions"],
+        ["React Testing Library", "Component", "Fast (ms)", "User-visible behavior, form interactions", "Any component the user interacts with"],
+        ["Playwright", "End-to-end", "Slow (seconds)", "Full user workflows across pages", "Critical paths: login, checkout, signup"],
+        ["pytest", "Unit / Integration", "Fast (ms)", "API endpoints, data processing, business logic", "Every API route, every service function"],
+        ["MSW (Mock Service Worker)", "API mocking", "Fast (ms)", "Frontend code that calls APIs", "When you want to mock API responses without mocking fetch"]
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Common Testing Mistakes to Avoid",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "list",
+          "ordered": false,
+          "items": [
+            "Testing implementation details instead of behavior -- do not test that setState was called, test that the UI changed",
+            "Writing tests that are coupled to each other -- each test should pass or fail independently",
+            "Using snapshot tests for everything -- they are easy to write but easy to blindly update when things change",
+            "Not testing error states -- happy paths are easy, but users will encounter errors",
+            "Writing E2E tests for everything -- they are slow and flaky, use them only for critical flows",
+            "Ignoring flaky tests -- a test that sometimes fails erodes trust in the entire suite",
+            "Testing third-party code -- you do not need to test that React renders a div correctly"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "Your testing toolkit is complete",
+      "body": "You now know how to write unit tests with Jest, component tests with React Testing Library, E2E tests with Playwright, and API tests with pytest. You know how to mock dependencies, measure coverage, and run tests in CI. Start with the most critical parts of your application and expand coverage over time."
+    }
+  ]
+}

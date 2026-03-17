@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Material UI Theming",
+  "headingLevel": 3,
+  "body": "The guide supports light and dark themes. The theme mode is stored in the Redux theme slice (persisted to localStorage). The `ThemeRegistry` component reads the mode from Redux, creates a MUI theme with `getTheme(mode)`, and wraps children in `CacheProvider` (for Emotion SSR) and `ThemeProvider`. The theme factory composes palette, typography, shape, and component overrides."
+}

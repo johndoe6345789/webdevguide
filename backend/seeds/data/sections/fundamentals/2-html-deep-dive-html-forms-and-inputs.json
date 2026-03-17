@@ -1,0 +1,21 @@
+{
+  "type": "accordion",
+  "title": "HTML Forms and Inputs",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "Forms are how users send data to your server. HTML5 introduced many input types with built-in validation, reducing the JavaScript you need to write."
+    },
+    {
+      "type": "code",
+      "language": "html",
+      "filename": "modern-form.html",
+      "code": "<form action=\"/signup\" method=\"POST\">\n  <!-- Text inputs with validation -->\n  <input type=\"text\" name=\"username\" required minlength=\"3\" maxlength=\"20\"\n         pattern=\"[a-zA-Z0-9_]+\" placeholder=\"Username\">\n\n  <input type=\"email\" name=\"email\" required placeholder=\"Email\">\n  <input type=\"password\" name=\"password\" required minlength=\"8\" placeholder=\"Password\">\n  <input type=\"url\" name=\"website\" placeholder=\"https://example.com\">\n  <input type=\"tel\" name=\"phone\" placeholder=\"+1 (555) 000-0000\">\n\n  <!-- Number and range -->\n  <input type=\"number\" name=\"age\" min=\"13\" max=\"120\" step=\"1\">\n  <input type=\"range\" name=\"volume\" min=\"0\" max=\"100\" value=\"50\">\n\n  <!-- Date and time -->\n  <input type=\"date\" name=\"birthday\">\n  <input type=\"datetime-local\" name=\"appointment\">\n  <input type=\"time\" name=\"alarm\">\n\n  <!-- Selection inputs -->\n  <input type=\"color\" name=\"favorite_color\" value=\"#3b82f6\">\n  <input type=\"file\" name=\"avatar\" accept=\"image/*\">\n  <input type=\"file\" name=\"documents\" multiple accept=\".pdf,.doc,.docx\">\n\n  <!-- Checkbox and radio -->\n  <label>\n    <input type=\"checkbox\" name=\"terms\" required> I agree to the terms\n  </label>\n\n  <fieldset>\n    <legend>Preferred contact method:</legend>\n    <label><input type=\"radio\" name=\"contact\" value=\"email\"> Email</label>\n    <label><input type=\"radio\" name=\"contact\" value=\"phone\"> Phone</label>\n  </fieldset>\n\n  <!-- Select dropdown -->\n  <select name=\"country\">\n    <option value=\"\">Select a country</option>\n    <option value=\"us\">United States</option>\n    <option value=\"uk\">United Kingdom</option>\n    <option value=\"ca\">Canada</option>\n  </select>\n\n  <!-- Textarea -->\n  <textarea name=\"bio\" rows=\"4\" maxlength=\"500\" placeholder=\"Tell us about yourself\"></textarea>\n\n  <button type=\"submit\">Sign Up</button>\n</form>"
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "body": "HTML5 validation attributes like `required`, `minlength`, `pattern`, and `type=\"email\"` give you free client-side validation. The browser displays native error messages without any JavaScript. Always validate on the server too -- client-side validation can be bypassed."
+    }
+  ]
+}

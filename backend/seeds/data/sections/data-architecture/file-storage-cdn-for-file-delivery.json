@@ -1,0 +1,6 @@
+{
+  "type": "alert",
+  "severity": "info",
+  "title": "CDN for file delivery",
+  "body": "Always serve user-uploaded files through a CDN (Cloudflare, CloudFront, Vercel). The CDN caches files at edge servers worldwide, reducing latency and offloading bandwidth from your origin server. Point your CDN at your S3 bucket and serve files from a custom domain like assets.yoursite.com."
+}

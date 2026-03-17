@@ -1,0 +1,7 @@
+{
+  "type": "code",
+  "language": "python",
+  "filename": "backend/app/services/guide_service.py",
+  "description": "The guide service uses find_one with a lambda predicate for slug-based lookups.",
+  "code": "from app.utils.db import get_db\n\ndef get_all_sections():\n    \"\"\"Return all guide sections sorted by order.\"\"\"\n    sections = get_db().read(\"guide_sections\")\n    return sorted(sections, key=lambda s: s.get(\"order\", 0))\n\ndef get_section_by_slug(slug):\n    \"\"\"Return a single section by its slug, or None.\"\"\"\n    return get_db().find_one(\n        \"guide_sections\", lambda s: s.get(\"slug\") == slug\n    )\n\ndef get_navigation():\n    \"\"\"Return a lightweight navigation structure.\"\"\"\n    sections = get_all_sections()\n    return [\n        {\"id\": s.get(\"id\"), \"title\": s[\"title\"],\n         \"slug\": s[\"slug\"], \"order\": s.get(\"order\", 0),\n         \"icon\": s.get(\"icon\", \"\")}\n        for s in sections\n    ]"
+}

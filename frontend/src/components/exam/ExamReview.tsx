@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -21,19 +22,32 @@ interface ExamReviewProps {
 }
 
 export default function ExamReview(p: ExamReviewProps) {
+  const t = useTranslations('exam');
+  const ci = p.currentIndex;
+  const q = p.currentQuestion;
+  const pct = ((ci + 1) / p.questions.length) * 100;
   return (
     <>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" fontWeight={700}>Review Answers</Typography>
-        <Button variant="contained" onClick={p.onExit}>Back to Start</Button>
+        <Typography variant="h4" fontWeight={700}>{t('reviewAnswers')}</Typography>
+        <Button variant="contained" onClick={p.onExit}>{t('backToStart')}</Button>
       </Box>
-      <LinearProgress variant="determinate" value={((p.currentIndex + 1) / p.questions.length) * 100} sx={{ mb: 3, height: 6, borderRadius: 3 }} />
+      <LinearProgress variant="determinate" value={pct} sx={{ mb: 3, height: 6, borderRadius: 3 }} />
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Question {p.currentIndex + 1} of {p.questions.length}
+        {t('questionOf', { current: ci + 1, total: p.questions.length })}
       </Typography>
-      <QuestionCard question={p.currentQuestion} questionNumber={p.currentIndex + 1} selectedOptionId={p.answers[p.currentQuestion.id]} onSelectOption={() => {}} reviewMode correctOptionId={p.currentQuestion.correctOptionId} />
-      <ReviewAnswer question={p.currentQuestion} selectedOptionId={p.answers[p.currentQuestion.id]} />
-      <ExamNavigation questions={p.questions} currentIndex={p.currentIndex} answers={p.answers} onGoTo={p.onGoTo} onPrev={p.onPrev} onNext={p.onNext} onSubmit={() => {}} reviewMode onExitReview={p.onExit} />
+      <QuestionCard question={q}
+        questionNumber={ci + 1}
+        selectedOptionId={p.answers[q.id]}
+        onSelectOption={() => {}} reviewMode
+        correctOptionId={q.correctOptionId} />
+      <ReviewAnswer question={q}
+        selectedOptionId={p.answers[q.id]} />
+      <ExamNavigation questions={p.questions}
+        currentIndex={ci} answers={p.answers}
+        onGoTo={p.onGoTo} onPrev={p.onPrev}
+        onNext={p.onNext} onSubmit={() => {}}
+        reviewMode onExitReview={p.onExit} />
     </>
   );
 }

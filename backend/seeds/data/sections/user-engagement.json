@@ -1,0 +1,588 @@
+{
+  "title": "User Engagement & Interaction",
+  "slug": "user-engagement",
+  "description": "Build features that keep users engaged — profiles, comments, voting systems, notifications, activity feeds, and social interactions",
+  "icon": "ThumbsUpDown",
+  "order": 29,
+  "estimatedMinutes": 40,
+  "difficulty": "intermediate",
+  "prerequisites": ["fundamentals", "backend-guide", "authentication-authorization"],
+  "keyPoints": [
+    "User profile pages with customization",
+    "Threaded comment systems",
+    "Upvote/downvote with ranking algorithms",
+    "Real-time notifications",
+    "Activity feeds and social graphs"
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "heading": "Why Engagement Matters",
+      "headingLevel": 2,
+      "body": "Retention is harder than acquisition. You can pour resources into marketing and onboarding, but the best features are useless if users don't come back. Engagement features create loops: a user takes an action, another user is notified, they return and take an action of their own. These loops are what transform a tool into a community."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        { "title": "Identity", "body": "User profiles give people a home on your platform and a reason to invest in their presence.", "icon": "Person", "chip": "Profiles" },
+        { "title": "Expression", "body": "Comments, posts, and replies let users contribute their voice and feel heard.", "icon": "ChatBubble", "chip": "Comments" },
+        { "title": "Recognition", "body": "Votes, likes, and reactions validate contributions and surface quality content.", "icon": "ThumbUp", "chip": "Votes" },
+        { "title": "Connection", "body": "Follow and friend systems build social graphs that make users invested in each other.", "icon": "People", "chip": "Social" },
+        { "title": "Feedback", "body": "Notifications close the engagement loop by bringing users back when something relevant happens.", "icon": "Notifications", "chip": "Alerts" },
+        { "title": "Progression", "body": "Reputation, karma, and achievements give users long-term goals to work toward.", "icon": "TrendingUp", "chip": "Gamification" }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "User Profile System",
+      "headingLevel": 2,
+      "body": "Every engaged platform starts with identity. Users need a home on your site, a place to customize their presence and showcase their activity. The profile is often the first feature users interact with after sign-up, and a well-designed profile system encourages users to invest in your platform."
+    },
+    {
+      "type": "code",
+      "language": "sql",
+      "filename": "schema/profiles.sql",
+      "description": "User profiles table with essential fields for identity, customization, and activity tracking.",
+      "code": "CREATE TABLE users (\n    id SERIAL PRIMARY KEY,\n    username VARCHAR(30) UNIQUE NOT NULL,\n    email VARCHAR(255) UNIQUE NOT NULL,\n    password_hash VARCHAR(255) NOT NULL,\n    display_name VARCHAR(100),\n    avatar_url VARCHAR(500),\n    bio TEXT,\n    location VARCHAR(100),\n    website VARCHAR(255),\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    is_verified BOOLEAN DEFAULT FALSE,\n    is_banned BOOLEAN DEFAULT FALSE,\n    karma INTEGER DEFAULT 0,\n    CONSTRAINT chk_username CHECK (username ~ '^[a-zA-Z0-9_]{3,30}$')\n);\n\nCREATE INDEX idx_users_username ON users(username);\nCREATE INDEX idx_users_last_active ON users(last_active);"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/profile.py",
+      "description": "Flask API for user profiles: view any profile by username and update your own profile including avatar upload with Pillow resizing.",
+      "code": "import os\nfrom io import BytesIO\nfrom flask import Blueprint, request, jsonify, current_app\nfrom flask_jwt_extended import jwt_required, get_jwt_identity\nfrom PIL import Image\nfrom werkzeug.utils import secure_filename\nfrom models import db, User\n\nprofile_bp = Blueprint(\"profile\", __name__)\n\nALLOWED_EXTENSIONS = {\"png\", \"jpg\", \"jpeg\", \"gif\", \"webp\"}\nMAX_AVATAR_SIZE = 400  # px\n\n\ndef resize_avatar(file_stream: BytesIO) -> BytesIO:\n    \"\"\"Resize and crop avatar to a square thumbnail.\"\"\"\n    img = Image.open(file_stream)\n    img = img.convert(\"RGB\")\n    # Crop to square from center\n    width, height = img.size\n    side = min(width, height)\n    left = (width - side) // 2\n    top = (height - side) // 2\n    img = img.crop((left, top, left + side, top + side))\n    img = img.resize((MAX_AVATAR_SIZE, MAX_AVATAR_SIZE), Image.LANCZOS)\n    output = BytesIO()\n    img.save(output, format=\"WEBP\", quality=85)\n    output.seek(0)\n    return output\n\n\n@profile_bp.get(\"/api/users/<username>\")\ndef get_profile(username: str):\n    user = User.query.filter_by(username=username).first_or_404()\n    return jsonify({\n        \"id\": user.id,\n        \"username\": user.username,\n        \"displayName\": user.display_name or user.username,\n        \"avatarUrl\": user.avatar_url,\n        \"bio\": user.bio,\n        \"location\": user.location,\n        \"website\": user.website,\n        \"karma\": user.karma,\n        \"isVerified\": user.is_verified,\n        \"createdAt\": user.created_at.isoformat(),\n        \"lastActive\": user.last_active.isoformat(),\n    })\n\n\n@profile_bp.put(\"/api/users/me\")\n@jwt_required()\ndef update_profile():\n    user_id = get_jwt_identity()\n    user = User.query.get_or_404(user_id)\n    data = request.get_json()\n    allowed_fields = [\"display_name\", \"bio\", \"location\", \"website\"]\n    for field in allowed_fields:\n        if field in data:\n            setattr(user, field, data[field][:500])  # length cap\n    db.session.commit()\n    return jsonify({\"message\": \"Profile updated\"})\n\n\n@profile_bp.post(\"/api/users/me/avatar\")\n@jwt_required()\ndef upload_avatar():\n    user_id = get_jwt_identity()\n    user = User.query.get_or_404(user_id)\n    if \"avatar\" not in request.files:\n        return jsonify({\"error\": \"No file provided\"}), 400\n    file = request.files[\"avatar\"]\n    ext = file.filename.rsplit(\".\", 1)[-1].lower()\n    if ext not in ALLOWED_EXTENSIONS:\n        return jsonify({\"error\": \"Invalid file type\"}), 400\n    resized = resize_avatar(BytesIO(file.read()))\n    filename = secure_filename(f\"avatar_{user_id}.webp\")\n    upload_dir = os.path.join(current_app.static_folder, \"avatars\")\n    os.makedirs(upload_dir, exist_ok=True)\n    path = os.path.join(upload_dir, filename)\n    with open(path, \"wb\") as f:\n        f.write(resized.read())\n    user.avatar_url = f\"/static/avatars/{filename}\"\n    db.session.commit()\n    return jsonify({\"avatarUrl\": user.avatar_url})"
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Public Profile",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "tsx",
+              "filename": "components/UserProfile.tsx",
+              "description": "Public user profile with avatar, stats bar, and tabbed content sections.",
+              "code": "import { useState, useEffect } from 'react';\n\ninterface UserProfile {\n  id: number;\n  username: string;\n  displayName: string;\n  avatarUrl: string | null;\n  bio: string | null;\n  location: string | null;\n  website: string | null;\n  karma: number;\n  isVerified: boolean;\n  createdAt: string;\n}\n\ninterface ProfileStats {\n  posts: number;\n  comments: number;\n  followers: number;\n  following: number;\n}\n\nexport default function UserProfile({ username }: { username: string }) {\n  const [profile, setProfile] = useState<UserProfile | null>(null);\n  const [stats, setStats] = useState<ProfileStats | null>(null);\n  const [activeTab, setActiveTab] = useState<'posts' | 'comments' | 'likes'>('posts');\n\n  useEffect(() => {\n    fetch(`/api/users/${username}`)\n      .then(res => res.json())\n      .then(setProfile);\n    fetch(`/api/users/${username}/stats`)\n      .then(res => res.json())\n      .then(setStats);\n  }, [username]);\n\n  if (!profile) return <div className=\"profile-skeleton\" />;\n\n  const avatarSrc = profile.avatarUrl\n    || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.displayName)}&size=128`;\n\n  const tabs = ['posts', 'comments', 'likes'] as const;\n\n  return (\n    <div className=\"max-w-2xl mx-auto\">\n      <div className=\"flex items-start gap-6 p-6\">\n        <img\n          src={avatarSrc}\n          alt={profile.displayName}\n          className=\"w-24 h-24 rounded-full object-cover\"\n        />\n        <div className=\"flex-1\">\n          <div className=\"flex items-center gap-2\">\n            <h1 className=\"text-2xl font-bold\">{profile.displayName}</h1>\n            {profile.isVerified && <span title=\"Verified\">&#10003;</span>}\n          </div>\n          <p className=\"text-gray-500\">@{profile.username}</p>\n          {profile.bio && <p className=\"mt-2\">{profile.bio}</p>}\n          <div className=\"flex gap-4 mt-2 text-sm text-gray-500\">\n            {profile.location && <span>{profile.location}</span>}\n            {profile.website && (\n              <a href={profile.website} target=\"_blank\" rel=\"noopener noreferrer\"\n                 className=\"text-blue-600 hover:underline\">{profile.website}</a>\n            )}\n          </div>\n          <p className=\"text-sm text-gray-400 mt-1\">\n            Joined {new Date(profile.createdAt).toLocaleDateString()}\n          </p>\n        </div>\n      </div>\n\n      {stats && (\n        <div className=\"flex justify-around border-y py-3 text-center\">\n          <div><strong>{stats.posts}</strong><br /><span className=\"text-sm text-gray-500\">Posts</span></div>\n          <div><strong>{stats.comments}</strong><br /><span className=\"text-sm text-gray-500\">Comments</span></div>\n          <div><strong>{stats.followers}</strong><br /><span className=\"text-sm text-gray-500\">Followers</span></div>\n          <div><strong>{stats.following}</strong><br /><span className=\"text-sm text-gray-500\">Following</span></div>\n          <div><strong>{profile.karma}</strong><br /><span className=\"text-sm text-gray-500\">Karma</span></div>\n        </div>\n      )}\n\n      <div className=\"flex border-b\">\n        {tabs.map(tab => (\n          <button\n            key={tab}\n            onClick={() => setActiveTab(tab)}\n            className={`flex-1 py-3 text-center capitalize ${\n              activeTab === tab ? 'border-b-2 border-blue-600 font-semibold' : 'text-gray-500'\n            }`}\n          >\n            {tab}\n          </button>\n        ))}\n      </div>\n\n      <div className=\"p-4\">\n        {activeTab === 'posts' && <p>User posts will render here.</p>}\n        {activeTab === 'comments' && <p>User comments will render here.</p>}\n        {activeTab === 'likes' && <p>Liked content will render here.</p>}\n      </div>\n    </div>\n  );\n}"
+            }
+          ]
+        },
+        {
+          "label": "Own Profile (Editable)",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "tsx",
+              "filename": "components/ProfileSettings.tsx",
+              "description": "Editable profile settings page for the logged-in user, with avatar upload and field editing.",
+              "code": "import { useState, useRef, FormEvent } from 'react';\n\ninterface ProfileForm {\n  displayName: string;\n  bio: string;\n  location: string;\n  website: string;\n}\n\nexport default function ProfileSettings({ initial }: { initial: ProfileForm & { avatarUrl: string | null } }) {\n  const [form, setForm] = useState<ProfileForm>({\n    displayName: initial.displayName,\n    bio: initial.bio,\n    location: initial.location,\n    website: initial.website,\n  });\n  const [avatarPreview, setAvatarPreview] = useState(initial.avatarUrl);\n  const [saving, setSaving] = useState(false);\n  const [message, setMessage] = useState('');\n  const fileRef = useRef<HTMLInputElement>(null);\n\n  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {\n    const file = e.target.files?.[0];\n    if (!file) return;\n    setAvatarPreview(URL.createObjectURL(file));\n    const formData = new FormData();\n    formData.append('avatar', file);\n    const res = await fetch('/api/users/me/avatar', { method: 'POST', body: formData });\n    const data = await res.json();\n    if (res.ok) setAvatarPreview(data.avatarUrl);\n  };\n\n  const handleSubmit = async (e: FormEvent) => {\n    e.preventDefault();\n    setSaving(true);\n    const res = await fetch('/api/users/me', {\n      method: 'PUT',\n      headers: { 'Content-Type': 'application/json' },\n      body: JSON.stringify({\n        display_name: form.displayName,\n        bio: form.bio,\n        location: form.location,\n        website: form.website,\n      }),\n    });\n    setSaving(false);\n    setMessage(res.ok ? 'Profile updated!' : 'Failed to save.');\n    setTimeout(() => setMessage(''), 3000);\n  };\n\n  const updateField = (field: keyof ProfileForm, value: string) =>\n    setForm(prev => ({ ...prev, [field]: value }));\n\n  return (\n    <form onSubmit={handleSubmit} className=\"max-w-lg mx-auto p-6 space-y-6\">\n      <h2 className=\"text-xl font-bold\">Edit Profile</h2>\n\n      <div className=\"flex items-center gap-4\">\n        <img\n          src={avatarPreview || '/default-avatar.png'}\n          alt=\"Avatar\"\n          className=\"w-20 h-20 rounded-full object-cover cursor-pointer\"\n          onClick={() => fileRef.current?.click()}\n        />\n        <input ref={fileRef} type=\"file\" accept=\"image/*\" className=\"hidden\"\n               onChange={handleAvatarChange} />\n        <button type=\"button\" onClick={() => fileRef.current?.click()}\n                className=\"text-blue-600 text-sm\">Change avatar</button>\n      </div>\n\n      <label className=\"block\">\n        <span className=\"text-sm font-medium\">Display Name</span>\n        <input type=\"text\" value={form.displayName} maxLength={100}\n               onChange={e => updateField('displayName', e.target.value)}\n               className=\"mt-1 block w-full border rounded px-3 py-2\" />\n      </label>\n\n      <label className=\"block\">\n        <span className=\"text-sm font-medium\">Bio</span>\n        <textarea value={form.bio} maxLength={500} rows={3}\n                  onChange={e => updateField('bio', e.target.value)}\n                  className=\"mt-1 block w-full border rounded px-3 py-2\" />\n      </label>\n\n      <label className=\"block\">\n        <span className=\"text-sm font-medium\">Location</span>\n        <input type=\"text\" value={form.location} maxLength={100}\n               onChange={e => updateField('location', e.target.value)}\n               className=\"mt-1 block w-full border rounded px-3 py-2\" />\n      </label>\n\n      <label className=\"block\">\n        <span className=\"text-sm font-medium\">Website</span>\n        <input type=\"url\" value={form.website} maxLength={255}\n               onChange={e => updateField('website', e.target.value)}\n               className=\"mt-1 block w-full border rounded px-3 py-2\" />\n      </label>\n\n      {message && <p className=\"text-green-600 text-sm\">{message}</p>}\n      <button type=\"submit\" disabled={saving}\n              className=\"bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50\">\n        {saving ? 'Saving...' : 'Save Changes'}\n      </button>\n    </form>\n  );\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Avatar System Deep Dive",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Avatars are surprisingly complex when done well. You need fallback generation for users without uploads, image processing to normalize sizes, and ideally CDN-backed storage for performance."
+        },
+        {
+          "type": "list",
+          "heading": "Avatar Strategies",
+          "ordered": false,
+          "items": [
+            "Default initials: Generate an image with the user's initials on a colored background (use a hash of the username for consistent color).",
+            "Gravatar fallback: Use gravatar.com with the user's email hash. Free and widely supported.",
+            "Upload with crop: Let users upload and crop to a square. Resize server-side to standard dimensions (128x128, 256x256).",
+            "CDN storage: Store processed avatars on S3/Cloudflare R2. Serve via CDN with cache headers for fast loading worldwide."
+          ]
+        },
+        {
+          "type": "code",
+          "language": "python",
+          "filename": "utils/avatar.py",
+          "description": "Generate a default avatar with the user's initials on a deterministic colored background.",
+          "code": "import hashlib\nfrom io import BytesIO\nfrom PIL import Image, ImageDraw, ImageFont\n\nCOLORS = [\n    \"#E53935\", \"#8E24AA\", \"#3949AB\", \"#039BE5\",\n    \"#00897B\", \"#43A047\", \"#F4511E\", \"#6D4C41\",\n]\n\n\ndef generate_initials_avatar(name: str, size: int = 256) -> BytesIO:\n    \"\"\"Create a square avatar with initials on a colored background.\"\"\"\n    initials = \"\".join(word[0].upper() for word in name.split()[:2]) or \"?\"\n    color_index = int(hashlib.md5(name.encode()).hexdigest(), 16) % len(COLORS)\n    bg_color = COLORS[color_index]\n\n    img = Image.new(\"RGB\", (size, size), bg_color)\n    draw = ImageDraw.Draw(img)\n    try:\n        font = ImageFont.truetype(\"arial.ttf\", size // 2)\n    except OSError:\n        font = ImageFont.load_default()\n    bbox = draw.textbbox((0, 0), initials, font=font)\n    text_w = bbox[2] - bbox[0]\n    text_h = bbox[3] - bbox[1]\n    x = (size - text_w) // 2\n    y = (size - text_h) // 2 - bbox[1]\n    draw.text((x, y), initials, fill=\"white\", font=font)\n\n    output = BytesIO()\n    img.save(output, format=\"PNG\")\n    output.seek(0)\n    return output"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Threaded Comment System",
+      "headingLevel": 2,
+      "body": "Comments are the backbone of engagement. Threaded (nested) comments let conversations branch naturally, allowing users to reply to specific points rather than contributing to one flat stream. This is the model used by Reddit, Hacker News, and most modern forums."
+    },
+    {
+      "type": "code",
+      "language": "sql",
+      "filename": "schema/comments.sql",
+      "description": "Comments table with self-referencing parent_id for threaded nesting. Polymorphic content_type allows comments on any entity (posts, articles, etc.).",
+      "code": "CREATE TABLE comments (\n    id SERIAL PRIMARY KEY,\n    user_id INTEGER NOT NULL REFERENCES users(id),\n    content_type VARCHAR(50) NOT NULL,   -- 'post', 'article', 'video'\n    content_id INTEGER NOT NULL,\n    parent_id INTEGER REFERENCES comments(id) ON DELETE CASCADE,\n    body TEXT NOT NULL,\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    is_deleted BOOLEAN DEFAULT FALSE,\n    upvotes INTEGER DEFAULT 0,\n    downvotes INTEGER DEFAULT 0,\n    depth INTEGER DEFAULT 0,\n    CONSTRAINT chk_body_length CHECK (char_length(body) BETWEEN 1 AND 10000)\n);\n\nCREATE INDEX idx_comments_content ON comments(content_type, content_id);\nCREATE INDEX idx_comments_parent ON comments(parent_id);\nCREATE INDEX idx_comments_user ON comments(user_id);"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/comments.py",
+      "description": "Flask comment API with recursive tree building. Converts flat database rows into a nested comment tree structure.",
+      "code": "from flask import Blueprint, request, jsonify\nfrom flask_jwt_extended import jwt_required, get_jwt_identity\nfrom models import db, Comment, User\nfrom datetime import datetime\n\ncomments_bp = Blueprint(\"comments\", __name__)\nMAX_DEPTH = 5\n\n\ndef build_comment_tree(comments: list[dict]) -> list[dict]:\n    \"\"\"Convert flat comment list into nested tree.\"\"\"\n    lookup: dict[int, dict] = {}\n    roots: list[dict] = []\n    for c in comments:\n        c[\"children\"] = []\n        lookup[c[\"id\"]] = c\n    for c in comments:\n        if c[\"parentId\"] and c[\"parentId\"] in lookup:\n            lookup[c[\"parentId\"]][\"children\"].append(c)\n        else:\n            roots.append(c)\n    return roots\n\n\ndef serialize_comment(c: Comment) -> dict:\n    return {\n        \"id\": c.id,\n        \"userId\": c.user_id,\n        \"username\": c.author.username,\n        \"avatarUrl\": c.author.avatar_url,\n        \"parentId\": c.parent_id,\n        \"body\": c.body if not c.is_deleted else \"[deleted]\",\n        \"createdAt\": c.created_at.isoformat(),\n        \"updatedAt\": c.updated_at.isoformat(),\n        \"upvotes\": c.upvotes,\n        \"downvotes\": c.downvotes,\n        \"depth\": c.depth,\n        \"isDeleted\": c.is_deleted,\n    }\n\n\n@comments_bp.get(\"/api/comments/<content_type>/<int:content_id>\")\ndef get_comments(content_type: str, content_id: int):\n    rows = (Comment.query\n            .filter_by(content_type=content_type, content_id=content_id)\n            .order_by(Comment.created_at.asc())\n            .all())\n    flat = [serialize_comment(c) for c in rows]\n    tree = build_comment_tree(flat)\n    return jsonify(tree)\n\n\n@comments_bp.post(\"/api/comments\")\n@jwt_required()\ndef create_comment():\n    user_id = get_jwt_identity()\n    data = request.get_json()\n    depth = 0\n    if data.get(\"parent_id\"):\n        parent = Comment.query.get_or_404(data[\"parent_id\"])\n        if parent.depth >= MAX_DEPTH:\n            return jsonify({\"error\": \"Maximum nesting depth reached\"}), 400\n        depth = parent.depth + 1\n    comment = Comment(\n        user_id=user_id,\n        content_type=data[\"content_type\"],\n        content_id=data[\"content_id\"],\n        parent_id=data.get(\"parent_id\"),\n        body=data[\"body\"].strip()[:10000],\n        depth=depth,\n    )\n    db.session.add(comment)\n    db.session.commit()\n    return jsonify(serialize_comment(comment)), 201\n\n\n@comments_bp.put(\"/api/comments/<int:comment_id>\")\n@jwt_required()\ndef edit_comment(comment_id: int):\n    user_id = get_jwt_identity()\n    comment = Comment.query.get_or_404(comment_id)\n    if comment.user_id != user_id:\n        return jsonify({\"error\": \"Not authorized\"}), 403\n    data = request.get_json()\n    comment.body = data[\"body\"].strip()[:10000]\n    comment.updated_at = datetime.utcnow()\n    db.session.commit()\n    return jsonify(serialize_comment(comment))\n\n\n@comments_bp.delete(\"/api/comments/<int:comment_id>\")\n@jwt_required()\ndef delete_comment(comment_id: int):\n    user_id = get_jwt_identity()\n    comment = Comment.query.get_or_404(comment_id)\n    if comment.user_id != user_id:\n        return jsonify({\"error\": \"Not authorized\"}), 403\n    comment.is_deleted = True\n    comment.body = \"\"\n    db.session.commit()\n    return jsonify({\"message\": \"Comment deleted\"})"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/CommentThread.tsx",
+      "description": "Recursive comment thread component with reply, collapse, edit, and delete functionality.",
+      "code": "import { useState } from 'react';\nimport CommentForm from './CommentForm';\n\ninterface Comment {\n  id: number;\n  userId: number;\n  username: string;\n  avatarUrl: string | null;\n  parentId: number | null;\n  body: string;\n  createdAt: string;\n  upvotes: number;\n  downvotes: number;\n  depth: number;\n  isDeleted: boolean;\n  children: Comment[];\n}\n\ninterface Props {\n  comment: Comment;\n  currentUserId: number | null;\n  onReply: (parentId: number, body: string) => Promise<void>;\n  onDelete: (commentId: number) => Promise<void>;\n  onEdit: (commentId: number, body: string) => Promise<void>;\n  maxDepth?: number;\n}\n\nexport default function CommentThread({\n  comment, currentUserId, onReply, onDelete, onEdit, maxDepth = 5,\n}: Props) {\n  const [collapsed, setCollapsed] = useState(false);\n  const [replying, setReplying] = useState(false);\n  const [editing, setEditing] = useState(false);\n  const [editBody, setEditBody] = useState(comment.body);\n\n  const score = comment.upvotes - comment.downvotes;\n  const timeAgo = getTimeAgo(comment.createdAt);\n  const isOwn = currentUserId === comment.userId;\n\n  const handleEdit = async () => {\n    await onEdit(comment.id, editBody);\n    setEditing(false);\n  };\n\n  return (\n    <div className={`pl-${Math.min(comment.depth * 4, 20)} border-l-2 border-gray-200 ml-2`}>\n      <div className=\"py-2\">\n        <div className=\"flex items-center gap-2 text-sm text-gray-500\">\n          <button onClick={() => setCollapsed(!collapsed)} className=\"text-xs\">\n            {collapsed ? '[+]' : '[-]'}\n          </button>\n          <img src={comment.avatarUrl || '/default-avatar.png'}\n               alt=\"\" className=\"w-5 h-5 rounded-full\" />\n          <span className=\"font-medium text-gray-800\">{comment.username}</span>\n          <span>{score} points</span>\n          <span>{timeAgo}</span>\n        </div>\n\n        {!collapsed && (\n          <>\n            {editing ? (\n              <div className=\"mt-2\">\n                <textarea value={editBody} onChange={e => setEditBody(e.target.value)}\n                          className=\"w-full border rounded p-2\" rows={3} />\n                <div className=\"flex gap-2 mt-1\">\n                  <button onClick={handleEdit}\n                          className=\"text-sm text-blue-600\">Save</button>\n                  <button onClick={() => setEditing(false)}\n                          className=\"text-sm text-gray-500\">Cancel</button>\n                </div>\n              </div>\n            ) : (\n              <p className=\"mt-1 text-gray-800\">{comment.body}</p>\n            )}\n\n            <div className=\"flex gap-3 mt-1 text-xs text-gray-500\">\n              {comment.depth < maxDepth && (\n                <button onClick={() => setReplying(!replying)}>Reply</button>\n              )}\n              {isOwn && !comment.isDeleted && (\n                <>\n                  <button onClick={() => setEditing(true)}>Edit</button>\n                  <button onClick={() => onDelete(comment.id)}\n                          className=\"text-red-500\">Delete</button>\n                </>\n              )}\n            </div>\n\n            {replying && (\n              <div className=\"mt-2 ml-4\">\n                <CommentForm\n                  onSubmit={async (body) => {\n                    await onReply(comment.id, body);\n                    setReplying(false);\n                  }}\n                  onCancel={() => setReplying(false)}\n                  placeholder=\"Write a reply...\"\n                />\n              </div>\n            )}\n\n            {comment.children.map(child => (\n              <CommentThread\n                key={child.id}\n                comment={child}\n                currentUserId={currentUserId}\n                onReply={onReply}\n                onDelete={onDelete}\n                onEdit={onEdit}\n                maxDepth={maxDepth}\n              />\n            ))}\n          </>\n        )}\n      </div>\n    </div>\n  );\n}\n\nfunction getTimeAgo(dateStr: string): string {\n  const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);\n  if (seconds < 60) return 'just now';\n  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;\n  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;\n  return `${Math.floor(seconds / 86400)}d ago`;\n}"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/CommentForm.tsx",
+      "description": "Comment input form with character limit, markdown preview toggle, and optimistic submit.",
+      "code": "import { useState, FormEvent } from 'react';\n\ninterface Props {\n  onSubmit: (body: string) => Promise<void>;\n  onCancel?: () => void;\n  placeholder?: string;\n  maxLength?: number;\n}\n\nexport default function CommentForm({\n  onSubmit, onCancel, placeholder = 'Write a comment...', maxLength = 10000,\n}: Props) {\n  const [body, setBody] = useState('');\n  const [submitting, setSubmitting] = useState(false);\n  const [preview, setPreview] = useState(false);\n\n  const handleSubmit = async (e: FormEvent) => {\n    e.preventDefault();\n    if (!body.trim() || submitting) return;\n    setSubmitting(true);\n    try {\n      await onSubmit(body.trim());\n      setBody('');\n    } finally {\n      setSubmitting(false);\n    }\n  };\n\n  return (\n    <form onSubmit={handleSubmit} className=\"space-y-2\">\n      <div className=\"flex gap-2 text-xs\">\n        <button type=\"button\" onClick={() => setPreview(false)}\n                className={!preview ? 'font-bold' : ''}>Write</button>\n        <button type=\"button\" onClick={() => setPreview(true)}\n                className={preview ? 'font-bold' : ''}>Preview</button>\n      </div>\n\n      {preview ? (\n        <div className=\"border rounded p-3 min-h-[80px] text-sm bg-gray-50\">\n          {body || <span className=\"text-gray-400\">Nothing to preview</span>}\n        </div>\n      ) : (\n        <textarea\n          value={body}\n          onChange={e => setBody(e.target.value)}\n          placeholder={placeholder}\n          maxLength={maxLength}\n          rows={3}\n          className=\"w-full border rounded p-3 text-sm resize-y\"\n        />\n      )}\n\n      <div className=\"flex items-center justify-between\">\n        <span className=\"text-xs text-gray-400\">\n          {body.length}/{maxLength}\n        </span>\n        <div className=\"flex gap-2\">\n          {onCancel && (\n            <button type=\"button\" onClick={onCancel}\n                    className=\"text-sm text-gray-500 px-3 py-1\">Cancel</button>\n          )}\n          <button type=\"submit\" disabled={!body.trim() || submitting}\n                  className=\"bg-blue-600 text-white text-sm px-4 py-1.5 rounded\n                             hover:bg-blue-700 disabled:opacity-50\">\n            {submitting ? 'Posting...' : 'Comment'}\n          </button>\n        </div>\n      </div>\n    </form>\n  );\n}"
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Flat Comments",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Flat comments display all replies in a single chronological list, like a chat. Simple to implement but conversations become hard to follow at scale. Best for low-volume comment sections on blog posts or small communities."
+            }
+          ]
+        },
+        {
+          "label": "Threaded Comments",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Threaded (nested) comments show replies indented under their parent. Conversations branch naturally and users can follow individual discussion threads. Best for discussion-heavy platforms like Reddit and Hacker News. Limit depth to 3-5 levels to avoid excessive indentation on mobile."
+            }
+          ]
+        },
+        {
+          "label": "Paginated Comments",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "For posts with hundreds or thousands of comments, load only top-level comments initially with a page size of 20-50. Replies can be loaded on demand ('Show 12 replies'). Use cursor-based pagination (not offset) so new comments do not shift existing pages. YouTube and Facebook use this hybrid approach."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Nesting Depth Limits",
+      "body": "For performance and readability, limit comment nesting depth to 3-5 levels. Reddit uses 'continue this thread' links for deeper replies. On mobile, deeply nested comments become unreadable due to indentation. Consider collapsing threads beyond a certain depth by default."
+    },
+    {
+      "type": "accordion",
+      "title": "Comment Moderation",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "list",
+          "heading": "Moderation Tools to Build",
+          "ordered": false,
+          "items": [
+            "Word filter: Maintain a blocklist of banned words and phrases. Auto-flag or auto-remove comments containing them.",
+            "Spam detection heuristics: Flag comments with excessive links, ALL CAPS, repeated characters, or that are posted too quickly in succession.",
+            "Report system: Let users report comments with a reason (spam, harassment, off-topic). Queue flagged comments for admin review.",
+            "Admin review queue: Dashboard showing reported and auto-flagged comments with approve/remove/ban actions.",
+            "Shadow banning: Banned users can still post, but their comments are only visible to themselves. They do not realize they are banned, which reduces ban-evasion attempts."
+          ]
+        },
+        {
+          "type": "code",
+          "language": "python",
+          "filename": "utils/moderation.py",
+          "description": "Simple spam detection heuristics for comment filtering.",
+          "code": "import re\nfrom typing import NamedTuple\n\n\nclass ModerationResult(NamedTuple):\n    is_spam: bool\n    reason: str\n\n\nBLOCKED_WORDS = {\"buy now\", \"free money\", \"click here\", \"act now\"}\nURL_PATTERN = re.compile(r'https?://\\S+')\n\n\ndef check_comment_spam(body: str) -> ModerationResult:\n    \"\"\"Run heuristic spam checks on a comment body.\"\"\"\n    lower = body.lower().strip()\n\n    # Check blocklist\n    for word in BLOCKED_WORDS:\n        if word in lower:\n            return ModerationResult(True, f\"Contains blocked phrase: {word}\")\n\n    # Excessive links\n    urls = URL_PATTERN.findall(body)\n    if len(urls) > 3:\n        return ModerationResult(True, \"Too many URLs\")\n\n    # Excessive caps (more than 70% uppercase in a message > 20 chars)\n    if len(body) > 20:\n        upper_ratio = sum(1 for c in body if c.isupper()) / len(body)\n        if upper_ratio > 0.7:\n            return ModerationResult(True, \"Excessive capitalization\")\n\n    # Repeated characters (e.g., \"aaaaaa\")\n    if re.search(r'(.)\\1{9,}', body):\n        return ModerationResult(True, \"Repeated characters\")\n\n    return ModerationResult(False, \"\")"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Voting / Upvote-Downvote System",
+      "headingLevel": 2,
+      "body": "Votes are the simplest form of user expression. A single click lets users signal approval or disapproval, and those signals power content ranking, quality filtering, and community self-moderation. The three common patterns are simple likes, upvote/downvote, and emoji reactions."
+    },
+    {
+      "type": "code",
+      "language": "sql",
+      "filename": "schema/votes.sql",
+      "description": "Votes table with polymorphic content support and a unique constraint preventing duplicate votes.",
+      "code": "CREATE TABLE votes (\n    id SERIAL PRIMARY KEY,\n    user_id INTEGER NOT NULL REFERENCES users(id),\n    content_type VARCHAR(50) NOT NULL,\n    content_id INTEGER NOT NULL,\n    value SMALLINT NOT NULL CHECK (value IN (-1, 1)),\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    CONSTRAINT uq_vote UNIQUE (user_id, content_id, content_type)\n);\n\nCREATE INDEX idx_votes_content ON votes(content_type, content_id);"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/votes.py",
+      "description": "Flask vote API handling upvote, downvote, vote switching, and vote removal with anti-abuse checks.",
+      "code": "from flask import Blueprint, request, jsonify\nfrom flask_jwt_extended import jwt_required, get_jwt_identity\nfrom models import db, Vote, Comment, Post\nfrom sqlalchemy import func\n\nvotes_bp = Blueprint(\"votes\", __name__)\n\nCONTENT_MODELS = {\n    \"post\": Post,\n    \"comment\": Comment,\n}\n\n\n@votes_bp.post(\"/api/vote\")\n@jwt_required()\ndef cast_vote():\n    user_id = get_jwt_identity()\n    data = request.get_json()\n    content_type = data[\"content_type\"]\n    content_id = data[\"content_id\"]\n    value = data[\"value\"]  # 1 or -1\n\n    if value not in (1, -1):\n        return jsonify({\"error\": \"Value must be 1 or -1\"}), 400\n\n    # Prevent self-voting\n    model = CONTENT_MODELS.get(content_type)\n    if model:\n        content = model.query.get(content_id)\n        if content and hasattr(content, \"user_id\") and content.user_id == user_id:\n            return jsonify({\"error\": \"Cannot vote on your own content\"}), 400\n\n    existing = Vote.query.filter_by(\n        user_id=user_id, content_type=content_type, content_id=content_id\n    ).first()\n\n    if existing:\n        if existing.value == value:\n            # Same vote again: remove it (toggle off)\n            db.session.delete(existing)\n            action = \"removed\"\n        else:\n            # Switch vote direction\n            existing.value = value\n            action = \"switched\"\n    else:\n        vote = Vote(\n            user_id=user_id,\n            content_type=content_type,\n            content_id=content_id,\n            value=value,\n        )\n        db.session.add(vote)\n        action = \"created\"\n\n    db.session.commit()\n\n    # Return updated score\n    score = db.session.query(func.coalesce(func.sum(Vote.value), 0)).filter_by(\n        content_type=content_type, content_id=content_id\n    ).scalar()\n\n    return jsonify({\"action\": action, \"score\": int(score)})"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/VoteButtons.tsx",
+      "description": "Upvote/downvote component with optimistic UI update, animated score, and current vote highlight.",
+      "code": "import { useState } from 'react';\n\ninterface Props {\n  contentType: string;\n  contentId: number;\n  initialScore: number;\n  initialVote: 1 | -1 | null;  // user's current vote\n}\n\nexport default function VoteButtons({ contentType, contentId, initialScore, initialVote }: Props) {\n  const [score, setScore] = useState(initialScore);\n  const [userVote, setUserVote] = useState(initialVote);\n  const [animating, setAnimating] = useState(false);\n\n  const handleVote = async (value: 1 | -1) => {\n    // Optimistic update\n    const prevScore = score;\n    const prevVote = userVote;\n\n    if (userVote === value) {\n      // Toggle off\n      setScore(score - value);\n      setUserVote(null);\n    } else if (userVote === null) {\n      // New vote\n      setScore(score + value);\n      setUserVote(value);\n    } else {\n      // Switch vote: remove old + add new = 2x change\n      setScore(score + value * 2);\n      setUserVote(value);\n    }\n\n    setAnimating(true);\n    setTimeout(() => setAnimating(false), 300);\n\n    try {\n      const res = await fetch('/api/vote', {\n        method: 'POST',\n        headers: { 'Content-Type': 'application/json' },\n        body: JSON.stringify({ content_type: contentType, content_id: contentId, value }),\n      });\n      const data = await res.json();\n      setScore(data.score);  // server truth\n    } catch {\n      // Revert on error\n      setScore(prevScore);\n      setUserVote(prevVote);\n    }\n  };\n\n  return (\n    <div className=\"flex flex-col items-center gap-1\">\n      <button\n        onClick={() => handleVote(1)}\n        className={`text-xl transition-transform ${\n          userVote === 1 ? 'text-orange-500 scale-110' : 'text-gray-400 hover:text-gray-600'\n        }`}\n        aria-label=\"Upvote\"\n      >\n        &#9650;\n      </button>\n      <span className={`font-bold text-sm transition-all ${\n        animating ? 'scale-125' : ''\n      } ${score > 0 ? 'text-orange-600' : score < 0 ? 'text-blue-600' : 'text-gray-600'}`}>\n        {score}\n      </span>\n      <button\n        onClick={() => handleVote(-1)}\n        className={`text-xl transition-transform ${\n          userVote === -1 ? 'text-blue-500 scale-110' : 'text-gray-400 hover:text-gray-600'\n        }`}\n        aria-label=\"Downvote\"\n      >\n        &#9660;\n      </button>\n    </div>\n  );\n}"
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Simple Like",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "tsx",
+              "filename": "components/LikeButton.tsx",
+              "description": "Simple heart-toggle like button with count.",
+              "code": "import { useState } from 'react';\n\nexport default function LikeButton({ contentType, contentId, initialLiked, initialCount }: {\n  contentType: string; contentId: number; initialLiked: boolean; initialCount: number;\n}) {\n  const [liked, setLiked] = useState(initialLiked);\n  const [count, setCount] = useState(initialCount);\n\n  const toggle = async () => {\n    setLiked(!liked);\n    setCount(liked ? count - 1 : count + 1);\n    await fetch('/api/vote', {\n      method: 'POST',\n      headers: { 'Content-Type': 'application/json' },\n      body: JSON.stringify({ content_type: contentType, content_id: contentId, value: 1 }),\n    });\n  };\n\n  return (\n    <button onClick={toggle} className=\"flex items-center gap-1\">\n      <span className={`text-xl transition-transform ${\n        liked ? 'text-red-500 scale-110' : 'text-gray-400'\n      }`}>\n        {liked ? '\\u2764' : '\\u2661'}\n      </span>\n      <span className=\"text-sm\">{count}</span>\n    </button>\n  );\n}"
+            }
+          ]
+        },
+        {
+          "label": "Upvote/Downvote",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "The upvote/downvote pattern (shown in VoteButtons above) is used by Reddit and Stack Overflow. It provides a net score and allows users to signal both approval and disapproval. The score becomes a quality signal for ranking content."
+            }
+          ]
+        },
+        {
+          "label": "Reactions (Emoji)",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "tsx",
+              "filename": "components/ReactionBar.tsx",
+              "description": "GitHub/Slack-style emoji reaction bar with multiple reaction types per content item.",
+              "code": "import { useState } from 'react';\n\ninterface ReactionSummary {\n  emoji: string;\n  count: number;\n  reacted: boolean;  // current user reacted with this\n}\n\nconst AVAILABLE_REACTIONS = ['\\ud83d\\udc4d', '\\ud83d\\udc4e', '\\ud83d\\ude04', '\\ud83c\\udf89', '\\ud83d\\ude15', '\\u2764\\ufe0f', '\\ud83d\\ude80', '\\ud83d\\udc40'];\n\nexport default function ReactionBar({ contentType, contentId, initial }: {\n  contentType: string; contentId: number; initial: ReactionSummary[];\n}) {\n  const [reactions, setReactions] = useState<ReactionSummary[]>(initial);\n  const [showPicker, setShowPicker] = useState(false);\n\n  const toggleReaction = async (emoji: string) => {\n    // Optimistic update\n    setReactions(prev => {\n      const existing = prev.find(r => r.emoji === emoji);\n      if (existing) {\n        if (existing.reacted) {\n          return existing.count === 1\n            ? prev.filter(r => r.emoji !== emoji)\n            : prev.map(r => r.emoji === emoji\n                ? { ...r, count: r.count - 1, reacted: false } : r);\n        }\n        return prev.map(r => r.emoji === emoji\n          ? { ...r, count: r.count + 1, reacted: true } : r);\n      }\n      return [...prev, { emoji, count: 1, reacted: true }];\n    });\n    setShowPicker(false);\n\n    await fetch('/api/reactions', {\n      method: 'POST',\n      headers: { 'Content-Type': 'application/json' },\n      body: JSON.stringify({ content_type: contentType, content_id: contentId, emoji }),\n    });\n  };\n\n  return (\n    <div className=\"flex items-center gap-1 flex-wrap\">\n      {reactions.map(r => (\n        <button\n          key={r.emoji}\n          onClick={() => toggleReaction(r.emoji)}\n          className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-sm border\n            ${r.reacted ? 'bg-blue-50 border-blue-300' : 'bg-gray-50 border-gray-200'}`}\n        >\n          <span>{r.emoji}</span>\n          <span>{r.count}</span>\n        </button>\n      ))}\n      <div className=\"relative\">\n        <button onClick={() => setShowPicker(!showPicker)}\n                className=\"px-2 py-0.5 rounded-full text-sm border bg-gray-50\"\n                title=\"Add reaction\">+</button>\n        {showPicker && (\n          <div className=\"absolute bottom-full mb-1 bg-white shadow-lg rounded-lg p-2\n                          flex gap-1 border z-10\">\n            {AVAILABLE_REACTIONS.map(emoji => (\n              <button key={emoji} onClick={() => toggleReaction(emoji)}\n                      className=\"text-xl hover:scale-125 transition-transform p-1\">\n                {emoji}\n              </button>\n            ))}\n          </div>\n        )}\n      </div>\n    </div>\n  );\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Ranking Algorithms",
+      "headingLevel": 3,
+      "body": "How you sort content matters more than you think. Naive sorting by raw score is biased toward older content. Time-decay algorithms and statistical confidence intervals create fairer rankings."
+    },
+    {
+      "type": "table",
+      "heading": "Algorithm Comparison",
+      "headers": ["Algorithm", "Formula", "Best For"],
+      "rows": [
+        ["Chronological", "ORDER BY created_at DESC", "Chat, real-time feeds, breaking news"],
+        ["Net Score", "upvotes - downvotes", "Simple communities, low traffic — biased toward older content"],
+        ["Wilson Score", "Lower bound of 95% confidence interval", "Reddit 'Best' — handles items with few votes fairly"],
+        ["Hot / Trending", "score / (age_in_hours + 2) ^ gravity", "Hacker News front page — score decays with time"],
+        ["Bayesian Average", "(C * m + sum_ratings) / (C + num_ratings)", "Star ratings (IMDb, Amazon) — pulls toward global mean"]
+      ]
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "utils/ranking.py",
+      "description": "Wilson Score confidence interval (used by Reddit for 'Best' comment sorting) and Hacker News hot ranking algorithm.",
+      "code": "import math\nfrom datetime import datetime\n\n\ndef wilson_score(upvotes: int, downvotes: int, confidence: float = 0.95) -> float:\n    \"\"\"Lower bound of Wilson Score confidence interval.\n\n    This is the algorithm Reddit uses to rank 'best' comments.\n    It answers: 'Given the votes observed, what is the lowest plausible\n    rate of upvotes?' Items with few votes get a lower bound, which\n    prevents a 1-upvote, 0-downvote item from ranking above a\n    100-upvote, 10-downvote item.\n    \"\"\"\n    n = upvotes + downvotes\n    if n == 0:\n        return 0.0\n\n    z = 1.96 if confidence == 0.95 else 1.645  # z-score\n    p = upvotes / n\n\n    numerator = p + z * z / (2 * n) - z * math.sqrt(\n        (p * (1 - p) + z * z / (4 * n)) / n\n    )\n    denominator = 1 + z * z / n\n    return numerator / denominator\n\n\ndef hot_score(upvotes: int, downvotes: int, created_at: datetime,\n             gravity: float = 1.8) -> float:\n    \"\"\"Hacker News-style hot ranking. Score decays with age.\n\n    Higher gravity = faster decay (content falls off the front page faster).\n    gravity=1.8 is the Hacker News default.\n    \"\"\"\n    score = upvotes - downvotes\n    age_hours = (datetime.utcnow() - created_at).total_seconds() / 3600\n    return score / pow(age_hours + 2, gravity)\n\n\ndef bayesian_average(\n    item_ratings: list[int],\n    global_mean: float = 3.0,\n    min_votes: int = 10,\n) -> float:\n    \"\"\"Bayesian average for star ratings (IMDb/Amazon style).\n\n    Pulls items with few ratings toward the global mean,\n    preventing a single 5-star rating from topping the chart.\n    \"\"\"\n    n = len(item_ratings)\n    if n == 0:\n        return global_mean\n    item_mean = sum(item_ratings) / n\n    return (min_votes * global_mean + n * item_mean) / (min_votes + n)"
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "Do Not Use Raw Score for Ranking",
+      "body": "Simple upvote-minus-downvote ranking is biased toward older content that has had more time to accumulate votes. A post with 1000 upvotes and 900 downvotes (net: 100) should not outrank a post with 10 upvotes and 0 downvotes (net: 10). Use Wilson Score or time-decay algorithms for fairer ranking."
+    },
+    {
+      "type": "text",
+      "heading": "Reaction System (Beyond Votes)",
+      "headingLevel": 2,
+      "body": "Reactions let users express nuanced feelings beyond a binary up/down. Facebook pioneered this with Like, Love, Haha, Wow, Sad, and Angry. GitHub uses emoji reactions on issues and pull requests. Reactions increase engagement because they lower the barrier to participation — reacting is faster than commenting."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/reactions.py",
+      "description": "Flask API for emoji reactions: toggle a reaction, get summary per content item.",
+      "code": "from flask import Blueprint, request, jsonify\nfrom flask_jwt_extended import jwt_required, get_jwt_identity\nfrom models import db, Reaction\nfrom sqlalchemy import func\n\nreactions_bp = Blueprint(\"reactions\", __name__)\n\n\n@reactions_bp.post(\"/api/reactions\")\n@jwt_required()\ndef toggle_reaction():\n    user_id = get_jwt_identity()\n    data = request.get_json()\n    content_type = data[\"content_type\"]\n    content_id = data[\"content_id\"]\n    emoji = data[\"emoji\"]\n\n    existing = Reaction.query.filter_by(\n        user_id=user_id, content_type=content_type,\n        content_id=content_id, emoji=emoji,\n    ).first()\n\n    if existing:\n        db.session.delete(existing)\n        action = \"removed\"\n    else:\n        reaction = Reaction(\n            user_id=user_id, content_type=content_type,\n            content_id=content_id, emoji=emoji,\n        )\n        db.session.add(reaction)\n        action = \"added\"\n\n    db.session.commit()\n    return jsonify({\"action\": action})\n\n\n@reactions_bp.get(\"/api/reactions/<content_type>/<int:content_id>\")\n@jwt_required()\ndef get_reactions(content_type: str, content_id: int):\n    user_id = get_jwt_identity()\n    rows = (\n        db.session.query(Reaction.emoji, func.count(Reaction.id))\n        .filter_by(content_type=content_type, content_id=content_id)\n        .group_by(Reaction.emoji)\n        .all()\n    )\n    user_reactions = {\n        r.emoji for r in Reaction.query.filter_by(\n            user_id=user_id, content_type=content_type, content_id=content_id\n        ).all()\n    }\n    return jsonify([\n        {\"emoji\": emoji, \"count\": count, \"reacted\": emoji in user_reactions}\n        for emoji, count in rows\n    ])"
+    },
+    {
+      "type": "text",
+      "heading": "Activity Feed",
+      "headingLevel": 2,
+      "body": "The activity feed is the heartbeat of an engaged platform. It shows users what is happening with people and content they care about. A well-designed feed brings users back daily by surfacing relevant, timely activity from their social graph."
+    },
+    {
+      "type": "code",
+      "language": "sql",
+      "filename": "schema/activity.sql",
+      "description": "Activity events table for tracking all user actions. The metadata JSON column stores event-specific details.",
+      "code": "CREATE TABLE activity_events (\n    id SERIAL PRIMARY KEY,\n    actor_id INTEGER NOT NULL REFERENCES users(id),\n    verb VARCHAR(50) NOT NULL,       -- 'posted', 'commented', 'liked', 'followed'\n    object_type VARCHAR(50) NOT NULL, -- 'post', 'comment', 'user'\n    object_id INTEGER NOT NULL,\n    target_id INTEGER,               -- e.g., the post a comment belongs to\n    metadata JSONB DEFAULT '{}',\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);\n\nCREATE INDEX idx_activity_actor ON activity_events(actor_id);\nCREATE INDEX idx_activity_created ON activity_events(created_at DESC);\nCREATE INDEX idx_activity_verb ON activity_events(verb);"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/feed.py",
+      "description": "Activity feed API using fan-out-on-read: query events from followed users, cursor-paginated.",
+      "code": "from flask import Blueprint, request, jsonify\nfrom flask_jwt_extended import jwt_required, get_jwt_identity\nfrom models import db, ActivityEvent, Follow, User\nfrom datetime import datetime\n\nfeed_bp = Blueprint(\"feed\", __name__)\n\n\n@feed_bp.get(\"/api/feed\")\n@jwt_required()\ndef get_feed():\n    \"\"\"Fan-out-on-read: query events from followed users at read time.\"\"\"\n    user_id = get_jwt_identity()\n    cursor = request.args.get(\"cursor\")  # ISO timestamp\n    limit = min(int(request.args.get(\"limit\", 20)), 50)\n\n    # Get IDs of users we follow\n    following_ids = [\n        f.following_id for f in\n        Follow.query.filter_by(follower_id=user_id).all()\n    ]\n    following_ids.append(user_id)  # include own activity\n\n    query = (\n        ActivityEvent.query\n        .filter(ActivityEvent.actor_id.in_(following_ids))\n        .order_by(ActivityEvent.created_at.desc())\n    )\n\n    if cursor:\n        cursor_dt = datetime.fromisoformat(cursor)\n        query = query.filter(ActivityEvent.created_at < cursor_dt)\n\n    events = query.limit(limit + 1).all()\n    has_more = len(events) > limit\n    events = events[:limit]\n\n    # Batch-load actor info\n    actor_ids = {e.actor_id for e in events}\n    actors = {u.id: u for u in User.query.filter(User.id.in_(actor_ids)).all()}\n\n    items = []\n    for e in events:\n        actor = actors.get(e.actor_id)\n        items.append({\n            \"id\": e.id,\n            \"actor\": {\n                \"id\": actor.id,\n                \"username\": actor.username,\n                \"avatarUrl\": actor.avatar_url,\n            } if actor else None,\n            \"verb\": e.verb,\n            \"objectType\": e.object_type,\n            \"objectId\": e.object_id,\n            \"targetId\": e.target_id,\n            \"metadata\": e.metadata,\n            \"createdAt\": e.created_at.isoformat(),\n        })\n\n    next_cursor = events[-1].created_at.isoformat() if events and has_more else None\n    return jsonify({\"items\": items, \"nextCursor\": next_cursor})"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/ActivityFeed.tsx",
+      "description": "Activity feed component with grouped items, infinite scroll, and skeleton loading.",
+      "code": "import { useState, useEffect, useCallback, useRef } from 'react';\n\ninterface ActivityItem {\n  id: number;\n  actor: { id: number; username: string; avatarUrl: string | null };\n  verb: string;\n  objectType: string;\n  objectId: number;\n  createdAt: string;\n}\n\nexport default function ActivityFeed() {\n  const [items, setItems] = useState<ActivityItem[]>([]);\n  const [cursor, setCursor] = useState<string | null>(null);\n  const [loading, setLoading] = useState(false);\n  const [hasMore, setHasMore] = useState(true);\n  const observerRef = useRef<HTMLDivElement>(null);\n\n  const loadMore = useCallback(async () => {\n    if (loading || !hasMore) return;\n    setLoading(true);\n    const params = new URLSearchParams({ limit: '20' });\n    if (cursor) params.set('cursor', cursor);\n    const res = await fetch(`/api/feed?${params}`);\n    const data = await res.json();\n    setItems(prev => [...prev, ...data.items]);\n    setCursor(data.nextCursor);\n    setHasMore(!!data.nextCursor);\n    setLoading(false);\n  }, [cursor, loading, hasMore]);\n\n  // Initial load\n  useEffect(() => { loadMore(); }, []);  // eslint-disable-line\n\n  // Infinite scroll with IntersectionObserver\n  useEffect(() => {\n    const el = observerRef.current;\n    if (!el) return;\n    const observer = new IntersectionObserver(\n      entries => { if (entries[0].isIntersecting) loadMore(); },\n      { threshold: 0.1 }\n    );\n    observer.observe(el);\n    return () => observer.disconnect();\n  }, [loadMore]);\n\n  const verbText = (verb: string, objectType: string): string => {\n    const map: Record<string, string> = {\n      posted: `created a new ${objectType}`,\n      commented: `commented on a ${objectType}`,\n      liked: `liked a ${objectType}`,\n      followed: 'started following',\n    };\n    return map[verb] || verb;\n  };\n\n  return (\n    <div className=\"max-w-xl mx-auto\">\n      <h2 className=\"text-xl font-bold p-4\">Activity</h2>\n      <div className=\"divide-y\">\n        {items.map(item => (\n          <div key={item.id} className=\"flex items-start gap-3 p-4\">\n            <img\n              src={item.actor.avatarUrl || '/default-avatar.png'}\n              alt=\"\" className=\"w-10 h-10 rounded-full\"\n            />\n            <div>\n              <p>\n                <span className=\"font-semibold\">{item.actor.username}</span>{' '}\n                {verbText(item.verb, item.objectType)}\n              </p>\n              <p className=\"text-sm text-gray-500\">\n                {new Date(item.createdAt).toLocaleString()}\n              </p>\n            </div>\n          </div>\n        ))}\n      </div>\n\n      {loading && (\n        <div className=\"space-y-4 p-4\">\n          {[1, 2, 3].map(i => (\n            <div key={i} className=\"flex gap-3 animate-pulse\">\n              <div className=\"w-10 h-10 rounded-full bg-gray-200\" />\n              <div className=\"flex-1 space-y-2\">\n                <div className=\"h-4 bg-gray-200 rounded w-3/4\" />\n                <div className=\"h-3 bg-gray-200 rounded w-1/3\" />\n              </div>\n            </div>\n          ))}\n        </div>\n      )}\n\n      <div ref={observerRef} className=\"h-4\" />\n      {!hasMore && items.length > 0 && (\n        <p className=\"text-center text-gray-400 py-4\">No more activity</p>\n      )}\n    </div>\n  );\n}"
+    },
+    {
+      "type": "accordion",
+      "title": "Fan-out on Write vs Fan-out on Read",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "body": "There are two fundamental approaches to building activity feeds. Fan-out on read (shown above) queries events at read time by looking up followed users. Fan-out on write pre-computes feeds: when a user posts, copy the event into every follower's feed inbox. The right choice depends on your scale."
+        },
+        {
+          "type": "table",
+          "headers": ["Approach", "How It Works", "Pros", "Cons", "Best For"],
+          "rows": [
+            ["Fan-out on Read", "Query events from followed users at request time", "Simple, no storage duplication, writes are fast", "Slow reads for users following many people, expensive at scale", "Small to medium platforms (under 100K users)"],
+            ["Fan-out on Write", "When a user posts, push event into each follower's Redis feed", "Fast reads (pre-computed), consistent feed delivery", "Expensive writes for users with millions of followers, storage duplication", "Large platforms (Twitter, Instagram scale)"]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Follow / Friend System",
+      "headingLevel": 2,
+      "body": "Follows are asymmetric (A follows B, but B does not follow A back), like Twitter. Friends are symmetric (both must agree), like Facebook. Most modern platforms use the follow model because it requires no acceptance step and naturally supports creators, influencers, and public figures."
+    },
+    {
+      "type": "code",
+      "language": "sql",
+      "filename": "schema/follows.sql",
+      "description": "Follows table with a unique constraint preventing duplicate follows.",
+      "code": "CREATE TABLE follows (\n    follower_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n    following_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    PRIMARY KEY (follower_id, following_id),\n    CONSTRAINT chk_no_self_follow CHECK (follower_id != following_id)\n);\n\nCREATE INDEX idx_follows_following ON follows(following_id);"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/follows.py",
+      "description": "Flask follow/unfollow API with follower and following list endpoints.",
+      "code": "from flask import Blueprint, request, jsonify\nfrom flask_jwt_extended import jwt_required, get_jwt_identity\nfrom models import db, Follow, User\nfrom sqlalchemy import func\n\nfollows_bp = Blueprint(\"follows\", __name__)\n\n\n@follows_bp.post(\"/api/users/<int:target_id>/follow\")\n@jwt_required()\ndef toggle_follow(target_id: int):\n    user_id = get_jwt_identity()\n    if user_id == target_id:\n        return jsonify({\"error\": \"Cannot follow yourself\"}), 400\n\n    existing = Follow.query.filter_by(\n        follower_id=user_id, following_id=target_id\n    ).first()\n\n    if existing:\n        db.session.delete(existing)\n        action = \"unfollowed\"\n    else:\n        follow = Follow(follower_id=user_id, following_id=target_id)\n        db.session.add(follow)\n        action = \"followed\"\n\n    db.session.commit()\n\n    follower_count = Follow.query.filter_by(following_id=target_id).count()\n    return jsonify({\"action\": action, \"followerCount\": follower_count})\n\n\n@follows_bp.get(\"/api/users/<int:user_id>/followers\")\ndef get_followers(user_id: int):\n    page = int(request.args.get(\"page\", 1))\n    per_page = min(int(request.args.get(\"per_page\", 20)), 50)\n    pagination = (\n        db.session.query(User)\n        .join(Follow, Follow.follower_id == User.id)\n        .filter(Follow.following_id == user_id)\n        .order_by(Follow.created_at.desc())\n        .paginate(page=page, per_page=per_page)\n    )\n    return jsonify({\n        \"users\": [{\"id\": u.id, \"username\": u.username,\n                   \"avatarUrl\": u.avatar_url} for u in pagination.items],\n        \"total\": pagination.total,\n        \"hasMore\": pagination.has_next,\n    })\n\n\n@follows_bp.get(\"/api/users/<int:user_id>/following\")\ndef get_following(user_id: int):\n    page = int(request.args.get(\"page\", 1))\n    per_page = min(int(request.args.get(\"per_page\", 20)), 50)\n    pagination = (\n        db.session.query(User)\n        .join(Follow, Follow.following_id == User.id)\n        .filter(Follow.follower_id == user_id)\n        .order_by(Follow.created_at.desc())\n        .paginate(page=page, per_page=per_page)\n    )\n    return jsonify({\n        \"users\": [{\"id\": u.id, \"username\": u.username,\n                   \"avatarUrl\": u.avatar_url} for u in pagination.items],\n        \"total\": pagination.total,\n        \"hasMore\": pagination.has_next,\n    })"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/FollowButton.tsx",
+      "description": "Follow/unfollow toggle button with optimistic count update.",
+      "code": "import { useState } from 'react';\n\ninterface Props {\n  targetUserId: number;\n  initialFollowing: boolean;\n  initialCount: number;\n}\n\nexport default function FollowButton({ targetUserId, initialFollowing, initialCount }: Props) {\n  const [following, setFollowing] = useState(initialFollowing);\n  const [count, setCount] = useState(initialCount);\n  const [busy, setBusy] = useState(false);\n\n  const toggle = async () => {\n    if (busy) return;\n    setBusy(true);\n    // Optimistic\n    setFollowing(!following);\n    setCount(following ? count - 1 : count + 1);\n\n    try {\n      const res = await fetch(`/api/users/${targetUserId}/follow`, { method: 'POST' });\n      const data = await res.json();\n      setCount(data.followerCount);\n      setFollowing(data.action === 'followed');\n    } catch {\n      // Revert\n      setFollowing(following);\n      setCount(count);\n    } finally {\n      setBusy(false);\n    }\n  };\n\n  return (\n    <button\n      onClick={toggle}\n      disabled={busy}\n      className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${\n        following\n          ? 'bg-gray-200 text-gray-800 hover:bg-red-100 hover:text-red-600'\n          : 'bg-blue-600 text-white hover:bg-blue-700'\n      }`}\n    >\n      {following ? 'Following' : 'Follow'}\n      <span className=\"ml-1 opacity-70\">{count}</span>\n    </button>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Real-Time Notifications",
+      "headingLevel": 2,
+      "body": "Notifications bring users back. They close the engagement loop: a user takes an action, another user is notified, they return and take an action of their own. Notifications should be timely, relevant, and actionable. Too many notifications cause users to disable them; too few and users forget about your platform."
+    },
+    {
+      "type": "code",
+      "language": "sql",
+      "filename": "schema/notifications.sql",
+      "description": "Notifications table tracking who triggered the notification, what it's about, and whether it has been read.",
+      "code": "CREATE TABLE notifications (\n    id SERIAL PRIMARY KEY,\n    user_id INTEGER NOT NULL REFERENCES users(id),\n    type VARCHAR(50) NOT NULL,         -- 'new_follower', 'comment_reply', 'upvote', 'mention'\n    actor_id INTEGER REFERENCES users(id),\n    object_type VARCHAR(50),\n    object_id INTEGER,\n    message TEXT NOT NULL,\n    is_read BOOLEAN DEFAULT FALSE,\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);\n\nCREATE INDEX idx_notifications_user ON notifications(user_id, is_read, created_at DESC);"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "services/notifications.py",
+      "description": "Notification service with helper to create notifications, mark as read, get unread count, and Server-Sent Events for real-time push.",
+      "code": "import json\nfrom flask import Blueprint, Response, request, jsonify, stream_with_context\nfrom flask_jwt_extended import jwt_required, get_jwt_identity\nfrom models import db, Notification, User\nimport queue\nimport threading\n\nnotifications_bp = Blueprint(\"notifications\", __name__)\n\n# In-memory SSE subscribers (use Redis pub/sub in production)\n_subscribers: dict[int, list[queue.Queue]] = {}\n_lock = threading.Lock()\n\n\ndef create_notification(\n    user_id: int, notif_type: str, actor_id: int,\n    object_type: str, object_id: int, message: str,\n) -> Notification:\n    \"\"\"Create a notification and push to connected SSE clients.\"\"\"\n    notif = Notification(\n        user_id=user_id, type=notif_type, actor_id=actor_id,\n        object_type=object_type, object_id=object_id, message=message,\n    )\n    db.session.add(notif)\n    db.session.commit()\n\n    # Push via SSE\n    payload = {\n        \"id\": notif.id, \"type\": notif_type,\n        \"message\": message, \"createdAt\": notif.created_at.isoformat(),\n    }\n    with _lock:\n        for q in _subscribers.get(user_id, []):\n            q.put(json.dumps(payload))\n\n    return notif\n\n\n@notifications_bp.get(\"/api/notifications\")\n@jwt_required()\ndef get_notifications():\n    user_id = get_jwt_identity()\n    page = int(request.args.get(\"page\", 1))\n    pagination = (\n        Notification.query\n        .filter_by(user_id=user_id)\n        .order_by(Notification.created_at.desc())\n        .paginate(page=page, per_page=20)\n    )\n    return jsonify({\n        \"items\": [{\n            \"id\": n.id, \"type\": n.type, \"message\": n.message,\n            \"isRead\": n.is_read, \"createdAt\": n.created_at.isoformat(),\n            \"objectType\": n.object_type, \"objectId\": n.object_id,\n        } for n in pagination.items],\n        \"unreadCount\": Notification.query.filter_by(\n            user_id=user_id, is_read=False\n        ).count(),\n    })\n\n\n@notifications_bp.post(\"/api/notifications/read\")\n@jwt_required()\ndef mark_read():\n    user_id = get_jwt_identity()\n    ids = request.get_json().get(\"ids\", [])\n    if ids:\n        Notification.query.filter(\n            Notification.id.in_(ids),\n            Notification.user_id == user_id,\n        ).update({\"is_read\": True}, synchronize_session=False)\n    else:\n        # Mark all read\n        Notification.query.filter_by(\n            user_id=user_id, is_read=False\n        ).update({\"is_read\": True}, synchronize_session=False)\n    db.session.commit()\n    return jsonify({\"message\": \"Marked as read\"})\n\n\n@notifications_bp.get(\"/api/notifications/stream\")\n@jwt_required()\ndef sse_stream():\n    \"\"\"Server-Sent Events stream for real-time notifications.\"\"\"\n    user_id = get_jwt_identity()\n    q: queue.Queue = queue.Queue()\n    with _lock:\n        _subscribers.setdefault(user_id, []).append(q)\n\n    def generate():\n        try:\n            while True:\n                data = q.get(timeout=30)\n                yield f\"data: {data}\\n\\n\"\n        except queue.Empty:\n            yield \": keepalive\\n\\n\"\n        finally:\n            with _lock:\n                _subscribers.get(user_id, []).remove(q)\n\n    return Response(\n        stream_with_context(generate()),\n        mimetype=\"text/event-stream\",\n        headers={\"Cache-Control\": \"no-cache\", \"X-Accel-Buffering\": \"no\"},\n    )"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/NotificationBell.tsx",
+      "description": "Notification bell with unread badge, dropdown list, and real-time SSE updates.",
+      "code": "import { useState, useEffect, useRef } from 'react';\n\ninterface Notification {\n  id: number;\n  type: string;\n  message: string;\n  isRead: boolean;\n  createdAt: string;\n  objectType?: string;\n  objectId?: number;\n}\n\nexport default function NotificationBell() {\n  const [notifications, setNotifications] = useState<Notification[]>([]);\n  const [unreadCount, setUnreadCount] = useState(0);\n  const [open, setOpen] = useState(false);\n  const dropdownRef = useRef<HTMLDivElement>(null);\n\n  // Load initial notifications\n  useEffect(() => {\n    fetch('/api/notifications')\n      .then(res => res.json())\n      .then(data => {\n        setNotifications(data.items);\n        setUnreadCount(data.unreadCount);\n      });\n  }, []);\n\n  // SSE for real-time updates\n  useEffect(() => {\n    const source = new EventSource('/api/notifications/stream');\n    source.onmessage = (event) => {\n      const notif = JSON.parse(event.data);\n      setNotifications(prev => [{ ...notif, isRead: false }, ...prev]);\n      setUnreadCount(prev => prev + 1);\n    };\n    return () => source.close();\n  }, []);\n\n  // Close dropdown on outside click\n  useEffect(() => {\n    const handler = (e: MouseEvent) => {\n      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {\n        setOpen(false);\n      }\n    };\n    document.addEventListener('mousedown', handler);\n    return () => document.removeEventListener('mousedown', handler);\n  }, []);\n\n  const markAllRead = async () => {\n    await fetch('/api/notifications/read', {\n      method: 'POST',\n      headers: { 'Content-Type': 'application/json' },\n      body: JSON.stringify({}),\n    });\n    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));\n    setUnreadCount(0);\n  };\n\n  return (\n    <div className=\"relative\" ref={dropdownRef}>\n      <button onClick={() => setOpen(!open)} className=\"relative p-2\">\n        <span className=\"text-xl\">&#128276;</span>\n        {unreadCount > 0 && (\n          <span className=\"absolute -top-1 -right-1 bg-red-500 text-white text-xs\n                           rounded-full w-5 h-5 flex items-center justify-center\">\n            {unreadCount > 99 ? '99+' : unreadCount}\n          </span>\n        )}\n      </button>\n\n      {open && (\n        <div className=\"absolute right-0 top-full mt-2 w-80 bg-white border rounded-lg\n                        shadow-xl z-50 max-h-96 overflow-y-auto\">\n          <div className=\"flex justify-between items-center p-3 border-b\">\n            <h3 className=\"font-semibold\">Notifications</h3>\n            {unreadCount > 0 && (\n              <button onClick={markAllRead} className=\"text-xs text-blue-600\">\n                Mark all read\n              </button>\n            )}\n          </div>\n\n          {notifications.length === 0 ? (\n            <p className=\"p-4 text-center text-gray-400\">No notifications yet</p>\n          ) : (\n            notifications.map(n => (\n              <div\n                key={n.id}\n                className={`p-3 border-b hover:bg-gray-50 cursor-pointer ${\n                  !n.isRead ? 'bg-blue-50' : ''\n                }`}\n              >\n                <p className=\"text-sm\">{n.message}</p>\n                <p className=\"text-xs text-gray-400 mt-1\">\n                  {new Date(n.createdAt).toLocaleString()}\n                </p>\n              </div>\n            ))\n          )}\n        </div>\n      )}\n    </div>\n  );\n}"
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        { "title": "New Follower", "body": "Notify when someone follows you. Include follower name and avatar.", "icon": "PersonAdd", "chip": "Social" },
+        { "title": "Comment Reply", "body": "Notify when someone replies to your comment in a thread.", "icon": "Reply", "chip": "Discussion" },
+        { "title": "Post Comment", "body": "Notify when someone comments on your post or article.", "icon": "Comment", "chip": "Content" },
+        { "title": "Upvote Milestone", "body": "Notify at milestones: 10, 100, 1000 upvotes on your content.", "icon": "Celebration", "chip": "Achievement" },
+        { "title": "Mention", "body": "Notify when someone uses @username to reference you.", "icon": "AlternateEmail", "chip": "Social" },
+        { "title": "Content Update", "body": "Notify when bookmarked content is updated or receives new activity.", "icon": "Update", "chip": "Follow-up" }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Mention System (@username)",
+      "headingLevel": 2,
+      "body": "Mentions connect conversations to people. When a user types @username in a comment or post, the mentioned user receives a notification. Mentions work in two parts: parsing @mentions from text and providing an autocomplete experience while typing."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "utils/mentions.py",
+      "description": "Parse @mentions from text and create notifications for mentioned users.",
+      "code": "import re\nfrom models import db, User\nfrom services.notifications import create_notification\n\nMENTION_PATTERN = re.compile(r'@([a-zA-Z0-9_]{3,30})\\b')\n\n\ndef extract_mentions(text: str) -> list[str]:\n    \"\"\"Extract unique @usernames from text.\"\"\"\n    return list(set(MENTION_PATTERN.findall(text)))\n\n\ndef process_mentions(\n    text: str, actor_id: int, object_type: str, object_id: int,\n) -> list[int]:\n    \"\"\"Find @mentioned users, create notifications, return their IDs.\"\"\"\n    usernames = extract_mentions(text)\n    if not usernames:\n        return []\n\n    users = User.query.filter(\n        User.username.in_(usernames),\n        User.id != actor_id,  # don't notify yourself\n    ).all()\n\n    actor = User.query.get(actor_id)\n    notified_ids = []\n    for user in users:\n        create_notification(\n            user_id=user.id,\n            notif_type=\"mention\",\n            actor_id=actor_id,\n            object_type=object_type,\n            object_id=object_id,\n            message=f\"@{actor.username} mentioned you in a {object_type}\",\n        )\n        notified_ids.append(user.id)\n\n    return notified_ids"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/MentionInput.tsx",
+      "description": "Text input with @mention autocomplete dropdown showing matching usernames.",
+      "code": "import { useState, useRef, useEffect, KeyboardEvent } from 'react';\n\ninterface UserSuggestion {\n  id: number;\n  username: string;\n  avatarUrl: string | null;\n}\n\ninterface Props {\n  value: string;\n  onChange: (value: string) => void;\n  placeholder?: string;\n}\n\nexport default function MentionInput({ value, onChange, placeholder }: Props) {\n  const [suggestions, setSuggestions] = useState<UserSuggestion[]>([]);\n  const [showSuggestions, setShowSuggestions] = useState(false);\n  const [selectedIndex, setSelectedIndex] = useState(0);\n  const [mentionQuery, setMentionQuery] = useState('');\n  const textareaRef = useRef<HTMLTextAreaElement>(null);\n\n  useEffect(() => {\n    if (!mentionQuery) {\n      setSuggestions([]);\n      setShowSuggestions(false);\n      return;\n    }\n    const timer = setTimeout(async () => {\n      const res = await fetch(\n        `/api/users/search?q=${encodeURIComponent(mentionQuery)}&limit=5`\n      );\n      const data = await res.json();\n      setSuggestions(data);\n      setShowSuggestions(data.length > 0);\n      setSelectedIndex(0);\n    }, 200);\n    return () => clearTimeout(timer);\n  }, [mentionQuery]);\n\n  const handleChange = (text: string) => {\n    onChange(text);\n    // Detect @mention in progress\n    const textarea = textareaRef.current;\n    if (!textarea) return;\n    const cursorPos = textarea.selectionStart;\n    const textBeforeCursor = text.slice(0, cursorPos);\n    const mentionMatch = textBeforeCursor.match(/@([a-zA-Z0-9_]{0,30})$/);\n    if (mentionMatch) {\n      setMentionQuery(mentionMatch[1]);\n    } else {\n      setMentionQuery('');\n      setShowSuggestions(false);\n    }\n  };\n\n  const insertMention = (username: string) => {\n    const textarea = textareaRef.current;\n    if (!textarea) return;\n    const cursorPos = textarea.selectionStart;\n    const textBeforeCursor = value.slice(0, cursorPos);\n    const atIndex = textBeforeCursor.lastIndexOf('@');\n    const newText = value.slice(0, atIndex) + `@${username} ` + value.slice(cursorPos);\n    onChange(newText);\n    setShowSuggestions(false);\n    setMentionQuery('');\n    textarea.focus();\n  };\n\n  const handleKeyDown = (e: KeyboardEvent) => {\n    if (!showSuggestions) return;\n    if (e.key === 'ArrowDown') {\n      e.preventDefault();\n      setSelectedIndex(i => Math.min(i + 1, suggestions.length - 1));\n    } else if (e.key === 'ArrowUp') {\n      e.preventDefault();\n      setSelectedIndex(i => Math.max(i - 1, 0));\n    } else if (e.key === 'Enter' && suggestions[selectedIndex]) {\n      e.preventDefault();\n      insertMention(suggestions[selectedIndex].username);\n    } else if (e.key === 'Escape') {\n      setShowSuggestions(false);\n    }\n  };\n\n  return (\n    <div className=\"relative\">\n      <textarea\n        ref={textareaRef}\n        value={value}\n        onChange={e => handleChange(e.target.value)}\n        onKeyDown={handleKeyDown}\n        placeholder={placeholder}\n        rows={3}\n        className=\"w-full border rounded p-3 text-sm\"\n      />\n      {showSuggestions && (\n        <div className=\"absolute left-0 bottom-full mb-1 w-64 bg-white border\n                        rounded-lg shadow-lg z-50\">\n          {suggestions.map((user, idx) => (\n            <button\n              key={user.id}\n              onClick={() => insertMention(user.username)}\n              className={`flex items-center gap-2 w-full px-3 py-2 text-left text-sm\n                ${idx === selectedIndex ? 'bg-blue-50' : 'hover:bg-gray-50'}`}\n            >\n              <img src={user.avatarUrl || '/default-avatar.png'}\n                   alt=\"\" className=\"w-6 h-6 rounded-full\" />\n              <span>@{user.username}</span>\n            </button>\n          ))}\n        </div>\n      )}\n    </div>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Content Bookmarking / Saving",
+      "headingLevel": 2,
+      "body": "Let users save content for later. Bookmarking is simple but powerful for engagement because it creates a reason to return. Users who bookmark content are signaling high interest and are more likely to become repeat visitors."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/bookmarks.py",
+      "description": "Flask bookmark API: toggle bookmark on/off, fetch user bookmarks with pagination and optional content type filter.",
+      "code": "from flask import Blueprint, request, jsonify\nfrom flask_jwt_extended import jwt_required, get_jwt_identity\nfrom models import db, Bookmark\nfrom datetime import datetime\n\nbookmarks_bp = Blueprint(\"bookmarks\", __name__)\n\n\n@bookmarks_bp.post(\"/api/bookmarks\")\n@jwt_required()\ndef toggle_bookmark():\n    user_id = get_jwt_identity()\n    data = request.get_json()\n    content_type = data[\"content_type\"]\n    content_id = data[\"content_id\"]\n\n    existing = Bookmark.query.filter_by(\n        user_id=user_id, content_type=content_type, content_id=content_id\n    ).first()\n\n    if existing:\n        db.session.delete(existing)\n        db.session.commit()\n        return jsonify({\"bookmarked\": False})\n\n    bookmark = Bookmark(\n        user_id=user_id, content_type=content_type,\n        content_id=content_id,\n    )\n    db.session.add(bookmark)\n    db.session.commit()\n    return jsonify({\"bookmarked\": True})\n\n\n@bookmarks_bp.get(\"/api/bookmarks\")\n@jwt_required()\ndef get_bookmarks():\n    user_id = get_jwt_identity()\n    page = int(request.args.get(\"page\", 1))\n    content_type = request.args.get(\"content_type\")  # optional filter\n\n    query = Bookmark.query.filter_by(user_id=user_id)\n    if content_type:\n        query = query.filter_by(content_type=content_type)\n\n    pagination = query.order_by(\n        Bookmark.created_at.desc()\n    ).paginate(page=page, per_page=20)\n\n    return jsonify({\n        \"items\": [{\n            \"id\": b.id,\n            \"contentType\": b.content_type,\n            \"contentId\": b.content_id,\n            \"createdAt\": b.created_at.isoformat(),\n        } for b in pagination.items],\n        \"total\": pagination.total,\n        \"hasMore\": pagination.has_next,\n    })"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/BookmarkButton.tsx",
+      "description": "Bookmark toggle button with optimistic update.",
+      "code": "import { useState } from 'react';\n\ninterface Props {\n  contentType: string;\n  contentId: number;\n  initialBookmarked: boolean;\n}\n\nexport default function BookmarkButton({ contentType, contentId, initialBookmarked }: Props) {\n  const [bookmarked, setBookmarked] = useState(initialBookmarked);\n\n  const toggle = async () => {\n    setBookmarked(!bookmarked);\n    try {\n      const res = await fetch('/api/bookmarks', {\n        method: 'POST',\n        headers: { 'Content-Type': 'application/json' },\n        body: JSON.stringify({ content_type: contentType, content_id: contentId }),\n      });\n      const data = await res.json();\n      setBookmarked(data.bookmarked);\n    } catch {\n      setBookmarked(bookmarked);  // revert\n    }\n  };\n\n  return (\n    <button\n      onClick={toggle}\n      className={`p-2 rounded transition-colors ${\n        bookmarked ? 'text-yellow-500' : 'text-gray-400 hover:text-gray-600'\n      }`}\n      title={bookmarked ? 'Remove bookmark' : 'Bookmark'}\n    >\n      {bookmarked ? '\\u2605' : '\\u2606'}\n    </button>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "User Reputation / Karma",
+      "headingLevel": 2,
+      "body": "An aggregate reputation score based on received votes, helpful contributions, and community participation. Like Stack Overflow reputation, karma gives users a long-term goal and a visible measure of their standing in the community. Transparent scoring builds trust."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "services/reputation.py",
+      "description": "Reputation calculation with different weights for different actions, following the Stack Overflow model.",
+      "code": "from models import db, User, Vote, Comment\nfrom sqlalchemy import func\n\n# Points awarded per action\nREP_WEIGHTS = {\n    \"post_upvoted\": 10,\n    \"post_downvoted\": -2,\n    \"comment_upvoted\": 5,\n    \"comment_downvoted\": -1,\n    \"answer_accepted\": 15,\n    \"gave_downvote\": -1,      # small cost to downvote\n    \"post_bookmarked\": 2,\n}\n\n\ndef calculate_karma(user_id: int) -> int:\n    \"\"\"Calculate total karma for a user based on all reputation events.\"\"\"\n    karma = 0\n\n    # Upvotes received on posts\n    post_upvotes = db.session.query(func.count(Vote.id)).filter(\n        Vote.content_type == \"post\",\n        Vote.value == 1,\n        Vote.content_id.in_(\n            db.session.query(db.literal_column(\"id\"))\n            .select_from(db.literal_column(\"posts\"))\n            .filter(db.literal_column(\"user_id\") == user_id)\n        )\n    ).scalar() or 0\n    karma += post_upvotes * REP_WEIGHTS[\"post_upvoted\"]\n\n    # Downvotes received on posts\n    post_downvotes = db.session.query(func.count(Vote.id)).filter(\n        Vote.content_type == \"post\",\n        Vote.value == -1,\n        Vote.content_id.in_(\n            db.session.query(db.literal_column(\"id\"))\n            .select_from(db.literal_column(\"posts\"))\n            .filter(db.literal_column(\"user_id\") == user_id)\n        )\n    ).scalar() or 0\n    karma += post_downvotes * REP_WEIGHTS[\"post_downvoted\"]\n\n    # Upvotes received on comments\n    comment_upvotes = db.session.query(func.count(Vote.id)).filter(\n        Vote.content_type == \"comment\",\n        Vote.value == 1,\n        Vote.content_id.in_(\n            db.session.query(Comment.id).filter(Comment.user_id == user_id)\n        )\n    ).scalar() or 0\n    karma += comment_upvotes * REP_WEIGHTS[\"comment_upvoted\"]\n\n    return max(karma, 1)  # minimum karma of 1\n\n\ndef update_user_karma(user_id: int) -> int:\n    \"\"\"Recalculate and persist karma for a user.\"\"\"\n    karma = calculate_karma(user_id)\n    User.query.filter_by(id=user_id).update({\"karma\": karma})\n    db.session.commit()\n    return karma"
+    },
+    {
+      "type": "table",
+      "heading": "Reputation Points by Action",
+      "headers": ["Action", "Points", "Rationale"],
+      "rows": [
+        ["Your post is upvoted", "+10", "Primary reward for quality content"],
+        ["Your answer is accepted", "+15", "Higher reward for directly solving a problem"],
+        ["Your comment is upvoted", "+5", "Smaller reward for conversational contributions"],
+        ["Your post is downvoted", "-2", "Mild penalty, less than the upvote reward to avoid discouraging posting"],
+        ["Your comment is downvoted", "-1", "Minimal penalty for low-quality comments"],
+        ["You downvote someone", "-1", "Small cost discourages frivolous downvoting"],
+        ["Your post is bookmarked", "+2", "Signal that content has lasting value"]
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Make Reputation Transparent",
+      "body": "Reputation systems work best when the scoring is transparent. Show users exactly how they earn and lose points. Stack Overflow displays a detailed reputation history: every upvote, downvote, and acceptance is visible with its point value. This transparency builds trust and motivates positive behavior."
+    },
+    {
+      "type": "text",
+      "heading": "Engagement Metrics & Analytics",
+      "headingLevel": 2,
+      "body": "You cannot improve what you do not measure. Track engagement metrics to understand how users interact with your platform, identify drop-off points, and validate whether new features actually improve retention."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        { "title": "DAU/MAU Ratio", "body": "Daily active users divided by monthly active users. Above 0.5 is excellent (like messaging apps). 0.1-0.2 is typical for content platforms.", "icon": "BarChart", "chip": "Core" },
+        { "title": "Session Length", "body": "Average time users spend per visit. Longer sessions indicate engaging content and features.", "icon": "Timer", "chip": "Depth" },
+        { "title": "Pages per Session", "body": "How many pages users view before leaving. More pages suggest good content discovery.", "icon": "Layers", "chip": "Depth" },
+        { "title": "Return Rate", "body": "Percentage of users who return within 7 days. The most direct measure of engagement.", "icon": "Replay", "chip": "Retention" },
+        { "title": "Comment Rate", "body": "Percentage of viewers who leave a comment. Typically 1-5% for healthy communities.", "icon": "Chat", "chip": "Participation" },
+        { "title": "Vote Rate", "body": "Percentage of viewers who vote on content. Higher than comment rate since voting is lower effort.", "icon": "HowToVote", "chip": "Participation" }
+      ]
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "services/engagement.py",
+      "description": "Calculate a per-user engagement score combining multiple activity signals.",
+      "code": "from datetime import datetime, timedelta\nfrom models import db, User, Comment, Vote, Bookmark, Follow\nfrom sqlalchemy import func\n\n\ndef calculate_engagement_score(user_id: int, days: int = 30) -> dict:\n    \"\"\"Calculate engagement score for a user over a recent period.\n\n    Returns a dict with individual metrics and an overall score (0-100).\n    \"\"\"\n    since = datetime.utcnow() - timedelta(days=days)\n\n    comments_count = Comment.query.filter(\n        Comment.user_id == user_id,\n        Comment.created_at >= since,\n    ).count()\n\n    votes_count = Vote.query.filter(\n        Vote.user_id == user_id,\n        Vote.created_at >= since,\n    ).count()\n\n    bookmarks_count = Bookmark.query.filter(\n        Bookmark.user_id == user_id,\n        Bookmark.created_at >= since,\n    ).count()\n\n    # Days active in the period\n    active_days = db.session.query(\n        func.count(func.distinct(func.date(Comment.created_at)))\n    ).filter(\n        Comment.user_id == user_id,\n        Comment.created_at >= since,\n    ).scalar() or 0\n\n    # Weighted score (max ~100)\n    score = min(100, (\n        comments_count * 3 +\n        votes_count * 1 +\n        bookmarks_count * 2 +\n        active_days * 5\n    ))\n\n    return {\n        \"userId\": user_id,\n        \"period\": f\"{days} days\",\n        \"comments\": comments_count,\n        \"votes\": votes_count,\n        \"bookmarks\": bookmarks_count,\n        \"activeDays\": active_days,\n        \"score\": score,\n    }"
+    },
+    {
+      "type": "accordion",
+      "title": "A/B Testing Engagement Features",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Before rolling out a new engagement feature to all users, A/B test it. Split users into control (no feature) and treatment (with feature) groups, then compare metrics after a set period. Key principles: test one change at a time, run the test long enough for statistical significance (usually 1-2 weeks minimum), measure the metric you actually care about (retention, not just clicks), and watch for negative second-order effects (e.g., notifications increase returns but also increase unsubscribes)."
+        },
+        {
+          "type": "list",
+          "ordered": true,
+          "items": [
+            "Define your hypothesis: 'Adding upvote notifications will increase 7-day return rate by 5%.'",
+            "Choose your metric: 7-day return rate, not vanity metrics like page views.",
+            "Split users randomly: 50/50 or 90/10 (small treatment group for risky features).",
+            "Run for at least 2 full weeks to capture weekly usage patterns.",
+            "Use a chi-squared test or t-test to check statistical significance (p < 0.05).",
+            "Ship or kill the feature based on results, not opinions."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Anti-Abuse & Moderation",
+      "headingLevel": 2,
+      "body": "Every engagement feature is an abuse vector. Comments enable harassment, votes enable brigading, follows enable stalking, notifications enable spam. Build moderation tools before you need them, not after a crisis."
+    },
+    {
+      "type": "list",
+      "heading": "Essential Moderation Tools",
+      "ordered": false,
+      "items": [
+        "Rate limiting: Prevent spam by limiting how fast users can post, comment, or vote.",
+        "Spam detection: Heuristic filters for common spam patterns (excessive links, ALL CAPS, repeated text).",
+        "Report system: Let users flag content with a reason. Queue flagged items for admin review.",
+        "User banning: Temporary (1 day, 7 days, 30 days) and permanent bans with reason tracking.",
+        "Content flagging: Auto-flag content that matches spam heuristics for human review.",
+        "Shadow banning: Banned users can still post, but their content is only visible to themselves.",
+        "IP blocking: Block persistent abusers by IP address (less effective with VPNs but still useful)."
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "error",
+      "title": "Build Moderation First",
+      "body": "Every engagement feature is an abuse vector. Build moderation tools BEFORE you need them, not after a crisis. A comment system without moderation will be overrun by spam within weeks. A voting system without rate limits will be gamed by bots. Plan for abuse from day one."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "utils/rate_limit.py",
+      "description": "Flask rate limiting decorator using in-memory tracking. Limits comments to 1 per 30 seconds and votes to 30 per minute per user.",
+      "code": "import time\nfrom functools import wraps\nfrom collections import defaultdict\nfrom flask import jsonify\nfrom flask_jwt_extended import get_jwt_identity\n\n# In-memory store: {user_id: [(timestamp, action), ...]}\n_rate_store: dict[int, list[tuple[float, str]]] = defaultdict(list)\n\nRATE_LIMITS = {\n    \"comment\": {\"max\": 1, \"window\": 30},    # 1 comment per 30 seconds\n    \"vote\": {\"max\": 30, \"window\": 60},       # 30 votes per minute\n    \"post\": {\"max\": 3, \"window\": 300},       # 3 posts per 5 minutes\n    \"follow\": {\"max\": 20, \"window\": 60},     # 20 follows per minute\n    \"report\": {\"max\": 5, \"window\": 300},     # 5 reports per 5 minutes\n}\n\n\ndef rate_limit(action: str):\n    \"\"\"Decorator that enforces per-user rate limits.\"\"\"\n    def decorator(f):\n        @wraps(f)\n        def wrapped(*args, **kwargs):\n            user_id = get_jwt_identity()\n            config = RATE_LIMITS.get(action)\n            if not config:\n                return f(*args, **kwargs)\n\n            now = time.time()\n            window = config[\"window\"]\n            max_count = config[\"max\"]\n\n            # Clean old entries\n            entries = _rate_store[user_id]\n            entries[:] = [\n                (ts, act) for ts, act in entries\n                if now - ts < window and act == action\n            ]\n\n            # Check limit\n            recent = [e for e in entries if e[1] == action]\n            if len(recent) >= max_count:\n                retry_after = int(window - (now - recent[0][0]))\n                return jsonify({\n                    \"error\": \"Rate limit exceeded\",\n                    \"retryAfter\": retry_after,\n                }), 429\n\n            # Record this action\n            entries.append((now, action))\n            return f(*args, **kwargs)\n        return wrapped\n    return decorator"
+    }
+  ]
+}

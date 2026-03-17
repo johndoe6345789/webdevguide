@@ -16,7 +16,9 @@ interface GuidePageLayoutProps {
   error: string | null;
 }
 
-export default function GuidePageLayout({ section, loading, error }: GuidePageLayoutProps) {
+export default function GuidePageLayout(
+  { section, loading, error }: GuidePageLayoutProps,
+) {
   if (loading) return <LoadingSpinner message="Loading section..." />;
   if (error || !section) return <Container maxWidth="lg" sx={{ py: 4 }}><Typography color="error">{error ?? 'Section not found'}</Typography></Container>;
 

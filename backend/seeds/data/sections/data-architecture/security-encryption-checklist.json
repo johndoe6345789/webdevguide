@@ -1,0 +1,11 @@
+{
+  "type": "list",
+  "heading": "Encryption checklist",
+  "items": [
+    "**HTTPS everywhere.** Use TLS for all connections. Hosting platforms (Vercel, Railway, Render) provide free TLS certificates. Never serve your API over plain HTTP.",
+    "**Hash passwords with bcrypt or Argon2.** Never store plain-text passwords. Use a work factor of at least 12 rounds for bcrypt.",
+    "**Encrypt sensitive columns.** PII like social security numbers or medical records should be encrypted at the application level before storing in the database.",
+    "**Database connection encryption.** Use SSL/TLS for database connections, especially when the database is on a different server. Most cloud databases require this by default.",
+    "**Encrypt backups.** Database backups contain all your data. Encrypt them with AES-256 and store encryption keys separately from the backups."
+  ]
+}

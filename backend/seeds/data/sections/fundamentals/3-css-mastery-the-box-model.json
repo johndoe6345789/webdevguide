@@ -1,0 +1,22 @@
+{
+  "type": "accordion",
+  "title": "The Box Model",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "Every HTML element is a rectangular box. The **box model** defines how the size of that box is calculated. Understanding it is essential for building predictable layouts."
+    },
+    {
+      "type": "code",
+      "language": "css",
+      "filename": "box-model.css",
+      "code": "/* The box model has four layers (inside out):\n   content → padding → border → margin */\n\n.card {\n  /* Content area */\n  width: 300px;\n  height: 200px;\n\n  /* Padding: space between content and border */\n  padding: 20px;\n\n  /* Border: line around the padding */\n  border: 2px solid #333;\n\n  /* Margin: space between this box and other boxes */\n  margin: 16px;\n}\n\n/* IMPORTANT: by default, width = content only.\n   With box-sizing: border-box, width includes padding and border.\n   This is almost always what you want. */\n\n*, *::before, *::after {\n  box-sizing: border-box; /* Put this in every project */\n}\n\n/* With border-box:\n   Total width = width (includes padding + border)\n   .card is exactly 300px wide, not 300 + 40 + 4 = 344px */\n\n/* Without border-box (content-box default):\n   Total width = width + padding-left + padding-right + border-left + border-right\n   .card is 300 + 20 + 20 + 2 + 2 = 344px wide */"
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "Always use border-box",
+      "body": "Add `box-sizing: border-box` to all elements at the top of your CSS. Without it, adding padding to an element increases its total width, breaking layouts in confusing ways."
+    }
+  ]
+}

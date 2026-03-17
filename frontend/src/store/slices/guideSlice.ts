@@ -48,13 +48,38 @@ const guideSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchSections.pending, (state) => { state.loading = true; state.error = null; })
-      .addCase(fetchSections.fulfilled, (state, action) => { state.loading = false; state.sections = action.payload; })
-      .addCase(fetchSections.rejected, (state, action) => { state.loading = false; state.error = action.error.message ?? 'Failed to load sections'; })
-      .addCase(fetchNavigation.fulfilled, (state, action) => { state.navigation = action.payload; })
-      .addCase(fetchSectionBySlug.pending, (state) => { state.loading = true; state.error = null; })
-      .addCase(fetchSectionBySlug.fulfilled, (state, action) => { state.loading = false; state.currentSection = action.payload; })
-      .addCase(fetchSectionBySlug.rejected, (state, action) => { state.loading = false; state.error = action.error.message ?? 'Section not found'; });
+      .addCase(fetchSections.pending, (s) => {
+        s.loading = true; s.error = null;
+      })
+      .addCase(fetchSections.fulfilled,
+        (s, action) => {
+          s.loading = false;
+          s.sections = action.payload;
+        })
+      .addCase(fetchSections.rejected,
+        (s, action) => {
+          s.loading = false;
+          s.error = action.error.message
+            ?? 'Failed to load sections';
+        })
+      .addCase(fetchNavigation.fulfilled,
+        (s, action) => {
+          s.navigation = action.payload;
+        })
+      .addCase(fetchSectionBySlug.pending, (s) => {
+        s.loading = true; s.error = null;
+      })
+      .addCase(fetchSectionBySlug.fulfilled,
+        (s, action) => {
+          s.loading = false;
+          s.currentSection = action.payload;
+        })
+      .addCase(fetchSectionBySlug.rejected,
+        (s, action) => {
+          s.loading = false;
+          s.error = action.error.message
+            ?? 'Section not found';
+        });
   },
 });
 

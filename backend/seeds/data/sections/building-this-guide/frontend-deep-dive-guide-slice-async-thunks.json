@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Guide Slice -- Async Thunks",
+  "headingLevel": 4,
+  "body": "The guideSlice is the most important slice for content rendering. It defines three async thunks: `fetchSections` (list all), `fetchNavigation`, and `fetchSectionBySlug` (single section with blocks). Each thunk calls the corresponding `guideApi` method. The extraReducers handle pending/fulfilled/rejected states."
+}

@@ -1,4 +1,4 @@
-/** A content block is the atomic unit of guide content served from the backend. */
+/** A content block -- atomic unit of guide content. */
 export type ContentBlock =
   | TextBlock
   | CodeBlock

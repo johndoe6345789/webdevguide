@@ -1,0 +1,5 @@
+{
+  "type": "alert",
+  "severity": "info",
+  "body": "debug=True makes Flask automatically restart when you save changes (just like React's hot reload). Only use this during development, never in production."
+}

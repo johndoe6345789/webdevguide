@@ -1,0 +1,11 @@
+{
+  "type": "list",
+  "heading": "Migration best practices",
+  "items": [
+    "**One migration per change.** Each migration file should do one thing: add a column, create a table, or add an index. Small migrations are easier to review and roll back.",
+    "**Always write down migrations.** The down migration undoes the up migration. This lets you roll back if something goes wrong in production.",
+    "**Never edit a deployed migration.** Once a migration has been applied to staging or production, create a new migration to make further changes.",
+    "**Test migrations on a copy of production data.** A migration that works on an empty database can fail on a table with millions of rows (lock timeouts, missing defaults).",
+    "**Use transactions.** Wrap migration steps in a transaction so the database is never left in a half-migrated state."
+  ]
+}

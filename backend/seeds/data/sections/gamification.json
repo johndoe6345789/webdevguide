@@ -1,0 +1,562 @@
+{
+  "title": "Gamification",
+  "slug": "gamification",
+  "description": "Apply game mechanics to your web app — XP systems, achievements, badges, leaderboards, streaks, quests, and progression systems that keep users engaged",
+  "icon": "EmojiEvents",
+  "order": 30,
+  "estimatedMinutes": 35,
+  "difficulty": "intermediate",
+  "prerequisites": ["fundamentals", "backend-guide"],
+  "keyPoints": [
+    "XP and leveling systems",
+    "Achievements and badges",
+    "Streaks and daily rewards",
+    "Leaderboards and competition",
+    "Quest and challenge systems"
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "heading": "What is Gamification?",
+      "headingLevel": 2,
+      "body": "Gamification applies game design elements to non-game contexts to drive engagement, motivation, and behavior change. It is used by Duolingo (streaks and XP), Stack Overflow (reputation and badges), GitHub (contribution graphs), Reddit (karma), LinkedIn (profile completion bars), and nearly every successful consumer app. The core idea is simple: people are wired to respond to progress, achievement, and competition. By layering these mechanics onto your app, you give users reasons to come back, explore deeper, and stay longer."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "Points / XP",
+          "body": "A universal currency that tracks every meaningful action a user takes. XP accumulates over time and feeds into leveling.",
+          "icon": "Stars",
+          "chip": "Core"
+        },
+        {
+          "title": "Levels",
+          "body": "Milestones that give users a sense of progression. Higher levels unlock privileges and signal expertise to others.",
+          "icon": "TrendingUp",
+          "chip": "Core"
+        },
+        {
+          "title": "Achievements",
+          "body": "Collectible badges earned by completing specific goals. They create targets for users to pursue and show off.",
+          "icon": "MilitaryTech",
+          "chip": "Core"
+        },
+        {
+          "title": "Leaderboards",
+          "body": "Ranked lists that drive competition. Use multiple timeframes so newcomers can compete on weekly boards.",
+          "icon": "Leaderboard",
+          "chip": "Social"
+        },
+        {
+          "title": "Streaks",
+          "body": "Consecutive-day counters that reward consistency. One of the most powerful retention mechanics ever designed.",
+          "icon": "LocalFire",
+          "chip": "Retention"
+        },
+        {
+          "title": "Quests",
+          "body": "Short-term guided goals like daily or weekly challenges. They give users direction when they open the app.",
+          "icon": "ExploreOutlined",
+          "chip": "Engagement"
+        },
+        {
+          "title": "Progress Bars",
+          "body": "Visual completion indicators that exploit the Zeigarnik Effect — people are driven to finish unfinished tasks.",
+          "icon": "DonutLarge",
+          "chip": "UX"
+        },
+        {
+          "title": "Rewards",
+          "body": "Tangible outcomes like unlocking features, earning cosmetics, or receiving bonus content for hitting milestones.",
+          "icon": "CardGiftcard",
+          "chip": "Motivation"
+        },
+        {
+          "title": "Social Proof",
+          "body": "Showing what others are doing — trending content, activity counters, and popularity signals that drive FOMO.",
+          "icon": "Groups",
+          "chip": "Social"
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Design for Intrinsic Motivation",
+      "body": "Good gamification rewards genuine engagement. Bad gamification manipulates users into empty actions. Design for intrinsic motivation — make the activity itself rewarding, with game mechanics as amplifiers, not replacements for real value."
+    },
+    {
+      "type": "text",
+      "heading": "Points and XP System",
+      "headingLevel": 2,
+      "body": "Points are the currency of gamification. XP (experience points) represent a user's total engagement history. Every meaningful action earns XP, creating a permanent record of contribution. The key is making XP transparent — users should always know what they earned, why they earned it, and how close they are to the next milestone."
+    },
+    {
+      "type": "code",
+      "language": "sql",
+      "filename": "schema/gamification.sql",
+      "description": "Database tables for XP tracking with a full audit trail of every point earned",
+      "code": "CREATE TABLE user_xp (\n    user_id    INTEGER PRIMARY KEY REFERENCES users(id),\n    total_xp   INTEGER NOT NULL DEFAULT 0,\n    level      INTEGER NOT NULL DEFAULT 1,\n    updated_at TIMESTAMP NOT NULL DEFAULT NOW()\n);\n\nCREATE TABLE xp_transactions (\n    id          SERIAL PRIMARY KEY,\n    user_id     INTEGER NOT NULL REFERENCES users(id),\n    amount      INTEGER NOT NULL,\n    reason      VARCHAR(100) NOT NULL,\n    source_type VARCHAR(50),\n    source_id   INTEGER,\n    created_at  TIMESTAMP NOT NULL DEFAULT NOW()\n);\n\nCREATE INDEX idx_xp_transactions_user ON xp_transactions(user_id);\nCREATE INDEX idx_xp_transactions_created ON xp_transactions(created_at);"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "services/xp_service.py",
+      "description": "XP service that awards points, checks for level-ups, and creates audit records",
+      "code": "import math\nfrom datetime import datetime, timedelta\nfrom flask import current_app\nfrom models import db, UserXP, XPTransaction, UserAchievement\n\n# XP reward amounts for each action\nXP_REWARDS = {\n    \"create_post\": 10,\n    \"receive_upvote\": 5,\n    \"leave_comment\": 3,\n    \"daily_login\": 2,\n    \"complete_profile\": 50,\n    \"first_post\": 25,\n    \"answer_accepted\": 15,\n    \"share_post\": 2,\n    \"report_bug\": 20,\n    \"invite_friend\": 30,\n}\n\nDAILY_XP_CAP = 500\nMIN_ACTION_INTERVAL = 30  # seconds between XP-earning actions\n\n\ndef xp_for_level(n: int) -> int:\n    \"\"\"Calculate total XP needed to reach level n.\"\"\"\n    return math.floor(100 * (n ** 1.5))\n\n\ndef get_level_from_xp(total_xp: int) -> int:\n    \"\"\"Determine current level from total XP.\"\"\"\n    level = 1\n    while xp_for_level(level + 1) <= total_xp:\n        level += 1\n    return level\n\n\ndef get_level_progress(total_xp: int) -> dict:\n    \"\"\"Get progress within the current level.\"\"\"\n    level = get_level_from_xp(total_xp)\n    current_threshold = xp_for_level(level)\n    next_threshold = xp_for_level(level + 1)\n    progress_xp = total_xp - current_threshold\n    needed_xp = next_threshold - current_threshold\n    return {\n        \"level\": level,\n        \"current_xp\": total_xp,\n        \"level_progress\": progress_xp,\n        \"level_total\": needed_xp,\n        \"percentage\": round((progress_xp / needed_xp) * 100, 1),\n        \"next_level_at\": next_threshold,\n    }\n\n\ndef check_daily_cap(user_id: int) -> int:\n    \"\"\"Return how much XP the user can still earn today.\"\"\"\n    today_start = datetime.utcnow().replace(\n        hour=0, minute=0, second=0, microsecond=0\n    )\n    earned_today = (\n        db.session.query(db.func.coalesce(db.func.sum(XPTransaction.amount), 0))\n        .filter(\n            XPTransaction.user_id == user_id,\n            XPTransaction.created_at >= today_start,\n        )\n        .scalar()\n    )\n    return max(0, DAILY_XP_CAP - earned_today)\n\n\ndef award_xp(\n    user_id: int,\n    amount: int,\n    reason: str,\n    source_type: str = None,\n    source_id: int = None,\n) -> dict:\n    \"\"\"Award XP to a user with cap enforcement and level-up detection.\"\"\"\n    remaining = check_daily_cap(user_id)\n    if remaining <= 0:\n        return {\"awarded\": 0, \"reason\": \"daily_cap_reached\"}\n\n    actual_amount = min(amount, remaining)\n\n    # Record the transaction\n    txn = XPTransaction(\n        user_id=user_id,\n        amount=actual_amount,\n        reason=reason,\n        source_type=source_type,\n        source_id=source_id,\n    )\n    db.session.add(txn)\n\n    # Update user totals\n    user_xp = UserXP.query.get(user_id)\n    if not user_xp:\n        user_xp = UserXP(user_id=user_id, total_xp=0, level=1)\n        db.session.add(user_xp)\n\n    old_level = user_xp.level\n    user_xp.total_xp += actual_amount\n    new_level = get_level_from_xp(user_xp.total_xp)\n    user_xp.level = new_level\n    user_xp.updated_at = datetime.utcnow()\n\n    db.session.commit()\n\n    leveled_up = new_level > old_level\n    return {\n        \"awarded\": actual_amount,\n        \"total_xp\": user_xp.total_xp,\n        \"level\": new_level,\n        \"leveled_up\": leveled_up,\n        \"old_level\": old_level if leveled_up else None,\n    }"
+    },
+    {
+      "type": "table",
+      "heading": "XP Reward Schedule",
+      "headers": ["Action", "XP Amount", "Category"],
+      "rows": [
+        ["Complete profile", "+50", "Onboarding"],
+        ["Invite a friend", "+30", "Growth"],
+        ["First post ever", "+25", "Milestone"],
+        ["Report a bug", "+20", "Quality"],
+        ["Answer accepted", "+15", "Helpfulness"],
+        ["Create a post", "+10", "Content"],
+        ["Receive an upvote", "+5", "Social"],
+        ["Leave a comment", "+3", "Engagement"],
+        ["Daily login", "+2", "Retention"],
+        ["Share a post", "+2", "Distribution"]
+      ]
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/XPBar.tsx",
+      "description": "Animated XP progress bar showing current level, XP count, and progress to next level",
+      "code": "import { useState, useEffect } from 'react';\nimport { Box, Typography, LinearProgress, Chip, keyframes } from '@mui/material';\nimport { styled } from '@mui/material/styles';\n\ninterface XPBarProps {\n  currentXP: number;\n  level: number;\n  levelProgress: number;\n  levelTotal: number;\n  percentage: number;\n  justLeveledUp?: boolean;\n}\n\nconst glowPulse = keyframes`\n  0% { box-shadow: 0 0 5px #ffd700; }\n  50% { box-shadow: 0 0 20px #ffd700, 0 0 40px #ff8c00; }\n  100% { box-shadow: 0 0 5px #ffd700; }\n`;\n\nconst LevelUpBox = styled(Box)`\n  animation: ${glowPulse} 1.5s ease-in-out 3;\n  border-radius: 12px;\n  padding: 16px;\n`;\n\nconst StyledProgress = styled(LinearProgress)(({ theme }) => ({\n  height: 12,\n  borderRadius: 6,\n  backgroundColor: theme.palette.grey[200],\n  '& .MuiLinearProgress-bar': {\n    borderRadius: 6,\n    background: 'linear-gradient(90deg, #4caf50, #8bc34a)',\n    transition: 'transform 1.2s cubic-bezier(0.4, 0, 0.2, 1)',\n  },\n}));\n\nexport default function XPBar({\n  currentXP, level, levelProgress, levelTotal, percentage, justLeveledUp,\n}: XPBarProps) {\n  const [animatedPercent, setAnimatedPercent] = useState(0);\n\n  useEffect(() => {\n    const timer = setTimeout(() => setAnimatedPercent(percentage), 100);\n    return () => clearTimeout(timer);\n  }, [percentage]);\n\n  const Wrapper = justLeveledUp ? LevelUpBox : Box;\n\n  return (\n    <Wrapper>\n      {justLeveledUp && (\n        <Typography variant=\"h6\" color=\"warning.main\" textAlign=\"center\" gutterBottom>\n          Level Up! You reached Level {level}!\n        </Typography>\n      )}\n      <Box display=\"flex\" alignItems=\"center\" justifyContent=\"space-between\" mb={1}>\n        <Chip label={`Level ${level}`} color=\"primary\" size=\"small\" />\n        <Typography variant=\"body2\" color=\"text.secondary\">\n          {currentXP.toLocaleString()} XP total\n        </Typography>\n      </Box>\n      <StyledProgress variant=\"determinate\" value={animatedPercent} />\n      <Box display=\"flex\" justifyContent=\"space-between\" mt={0.5}>\n        <Typography variant=\"caption\" color=\"text.secondary\">\n          {levelProgress} / {levelTotal} XP\n        </Typography>\n        <Typography variant=\"caption\" color=\"text.secondary\">\n          {levelTotal - levelProgress} XP to Level {level + 1}\n        </Typography>\n      </Box>\n    </Wrapper>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Leveling System",
+      "headingLevel": 2,
+      "body": "Levels provide milestones and a sense of progression. The key design decision is the XP curve. Use an exponential curve so early levels come fast — giving new users quick dopamine hits — while later levels require real commitment and signal genuine expertise."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "services/level_service.py",
+      "description": "Level calculation with exponential XP curve and progress tracking",
+      "code": "import math\n\n\ndef xp_for_level(n: int) -> int:\n    \"\"\"Total XP required to reach level n.\n\n    Uses an exponential curve: XP = floor(100 * n^1.5)\n    Early levels come fast, later levels require real commitment.\n    \"\"\"\n    if n <= 1:\n        return 0\n    return math.floor(100 * (n ** 1.5))\n\n\ndef get_level_from_xp(total_xp: int) -> int:\n    \"\"\"Determine the current level for a given XP total.\"\"\"\n    level = 1\n    while xp_for_level(level + 1) <= total_xp:\n        level += 1\n    return level\n\n\ndef get_progress_in_level(total_xp: int) -> float:\n    \"\"\"Return 0.0 to 1.0 representing progress within the current level.\"\"\"\n    level = get_level_from_xp(total_xp)\n    current = xp_for_level(level)\n    next_lvl = xp_for_level(level + 1)\n    if next_lvl == current:\n        return 1.0\n    return (total_xp - current) / (next_lvl - current)\n\n\n# Print a level table for reference\nif __name__ == \"__main__\":\n    for lvl in [1, 2, 3, 5, 10, 15, 20, 30, 50]:\n        print(f\"Level {lvl:>3}: {xp_for_level(lvl):>8,} XP\")"
+    },
+    {
+      "type": "table",
+      "heading": "Level Progression Table",
+      "headers": ["Level", "Total XP Required", "XP from Previous Level"],
+      "rows": [
+        ["1", "0", "—"],
+        ["2", "100 (283 technically, but we start at 100)", "100"],
+        ["3", "520", "237"],
+        ["5", "1,118", "—"],
+        ["10", "3,162", "—"],
+        ["15", "5,809", "—"],
+        ["20", "8,944", "—"],
+        ["30", "16,432", "—"],
+        ["50", "35,355", "—"]
+      ]
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/LevelBadge.tsx",
+      "description": "Circular level badge with color tiers — bronze, silver, gold, platinum",
+      "code": "import { Box, Typography } from '@mui/material';\n\ninterface LevelBadgeProps {\n  level: number;\n  size?: number;\n}\n\nfunction getTierColor(level: number): { bg: string; border: string; label: string } {\n  if (level >= 50) return { bg: '#e5e4e2', border: '#b4b4b4', label: 'Platinum' };\n  if (level >= 26) return { bg: '#ffd700', border: '#daa520', label: 'Gold' };\n  if (level >= 11) return { bg: '#c0c0c0', border: '#a8a8a8', label: 'Silver' };\n  return { bg: '#cd7f32', border: '#a0522d', label: 'Bronze' };\n}\n\nexport default function LevelBadge({ level, size = 48 }: LevelBadgeProps) {\n  const tier = getTierColor(level);\n\n  return (\n    <Box\n      sx={{\n        width: size,\n        height: size,\n        borderRadius: '50%',\n        background: `radial-gradient(circle at 30% 30%, ${tier.bg}, ${tier.border})`,\n        border: `3px solid ${tier.border}`,\n        display: 'flex',\n        alignItems: 'center',\n        justifyContent: 'center',\n        boxShadow: `0 2px 8px ${tier.border}40`,\n        position: 'relative',\n      }}\n      title={`Level ${level} (${tier.label})`}\n    >\n      <Typography\n        sx={{\n          fontWeight: 800,\n          fontSize: size * 0.4,\n          color: level >= 26 ? '#1a1a1a' : '#fff',\n          lineHeight: 1,\n        }}\n      >\n        {level}\n      </Typography>\n    </Box>\n  );\n}"
+    },
+    {
+      "type": "accordion",
+      "title": "Level-Based Privileges — Unlock Features at Milestones",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "table",
+          "heading": "Feature Unlocks by Level",
+          "headers": ["Level", "Feature Unlocked"],
+          "rows": [
+            ["1", "View content, upvote"],
+            ["3", "Leave comments"],
+            ["5", "Create posts"],
+            ["8", "Upload images"],
+            ["10", "Moderate comments (flag/report)"],
+            ["15", "Create polls"],
+            ["20", "Custom flair and profile badge"],
+            ["30", "Access beta features"],
+            ["50", "Community moderator tools"]
+          ]
+        },
+        {
+          "type": "code",
+          "language": "python",
+          "filename": "middleware/level_gate.py",
+          "description": "Flask decorator that restricts routes based on user level",
+          "code": "from functools import wraps\nfrom flask import g, jsonify\nfrom models import UserXP\n\nLEVEL_REQUIREMENTS = {\n    \"comment\": 3,\n    \"create_post\": 5,\n    \"upload_image\": 8,\n    \"moderate\": 10,\n    \"create_poll\": 15,\n    \"custom_flair\": 20,\n    \"beta_features\": 30,\n    \"mod_tools\": 50,\n}\n\n\ndef requires_level(feature: str):\n    \"\"\"Decorator that blocks access if user level is too low.\"\"\"\n    required = LEVEL_REQUIREMENTS.get(feature, 1)\n\n    def decorator(f):\n        @wraps(f)\n        def wrapped(*args, **kwargs):\n            user_xp = UserXP.query.get(g.user_id)\n            current_level = user_xp.level if user_xp else 1\n            if current_level < required:\n                return jsonify({\n                    \"error\": \"level_too_low\",\n                    \"required_level\": required,\n                    \"current_level\": current_level,\n                    \"feature\": feature,\n                    \"message\": f\"Reach level {required} to unlock this feature.\",\n                }), 403\n            return f(*args, **kwargs)\n        return wrapped\n    return decorator\n\n\n# Usage:\n# @app.route('/api/posts', methods=['POST'])\n# @requires_level('create_post')\n# def create_post():\n#     ..."
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Achievements and Badges",
+      "headingLevel": 2,
+      "body": "Achievements reward specific behaviors and milestones. They are collectible, shareable, and create concrete goals for users to pursue. The best achievement systems have a mix of easy wins for newcomers, challenging goals for veterans, and secret achievements that surprise users when unlocked."
+    },
+    {
+      "type": "code",
+      "language": "sql",
+      "filename": "schema/achievements.sql",
+      "description": "Database schema for achievements and the user-to-achievement join table",
+      "code": "CREATE TABLE achievements (\n    id          SERIAL PRIMARY KEY,\n    slug        VARCHAR(50) UNIQUE NOT NULL,\n    title       VARCHAR(100) NOT NULL,\n    description TEXT NOT NULL,\n    icon        VARCHAR(50) NOT NULL,\n    category    VARCHAR(30) NOT NULL,  -- 'progress', 'event', 'secret'\n    xp_reward   INTEGER NOT NULL DEFAULT 0,\n    is_secret   BOOLEAN NOT NULL DEFAULT FALSE,\n    created_at  TIMESTAMP NOT NULL DEFAULT NOW()\n);\n\nCREATE TABLE user_achievements (\n    user_id        INTEGER NOT NULL REFERENCES users(id),\n    achievement_id INTEGER NOT NULL REFERENCES achievements(id),\n    unlocked_at    TIMESTAMP NOT NULL DEFAULT NOW(),\n    PRIMARY KEY (user_id, achievement_id)\n);\n\nCREATE INDEX idx_user_achievements_user ON user_achievements(user_id);"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "services/achievement_service.py",
+      "description": "Achievement definitions and a checker that evaluates conditions after user actions",
+      "code": "from datetime import datetime\nfrom models import db, Achievement, UserAchievement, UserXP\nfrom services.xp_service import award_xp\n\n# Achievement definitions with their unlock conditions\nACHIEVEMENT_DEFS = [\n    {\n        \"slug\": \"first_steps\",\n        \"title\": \"First Steps\",\n        \"description\": \"Create your first post\",\n        \"icon\": \"EmojiPeople\",\n        \"category\": \"event\",\n        \"xp_reward\": 25,\n        \"check\": lambda stats: stats.get(\"total_posts\", 0) >= 1,\n    },\n    {\n        \"slug\": \"conversationalist\",\n        \"title\": \"Conversationalist\",\n        \"description\": \"Leave 10 comments\",\n        \"icon\": \"Chat\",\n        \"category\": \"progress\",\n        \"xp_reward\": 50,\n        \"check\": lambda stats: stats.get(\"total_comments\", 0) >= 10,\n    },\n    {\n        \"slug\": \"popular\",\n        \"title\": \"Popular\",\n        \"description\": \"Receive 100 upvotes on your content\",\n        \"icon\": \"Favorite\",\n        \"category\": \"progress\",\n        \"xp_reward\": 100,\n        \"check\": lambda stats: stats.get(\"total_upvotes_received\", 0) >= 100,\n    },\n    {\n        \"slug\": \"streak_master\",\n        \"title\": \"Streak Master\",\n        \"description\": \"Maintain a 30-day streak\",\n        \"icon\": \"LocalFireDepartment\",\n        \"category\": \"progress\",\n        \"xp_reward\": 200,\n        \"check\": lambda stats: stats.get(\"current_streak\", 0) >= 30,\n    },\n    {\n        \"slug\": \"night_owl\",\n        \"title\": \"Night Owl\",\n        \"description\": \"Create a post between midnight and 4 AM\",\n        \"icon\": \"DarkMode\",\n        \"category\": \"event\",\n        \"xp_reward\": 15,\n        \"is_secret\": True,\n        \"check\": lambda stats: stats.get(\"posted_late_night\", False),\n    },\n    {\n        \"slug\": \"helpful\",\n        \"title\": \"Helpful\",\n        \"description\": \"Have 5 answers marked as accepted\",\n        \"icon\": \"ThumbUp\",\n        \"category\": \"progress\",\n        \"xp_reward\": 75,\n        \"check\": lambda stats: stats.get(\"accepted_answers\", 0) >= 5,\n    },\n    {\n        \"slug\": \"collector\",\n        \"title\": \"Collector\",\n        \"description\": \"Earn 10 different badges\",\n        \"icon\": \"Collections\",\n        \"category\": \"progress\",\n        \"xp_reward\": 150,\n        \"check\": lambda stats: stats.get(\"total_badges\", 0) >= 10,\n    },\n    {\n        \"slug\": \"veteran\",\n        \"title\": \"Veteran\",\n        \"description\": \"Be a member for over 1 year\",\n        \"icon\": \"Shield\",\n        \"category\": \"progress\",\n        \"xp_reward\": 100,\n        \"check\": lambda stats: stats.get(\"account_age_days\", 0) >= 365,\n    },\n]\n\n\ndef get_user_stats(user_id: int) -> dict:\n    \"\"\"Gather all stats needed for achievement checks.\"\"\"\n    # In a real app, query these from the database\n    from models import Post, Comment, Vote, UserStreak, User\n\n    user = User.query.get(user_id)\n    streak = UserStreak.query.get(user_id)\n    earned_count = UserAchievement.query.filter_by(user_id=user_id).count()\n    now = datetime.utcnow()\n\n    return {\n        \"total_posts\": Post.query.filter_by(author_id=user_id).count(),\n        \"total_comments\": Comment.query.filter_by(author_id=user_id).count(),\n        \"total_upvotes_received\": (\n            Vote.query.join(Post).filter(Post.author_id == user_id).count()\n        ),\n        \"current_streak\": streak.current_streak if streak else 0,\n        \"posted_late_night\": 0 <= now.hour < 4,\n        \"accepted_answers\": (\n            Comment.query.filter_by(author_id=user_id, is_accepted=True).count()\n        ),\n        \"total_badges\": earned_count,\n        \"account_age_days\": (now - user.created_at).days if user else 0,\n    }\n\n\ndef check_achievements(user_id: int) -> list[dict]:\n    \"\"\"Evaluate all achievement conditions and unlock any newly earned ones.\"\"\"\n    stats = get_user_stats(user_id)\n    already_earned = {\n        ua.achievement_id\n        for ua in UserAchievement.query.filter_by(user_id=user_id).all()\n    }\n    newly_unlocked = []\n\n    for defn in ACHIEVEMENT_DEFS:\n        achievement = Achievement.query.filter_by(slug=defn[\"slug\"]).first()\n        if not achievement or achievement.id in already_earned:\n            continue\n\n        if defn[\"check\"](stats):\n            ua = UserAchievement(\n                user_id=user_id,\n                achievement_id=achievement.id,\n                unlocked_at=datetime.utcnow(),\n            )\n            db.session.add(ua)\n\n            if achievement.xp_reward > 0:\n                award_xp(user_id, achievement.xp_reward, f\"achievement:{defn['slug']}\")\n\n            newly_unlocked.append({\n                \"slug\": defn[\"slug\"],\n                \"title\": defn[\"title\"],\n                \"description\": defn[\"description\"],\n                \"icon\": defn.get(\"icon\", \"EmojiEvents\"),\n                \"xp_reward\": achievement.xp_reward,\n            })\n\n    db.session.commit()\n    return newly_unlocked"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/AchievementUnlockedToast.tsx",
+      "description": "Animated popup notification when the user earns a new achievement",
+      "code": "import { Snackbar, Paper, Box, Typography, Chip, Slide, keyframes } from '@mui/material';\nimport { EmojiEvents } from '@mui/icons-material';\nimport { styled } from '@mui/material/styles';\n\ninterface AchievementToastProps {\n  open: boolean;\n  onClose: () => void;\n  title: string;\n  description: string;\n  xpReward: number;\n}\n\nconst shimmer = keyframes`\n  0% { background-position: -200% center; }\n  100% { background-position: 200% center; }\n`;\n\nconst ToastPaper = styled(Paper)`\n  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);\n  border: 2px solid #ffd700;\n  border-radius: 12px;\n  padding: 16px 20px;\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  min-width: 320px;\n  background-size: 200% 100%;\n  animation: ${shimmer} 2s ease-in-out;\n`;\n\nexport default function AchievementUnlockedToast({\n  open, onClose, title, description, xpReward,\n}: AchievementToastProps) {\n  return (\n    <Snackbar\n      open={open}\n      onClose={onClose}\n      autoHideDuration={5000}\n      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}\n      TransitionComponent={Slide}\n    >\n      <ToastPaper elevation={8}>\n        <EmojiEvents sx={{ color: '#ffd700', fontSize: 40 }} />\n        <Box>\n          <Typography variant=\"caption\" sx={{ color: '#ffd700', fontWeight: 700 }}>\n            Achievement Unlocked!\n          </Typography>\n          <Typography variant=\"subtitle1\" sx={{ color: '#fff', fontWeight: 600 }}>\n            {title}\n          </Typography>\n          <Typography variant=\"body2\" sx={{ color: '#ccc' }}>\n            {description}\n          </Typography>\n        </Box>\n        <Chip label={`+${xpReward} XP`} size=\"small\" sx={{ bgcolor: '#ffd700', color: '#1a1a2e', fontWeight: 700 }} />\n      </ToastPaper>\n    </Snackbar>\n  );\n}"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/AchievementShowcase.tsx",
+      "description": "Grid of all achievements — earned ones highlighted, unearned grayed out, secrets hidden",
+      "code": "import { Box, Typography, Grid, Paper, Chip } from '@mui/material';\nimport { Lock, EmojiEvents } from '@mui/icons-material';\n\ninterface AchievementData {\n  slug: string;\n  title: string;\n  description: string;\n  icon: string;\n  xpReward: number;\n  isSecret: boolean;\n  unlockedAt: string | null;\n}\n\ninterface AchievementShowcaseProps {\n  achievements: AchievementData[];\n}\n\nexport default function AchievementShowcase({ achievements }: AchievementShowcaseProps) {\n  const earned = achievements.filter((a) => a.unlockedAt);\n  const visible = achievements.filter((a) => !a.isSecret || a.unlockedAt);\n  const hiddenCount = achievements.filter((a) => a.isSecret && !a.unlockedAt).length;\n\n  return (\n    <Box>\n      <Box display=\"flex\" justifyContent=\"space-between\" alignItems=\"center\" mb={2}>\n        <Typography variant=\"h6\">Achievements</Typography>\n        <Chip label={`${earned.length} / ${achievements.length}`} color=\"primary\" size=\"small\" />\n      </Box>\n\n      <Grid container spacing={2}>\n        {visible.map((ach) => {\n          const isEarned = Boolean(ach.unlockedAt);\n          return (\n            <Grid item xs={12} sm={6} md={4} key={ach.slug}>\n              <Paper\n                sx={{\n                  p: 2,\n                  opacity: isEarned ? 1 : 0.5,\n                  filter: isEarned ? 'none' : 'grayscale(100%)',\n                  border: isEarned ? '2px solid #ffd700' : '1px solid #e0e0e0',\n                  transition: 'all 0.3s',\n                  '&:hover': { transform: 'translateY(-2px)', boxShadow: 3 },\n                }}\n              >\n                <Box display=\"flex\" alignItems=\"center\" gap={1} mb={1}>\n                  <EmojiEvents sx={{ color: isEarned ? '#ffd700' : '#bdbdbd' }} />\n                  <Typography variant=\"subtitle2\" fontWeight={700}>\n                    {ach.title}\n                  </Typography>\n                </Box>\n                <Typography variant=\"body2\" color=\"text.secondary\">\n                  {ach.description}\n                </Typography>\n                {isEarned && (\n                  <Typography variant=\"caption\" color=\"text.secondary\" mt={1} display=\"block\">\n                    Unlocked {new Date(ach.unlockedAt!).toLocaleDateString()}\n                  </Typography>\n                )}\n              </Paper>\n            </Grid>\n          );\n        })}\n      </Grid>\n\n      {hiddenCount > 0 && (\n        <Box display=\"flex\" alignItems=\"center\" gap={1} mt={2} color=\"text.secondary\">\n          <Lock fontSize=\"small\" />\n          <Typography variant=\"body2\">\n            {hiddenCount} secret achievement{hiddenCount > 1 ? 's' : ''} remaining\n          </Typography>\n        </Box>\n      )}\n    </Box>\n  );\n}"
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Progress-Based",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Progress-based achievements are earned by accumulating actions over time. Examples: 'Leave 10 comments', 'Receive 100 upvotes', 'Maintain a 30-day streak'. These reward dedication and consistency. They should have multiple tiers (bronze, silver, gold) so users always have the next milestone in sight."
+            }
+          ]
+        },
+        {
+          "label": "Event-Based",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Event-based achievements trigger on a single specific action. Examples: 'Create your first post', 'Invite a friend', 'Vote in a community poll'. These are great for onboarding — they guide new users through the features of your app and reward exploration."
+            }
+          ]
+        },
+        {
+          "label": "Secret Achievements",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Secret achievements are hidden until earned, creating surprise and delight. Examples: 'Night Owl' (post between midnight and 4 AM), 'Speed Demon' (complete a quiz in under 60 seconds), 'Easter Egg' (visit a hidden page). Show them as locked question marks in the achievement showcase — curiosity drives engagement."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Streak System",
+      "headingLevel": 2,
+      "body": "Streaks reward consistency by counting consecutive days of activity. They are one of the most powerful retention mechanics ever designed — Duolingo attributes much of its engagement to its streak system. The key is balancing motivation with compassion: streaks should encourage daily use without creating anxiety or guilt when life gets in the way."
+    },
+    {
+      "type": "code",
+      "language": "sql",
+      "filename": "schema/streaks.sql",
+      "description": "Database table for tracking user streaks, including a streak freeze mechanic",
+      "code": "CREATE TABLE user_streaks (\n    user_id            INTEGER PRIMARY KEY REFERENCES users(id),\n    current_streak     INTEGER NOT NULL DEFAULT 0,\n    longest_streak     INTEGER NOT NULL DEFAULT 0,\n    last_activity_date DATE,\n    streak_freezes     INTEGER NOT NULL DEFAULT 0,\n    freeze_used_date   DATE\n);"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "services/streak_service.py",
+      "description": "Streak tracking with streak freezes — one forgiven missed day per freeze earned",
+      "code": "from datetime import date, timedelta\nfrom models import db, UserStreak\nfrom services.xp_service import award_xp\n\nSTREAK_MILESTONES = {7: 50, 14: 100, 30: 200, 60: 500, 100: 1000, 365: 5000}\n\n\ndef record_activity(user_id: int) -> dict:\n    \"\"\"Update streak for today's activity. Call once per day.\"\"\"\n    today = date.today()\n    streak = UserStreak.query.get(user_id)\n\n    if not streak:\n        streak = UserStreak(\n            user_id=user_id,\n            current_streak=1,\n            longest_streak=1,\n            last_activity_date=today,\n            streak_freezes=0,\n        )\n        db.session.add(streak)\n        db.session.commit()\n        return {\"streak\": 1, \"is_new\": True, \"milestone\": None}\n\n    # Already logged today\n    if streak.last_activity_date == today:\n        return {\"streak\": streak.current_streak, \"is_new\": False, \"milestone\": None}\n\n    yesterday = today - timedelta(days=1)\n    two_days_ago = today - timedelta(days=2)\n\n    if streak.last_activity_date == yesterday:\n        # Consecutive day — extend streak\n        streak.current_streak += 1\n    elif (\n        streak.last_activity_date == two_days_ago\n        and streak.streak_freezes > 0\n        and streak.freeze_used_date != yesterday\n    ):\n        # Missed one day but user has a streak freeze\n        streak.streak_freezes -= 1\n        streak.freeze_used_date = yesterday\n        streak.current_streak += 1  # freeze covers the gap\n    else:\n        # Streak broken\n        streak.current_streak = 1\n\n    streak.last_activity_date = today\n    streak.longest_streak = max(streak.longest_streak, streak.current_streak)\n\n    # Check for milestone rewards\n    milestone_xp = STREAK_MILESTONES.get(streak.current_streak)\n    if milestone_xp:\n        award_xp(user_id, milestone_xp, f\"streak_milestone:{streak.current_streak}\")\n\n    db.session.commit()\n\n    return {\n        \"streak\": streak.current_streak,\n        \"longest\": streak.longest_streak,\n        \"is_new\": True,\n        \"milestone\": streak.current_streak if milestone_xp else None,\n        \"freezes_remaining\": streak.streak_freezes,\n    }\n\n\ndef grant_streak_freeze(user_id: int) -> int:\n    \"\"\"Award a streak freeze (earned via achievement or purchase).\"\"\"\n    streak = UserStreak.query.get(user_id)\n    if not streak:\n        return 0\n    streak.streak_freezes = min(streak.streak_freezes + 1, 3)  # max 3 stored\n    db.session.commit()\n    return streak.streak_freezes"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/StreakDisplay.tsx",
+      "description": "Streak counter with fire icon and a GitHub-style activity heatmap",
+      "code": "import { Box, Typography, Chip, Tooltip } from '@mui/material';\nimport { LocalFireDepartment, AcUnit } from '@mui/icons-material';\n\ninterface StreakDisplayProps {\n  currentStreak: number;\n  longestStreak: number;\n  freezesRemaining: number;\n  activityDays: string[];  // ISO date strings of active days\n}\n\nfunction getHeatmapColor(count: number): string {\n  if (count === 0) return '#ebedf0';\n  if (count === 1) return '#9be9a8';\n  if (count <= 3) return '#40c463';\n  return '#216e39';\n}\n\nexport default function StreakDisplay({\n  currentStreak, longestStreak, freezesRemaining, activityDays,\n}: StreakDisplayProps) {\n  const activeDatesSet = new Set(activityDays);\n\n  // Generate last 12 weeks of dates for the heatmap\n  const today = new Date();\n  const weeks: Date[][] = [];\n  for (let w = 11; w >= 0; w--) {\n    const week: Date[] = [];\n    for (let d = 0; d < 7; d++) {\n      const date = new Date(today);\n      date.setDate(today.getDate() - (w * 7 + (6 - d)));\n      week.push(date);\n    }\n    weeks.push(week);\n  }\n\n  return (\n    <Box>\n      <Box display=\"flex\" alignItems=\"center\" gap={2} mb={2}>\n        <Box display=\"flex\" alignItems=\"center\" gap={0.5}>\n          <LocalFireDepartment\n            sx={{ color: currentStreak > 0 ? '#ff6b35' : '#bdbdbd', fontSize: 32 }}\n          />\n          <Typography variant=\"h4\" fontWeight={800} color={currentStreak > 0 ? '#ff6b35' : 'text.secondary'}>\n            {currentStreak}\n          </Typography>\n          <Typography variant=\"body2\" color=\"text.secondary\" ml={0.5}>\n            day streak\n          </Typography>\n        </Box>\n\n        <Chip label={`Best: ${longestStreak}`} size=\"small\" variant=\"outlined\" />\n\n        {freezesRemaining > 0 && (\n          <Tooltip title={`${freezesRemaining} streak freeze${freezesRemaining > 1 ? 's' : ''} available`}>\n            <Chip icon={<AcUnit />} label={freezesRemaining} size=\"small\" color=\"info\" />\n          </Tooltip>\n        )}\n      </Box>\n\n      {/* Activity heatmap */}\n      <Box display=\"flex\" gap=\"3px\">\n        {weeks.map((week, wi) => (\n          <Box key={wi} display=\"flex\" flexDirection=\"column\" gap=\"3px\">\n            {week.map((day, di) => {\n              const iso = day.toISOString().split('T')[0];\n              const isActive = activeDatesSet.has(iso);\n              return (\n                <Tooltip key={di} title={`${iso}: ${isActive ? 'Active' : 'Inactive'}`}>\n                  <Box\n                    sx={{\n                      width: 12,\n                      height: 12,\n                      borderRadius: '2px',\n                      bgcolor: getHeatmapColor(isActive ? 1 : 0),\n                    }}\n                  />\n                </Tooltip>\n              );\n            })}\n          </Box>\n        ))}\n      </Box>\n    </Box>\n  );\n}"
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "Streaks and User Wellbeing",
+      "body": "Streaks can create anxiety and guilt when broken. Always offer a graceful way to recover — streak freezes, streak repair items, or a 'welcome back' bonus instead of punishment. Never shame users for real-life interruptions. Duolingo learned this the hard way and now offers multiple streak-protection mechanisms."
+    },
+    {
+      "type": "text",
+      "heading": "Daily Rewards and Login Bonuses",
+      "headingLevel": 2,
+      "body": "Daily rewards give users a reason to return every day, even if they do not have a specific task in mind. Escalating rewards over a multi-day cycle create anticipation — users know day 7 has the biggest prize, so they keep coming back."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "services/daily_reward_service.py",
+      "description": "Seven-day escalating reward cycle with XP bonuses and a day-7 badge",
+      "code": "from datetime import date, timedelta\nfrom models import db, UserDailyReward\nfrom services.xp_service import award_xp\nfrom services.achievement_service import check_achievements\n\nDAILY_REWARDS = [\n    {\"day\": 1, \"xp\": 5,  \"label\": \"Welcome back!\"},\n    {\"day\": 2, \"xp\": 10, \"label\": \"Day 2 bonus\"},\n    {\"day\": 3, \"xp\": 15, \"label\": \"Halfway there\"},\n    {\"day\": 4, \"xp\": 20, \"label\": \"Keep it up\"},\n    {\"day\": 5, \"xp\": 25, \"label\": \"Almost there\"},\n    {\"day\": 6, \"xp\": 35, \"label\": \"One more day!\"},\n    {\"day\": 7, \"xp\": 50, \"label\": \"Weekly champion!\", \"badge\": \"weekly_warrior\"},\n]\n\n\ndef claim_daily_reward(user_id: int) -> dict | None:\n    \"\"\"Claim today's daily reward. Returns None if already claimed.\"\"\"\n    today = date.today()\n    record = UserDailyReward.query.filter_by(user_id=user_id).first()\n\n    if record and record.last_claimed == today:\n        return None  # Already claimed today\n\n    if not record:\n        record = UserDailyReward(user_id=user_id, cycle_day=0, last_claimed=None)\n        db.session.add(record)\n\n    # Check if the cycle continues or resets\n    if record.last_claimed and (today - record.last_claimed).days == 1:\n        # Consecutive day — advance cycle\n        record.cycle_day = (record.cycle_day % 7) + 1\n    else:\n        # Missed a day or first claim — restart cycle\n        record.cycle_day = 1\n\n    record.last_claimed = today\n    reward = DAILY_REWARDS[record.cycle_day - 1]\n\n    award_xp(user_id, reward[\"xp\"], f\"daily_reward:day_{record.cycle_day}\")\n    db.session.commit()\n\n    return {\n        \"day\": record.cycle_day,\n        \"xp\": reward[\"xp\"],\n        \"label\": reward[\"label\"],\n        \"badge\": reward.get(\"badge\"),\n        \"next_day\": (record.cycle_day % 7) + 1,\n    }"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/DailyRewardCalendar.tsx",
+      "description": "Seven-day reward track with claimed, available, and locked states",
+      "code": "import { Box, Typography, Button, Paper, Chip } from '@mui/material';\nimport { CheckCircle, Lock, CardGiftcard } from '@mui/icons-material';\n\ninterface DailyReward {\n  day: number;\n  xp: number;\n  label: string;\n  badge?: string;\n}\n\ninterface DailyRewardCalendarProps {\n  rewards: DailyReward[];\n  currentDay: number;      // which day in the cycle (1-7)\n  claimedToday: boolean;\n  onClaim: () => void;\n}\n\nexport default function DailyRewardCalendar({\n  rewards, currentDay, claimedToday, onClaim,\n}: DailyRewardCalendarProps) {\n  return (\n    <Box>\n      <Typography variant=\"h6\" gutterBottom>Daily Rewards</Typography>\n      <Box display=\"flex\" gap={1} flexWrap=\"wrap\">\n        {rewards.map((reward) => {\n          const isClaimed = reward.day < currentDay || (reward.day === currentDay && claimedToday);\n          const isAvailable = reward.day === currentDay && !claimedToday;\n          const isLocked = reward.day > currentDay;\n\n          return (\n            <Paper\n              key={reward.day}\n              sx={{\n                p: 2,\n                minWidth: 100,\n                textAlign: 'center',\n                border: isAvailable ? '2px solid #ffd700' : '1px solid #e0e0e0',\n                bgcolor: isClaimed ? '#f0fff0' : isAvailable ? '#fffde7' : '#fafafa',\n                opacity: isLocked ? 0.6 : 1,\n                transition: 'all 0.3s',\n              }}\n            >\n              <Typography variant=\"caption\" color=\"text.secondary\">\n                Day {reward.day}\n              </Typography>\n              <Box my={1}>\n                {isClaimed ? (\n                  <CheckCircle sx={{ color: '#4caf50', fontSize: 28 }} />\n                ) : isLocked ? (\n                  <Lock sx={{ color: '#bdbdbd', fontSize: 28 }} />\n                ) : (\n                  <CardGiftcard sx={{ color: '#ffd700', fontSize: 28 }} />\n                )}\n              </Box>\n              <Chip label={`+${reward.xp} XP`} size=\"small\" color={isClaimed ? 'success' : 'default'} />\n              {reward.badge && (\n                <Typography variant=\"caption\" display=\"block\" mt={0.5} color=\"warning.main\">\n                  + Badge!\n                </Typography>\n              )}\n            </Paper>\n          );\n        })}\n      </Box>\n      {!claimedToday && (\n        <Button\n          variant=\"contained\"\n          color=\"warning\"\n          onClick={onClaim}\n          sx={{ mt: 2, fontWeight: 700 }}\n          startIcon={<CardGiftcard />}\n        >\n          Claim Day {currentDay} Reward\n        </Button>\n      )}\n    </Box>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Leaderboards",
+      "headingLevel": 2,
+      "body": "Leaderboards drive competition and give users a benchmark to measure themselves against. But a single all-time leaderboard discourages newcomers who can never catch the top spots. The solution is multiple timeframes — daily, weekly, and monthly boards reset regularly so everyone has a chance to compete."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/leaderboard.py",
+      "description": "Leaderboard API with multiple time periods and the current user's rank",
+      "code": "from datetime import datetime, timedelta\nfrom flask import Blueprint, request, g, jsonify\nfrom models import db, XPTransaction, User, UserXP\nfrom sqlalchemy import func, desc\n\nleaderboard_bp = Blueprint(\"leaderboard\", __name__)\n\nPERIOD_DELTAS = {\n    \"daily\": timedelta(days=1),\n    \"weekly\": timedelta(weeks=1),\n    \"monthly\": timedelta(days=30),\n    \"all_time\": None,\n}\n\n\n@leaderboard_bp.route(\"/api/leaderboard\")\ndef get_leaderboard():\n    period = request.args.get(\"period\", \"weekly\")\n    limit = min(int(request.args.get(\"limit\", 50)), 100)\n\n    if period not in PERIOD_DELTAS:\n        return jsonify({\"error\": \"Invalid period\"}), 400\n\n    delta = PERIOD_DELTAS[period]\n\n    if delta:\n        since = datetime.utcnow() - delta\n        # Sum XP earned in the time period\n        query = (\n            db.session.query(\n                XPTransaction.user_id,\n                func.sum(XPTransaction.amount).label(\"score\"),\n                func.rank().over(order_by=func.sum(XPTransaction.amount).desc()).label(\"rank\"),\n            )\n            .filter(XPTransaction.created_at >= since)\n            .group_by(XPTransaction.user_id)\n            .order_by(desc(\"score\"))\n        )\n    else:\n        # All-time uses total_xp from user_xp table\n        query = (\n            db.session.query(\n                UserXP.user_id,\n                UserXP.total_xp.label(\"score\"),\n                func.rank().over(order_by=UserXP.total_xp.desc()).label(\"rank\"),\n            )\n            .order_by(desc(\"score\"))\n        )\n\n    # Get top N\n    results = query.limit(limit).all()\n    user_ids = [r.user_id for r in results]\n    users = {u.id: u for u in User.query.filter(User.id.in_(user_ids)).all()}\n    user_xp_map = {ux.user_id: ux for ux in UserXP.query.filter(UserXP.user_id.in_(user_ids)).all()}\n\n    leaderboard = []\n    for r in results:\n        u = users.get(r.user_id)\n        ux = user_xp_map.get(r.user_id)\n        if u:\n            leaderboard.append({\n                \"rank\": r.rank,\n                \"user_id\": r.user_id,\n                \"username\": u.username,\n                \"avatar_url\": u.avatar_url,\n                \"score\": r.score,\n                \"level\": ux.level if ux else 1,\n            })\n\n    # Always include the requesting user's rank\n    my_rank = None\n    if hasattr(g, \"user_id\") and g.user_id:\n        my_entry = next((e for e in leaderboard if e[\"user_id\"] == g.user_id), None)\n        if my_entry:\n            my_rank = my_entry\n        else:\n            # User not in top N — find their rank\n            all_results = query.subquery()\n            user_rank = (\n                db.session.query(all_results)\n                .filter(all_results.c.user_id == g.user_id)\n                .first()\n            )\n            if user_rank:\n                me = User.query.get(g.user_id)\n                my_xp = UserXP.query.get(g.user_id)\n                my_rank = {\n                    \"rank\": user_rank.rank,\n                    \"user_id\": g.user_id,\n                    \"username\": me.username if me else \"You\",\n                    \"score\": user_rank.score,\n                    \"level\": my_xp.level if my_xp else 1,\n                }\n\n    return jsonify({\n        \"period\": period,\n        \"leaderboard\": leaderboard,\n        \"my_rank\": my_rank,\n    })"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/LeaderboardTable.tsx",
+      "description": "Leaderboard with podium top 3, time period tabs, and current user highlight",
+      "code": "import { useState } from 'react';\nimport {\n  Box, Typography, Tabs, Tab, Table, TableBody, TableCell,\n  TableContainer, TableHead, TableRow, Paper, Avatar, Chip,\n} from '@mui/material';\nimport { EmojiEvents } from '@mui/icons-material';\nimport LevelBadge from './LevelBadge';\n\ninterface LeaderboardEntry {\n  rank: number;\n  userId: number;\n  username: string;\n  avatarUrl: string;\n  score: number;\n  level: number;\n}\n\ninterface LeaderboardTableProps {\n  entries: LeaderboardEntry[];\n  myRank: LeaderboardEntry | null;\n  currentUserId: number;\n  period: string;\n  onPeriodChange: (period: string) => void;\n}\n\nconst PODIUM_COLORS = ['#ffd700', '#c0c0c0', '#cd7f32'];\n\nexport default function LeaderboardTable({\n  entries, myRank, currentUserId, period, onPeriodChange,\n}: LeaderboardTableProps) {\n  const top3 = entries.slice(0, 3);\n  const rest = entries.slice(3);\n\n  return (\n    <Box>\n      <Tabs value={period} onChange={(_, v) => onPeriodChange(v)} sx={{ mb: 2 }}>\n        <Tab value=\"daily\" label=\"Today\" />\n        <Tab value=\"weekly\" label=\"This Week\" />\n        <Tab value=\"monthly\" label=\"This Month\" />\n        <Tab value=\"all_time\" label=\"All Time\" />\n      </Tabs>\n\n      {/* Podium for top 3 */}\n      <Box display=\"flex\" justifyContent=\"center\" alignItems=\"flex-end\" gap={2} mb={3}>\n        {[1, 0, 2].map((idx) => {\n          const entry = top3[idx];\n          if (!entry) return null;\n          const heights = [120, 80, 60];\n          return (\n            <Box key={idx} textAlign=\"center\">\n              <Avatar src={entry.avatarUrl} sx={{ width: 48, height: 48, mx: 'auto', mb: 1 }} />\n              <Typography variant=\"body2\" fontWeight={700}>{entry.username}</Typography>\n              <Typography variant=\"caption\" color=\"text.secondary\">\n                {entry.score.toLocaleString()} XP\n              </Typography>\n              <Box\n                sx={{\n                  mt: 1, width: 80, height: heights[idx],\n                  bgcolor: PODIUM_COLORS[idx], borderRadius: '8px 8px 0 0',\n                  display: 'flex', alignItems: 'center', justifyContent: 'center',\n                }}\n              >\n                <EmojiEvents sx={{ color: '#fff', fontSize: 28 }} />\n              </Box>\n            </Box>\n          );\n        })}\n      </Box>\n\n      {/* Full table */}\n      <TableContainer component={Paper}>\n        <Table size=\"small\">\n          <TableHead>\n            <TableRow>\n              <TableCell>Rank</TableCell>\n              <TableCell>User</TableCell>\n              <TableCell align=\"right\">Score</TableCell>\n              <TableCell align=\"right\">Level</TableCell>\n            </TableRow>\n          </TableHead>\n          <TableBody>\n            {rest.map((entry) => (\n              <TableRow\n                key={entry.userId}\n                sx={{ bgcolor: entry.userId === currentUserId ? '#e3f2fd' : 'inherit' }}\n              >\n                <TableCell>#{entry.rank}</TableCell>\n                <TableCell>\n                  <Box display=\"flex\" alignItems=\"center\" gap={1}>\n                    <Avatar src={entry.avatarUrl} sx={{ width: 24, height: 24 }} />\n                    {entry.username}\n                  </Box>\n                </TableCell>\n                <TableCell align=\"right\">{entry.score.toLocaleString()}</TableCell>\n                <TableCell align=\"right\"><LevelBadge level={entry.level} size={24} /></TableCell>\n              </TableRow>\n            ))}\n          </TableBody>\n        </Table>\n      </TableContainer>\n\n      {/* Show user's rank if not in the visible list */}\n      {myRank && !entries.some((e) => e.userId === currentUserId) && (\n        <Paper sx={{ mt: 2, p: 2, bgcolor: '#e3f2fd', textAlign: 'center' }}>\n          <Typography variant=\"body2\">\n            Your rank: <strong>#{myRank.rank}</strong> with{' '}\n            <strong>{myRank.score.toLocaleString()} XP</strong>\n          </Typography>\n        </Paper>\n      )}\n    </Box>\n  );\n}"
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Global Leaderboard",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Global leaderboards rank all users against each other. Best for apps with competitive communities where users want to be recognized publicly. Use time-based resets (weekly, monthly) so new users can compete. Show all-time boards separately for lifetime achievement."
+            }
+          ]
+        },
+        {
+          "label": "Friends Leaderboard",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Friends-only leaderboards create intimate competition between people who know each other. Much more motivating than competing against strangers — seeing your coworker 50 XP ahead of you is more compelling than being #4,382 globally. Requires a social graph or team structure."
+            }
+          ]
+        },
+        {
+          "label": "Category Leaderboard",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Category leaderboards rank users within a specific skill or topic area. Great for learning platforms — you might be #200 overall but #3 in JavaScript or #1 in your city. These let users find their niche and feel successful in their area of expertise."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Always Show the User Their Rank",
+      "body": "Always show users their own rank, even if they are number 4,382. Relative progress motivates more than absolute rank — 'You moved up 12 places this week!' is more encouraging than showing a distant top-10 they may never reach."
+    },
+    {
+      "type": "text",
+      "heading": "Quests and Challenges",
+      "headingLevel": 2,
+      "body": "Quests are short-term goals that guide user behavior. Daily quests provide direction when users open the app, weekly challenges provide medium-term goals, and seasonal events create excitement. The key is variety — rotate quests so users experience different parts of your app."
+    },
+    {
+      "type": "code",
+      "language": "sql",
+      "filename": "schema/quests.sql",
+      "description": "Database schema for quests and user quest progress tracking",
+      "code": "CREATE TABLE quests (\n    id           SERIAL PRIMARY KEY,\n    title        VARCHAR(200) NOT NULL,\n    description  TEXT NOT NULL,\n    quest_type   VARCHAR(20) NOT NULL,  -- 'daily', 'weekly', 'special'\n    event_type   VARCHAR(50) NOT NULL,  -- maps to the action being tracked\n    target_count INTEGER NOT NULL DEFAULT 1,\n    xp_reward    INTEGER NOT NULL DEFAULT 10,\n    is_active    BOOLEAN NOT NULL DEFAULT TRUE\n);\n\nCREATE TABLE user_quests (\n    id           SERIAL PRIMARY KEY,\n    user_id      INTEGER NOT NULL REFERENCES users(id),\n    quest_id     INTEGER NOT NULL REFERENCES quests(id),\n    progress     INTEGER NOT NULL DEFAULT 0,\n    assigned_at  TIMESTAMP NOT NULL DEFAULT NOW(),\n    completed_at TIMESTAMP,\n    expires_at   TIMESTAMP NOT NULL\n);\n\nCREATE INDEX idx_user_quests_active\n    ON user_quests(user_id, completed_at)\n    WHERE completed_at IS NULL;"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "services/quest_service.py",
+      "description": "Quest assignment and progress tracking system",
+      "code": "import random\nfrom datetime import datetime, timedelta\nfrom models import db, Quest, UserQuest\nfrom services.xp_service import award_xp\n\nDAILY_QUEST_COUNT = 3\n\n\ndef assign_daily_quests(user_id: int) -> list[dict]:\n    \"\"\"Assign 3 random daily quests if user has none active today.\"\"\"\n    now = datetime.utcnow()\n\n    # Check for existing active daily quests\n    active = UserQuest.query.filter(\n        UserQuest.user_id == user_id,\n        UserQuest.expires_at > now,\n        UserQuest.completed_at.is_(None),\n    ).join(Quest).filter(Quest.quest_type == \"daily\").count()\n\n    if active > 0:\n        return []  # Already has quests for today\n\n    # Pick random daily quests\n    all_daily = Quest.query.filter_by(quest_type=\"daily\", is_active=True).all()\n    selected = random.sample(all_daily, min(DAILY_QUEST_COUNT, len(all_daily)))\n\n    assigned = []\n    for quest in selected:\n        uq = UserQuest(\n            user_id=user_id,\n            quest_id=quest.id,\n            progress=0,\n            assigned_at=now,\n            expires_at=now.replace(hour=23, minute=59, second=59),\n        )\n        db.session.add(uq)\n        assigned.append({\n            \"quest_id\": quest.id,\n            \"title\": quest.title,\n            \"description\": quest.description,\n            \"target\": quest.target_count,\n            \"xp_reward\": quest.xp_reward,\n            \"progress\": 0,\n        })\n\n    db.session.commit()\n    return assigned\n\n\ndef track_quest_progress(user_id: int, event_type: str) -> list[dict]:\n    \"\"\"Increment progress on quests matching the event type.\"\"\"\n    now = datetime.utcnow()\n    completed_quests = []\n\n    active_quests = (\n        UserQuest.query\n        .filter(\n            UserQuest.user_id == user_id,\n            UserQuest.completed_at.is_(None),\n            UserQuest.expires_at > now,\n        )\n        .join(Quest)\n        .filter(Quest.event_type == event_type)\n        .all()\n    )\n\n    for uq in active_quests:\n        uq.progress += 1\n        quest = Quest.query.get(uq.quest_id)\n\n        if uq.progress >= quest.target_count:\n            uq.completed_at = now\n            award_xp(user_id, quest.xp_reward, f\"quest:{quest.id}\")\n            completed_quests.append({\n                \"quest_id\": quest.id,\n                \"title\": quest.title,\n                \"xp_reward\": quest.xp_reward,\n            })\n\n    db.session.commit()\n    return completed_quests"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/QuestPanel.tsx",
+      "description": "Active quest list with progress bars, completion states, and reward claiming",
+      "code": "import {\n  Box, Typography, Paper, LinearProgress, Button, Chip, Stack,\n} from '@mui/material';\nimport { CheckCircle, Timer, EmojiEvents } from '@mui/icons-material';\n\ninterface QuestData {\n  questId: number;\n  title: string;\n  description: string;\n  target: number;\n  progress: number;\n  xpReward: number;\n  completedAt: string | null;\n  expiresAt: string;\n}\n\ninterface QuestPanelProps {\n  quests: QuestData[];\n  onClaimReward: (questId: number) => void;\n}\n\nfunction timeRemaining(expiresAt: string): string {\n  const diff = new Date(expiresAt).getTime() - Date.now();\n  if (diff <= 0) return 'Expired';\n  const hours = Math.floor(diff / 3600000);\n  const mins = Math.floor((diff % 3600000) / 60000);\n  return `${hours}h ${mins}m remaining`;\n}\n\nexport default function QuestPanel({ quests, onClaimReward }: QuestPanelProps) {\n  return (\n    <Box>\n      <Typography variant=\"h6\" gutterBottom>\n        Daily Quests\n      </Typography>\n      <Stack spacing={2}>\n        {quests.map((quest) => {\n          const isComplete = quest.completedAt !== null;\n          const pct = Math.min((quest.progress / quest.target) * 100, 100);\n\n          return (\n            <Paper key={quest.questId} sx={{ p: 2 }}>\n              <Box display=\"flex\" justifyContent=\"space-between\" alignItems=\"flex-start\">\n                <Box flex={1}>\n                  <Box display=\"flex\" alignItems=\"center\" gap={1} mb={0.5}>\n                    {isComplete ? (\n                      <CheckCircle sx={{ color: '#4caf50' }} />\n                    ) : (\n                      <EmojiEvents sx={{ color: '#ff9800' }} />\n                    )}\n                    <Typography variant=\"subtitle2\" fontWeight={700}>\n                      {quest.title}\n                    </Typography>\n                  </Box>\n                  <Typography variant=\"body2\" color=\"text.secondary\" mb={1}>\n                    {quest.description}\n                  </Typography>\n                  <LinearProgress\n                    variant=\"determinate\"\n                    value={pct}\n                    sx={{ height: 8, borderRadius: 4, mb: 0.5 }}\n                    color={isComplete ? 'success' : 'primary'}\n                  />\n                  <Box display=\"flex\" justifyContent=\"space-between\">\n                    <Typography variant=\"caption\" color=\"text.secondary\">\n                      {quest.progress} / {quest.target}\n                    </Typography>\n                    {!isComplete && (\n                      <Typography variant=\"caption\" color=\"text.secondary\">\n                        <Timer sx={{ fontSize: 12, mr: 0.5, verticalAlign: 'middle' }} />\n                        {timeRemaining(quest.expiresAt)}\n                      </Typography>\n                    )}\n                  </Box>\n                </Box>\n                <Box ml={2} textAlign=\"center\">\n                  <Chip label={`+${quest.xpReward} XP`} size=\"small\" color=\"warning\" />\n                  {isComplete && (\n                    <Button size=\"small\" variant=\"contained\" color=\"success\" sx={{ mt: 1 }} onClick={() => onClaimReward(quest.questId)}>\n                      Claim\n                    </Button>\n                  )}\n                </Box>\n              </Box>\n            </Paper>\n          );\n        })}\n      </Stack>\n    </Box>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Progress Bars and Completion",
+      "headingLevel": 2,
+      "body": "Progress bars exploit the Zeigarnik Effect — people are psychologically driven to complete unfinished tasks. A profile at 70% completion feels incomplete and motivates users to fill in the remaining fields. LinkedIn popularized this with their 'Profile Strength' meter."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/ProfileCompletionBar.tsx",
+      "description": "Profile completion meter with checklist showing which fields are missing",
+      "code": "import {\n  Box, Typography, LinearProgress, List, ListItem,\n  ListItemIcon, ListItemText, Chip,\n} from '@mui/material';\nimport { CheckCircle, RadioButtonUnchecked } from '@mui/icons-material';\n\ninterface ProfileField {\n  key: string;\n  label: string;\n  weight: number;  // percentage points\n  completed: boolean;\n}\n\ninterface ProfileCompletionBarProps {\n  fields: ProfileField[];\n}\n\nconst DEFAULT_FIELDS: ProfileField[] = [\n  { key: 'avatar', label: 'Upload a profile photo', weight: 20, completed: false },\n  { key: 'bio', label: 'Write a short bio', weight: 15, completed: false },\n  { key: 'location', label: 'Add your location', weight: 10, completed: false },\n  { key: 'website', label: 'Link your website', weight: 10, completed: false },\n  { key: 'skills', label: 'Add at least 3 skills', weight: 15, completed: false },\n  { key: 'social', label: 'Connect a social account', weight: 10, completed: false },\n  { key: 'first_post', label: 'Create your first post', weight: 20, completed: false },\n];\n\nexport default function ProfileCompletionBar({ fields = DEFAULT_FIELDS }: ProfileCompletionBarProps) {\n  const percentage = fields.reduce((sum, f) => sum + (f.completed ? f.weight : 0), 0);\n  const incomplete = fields.filter((f) => !f.completed);\n\n  const color = percentage >= 80 ? 'success' : percentage >= 50 ? 'warning' : 'error';\n\n  return (\n    <Box>\n      <Box display=\"flex\" justifyContent=\"space-between\" alignItems=\"center\" mb={1}>\n        <Typography variant=\"subtitle1\" fontWeight={700}>\n          Profile Strength\n        </Typography>\n        <Chip label={`${percentage}%`} color={color} size=\"small\" />\n      </Box>\n      <LinearProgress\n        variant=\"determinate\"\n        value={percentage}\n        color={color}\n        sx={{ height: 10, borderRadius: 5, mb: 2 }}\n      />\n      {incomplete.length > 0 && (\n        <>\n          <Typography variant=\"body2\" color=\"text.secondary\" gutterBottom>\n            Complete these to strengthen your profile:\n          </Typography>\n          <List dense>\n            {incomplete.map((field) => (\n              <ListItem key={field.key} disablePadding sx={{ mb: 0.5 }}>\n                <ListItemIcon sx={{ minWidth: 32 }}>\n                  <RadioButtonUnchecked sx={{ fontSize: 18, color: '#bdbdbd' }} />\n                </ListItemIcon>\n                <ListItemText\n                  primary={field.label}\n                  secondary={`+${field.weight}%`}\n                  primaryTypographyProps={{ variant: 'body2' }}\n                />\n              </ListItem>\n            ))}\n          </List>\n        </>\n      )}\n      {percentage === 100 && (\n        <Box display=\"flex\" alignItems=\"center\" gap={1} color=\"success.main\">\n          <CheckCircle />\n          <Typography variant=\"body2\" fontWeight={700}>\n            Profile complete! You earned +50 XP.\n          </Typography>\n        </Box>\n      )}\n    </Box>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Notification and Reward Timing",
+      "headingLevel": 2,
+      "body": "When you show rewards matters as much as what the reward is. The psychology of reinforcement schedules shows that variable rewards are the most engaging — unpredictable timing keeps users curious and checking back."
+    },
+    {
+      "type": "table",
+      "heading": "Reward Schedule Types",
+      "headers": ["Schedule", "Pattern", "Engagement Level", "Example"],
+      "rows": [
+        ["Fixed Ratio", "Every Nth action", "Moderate", "Every 10th comment earns bonus XP"],
+        ["Fixed Interval", "Same time every day", "Moderate", "Daily login bonus at midnight"],
+        ["Variable Ratio", "Random chance per action", "Very High", "Random loot drops after posting"],
+        ["Variable Interval", "Random timing", "High", "Surprise bonus XP at random times"]
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "The Psychology of Gamification",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Effective gamification is rooted in behavioral psychology. Self-Determination Theory identifies three core human needs that gamification can address: Autonomy (giving users choices in what quests to pursue), Competence (providing clear progress and skill growth via levels), and Relatedness (connecting users through leaderboards and social features). Flow state — the zone of optimal engagement — happens when challenge matches skill level. Too easy and users get bored; too hard and they quit. Design your difficulty curves accordingly."
+        },
+        {
+          "type": "list",
+          "heading": "Ethical Considerations",
+          "ordered": false,
+          "items": [
+            "Intrinsic motivation (enjoyment of the task) is more sustainable than extrinsic (rewards)",
+            "Over-rewarding can undermine intrinsic motivation — the overjustification effect",
+            "Dark patterns (fake urgency, punishing absence) erode trust long-term",
+            "Be transparent about how systems work — hidden manipulation breeds resentment",
+            "Test with real users to ensure mechanics feel rewarding, not manipulative"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Social Proof and FOMO",
+      "headingLevel": 2,
+      "body": "Showing what others are doing drives engagement through social proof — if many people are doing something, it must be worthwhile. These signals reduce decision paralysis and create a sense of community momentum."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/SocialProofIndicators.tsx",
+      "description": "Components for real-time activity counters and trending indicators",
+      "code": "import { Box, Typography, Chip, Stack } from '@mui/material';\nimport { Visibility, TrendingUp, ThumbUp, Group } from '@mui/icons-material';\n\ninterface LiveViewersProps {\n  count: number;\n}\n\nexport function LiveViewers({ count }: LiveViewersProps) {\n  return (\n    <Box display=\"flex\" alignItems=\"center\" gap={0.5}>\n      <Visibility sx={{ fontSize: 16, color: '#4caf50' }} />\n      <Typography variant=\"caption\" color=\"text.secondary\">\n        {count} {count === 1 ? 'person is' : 'people are'} reading this right now\n      </Typography>\n    </Box>\n  );\n}\n\ninterface TrendingBadgeProps {\n  label: string;\n  metric: string;\n}\n\nexport function TrendingBadge({ label, metric }: TrendingBadgeProps) {\n  return (\n    <Chip\n      icon={<TrendingUp />}\n      label={`${label} — ${metric}`}\n      color=\"error\"\n      size=\"small\"\n      variant=\"outlined\"\n    />\n  );\n}\n\ninterface ChallengeParticipantsProps {\n  challengeTitle: string;\n  participantCount: number;\n}\n\nexport function ChallengeParticipants({ challengeTitle, participantCount }: ChallengeParticipantsProps) {\n  return (\n    <Box display=\"flex\" alignItems=\"center\" gap={1} p={1} bgcolor=\"#f3e5f5\" borderRadius={1}>\n      <Group sx={{ color: '#9c27b0' }} />\n      <Typography variant=\"body2\">\n        <strong>{participantCount.toLocaleString()}</strong> people joined the{' '}\n        <strong>{challengeTitle}</strong> challenge\n      </Typography>\n    </Box>\n  );\n}\n\ninterface PopularTodayProps {\n  items: { title: string; votes: number }[];\n}\n\nexport function PopularToday({ items }: PopularTodayProps) {\n  return (\n    <Box>\n      <Typography variant=\"subtitle2\" gutterBottom>\n        Most Upvoted Today\n      </Typography>\n      <Stack spacing={1}>\n        {items.map((item, idx) => (\n          <Box key={idx} display=\"flex\" alignItems=\"center\" gap={1}>\n            <Chip label={idx + 1} size=\"small\" sx={{ minWidth: 28, fontWeight: 700 }} />\n            <Typography variant=\"body2\" flex={1} noWrap>\n              {item.title}\n            </Typography>\n            <Box display=\"flex\" alignItems=\"center\" gap={0.5}>\n              <ThumbUp sx={{ fontSize: 14, color: '#1976d2' }} />\n              <Typography variant=\"caption\">{item.votes}</Typography>\n            </Box>\n          </Box>\n        ))}\n      </Stack>\n    </Box>\n  );\n}"
+    },
+    {
+      "type": "list",
+      "heading": "Social Proof Mechanics",
+      "ordered": false,
+      "items": [
+        "Activity counters — 'X users are reading this right now'",
+        "'Popular right now' badges on trending content",
+        "'X people liked this' with avatar stack showing who",
+        "Trending indicators with upward arrows and percentages",
+        "'Join X others who completed this challenge'",
+        "Recent activity feed showing real-time user actions",
+        "'This post was shared Y times this week'",
+        "Community milestone counters — 'We just hit 10,000 posts!'"
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Seasonal Events and Limited-Time Content",
+      "headingLevel": 2,
+      "body": "Time-limited events create urgency and excitement. Think holiday events in games, or GitHub's Hacktoberfest. Seasonal content gives users a reason to engage during specific periods and creates shared community experiences."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "services/event_service.py",
+      "description": "Seasonal event system with time-limited challenges, exclusive badges, and bonus XP",
+      "code": "from datetime import datetime\nfrom models import db, SeasonalEvent, UserEventProgress\nfrom services.xp_service import award_xp\n\n\ndef get_active_events() -> list[dict]:\n    \"\"\"Return all currently active seasonal events.\"\"\"\n    now = datetime.utcnow()\n    events = SeasonalEvent.query.filter(\n        SeasonalEvent.start_date <= now,\n        SeasonalEvent.end_date >= now,\n        SeasonalEvent.is_active == True,\n    ).all()\n\n    return [\n        {\n            \"id\": e.id,\n            \"title\": e.title,\n            \"description\": e.description,\n            \"theme\": e.theme,\n            \"start_date\": e.start_date.isoformat(),\n            \"end_date\": e.end_date.isoformat(),\n            \"xp_multiplier\": e.xp_multiplier,\n            \"exclusive_badge\": e.exclusive_badge_slug,\n            \"challenges\": e.challenges,  # JSON list of event-specific quests\n        }\n        for e in events\n    ]\n\n\ndef apply_event_xp_bonus(base_xp: int) -> int:\n    \"\"\"Multiply XP if a bonus event is active.\"\"\"\n    events = get_active_events()\n    multiplier = 1.0\n    for event in events:\n        if event[\"xp_multiplier\"] > multiplier:\n            multiplier = event[\"xp_multiplier\"]\n    return int(base_xp * multiplier)\n\n\ndef check_event_completion(user_id: int, event_id: int) -> dict | None:\n    \"\"\"Check if user completed all event challenges for the exclusive badge.\"\"\"\n    progress = UserEventProgress.query.filter_by(\n        user_id=user_id, event_id=event_id\n    ).first()\n\n    event = SeasonalEvent.query.get(event_id)\n    if not event or not progress:\n        return None\n\n    total = len(event.challenges)\n    completed = progress.completed_challenges\n\n    if completed >= total and not progress.reward_claimed:\n        progress.reward_claimed = True\n        award_xp(user_id, 500, f\"event_complete:{event.id}\")\n        db.session.commit()\n        return {\n            \"event_title\": event.title,\n            \"badge\": event.exclusive_badge_slug,\n            \"xp_reward\": 500,\n        }\n\n    return None"
+    },
+    {
+      "type": "accordion",
+      "title": "Event Calendar Design Tips",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "list",
+          "ordered": false,
+          "items": [
+            "Plan 4 major events per year aligned with seasons or holidays",
+            "Announce events 1-2 weeks early to build anticipation",
+            "Run events for 2-4 weeks — long enough to participate, short enough to feel urgent",
+            "Offer exclusive badges that can never be earned again — scarcity drives participation",
+            "Include a mix of easy and hard challenges so all skill levels can participate",
+            "Double XP weekends are simple to implement and always boost engagement",
+            "Anniversary events celebrating your app's launch create community nostalgia",
+            "Post-event wrap-ups showing community stats reinforce shared accomplishment"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "error",
+      "title": "Anti-Gaming: Defend Your System",
+      "body": "Every gamification system will be gamed. Users will create bots, spam low-effort content, and exploit loopholes to climb leaderboards. Design defenses from day one — the integrity of your system determines whether users trust it."
+    },
+    {
+      "type": "list",
+      "heading": "Anti-Abuse Measures",
+      "ordered": false,
+      "items": [
+        "Daily XP caps (e.g., 500 XP per day) to prevent grinding exploits",
+        "Diminishing returns on repeated identical actions within a short window",
+        "Minimum time between XP-earning actions (e.g., 30 seconds) to block bots",
+        "Rate limiting on API endpoints that award points",
+        "Manual review for leaderboard top spots before awarding prizes",
+        "Separate sandboxed leaderboards for accounts less than 7 days old",
+        "Content quality checks — upvoted content earns more than spam posts",
+        "IP-based duplicate detection to catch multi-account abuse",
+        "Anomaly detection that flags accounts earning XP 3x above average rate"
+      ]
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "middleware/rate_limit_xp.py",
+      "description": "Rate-limited XP awarding with daily caps and minimum action intervals",
+      "code": "from datetime import datetime, timedelta\nfrom functools import wraps\nfrom flask import g, jsonify\nfrom models import db, XPTransaction\n\nDAILY_XP_CAP = 500\nMIN_ACTION_INTERVAL_SECONDS = 30\n\n\ndef rate_limit_xp(action_name: str):\n    \"\"\"Decorator that enforces XP rate limits before awarding.\"\"\"\n    def decorator(f):\n        @wraps(f)\n        def wrapped(*args, **kwargs):\n            user_id = g.user_id\n            now = datetime.utcnow()\n\n            # Check minimum interval since last XP action\n            last_txn = (\n                XPTransaction.query\n                .filter_by(user_id=user_id)\n                .order_by(XPTransaction.created_at.desc())\n                .first()\n            )\n            if last_txn:\n                elapsed = (now - last_txn.created_at).total_seconds()\n                if elapsed < MIN_ACTION_INTERVAL_SECONDS:\n                    return jsonify({\n                        \"error\": \"rate_limited\",\n                        \"retry_after\": int(MIN_ACTION_INTERVAL_SECONDS - elapsed),\n                        \"message\": \"Please wait before performing another action.\",\n                    }), 429\n\n            # Check daily cap\n            today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)\n            earned_today = (\n                db.session.query(\n                    db.func.coalesce(db.func.sum(XPTransaction.amount), 0)\n                )\n                .filter(\n                    XPTransaction.user_id == user_id,\n                    XPTransaction.created_at >= today_start,\n                )\n                .scalar()\n            )\n\n            if earned_today >= DAILY_XP_CAP:\n                return jsonify({\n                    \"error\": \"daily_cap_reached\",\n                    \"earned_today\": earned_today,\n                    \"cap\": DAILY_XP_CAP,\n                    \"message\": \"You have reached the daily XP limit. Come back tomorrow!\",\n                }), 429\n\n            g.xp_remaining_today = DAILY_XP_CAP - earned_today\n            return f(*args, **kwargs)\n        return wrapped\n    return decorator\n\n\n# Usage:\n# @app.route('/api/posts', methods=['POST'])\n# @login_required\n# @rate_limit_xp('create_post')\n# def create_post():\n#     post = create_the_post()\n#     award_xp(g.user_id, XP_REWARDS['create_post'], 'create_post', 'post', post.id)\n#     return jsonify(post.to_dict()), 201"
+    },
+    {
+      "type": "text",
+      "heading": "Putting It All Together",
+      "headingLevel": 2,
+      "body": "The real power of gamification comes from connecting all these systems. A single user action — like posting a comment — can trigger a cascade of engagement mechanics: XP is awarded, the streak is updated, quest progress increments, achievements are checked, and the activity appears in the social feed. The engagement pipeline below orchestrates all of this through a single entry point."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "services/engagement_pipeline.py",
+      "description": "Central engagement pipeline that orchestrates all gamification systems after any user action",
+      "code": "from datetime import datetime\nfrom services.xp_service import award_xp, XP_REWARDS\nfrom services.streak_service import record_activity\nfrom services.achievement_service import check_achievements\nfrom services.quest_service import track_quest_progress\nfrom services.event_service import apply_event_xp_bonus\n\n\ndef handle_user_action(\n    user_id: int,\n    action: str,\n    source_type: str = None,\n    source_id: int = None,\n) -> dict:\n    \"\"\"Central handler called after every meaningful user action.\n\n    Orchestrates XP, streaks, quests, achievements, and events\n    in a single transaction-safe pipeline.\n\n    Args:\n        user_id: The acting user's ID.\n        action: Action key matching XP_REWARDS (e.g., 'create_post').\n        source_type: The entity type (e.g., 'post', 'comment').\n        source_id: The entity's ID for audit trail.\n\n    Returns:\n        A dict of everything that happened, for the frontend to display.\n    \"\"\"\n    result = {\n        \"xp\": None,\n        \"streak\": None,\n        \"achievements\": [],\n        \"quests_completed\": [],\n        \"event_bonus\": False,\n    }\n\n    # 1. Award XP (with event bonus if active)\n    base_xp = XP_REWARDS.get(action, 0)\n    if base_xp > 0:\n        boosted_xp = apply_event_xp_bonus(base_xp)\n        xp_result = award_xp(user_id, boosted_xp, action, source_type, source_id)\n        result[\"xp\"] = xp_result\n        result[\"event_bonus\"] = boosted_xp > base_xp\n\n    # 2. Update streak\n    streak_result = record_activity(user_id)\n    result[\"streak\"] = streak_result\n\n    # 3. Track quest progress\n    completed = track_quest_progress(user_id, action)\n    result[\"quests_completed\"] = completed\n\n    # 4. Check achievements (runs after XP and streak are updated)\n    newly_unlocked = check_achievements(user_id)\n    result[\"achievements\"] = newly_unlocked\n\n    return result\n\n\n# Example: a single comment triggers the entire pipeline\n#\n# In your route handler:\n#   comment = save_comment(data)\n#   engagement = handle_user_action(\n#       user_id=current_user.id,\n#       action='leave_comment',\n#       source_type='comment',\n#       source_id=comment.id,\n#   )\n#   return jsonify({\n#       'comment': comment.to_dict(),\n#       'engagement': engagement,  # frontend uses this for toasts\n#   })"
+    }
+  ]
+}

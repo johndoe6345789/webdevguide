@@ -1,0 +1,29 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "DON'T: Mega Component",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "src/UserDashboard.tsx",
+          "description": "This component does everything: fetches data, manages state, handles forms, and renders UI. It is 300 lines long, untestable, and any change risks breaking something.",
+          "code": "function UserDashboard() {\n  const [user, setUser] = useState(null);\n  const [orders, setOrders] = useState([]);\n  const [editName, setEditName] = useState(\"\");\n  const [loading, setLoading] = useState(true);\n  const [error, setError] = useState(null);\n  const [activeTab, setActiveTab] = useState(\"profile\");\n  const [sortBy, setSortBy] = useState(\"date\");\n\n  useEffect(() => {\n    fetch(\"/api/user\")\n      .then((r) => r.json())\n      .then((data) => {\n        setUser(data);\n        setEditName(data.name);\n        return fetch(`/api/orders?userId=${data.id}`);\n      })\n      .then((r) => r.json())\n      .then((data) => setOrders(data))\n      .catch((e) => setError(e.message))\n      .finally(() => setLoading(false));\n  }, []);\n\n  const handleUpdateName = async () => {\n    const res = await fetch(\"/api/user\", {\n      method: \"PATCH\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({ name: editName }),\n    });\n    const updated = await res.json();\n    setUser(updated);\n  };\n\n  const sortedOrders = [...orders].sort((a, b) => {\n    if (sortBy === \"date\") return b.date - a.date;\n    return b.total - a.total;\n  });\n\n  if (loading) return <Spinner />;\n  if (error) return <p>Error: {error}</p>;\n\n  return (\n    <div>\n      <h1>{user.name}</h1>\n      {/* ... 200 more lines of mixed concerns */}\n    </div>\n  );\n}"
+        }
+      ]
+    },
+    {
+      "label": "DO: Composed Components",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "src/features/dashboard/DashboardPage.tsx",
+          "description": "Each piece is its own module. The page component just composes them together. Each sub-component is independently testable and reusable.",
+          "code": "// --- hooks/useUser.ts (data fetching concern) ---\nexport function useUser() {\n  return useQuery({ queryKey: [\"user\"], queryFn: fetchUser });\n}\n\n// --- hooks/useOrders.ts (data fetching concern) ---\nexport function useOrders(userId: string) {\n  return useQuery({\n    queryKey: [\"orders\", userId],\n    queryFn: () => fetchOrders(userId),\n  });\n}\n\n// --- ProfileEditor.tsx (editing concern) ---\nfunction ProfileEditor({ user }: { user: User }) {\n  const [name, setName] = useState(user.name);\n  const mutation = useMutation({ mutationFn: updateUser });\n\n  return (\n    <form onSubmit={() => mutation.mutate({ name })}>\n      <input value={name} onChange={(e) => setName(e.target.value)} />\n      <button type=\"submit\">Save</button>\n    </form>\n  );\n}\n\n// --- OrderTable.tsx (display concern) ---\nfunction OrderTable({ orders }: { orders: Order[] }) {\n  const [sortBy, setSortBy] = useState<\"date\" | \"total\">(\"date\");\n  const sorted = useMemo(() => sortOrders(orders, sortBy), [orders, sortBy]);\n  return <table>{/* render sorted orders */}</table>;\n}\n\n// --- DashboardPage.tsx (composition) ---\nfunction DashboardPage() {\n  const { data: user, isLoading } = useUser();\n  const { data: orders } = useOrders(user?.id);\n\n  if (isLoading) return <Spinner />;\n  return (\n    <div>\n      <ProfileEditor user={user} />\n      <OrderTable orders={orders ?? []} />\n    </div>\n  );\n}"
+        }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,8 @@
-export default function useAnswerStyles(selected: boolean, correct?: boolean | null, reviewMode?: boolean) {
+export default function useAnswerStyles(
+  selected: boolean,
+  correct?: boolean | null,
+  reviewMode?: boolean,
+) {
   const borderColor = (() => {
     if (!reviewMode) return selected ? 'primary.main' : 'divider';
     if (correct === true) return 'success.main';

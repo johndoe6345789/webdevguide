@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Frontend Deep Dive",
+  "headingLevel": 2,
+  "body": "The frontend is a Next.js 15 application using the App Router, React 19, Material UI 6, Redux Toolkit with persistence, and next-intl for internationalization. It fetches data from the Flask API and renders it through a block-based component system."
+}

@@ -1,0 +1,7 @@
+{
+  "type": "code",
+  "language": "text",
+  "filename": "backend/requirements.txt",
+  "description": "All four backend dependencies. No ORM, no database driver -- just Flask, CORS, gunicorn, and dotenv.",
+  "code": "Flask==3.1.0\nFlask-Cors==5.0.1\ngunicorn==23.0.0\npython-dotenv==1.0.1"
+}

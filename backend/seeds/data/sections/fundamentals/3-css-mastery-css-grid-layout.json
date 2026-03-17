@@ -1,0 +1,22 @@
+{
+  "type": "accordion",
+  "title": "CSS Grid Layout",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "**CSS Grid** is a two-dimensional layout system for creating rows AND columns simultaneously. Use Grid for overall page layouts and complex grid-based designs. Use Flexbox for simpler one-dimensional arrangements."
+    },
+    {
+      "type": "code",
+      "language": "css",
+      "filename": "grid-examples.css",
+      "code": "/* Basic grid: 3 equal columns */\n.grid-3 {\n  display: grid;\n  grid-template-columns: 1fr 1fr 1fr; /* fr = fraction of available space */\n  gap: 1rem;\n}\n\n/* Repeat notation (same as above, but cleaner) */\n.grid-3-alt {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 1rem;\n}\n\n/* Auto-fit: as many columns as fit, minimum 250px each */\n.responsive-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\n  gap: 1.5rem;\n}\n\n/* Named areas for page layout */\n.page-layout {\n  display: grid;\n  grid-template-areas:\n    \"header  header  header\"\n    \"sidebar content content\"\n    \"footer  footer  footer\";\n  grid-template-columns: 250px 1fr 1fr;\n  grid-template-rows: auto 1fr auto;\n  min-height: 100vh;\n  gap: 1rem;\n}\n\n.page-layout header  { grid-area: header; }\n.page-layout .sidebar { grid-area: sidebar; }\n.page-layout .content { grid-area: content; }\n.page-layout footer  { grid-area: footer; }\n\n/* Spanning multiple columns or rows */\n.featured-card {\n  grid-column: span 2; /* Takes up 2 columns */\n  grid-row: span 2;    /* Takes up 2 rows */\n}"
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Grid vs Flexbox",
+      "body": "Use **Flexbox** for one-dimensional layouts (a row of nav items, a column of cards). Use **Grid** for two-dimensional layouts (a dashboard with rows and columns, a page with header/sidebar/content/footer). They work great together -- a Grid layout can contain Flex containers inside its cells."
+    }
+  ]
+}

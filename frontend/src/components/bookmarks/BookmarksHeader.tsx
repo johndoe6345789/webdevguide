@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
@@ -9,17 +10,18 @@ interface BookmarksHeaderProps {
 }
 
 export default function BookmarksHeader({ count }: BookmarksHeaderProps) {
+  const t = useTranslations('bookmarks');
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
       <Box>
         <Typography variant="h3" component="h1" fontWeight={700} gutterBottom>
-          Your Bookmarks
+          {t('title')}
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-          Pages you&apos;ve saved for quick access. Bookmark any page using the bookmark icon.
+          {t('description')}
         </Typography>
       </Box>
-      <Chip label={`${count} saved`} color="primary" />
+      <Chip label={t('saved', { count })} color="primary" />
     </Box>
   );
 }

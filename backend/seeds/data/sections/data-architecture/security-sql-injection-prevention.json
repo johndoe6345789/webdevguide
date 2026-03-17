@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "SQL Injection Prevention",
+  "headingLevel": 3,
+  "body": "SQL injection is one of the most common and dangerous web vulnerabilities. An attacker inserts malicious SQL into user input that gets executed by your database."
+}

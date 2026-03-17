@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Next.js App Router and Locale Routing",
+  "headingLevel": 3,
+  "body": "The frontend uses Next.js App Router with a `[locale]` dynamic segment for internationalization. Every page lives under `app/[locale]/`. The root layout at `app/layout.tsx` sets the HTML lang and metadata. The locale layout at `app/[locale]/layout.tsx` wraps children in the i18n provider, Redux store provider, theme registry, header, and footer."
+}

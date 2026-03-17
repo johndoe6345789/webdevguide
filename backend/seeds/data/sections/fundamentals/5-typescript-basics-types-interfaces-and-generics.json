@@ -1,0 +1,22 @@
+{
+  "type": "accordion",
+  "title": "Types, Interfaces, and Generics",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "TypeScript adds type annotations that describe what kind of data a variable holds, what a function accepts, and what it returns. The compiler checks these at build time and strips them out -- the runtime code is plain JavaScript."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "types-basics.ts",
+      "code": "// Primitive type annotations\nlet username: string = 'Alice';\nlet age: number = 30;\nlet isActive: boolean = true;\nlet data: null = null;\nlet maybe: undefined = undefined;\n\n// Arrays\nlet names: string[] = ['Alice', 'Bob'];\nlet scores: number[] = [95, 87, 92];\nlet matrix: number[][] = [[1, 2], [3, 4]];\n\n// Tuples (fixed-length arrays with specific types)\nlet coordinate: [number, number] = [40.7, -74.0];\nlet entry: [string, number] = ['Alice', 30];\n\n// Union types (can be one of several types)\nlet id: string | number = 'abc123';\nid = 42; // also valid\n\n// Literal types (restrict to specific values)\ntype Direction = 'north' | 'south' | 'east' | 'west';\ntype HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';\ntype StatusCode = 200 | 201 | 400 | 404 | 500;\n\nlet dir: Direction = 'north'; // only these 4 values are allowed\n\n// Function types\nfunction add(a: number, b: number): number {\n  return a + b;\n}\n\nconst greet = (name: string): string => {\n  return `Hello, ${name}!`;\n};\n\n// Optional and default parameters\nfunction createUser(name: string, age?: number, role: string = 'user') {\n  return { name, age, role };\n}"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "interfaces.ts",
+      "code": "// Interface: describes the shape of an object\ninterface User {\n  id: number;\n  name: string;\n  email: string;\n  bio?: string;           // Optional\n  readonly createdAt: Date; // Cannot be changed after creation\n}\n\n// Extending interfaces\ninterface AdminUser extends User {\n  permissions: string[];\n  department: string;\n}\n\n// Type alias (similar to interface, but more flexible)\ntype ApiResponse<T> = {\n  data: T;\n  status: number;\n  message: string;\n};\n\n// Using generics -- T is a placeholder for any type\ntype UserResponse = ApiResponse<User>;\ntype UsersResponse = ApiResponse<User[]>;\n\n// Generic function\nfunction getFirst<T>(items: T[]): T | undefined {\n  return items[0];\n}\n\nconst firstNumber = getFirst([1, 2, 3]);       // type: number | undefined\nconst firstString = getFirst(['a', 'b', 'c']); // type: string | undefined\n\n// Generic with constraints\nfunction getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {\n  return obj[key];\n}\n\nconst user: User = { id: 1, name: 'Alice', email: 'a@b.com', createdAt: new Date() };\nconst name = getProperty(user, 'name'); // type: string\n// getProperty(user, 'invalid'); // Error: 'invalid' is not a key of User"
+    }
+  ]
+}

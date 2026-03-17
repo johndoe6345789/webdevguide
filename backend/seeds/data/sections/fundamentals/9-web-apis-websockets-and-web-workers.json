@@ -1,0 +1,45 @@
+{
+  "type": "accordion",
+  "title": "WebSockets and Web Workers",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "**WebSockets** provide a persistent, two-way communication channel between the browser and server -- ideal for chat apps, live notifications, and real-time dashboards. **Web Workers** run JavaScript in a background thread so heavy computations do not freeze the UI."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "WebSockets",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "typescript",
+              "filename": "websocket-example.ts",
+              "code": "// Connect to a WebSocket server\nconst socket = new WebSocket('wss://api.example.com/ws');\n\n// Connection opened\nsocket.addEventListener('open', () => {\n  console.log('Connected to server');\n  socket.send(JSON.stringify({ type: 'subscribe', channel: 'notifications' }));\n});\n\n// Listen for messages\nsocket.addEventListener('message', (event) => {\n  const data = JSON.parse(event.data);\n  console.log('Received:', data);\n});\n\n// Handle errors and closing\nsocket.addEventListener('error', (error) => {\n  console.error('WebSocket error:', error);\n});\n\nsocket.addEventListener('close', (event) => {\n  console.log(`Connection closed: ${event.code} ${event.reason}`);\n  // Reconnect logic would go here\n});\n\n// Send a message\nfunction sendMessage(content: string) {\n  if (socket.readyState === WebSocket.OPEN) {\n    socket.send(JSON.stringify({ type: 'message', content }));\n  }\n}\n\n// Close the connection\n// socket.close();"
+            }
+          ]
+        },
+        {
+          "label": "Web Workers",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "typescript",
+              "filename": "worker-usage.ts",
+              "description": "Main thread: create and communicate with the worker",
+              "code": "// Create a worker from a separate file\nconst worker = new Worker('/workers/heavy-calc.js');\n\n// Send data to the worker\nworker.postMessage({ numbers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] });\n\n// Receive results from the worker\nworker.addEventListener('message', (event) => {\n  console.log('Result from worker:', event.data.result);\n});\n\n// Handle errors\nworker.addEventListener('error', (error) => {\n  console.error('Worker error:', error.message);\n});\n\n// Terminate when done\n// worker.terminate();"
+            },
+            {
+              "type": "code",
+              "language": "javascript",
+              "filename": "workers/heavy-calc.js",
+              "description": "Worker file: runs in a separate thread",
+              "code": "// This runs in a separate thread -- no access to DOM\nself.addEventListener('message', (event) => {\n  const { numbers } = event.data;\n\n  // Simulate heavy computation\n  const result = numbers.reduce((sum, n) => {\n    // Expensive calculation here\n    for (let i = 0; i < 1000000; i++) {\n      sum += Math.sqrt(n * i);\n    }\n    return sum;\n  }, 0);\n\n  // Send the result back to the main thread\n  self.postMessage({ result });\n});"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "type": "accordion",
+  "title": "CSS Variables, Animations, and BEM",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "Modern CSS includes custom properties (variables) for theming, keyframe animations for motion, and naming conventions like BEM for maintainable code."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "CSS Variables",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "css",
+              "filename": "variables.css",
+              "code": "/* Define variables on :root for global access */\n:root {\n  --color-primary: #3b82f6;\n  --color-primary-dark: #1d4ed8;\n  --color-text: #1f2937;\n  --color-bg: #ffffff;\n  --font-sans: 'Inter', system-ui, sans-serif;\n  --spacing-sm: 0.5rem;\n  --spacing-md: 1rem;\n  --spacing-lg: 2rem;\n  --radius: 8px;\n  --shadow: 0 1px 3px rgba(0, 0, 0, 0.12);\n}\n\n/* Dark mode with a single class swap */\n[data-theme='dark'] {\n  --color-text: #f9fafb;\n  --color-bg: #111827;\n  --shadow: 0 1px 3px rgba(0, 0, 0, 0.5);\n}\n\n/* Use variables anywhere */\n.button {\n  background: var(--color-primary);\n  color: white;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-radius: var(--radius);\n  font-family: var(--font-sans);\n  border: none;\n  cursor: pointer;\n}\n\n.button:hover {\n  background: var(--color-primary-dark);\n}"
+            }
+          ]
+        },
+        {
+          "label": "Animations",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "css",
+              "filename": "animations.css",
+              "code": "/* Transition: smooth changes on state change */\n.button {\n  background: #3b82f6;\n  transition: background 200ms ease, transform 150ms ease;\n}\n\n.button:hover {\n  background: #1d4ed8;\n  transform: translateY(-1px);\n}\n\n.button:active {\n  transform: translateY(0);\n}\n\n/* Keyframe animation: complex multi-step animations */\n@keyframes fadeInUp {\n  from {\n    opacity: 0;\n    transform: translateY(20px);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0);\n  }\n}\n\n.card {\n  animation: fadeInUp 400ms ease-out;\n}\n\n/* Spinner animation */\n@keyframes spin {\n  to { transform: rotate(360deg); }\n}\n\n.spinner {\n  width: 24px;\n  height: 24px;\n  border: 3px solid #e5e7eb;\n  border-top-color: #3b82f6;\n  border-radius: 50%;\n  animation: spin 600ms linear infinite;\n}\n\n/* Respect user preferences for reduced motion */\n@media (prefers-reduced-motion: reduce) {\n  *, *::before, *::after {\n    animation-duration: 0.01ms !important;\n    transition-duration: 0.01ms !important;\n  }\n}"
+            }
+          ]
+        },
+        {
+          "label": "BEM Naming",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "**BEM (Block Element Modifier)** is a naming convention that makes CSS classes predictable and avoids specificity wars. A **Block** is a standalone component, an **Element** is a part of a block, and a **Modifier** is a variation."
+            },
+            {
+              "type": "code",
+              "language": "css",
+              "filename": "bem-example.css",
+              "code": "/* Block: .card */\n.card {\n  border: 1px solid #e5e7eb;\n  border-radius: 8px;\n  padding: 1.5rem;\n}\n\n/* Element: .card__title (part of the card) */\n.card__title {\n  font-size: 1.25rem;\n  font-weight: 600;\n  margin-bottom: 0.5rem;\n}\n\n.card__body {\n  color: #6b7280;\n  line-height: 1.6;\n}\n\n.card__footer {\n  margin-top: 1rem;\n  border-top: 1px solid #e5e7eb;\n  padding-top: 1rem;\n}\n\n/* Modifier: .card--featured (a variation of the card) */\n.card--featured {\n  border-color: #3b82f6;\n  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.1);\n}\n\n.card--compact {\n  padding: 0.75rem;\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

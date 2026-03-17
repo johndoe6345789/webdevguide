@@ -1,0 +1,345 @@
+{
+  "title": "Building This Guide",
+  "slug": "building-this-guide",
+  "description": "A complete walkthrough of how this web development guide was built -- from the JSON seed data system to the Flask API to the Next.js frontend. This section is the guide explaining itself, in enough detail that you could rebuild it from scratch.",
+  "icon": "AutoStories",
+  "order": 20,
+  "estimatedMinutes": 120,
+  "difficulty": "advanced",
+  "prerequisites": [
+    "backend-guide",
+    "fundamentals",
+    "docker-guide"
+  ],
+  "keyPoints": [
+    "The entire guide is powered by JSON files -- every section, exam question, and glossary term is authored in JSON and served through a Flask API",
+    "The block-based content system uses 10 block types (text, code, list, alert, step, tabs, accordion, table, cardGrid, image) that the BlockRenderer dispatches to specialized React components",
+    "The $ref resolution system lets you split large JSON files into smaller, modular pieces that are assembled at seed time",
+    "Flask's app factory pattern with blueprints keeps the backend organized into guide, exam, and glossary modules",
+    "JsonDatabase is a thread-safe file-based database that stores collections as JSON files with atomic writes and per-collection locking",
+    "The Redux store uses seven slices -- four persisted (theme, exam, progress, bookmarks) and three transient (guide, glossary, generator)",
+    "Adding a new guide section is as simple as creating a JSON file, adding one line to index.json, creating a page.tsx, and adding a nav entry -- no backend code changes needed",
+    "Docker multi-stage builds keep the production images small, while dev compose files use volume mounts for hot reloading",
+    "GitHub Actions CI/CD runs flake8, ESLint, TypeScript checking, database seeding, frontend build, and Docker health checks on every push"
+  ],
+  "blocks": [
+    {
+      "$ref": "building-this-guide/the-guide-that-explains-itself-the-guide-that-explains-itself.json"
+    },
+    {
+      "$ref": "building-this-guide/the-guide-that-explains-itself-why-this-section-matters.json"
+    },
+    {
+      "$ref": "building-this-guide/architecture-overview-architecture-overview.json"
+    },
+    {
+      "$ref": "building-this-guide/architecture-overview-block-1.json"
+    },
+    {
+      "$ref": "building-this-guide/architecture-overview-end-to-end-data-flow.json"
+    },
+    {
+      "$ref": "building-this-guide/architecture-overview-from-json-file-to-rendered-page.json"
+    },
+    {
+      "$ref": "building-this-guide/project-structure-project-structure.json"
+    },
+    {
+      "$ref": "building-this-guide/project-structure-block-6.json"
+    },
+    {
+      "$ref": "building-this-guide/backend-deep-dive-backend-deep-dive.json"
+    },
+    {
+      "$ref": "building-this-guide/backend-deep-dive-app-factory-pattern.json"
+    },
+    {
+      "$ref": "building-this-guide/backend-deep-dive-block-9.json"
+    },
+    {
+      "$ref": "building-this-guide/backend-deep-dive-configuration-classes.json"
+    },
+    {
+      "$ref": "building-this-guide/backend-deep-dive-block-11.json"
+    },
+    {
+      "$ref": "building-this-guide/backend-deep-dive-blueprint-structure.json"
+    },
+    {
+      "$ref": "building-this-guide/backend-deep-dive-api-endpoints.json"
+    },
+    {
+      "$ref": "building-this-guide/backend-deep-dive-7.json"
+    },
+    {
+      "$ref": "building-this-guide/backend-deep-dive-service-layer.json"
+    },
+    {
+      "$ref": "building-this-guide/backend-deep-dive-block-14.json"
+    },
+    {
+      "$ref": "building-this-guide/backend-deep-dive-jsondatabase-thread-safe-file-storage.json"
+    },
+    {
+      "$ref": "building-this-guide/backend-deep-dive-block-16.json"
+    },
+    {
+      "$ref": "building-this-guide/backend-deep-dive-the-ref-resolution-system.json"
+    },
+    {
+      "$ref": "building-this-guide/backend-deep-dive-block-18.json"
+    },
+    {
+      "$ref": "building-this-guide/backend-deep-dive-entrypoint-script.json"
+    },
+    {
+      "$ref": "building-this-guide/backend-deep-dive-block-20.json"
+    },
+    {
+      "$ref": "building-this-guide/the-content-system-the-content-system.json"
+    },
+    {
+      "$ref": "building-this-guide/the-content-system-section-json-structure.json"
+    },
+    {
+      "$ref": "building-this-guide/the-content-system-block-23.json"
+    },
+    {
+      "$ref": "building-this-guide/the-content-system-block-type-reference.json"
+    },
+    {
+      "$ref": "building-this-guide/the-content-system-all-block-types.json"
+    },
+    {
+      "$ref": "building-this-guide/the-content-system-block-25.json"
+    },
+    {
+      "$ref": "building-this-guide/the-content-system-the-indexjson-root-map.json"
+    },
+    {
+      "$ref": "building-this-guide/the-content-system-block-27.json"
+    },
+    {
+      "$ref": "building-this-guide/frontend-deep-dive-frontend-deep-dive.json"
+    },
+    {
+      "$ref": "building-this-guide/frontend-deep-dive-nextjs-app-router-and-locale-routing.json"
+    },
+    {
+      "$ref": "building-this-guide/frontend-deep-dive-block-2.json"
+    },
+    {
+      "$ref": "building-this-guide/frontend-deep-dive-guide-section-pages.json"
+    },
+    {
+      "$ref": "building-this-guide/frontend-deep-dive-block-31.json"
+    },
+    {
+      "$ref": "building-this-guide/frontend-deep-dive-block-rendering-pipeline.json"
+    },
+    {
+      "$ref": "building-this-guide/frontend-deep-dive-6.json"
+    },
+    {
+      "$ref": "building-this-guide/frontend-deep-dive-redux-store-with-persistence.json"
+    },
+    {
+      "$ref": "building-this-guide/frontend-deep-dive-block-34.json"
+    },
+    {
+      "$ref": "building-this-guide/frontend-deep-dive-redux-slices-overview.json"
+    },
+    {
+      "$ref": "building-this-guide/frontend-deep-dive-all-seven-redux-slices.json"
+    },
+    {
+      "$ref": "building-this-guide/frontend-deep-dive-guide-slice-async-thunks.json"
+    },
+    {
+      "$ref": "building-this-guide/frontend-deep-dive-block-37.json"
+    },
+    {
+      "$ref": "building-this-guide/frontend-deep-dive-api-client.json"
+    },
+    {
+      "$ref": "building-this-guide/frontend-deep-dive-block-39.json"
+    },
+    {
+      "$ref": "building-this-guide/frontend-deep-dive-material-ui-theming.json"
+    },
+    {
+      "$ref": "building-this-guide/frontend-deep-dive-16.json"
+    },
+    {
+      "$ref": "building-this-guide/frontend-deep-dive-internationalization-with-next-intl.json"
+    },
+    {
+      "$ref": "building-this-guide/frontend-deep-dive-18.json"
+    },
+    {
+      "$ref": "building-this-guide/frontend-deep-dive-navigation-system.json"
+    },
+    {
+      "$ref": "building-this-guide/frontend-deep-dive-block-43.json"
+    },
+    {
+      "$ref": "building-this-guide/devops-devops.json"
+    },
+    {
+      "$ref": "building-this-guide/devops-docker-multi-stage-builds.json"
+    },
+    {
+      "$ref": "building-this-guide/devops-block-46.json"
+    },
+    {
+      "$ref": "building-this-guide/devops-docker-compose.json"
+    },
+    {
+      "$ref": "building-this-guide/devops-block-4.json"
+    },
+    {
+      "$ref": "building-this-guide/devops-github-actions-cicd-pipeline.json"
+    },
+    {
+      "$ref": "building-this-guide/devops-block-49.json"
+    },
+    {
+      "$ref": "building-this-guide/how-to-add-a-new-guide-section-how-to-add-a-new-guide-section.json"
+    },
+    {
+      "$ref": "building-this-guide/how-to-add-a-new-guide-section-create-the-json-section-file.json"
+    },
+    {
+      "$ref": "building-this-guide/how-to-add-a-new-guide-section-register-it-in-indexjson.json"
+    },
+    {
+      "$ref": "building-this-guide/how-to-add-a-new-guide-section-create-the-nextjs-page.json"
+    },
+    {
+      "$ref": "building-this-guide/how-to-add-a-new-guide-section-add-navigation-entry-and-translation.json"
+    },
+    {
+      "$ref": "building-this-guide/how-to-add-a-new-guide-section-re-seed-and-verify.json"
+    },
+    {
+      "$ref": "building-this-guide/how-to-add-a-new-guide-section-checklist-for-new-sections.json"
+    },
+    {
+      "$ref": "building-this-guide/development-workflow-development-workflow.json"
+    },
+    {
+      "$ref": "building-this-guide/development-workflow-local-setup-without-docker.json"
+    },
+    {
+      "$ref": "building-this-guide/development-workflow-clone-and-install-backend.json"
+    },
+    {
+      "$ref": "building-this-guide/development-workflow-seed-the-database-and-start-the-backend.json"
+    },
+    {
+      "$ref": "building-this-guide/development-workflow-install-frontend-and-start-dev-server.json"
+    },
+    {
+      "$ref": "building-this-guide/development-workflow-running-with-docker.json"
+    },
+    {
+      "$ref": "building-this-guide/development-workflow-block-63.json"
+    },
+    {
+      "$ref": "building-this-guide/development-workflow-backend-dependencies.json"
+    },
+    {
+      "$ref": "building-this-guide/development-workflow-block-65.json"
+    },
+    {
+      "$ref": "building-this-guide/development-workflow-frontend-dependencies.json"
+    },
+    {
+      "$ref": "building-this-guide/development-workflow-key-frontend-dependencies.json"
+    },
+    {
+      "$ref": "building-this-guide/the-exam-and-glossary-systems-the-exam-and-glossary-systems.json"
+    },
+    {
+      "$ref": "building-this-guide/the-exam-and-glossary-systems-exam-system.json"
+    },
+    {
+      "$ref": "building-this-guide/the-exam-and-glossary-systems-block-69.json"
+    },
+    {
+      "$ref": "building-this-guide/the-exam-and-glossary-systems-glossary-system.json"
+    },
+    {
+      "$ref": "building-this-guide/the-exam-and-glossary-systems-block-71.json"
+    },
+    {
+      "$ref": "building-this-guide/the-exam-and-glossary-systems-typed-redux-hooks.json"
+    },
+    {
+      "$ref": "building-this-guide/the-exam-and-glossary-systems-block-73.json"
+    },
+    {
+      "$ref": "building-this-guide/design-decisions-and-tradeoffs-design-decisions-and-tradeoffs.json"
+    },
+    {
+      "$ref": "building-this-guide/design-decisions-and-tradeoffs-why-json-files-instead-of-a-real-database.json"
+    },
+    {
+      "$ref": "building-this-guide/design-decisions-and-tradeoffs-why-blocks-instead-of-markdown.json"
+    },
+    {
+      "$ref": "building-this-guide/design-decisions-and-tradeoffs-why-ref-resolution-at-seed-time-not-request-time.json"
+    },
+    {
+      "$ref": "building-this-guide/design-decisions-and-tradeoffs-why-redux-instead-of-react-query-swr.json"
+    },
+    {
+      "$ref": "building-this-guide/design-decisions-and-tradeoffs-why-file-based-routing-with-a-page-per-section.json"
+    },
+    {
+      "$ref": "building-this-guide/design-decisions-and-tradeoffs-why-flask-instead-of-fastapi-express-django.json"
+    },
+    {
+      "$ref": "building-this-guide/extending-the-guide-extending-the-guide.json"
+    },
+    {
+      "$ref": "building-this-guide/extending-the-guide-common-modifications.json"
+    },
+    {
+      "$ref": "building-this-guide/extending-the-guide-adding-a-new-block-type.json"
+    },
+    {
+      "$ref": "building-this-guide/extending-the-guide-define-the-typescript-interface.json"
+    },
+    {
+      "$ref": "building-this-guide/extending-the-guide-create-the-renderer-component.json"
+    },
+    {
+      "$ref": "building-this-guide/extending-the-guide-add-to-blockrenderer.json"
+    },
+    {
+      "$ref": "building-this-guide/testing-and-quality-testing-and-quality.json"
+    },
+    {
+      "$ref": "building-this-guide/testing-and-quality-block-87.json"
+    },
+    {
+      "$ref": "building-this-guide/testing-and-quality-always-seed-before-committing.json"
+    },
+    {
+      "$ref": "building-this-guide/environment-variables-environment-variables.json"
+    },
+    {
+      "$ref": "building-this-guide/environment-variables-environment-variables-reference.json"
+    },
+    {
+      "$ref": "building-this-guide/production-deployment-production-deployment.json"
+    },
+    {
+      "$ref": "building-this-guide/production-deployment-production-deployment-checklist.json"
+    },
+    {
+      "$ref": "building-this-guide/production-deployment-you-now-have-the-complete-picture.json"
+    }
+  ]
+}

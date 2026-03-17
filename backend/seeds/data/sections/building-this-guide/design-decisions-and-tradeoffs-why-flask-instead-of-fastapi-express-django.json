@@ -1,0 +1,11 @@
+{
+  "type": "accordion",
+  "title": "Why Flask instead of FastAPI / Express / Django?",
+  "defaultExpanded": false,
+  "blocks": [
+    {
+      "type": "text",
+      "body": "Flask was chosen for its simplicity and minimal boilerplate. The backend serves pre-resolved JSON -- there is no ORM, no authentication, no complex query logic. Flask's app factory pattern and blueprint system provide just enough structure to keep the code organized. The entire backend is under 300 lines of Python across all files. FastAPI would add unnecessary async complexity for what is essentially a static file server. Django would be massive overkill. Express would work but would mean two JavaScript runtimes instead of one Python + one Node."
+    }
+  ]
+}

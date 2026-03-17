@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "You Built a Complete Backend!",
+  "headingLevel": 2,
+  "body": "You now know how to create a Flask API, organize it with blueprints, store data in JSON files, protect routes with JWT authentication, connect it to a React frontend, handle errors properly, and write tests to keep everything working."
+}

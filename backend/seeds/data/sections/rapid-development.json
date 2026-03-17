@@ -1,0 +1,638 @@
+{
+  "title": "Rapid Development -- Ship Fast, Iterate Fast",
+  "slug": "rapid-development",
+  "description": "Stop overthinking, start shipping. Templates, tools, and tactics to go from zero to deployed in minutes, not months.",
+  "icon": "RocketLaunch",
+  "order": 35,
+  "estimatedMinutes": 20,
+  "difficulty": "beginner",
+  "prerequisites": [],
+  "keyPoints": [
+    "Ship an MVP before perfecting anything",
+    "Use starter templates and scaffolding to skip boilerplate",
+    "Leverage AI to generate code, tests, and debug faster",
+    "Deploy in seconds with modern CLI tools",
+    "Know when speed creates debt and when it creates momentum"
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "heading": "The Speed Mindset",
+      "headingLevel": 2,
+      "body": "The fastest developers are not the ones who type the fastest. They are the ones who build the smallest possible thing that works, ship it, get feedback, and iterate. Every hour you spend perfecting a feature nobody has used yet is an hour wasted. Your first version will be wrong. Accept that. Ship it anyway."
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "The Golden Rule of Rapid Development",
+      "body": "If you are not embarrassed by the first version of your product, you launched too late. Get something real in front of real users as fast as humanly possible. Their feedback is worth more than a month of planning."
+    },
+    {
+      "type": "table",
+      "heading": "MVP vs Perfect -- When to Cut Corners",
+      "headers": ["Cut This Corner", "Never Cut This Corner"],
+      "rows": [
+        ["Pixel-perfect design -- use a component library", "Authentication and authorization -- never roll your own crypto"],
+        ["Full test coverage -- test critical paths only", "Input validation -- never trust user input"],
+        ["Microservices architecture -- start with a monolith", "HTTPS and secure headers -- security from day one"],
+        ["Custom design system -- use Tailwind and shadcn/ui", "Database backups -- you will lose data eventually"],
+        ["Internationalization -- launch in one language first", "Environment variables -- never hardcode secrets"],
+        ["Advanced caching -- optimize when you have traffic", "Error boundaries -- catch crashes before users see them"]
+      ]
+    },
+    {
+      "type": "text",
+      "body": "Perfect is the enemy of shipped. A working prototype in a users hands teaches you more than six months of architecture planning. The goal is not to build the final product on day one. The goal is to learn what the final product should be."
+    },
+    {
+      "type": "text",
+      "heading": "Starter Templates -- Full Project in 60 Seconds",
+      "headingLevel": 2,
+      "body": "Stop starting from scratch. Every major framework has a CLI that scaffolds a production-ready project with routing, TypeScript, linting, and styling already configured. Pick one and run it."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Next.js",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "bash",
+              "filename": "terminal",
+              "description": "Creates a full Next.js app with TypeScript, Tailwind CSS, ESLint, App Router, and src directory. You are coding in under 60 seconds.",
+              "code": "npx create-next-app@latest my-app --typescript --tailwind --eslint --app --src-dir --use-npm\ncd my-app\nnpm run dev"
+            }
+          ]
+        },
+        {
+          "label": "Vite + React",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "bash",
+              "filename": "terminal",
+              "description": "Vite is blazing fast. Hot module replacement in milliseconds, not seconds. Great for SPAs where you do not need server-side rendering.",
+              "code": "npm create vite@latest my-app -- --template react-ts\ncd my-app\nnpm install\nnpm run dev"
+            }
+          ]
+        },
+        {
+          "label": "T3 Stack",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "bash",
+              "filename": "terminal",
+              "description": "The T3 Stack gives you Next.js, TypeScript, tRPC, Prisma, Tailwind, and NextAuth all wired together. Full-stack type safety out of the box.",
+              "code": "npm create t3-app@latest my-app\ncd my-app\nnpm run dev"
+            }
+          ]
+        },
+        {
+          "label": "shadcn/ui Init",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "bash",
+              "filename": "terminal",
+              "description": "After creating a Next.js app, run shadcn init to set up a beautiful component system. Then add components one at a time as you need them.",
+              "code": "npx shadcn@latest init\nnpx shadcn@latest add button card input dialog table\n# Components are copied into your project -- you own and customize them"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Pro Tip -- Pick a Stack and Stick With It",
+      "body": "Do not spend three days comparing frameworks. Pick Next.js + Tailwind + shadcn/ui if you have no strong preference. It is the most popular combo, has the most tutorials, and the most StackOverflow answers. You can always switch later (but you probably will not need to)."
+    },
+    {
+      "type": "text",
+      "heading": "Copy-Paste Development -- No Shame, All Speed",
+      "headingLevel": 2,
+      "body": "The fastest code is code you did not write. Component libraries like shadcn/ui give you production-quality UI components that you copy directly into your project. No npm dependency, no version conflicts, full customization. Just paste and go."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/app/dashboard/page.tsx",
+      "description": "A complete dashboard page built entirely from shadcn/ui components. You wrote zero CSS. Zero custom components. It looks professional and it took five minutes.",
+      "code": "import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';\nimport { Button } from '@/components/ui/button';\nimport { Badge } from '@/components/ui/badge';\n\nexport default function DashboardPage() {\n  return (\n    <div className=\"p-8 space-y-6\">\n      <div className=\"flex justify-between items-center\">\n        <h1 className=\"text-3xl font-bold\">Dashboard</h1>\n        <Button>New Project</Button>\n      </div>\n      <div className=\"grid grid-cols-1 md:grid-cols-3 gap-4\">\n        <Card>\n          <CardHeader><CardTitle>Revenue</CardTitle></CardHeader>\n          <CardContent>\n            <p className=\"text-3xl font-bold\">$12,450</p>\n            <Badge variant=\"secondary\">+12% this month</Badge>\n          </CardContent>\n        </Card>\n        <Card>\n          <CardHeader><CardTitle>Users</CardTitle></CardHeader>\n          <CardContent>\n            <p className=\"text-3xl font-bold\">1,234</p>\n            <Badge variant=\"secondary\">+8% this week</Badge>\n          </CardContent>\n        </Card>\n        <Card>\n          <CardHeader><CardTitle>Active Now</CardTitle></CardHeader>\n          <CardContent>\n            <p className=\"text-3xl font-bold\">42</p>\n            <Badge variant=\"outline\">Live</Badge>\n          </CardContent>\n        </Card>\n      </div>\n    </div>\n  );\n}"
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "shadcn/ui",
+          "body": "Copy-paste React components built on Radix UI and Tailwind. You own every line. No dependency lock-in. The gold standard for rapid UI development.",
+          "icon": "ContentCopy",
+          "chip": "Free"
+        },
+        {
+          "title": "Tailwind UI",
+          "body": "Premium templates and components from the Tailwind team. Hundreds of responsive, accessible blocks you drop into your project. Worth every dollar for speed.",
+          "icon": "Palette",
+          "chip": "Paid"
+        },
+        {
+          "title": "MUI Templates",
+          "body": "Material UI offers free and premium templates for dashboards, landing pages, and e-commerce. Battle-tested components with theming built in.",
+          "icon": "Dashboard",
+          "chip": "Free + Paid"
+        },
+        {
+          "title": "v0 by Vercel",
+          "body": "Describe a UI in plain English and get a working React component with shadcn/ui and Tailwind. AI-generated copy-paste code that actually looks good.",
+          "icon": "AutoAwesome",
+          "chip": "AI"
+        },
+        {
+          "title": "Aceternity UI",
+          "body": "Animated, modern UI components you copy-paste into your project. Scroll effects, hero sections, cards with glowing borders -- the fancy stuff made easy.",
+          "icon": "Animation",
+          "chip": "Free"
+        },
+        {
+          "title": "Magic UI",
+          "body": "Beautiful animated components built on top of shadcn/ui and Tailwind. Text animations, number tickers, gradient borders -- all copy-paste ready.",
+          "icon": "AutoFixHigh",
+          "chip": "Free"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "AI-Assisted Speed -- Your Fastest Teammate",
+      "headingLevel": 2,
+      "body": "AI does not replace you. It replaces the boring parts. Boilerplate, tests, documentation, regex, SQL queries, CSS layouts -- all the stuff that slows you down and does not require creative thinking. Use AI for the grunt work so you can focus on the product."
+    },
+    {
+      "type": "list",
+      "heading": "What AI Does Well (Use It Here)",
+      "items": [
+        "Generate boilerplate -- CRUD endpoints, form components, API routes, database schemas",
+        "Write tests -- Give it your function, ask for unit tests covering edge cases",
+        "Debug errors -- Paste a stack trace and get an explanation plus fix in seconds",
+        "Scaffold entire features -- Describe what you want in plain English, get working code",
+        "Convert between formats -- JSON to TypeScript types, SQL to Prisma schema, REST to tRPC",
+        "Write documentation -- Give it your code, get JSDoc comments and README sections",
+        "Regex and complex logic -- Describe the pattern, get the expression with explanation"
+      ]
+    },
+    {
+      "type": "code",
+      "language": "text",
+      "filename": "AI Prompt Examples",
+      "description": "Copy these prompts directly into Claude or ChatGPT. Be specific about your stack, include example data, and ask for TypeScript. The more context you give, the better the output.",
+      "code": "PROMPT 1 -- Scaffold an API:\n\"Create a Next.js API route at /api/posts that handles GET (list all, with\npagination), POST (create), and DELETE (by id). Use Prisma with a Post model\nthat has id, title, content, published, and createdAt. Include error handling\nand return proper HTTP status codes. TypeScript.\"\n\nPROMPT 2 -- Generate tests:\n\"Write Jest tests for this function. Cover: valid input, empty input, null,\nundefined, very large numbers, negative numbers, and string input. Use\ndescribe/it blocks with clear test names.\n[paste your function here]\"\n\nPROMPT 3 -- Debug an error:\n\"I am getting this error in my Next.js app. Explain what is happening and\ngive me the fix:\n[paste the full error message and stack trace]\"\n\nPROMPT 4 -- Convert formats:\n\"Convert this SQL schema to a Prisma schema. Preserve all relationships,\ndefaults, and constraints:\n[paste SQL]\""
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "AI Code Needs Review",
+      "body": "AI-generated code is a first draft, not a final product. Always review it for security issues (SQL injection, XSS), hardcoded values, missing error handling, and incorrect business logic. Trust but verify. The speed gain comes from editing AI output, not blindly shipping it."
+    },
+    {
+      "type": "text",
+      "heading": "The Rapid Prototyping Stack",
+      "headingLevel": 2,
+      "body": "You need a stack where every layer talks to every other layer with full type safety, zero configuration, and instant feedback. Two combos dominate rapid prototyping right now."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Next.js + Prisma + tRPC",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "The type-safe full-stack combo. Change your database schema, and your frontend code gets type errors instantly if it is using the wrong fields. No REST endpoints to maintain, no OpenAPI specs, no code generation. Just end-to-end TypeScript."
+            },
+            {
+              "type": "code",
+              "language": "typescript",
+              "filename": "server/routers/post.ts",
+              "description": "A complete tRPC router with full CRUD. Your frontend gets autocomplete on every field name, every input, every return type. Change the schema and TypeScript catches every broken call site.",
+              "code": "import { z } from 'zod';\nimport { router, publicProcedure } from '../trpc';\nimport { prisma } from '../db';\n\nexport const postRouter = router({\n  list: publicProcedure\n    .input(z.object({ limit: z.number().min(1).max(100).default(10) }))\n    .query(async ({ input }) => {\n      return prisma.post.findMany({\n        take: input.limit,\n        orderBy: { createdAt: 'desc' },\n      });\n    }),\n\n  create: publicProcedure\n    .input(z.object({ title: z.string().min(1), content: z.string() }))\n    .mutation(async ({ input }) => {\n      return prisma.post.create({ data: input });\n    }),\n\n  delete: publicProcedure\n    .input(z.object({ id: z.string() }))\n    .mutation(async ({ input }) => {\n      return prisma.post.delete({ where: { id: input.id } });\n    }),\n});"
+            }
+          ]
+        },
+        {
+          "label": "Next.js + Supabase",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "When you do not want to write any backend code at all. Supabase gives you a Postgres database, authentication, file storage, and real-time subscriptions. You call it directly from your frontend with a typed client."
+            },
+            {
+              "type": "code",
+              "language": "typescript",
+              "filename": "lib/supabase.ts",
+              "description": "Set up the Supabase client once, use it everywhere. The Database type is auto-generated from your schema so you get full autocomplete.",
+              "code": "import { createClient } from '@supabase/supabase-js';\nimport type { Database } from '@/types/supabase';\n\nexport const supabase = createClient<Database>(\n  process.env.NEXT_PUBLIC_SUPABASE_URL!,\n  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!\n);\n\n// Fetch posts -- fully typed, no backend code\nconst { data: posts, error } = await supabase\n  .from('posts')\n  .select('id, title, content, created_at')\n  .order('created_at', { ascending: false })\n  .limit(10);\n\n// Insert a post -- one line\nconst { data } = await supabase\n  .from('posts')\n  .insert({ title: 'Hello World', content: 'Shipped in 5 minutes' })\n  .select()\n  .single();\n\n// Real-time subscription -- three lines\nsupabase.channel('posts')\n  .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' },\n    (payload) => console.log('New post:', payload.new))\n  .subscribe();"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Backend in 5 Minutes -- Zero Server Code",
+      "headingLevel": 2,
+      "body": "You do not need to build a backend. Not for your MVP, not for your prototype, maybe not ever. Backend-as-a-Service platforms give you a database, auth, file storage, and APIs with zero server code. Pick one, connect it, and start building your UI."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 2,
+      "cards": [
+        {
+          "title": "Supabase",
+          "body": "Open-source Firebase alternative. Postgres database, Row Level Security, Auth, Storage, Edge Functions, and real-time subscriptions. Generous free tier. The go-to choice for most projects.",
+          "icon": "Storage",
+          "chip": "Recommended"
+        },
+        {
+          "title": "Firebase",
+          "body": "Google's BaaS. Firestore (NoSQL), Authentication, Cloud Functions, Hosting, and Analytics. Massive ecosystem. Best if you are already in the Google Cloud world or building mobile apps.",
+          "icon": "Cloud",
+          "chip": "Google"
+        },
+        {
+          "title": "PocketBase",
+          "body": "A single binary that gives you a database, auth, file storage, and admin dashboard. Download it, run it, done. Perfect for side projects and self-hosted apps.",
+          "icon": "Inventory",
+          "chip": "Self-Hosted"
+        },
+        {
+          "title": "Convex",
+          "body": "Reactive backend with real-time sync, scheduled functions, and file storage. TypeScript-native. Your frontend automatically updates when data changes. Zero polling, zero WebSocket setup.",
+          "icon": "Sync",
+          "chip": "Real-Time"
+        }
+      ]
+    },
+    {
+      "type": "code",
+      "language": "bash",
+      "filename": "terminal",
+      "description": "Supabase from zero to running in four commands. After this, you have a full Postgres database with a REST API, a GraphQL API, auth endpoints, and a dashboard to manage it all.",
+      "code": "npm install @supabase/supabase-js\nnpx supabase init\nnpx supabase start\n# Local Supabase is running -- dashboard at http://localhost:54323\n# Create tables in the dashboard, get instant API endpoints"
+    },
+    {
+      "type": "text",
+      "heading": "Authentication in 2 Minutes",
+      "headingLevel": 2,
+      "body": "Auth is the feature developers waste the most time building from scratch. Do not. Use a library that handles sessions, tokens, OAuth providers, password hashing, email verification, and rate limiting. Your job is to call a function, not to understand PKCE flows."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "NextAuth.js (Auth.js)",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "typescript",
+              "filename": "app/api/auth/[...nextauth]/route.ts",
+              "description": "Full GitHub + Google login in one file. NextAuth handles callbacks, sessions, CSRF protection, and token rotation. You add providers and you are done.",
+              "code": "import NextAuth from 'next-auth';\nimport GitHub from 'next-auth/providers/github';\nimport Google from 'next-auth/providers/google';\n\nconst handler = NextAuth({\n  providers: [\n    GitHub({\n      clientId: process.env.GITHUB_ID!,\n      clientSecret: process.env.GITHUB_SECRET!,\n    }),\n    Google({\n      clientId: process.env.GOOGLE_ID!,\n      clientSecret: process.env.GOOGLE_SECRET!,\n    }),\n  ],\n});\n\nexport { handler as GET, handler as POST };"
+            },
+            {
+              "type": "code",
+              "language": "tsx",
+              "filename": "components/AuthButton.tsx",
+              "description": "A sign-in button. That is literally all the frontend auth code you need.",
+              "code": "'use client';\nimport { signIn, signOut, useSession } from 'next-auth/react';\n\nexport function AuthButton() {\n  const { data: session } = useSession();\n\n  if (session) {\n    return (\n      <div>\n        <p>Signed in as {session.user?.email}</p>\n        <button onClick={() => signOut()}>Sign Out</button>\n      </div>\n    );\n  }\n\n  return <button onClick={() => signIn()}>Sign In</button>;\n}"
+            }
+          ]
+        },
+        {
+          "label": "Clerk",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "tsx",
+              "filename": "app/layout.tsx",
+              "description": "Clerk gives you a complete auth UI out of the box. Sign-in modals, user profile pages, organization management -- all pre-built. Wrap your app and drop in components.",
+              "code": "import { ClerkProvider, SignInButton, UserButton } from '@clerk/nextjs';\n\nexport default function RootLayout({ children }: { children: React.ReactNode }) {\n  return (\n    <ClerkProvider>\n      <html lang=\"en\">\n        <body>\n          <nav>\n            <SignInButton />\n            <UserButton afterSignOutUrl=\"/\" />\n          </nav>\n          {children}\n        </body>\n      </html>\n    </ClerkProvider>\n  );\n}"
+            }
+          ]
+        },
+        {
+          "label": "Supabase Auth",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "typescript",
+              "filename": "lib/auth.ts",
+              "description": "If you are already using Supabase for your database, auth is built in. Social login, magic links, and email/password with zero extra setup.",
+              "code": "import { supabase } from './supabase';\n\n// Social login -- one function call\nawait supabase.auth.signInWithOAuth({ provider: 'github' });\nawait supabase.auth.signInWithOAuth({ provider: 'google' });\n\n// Magic link -- no password needed\nawait supabase.auth.signInWithOtp({ email: 'user@example.com' });\n\n// Email + password signup\nawait supabase.auth.signUp({\n  email: 'user@example.com',\n  password: 'securepassword123',\n});\n\n// Get current user\nconst { data: { user } } = await supabase.auth.getUser();"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Database Without SQL -- Prisma in 3 Commands",
+      "headingLevel": 2,
+      "body": "Prisma lets you define your database schema in a simple file, generate a migration, and immediately query your data with full TypeScript autocompletion. No SQL, no ORMs with mysterious methods, no raw query strings. Schema to type-safe queries in three commands."
+    },
+    {
+      "type": "step",
+      "step": 1,
+      "title": "Define Your Schema",
+      "body": "Write your data model in plain English-like syntax. Prisma handles the SQL under the hood.",
+      "language": "prisma",
+      "code": "// prisma/schema.prisma\ngenerator client {\n  provider = \"prisma-client-js\"\n}\n\ndatasource db {\n  provider = \"postgresql\" // or sqlite for local dev\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id        String   @id @default(cuid())\n  email     String   @unique\n  name      String?\n  posts     Post[]\n  createdAt DateTime @default(now())\n}\n\nmodel Post {\n  id        String   @id @default(cuid())\n  title     String\n  content   String\n  published Boolean  @default(false)\n  author    User     @relation(fields: [authorId], references: [id])\n  authorId  String\n  createdAt DateTime @default(now())\n}"
+    },
+    {
+      "type": "step",
+      "step": 2,
+      "title": "Run Migration",
+      "body": "One command creates the tables and generates the typed client.",
+      "language": "bash",
+      "code": "npx prisma migrate dev --name init\n# Creates tables in your database\n# Generates PrismaClient with full TypeScript types"
+    },
+    {
+      "type": "step",
+      "step": 3,
+      "title": "Query With Full Type Safety",
+      "body": "Every query is autocompleted. Every result is typed. If you mistype a field name, TypeScript catches it before you even run the code.",
+      "language": "typescript",
+      "code": "import { PrismaClient } from '@prisma/client';\nconst prisma = new PrismaClient();\n\n// Create a user with a post -- fully typed\nconst user = await prisma.user.create({\n  data: {\n    email: 'dev@example.com',\n    name: 'Speed Demon',\n    posts: {\n      create: { title: 'Shipped in 5 min', content: 'Prisma is magic' },\n    },\n  },\n  include: { posts: true }, // Autocomplete knows 'posts' exists\n});\n\n// Find users with their posts -- zero SQL\nconst users = await prisma.user.findMany({\n  where: { posts: { some: { published: true } } },\n  include: { posts: true },\n  orderBy: { createdAt: 'desc' },\n});"
+    },
+    {
+      "type": "text",
+      "heading": "Deploy in 30 Seconds",
+      "headingLevel": 2,
+      "body": "Your app is not real until it is on the internet. Local demos do not count. Deploy early, deploy often. Modern platforms make this absurdly easy -- one command, one click, or just push to git."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Vercel",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "bash",
+              "filename": "terminal",
+              "description": "One command. Vercel auto-detects Next.js, builds it, deploys it, and gives you a URL. Every git push to main auto-deploys. Every pull request gets a preview URL.",
+              "code": "npm i -g vercel\nvercel\n# Answer the prompts (or just hit Enter for defaults)\n# Deployed. You have a live URL."
+            }
+          ]
+        },
+        {
+          "label": "Netlify",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "bash",
+              "filename": "terminal",
+              "description": "Netlify works great for static sites and Jamstack apps. Drag and drop your build folder or use the CLI.",
+              "code": "npm i -g netlify-cli\nntl init\nntl deploy --prod\n# Or just drag your 'out' folder to app.netlify.com/drop"
+            }
+          ]
+        },
+        {
+          "label": "Railway",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "bash",
+              "filename": "terminal",
+              "description": "Railway is great for full-stack apps that need a database. It provisions Postgres, Redis, or any other service alongside your app.",
+              "code": "npm i -g @railway/cli\nrailway login\nrailway init\nrailway up\n# Deployed with a database. Environment variables are auto-injected."
+            }
+          ]
+        },
+        {
+          "label": "Fly.io",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "bash",
+              "filename": "terminal",
+              "description": "Fly.io deploys Docker containers to servers worldwide. Great for apps that need to be close to users globally.",
+              "code": "curl -L https://fly.io/install.sh | sh\nfly launch\nfly deploy\n# Running on servers worldwide"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "Preview Deployments Are a Superpower",
+      "body": "Vercel and Netlify create a unique URL for every pull request. Share it with your team, your client, your mom. They can see exactly what changed without pulling code or running anything locally. This is the fastest feedback loop in web development."
+    },
+    {
+      "type": "text",
+      "heading": "Pre-Built Features -- Payments, Emails, Uploads, Real-Time",
+      "headingLevel": 2,
+      "body": "Do not build what you can buy or import. Payments, email sending, file uploads, and real-time features are solved problems. Plug in a service, call an API, and move on to the features that make your app unique."
+    },
+    {
+      "type": "accordion",
+      "title": "Stripe Checkout -- Payments in 20 Lines",
+      "defaultExpanded": true,
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "app/api/checkout/route.ts",
+          "description": "A complete payment flow. Stripe handles the checkout page, card validation, 3D Secure, receipts, and fraud detection. You redirect the user and handle the webhook.",
+          "code": "import Stripe from 'stripe';\nimport { NextResponse } from 'next/server';\n\nconst stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);\n\nexport async function POST(req: Request) {\n  const { priceId } = await req.json();\n\n  const session = await stripe.checkout.sessions.create({\n    mode: 'payment',\n    payment_method_types: ['card'],\n    line_items: [{ price: priceId, quantity: 1 }],\n    success_url: `${process.env.NEXT_PUBLIC_URL}/success`,\n    cancel_url: `${process.env.NEXT_PUBLIC_URL}/cancel`,\n  });\n\n  return NextResponse.json({ url: session.url });\n}"
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Resend -- Transactional Emails in 5 Lines",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "lib/email.ts",
+          "description": "Resend is email for developers. No SMTP config, no templates to manage. Send beautiful emails with React components or plain HTML.",
+          "code": "import { Resend } from 'resend';\n\nconst resend = new Resend(process.env.RESEND_API_KEY);\n\nawait resend.emails.send({\n  from: 'onboarding@yourdomain.com',\n  to: 'user@example.com',\n  subject: 'Welcome!',\n  html: '<h1>You are in!</h1><p>Thanks for signing up.</p>',\n});"
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "UploadThing -- File Uploads Without the Pain",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "app/api/uploadthing/core.ts",
+          "description": "File uploads are notoriously annoying. UploadThing handles presigned URLs, validation, size limits, and type checking. You define what is allowed, it handles the rest.",
+          "code": "import { createUploadthing, type FileRouter } from 'uploadthing/next';\n\nconst f = createUploadthing();\n\nexport const ourFileRouter = {\n  imageUploader: f({ image: { maxFileSize: '4MB', maxFileCount: 4 } })\n    .middleware(async () => {\n      // Auth check here\n      return { userId: 'user_123' };\n    })\n    .onUploadComplete(async ({ metadata, file }) => {\n      console.log('Upload complete:', file.url);\n    }),\n} satisfies FileRouter;"
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Pusher -- Real-Time in 10 Lines",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "lib/pusher.ts",
+          "description": "Add real-time updates to your app without WebSocket boilerplate. Pusher handles connections, reconnections, scaling, and fallbacks.",
+          "code": "// Server side -- send an event\nimport Pusher from 'pusher';\n\nconst pusher = new Pusher({\n  appId: process.env.PUSHER_APP_ID!,\n  key: process.env.PUSHER_KEY!,\n  secret: process.env.PUSHER_SECRET!,\n  cluster: 'us2',\n});\n\nawait pusher.trigger('chat', 'new-message', {\n  user: 'Alice',\n  text: 'Hello!',\n});\n\n// Client side -- listen for events\nimport PusherClient from 'pusher-js';\n\nconst pusherClient = new PusherClient(process.env.NEXT_PUBLIC_PUSHER_KEY!, {\n  cluster: 'us2',\n});\n\npusherClient.subscribe('chat').bind('new-message', (data: any) => {\n  console.log('Got message:', data);\n});"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Scaffolding Tools -- Generate, Do Not Type",
+      "headingLevel": 2,
+      "body": "If you are creating the same file structure over and over -- a new component with its styles, tests, and exports, or a new API route with its handler and validation -- stop typing and start generating. Scaffolding tools let you define a template once and stamp out new instances in seconds."
+    },
+    {
+      "type": "code",
+      "language": "javascript",
+      "filename": "plopfile.js",
+      "description": "Plop.js generates files from templates. Run 'npx plop component' and answer the prompts. It creates the component file, the test file, the story file, and updates the barrel export. Every component follows the same pattern automatically.",
+      "code": "// plopfile.js\nmodule.exports = function (plop) {\n  plop.setGenerator('component', {\n    description: 'Create a new React component',\n    prompts: [\n      {\n        type: 'input',\n        name: 'name',\n        message: 'Component name (PascalCase):',\n      },\n    ],\n    actions: [\n      {\n        type: 'add',\n        path: 'src/components/{{name}}/{{name}}.tsx',\n        templateFile: 'plop-templates/component.tsx.hbs',\n      },\n      {\n        type: 'add',\n        path: 'src/components/{{name}}/{{name}}.test.tsx',\n        templateFile: 'plop-templates/component.test.tsx.hbs',\n      },\n      {\n        type: 'add',\n        path: 'src/components/{{name}}/index.ts',\n        template: \"export { {{name}} } from './{{name}}';\",\n      },\n    ],\n  });\n};"
+    },
+    {
+      "type": "code",
+      "language": "handlebars",
+      "filename": "plop-templates/component.tsx.hbs",
+      "description": "The Handlebars template that Plop uses. Every generated component gets the same structure, the same prop typing, the same export pattern.",
+      "code": "interface {{name}}Props {\n  className?: string;\n  children?: React.ReactNode;\n}\n\nexport function {{name}}({ className, children }: {{name}}Props) {\n  return (\n    <div className={className}>\n      {children}\n    </div>\n  );\n}"
+    },
+    {
+      "type": "code",
+      "language": "bash",
+      "filename": "terminal",
+      "description": "Run the generator. Answer one question. Get three files. Consistent structure, every time.",
+      "code": "npx plop component\n# ? Component name: UserProfile\n# ✔ src/components/UserProfile/UserProfile.tsx\n# ✔ src/components/UserProfile/UserProfile.test.tsx\n# ✔ src/components/UserProfile/index.ts"
+    },
+    {
+      "type": "text",
+      "heading": "Speed Anti-Patterns -- When Fast Becomes Expensive",
+      "headingLevel": 2,
+      "body": "Going fast is good. Going fast in the wrong direction is expensive. There are shortcuts that save you time today and cost you nothing. There are shortcuts that save you time today and cost you ten times as much next month. Know the difference."
+    },
+    {
+      "type": "table",
+      "heading": "Dangerous Shortcuts",
+      "headers": ["Anti-Pattern", "Why It Feels Fast", "Why It Costs You Later", "Do This Instead"],
+      "rows": [
+        ["No TypeScript", "Less typing, no type errors to fix", "Bugs in production that types would have caught at build time. Refactoring becomes terrifying.", "Use TypeScript from the start. The 10% overhead saves 10x in debugging."],
+        ["No tests on critical paths", "Ship features faster without writing tests", "Payment processing breaks silently. User signup fails on edge cases. You find out from angry users.", "Test auth, payments, and data mutations. Skip testing UI layout."],
+        ["No error boundaries", "Less code to write", "One component crash takes down your entire app. Users see a white screen.", "Wrap major sections in error boundaries. Five minutes of work prevents total app crashes."],
+        ["Hardcoded secrets", "Quick and easy, no env file to manage", "Secrets in git history. Leaked API keys. Compromised accounts.", "Use .env files from day one. It takes 30 seconds to set up."],
+        ["any everywhere", "TypeScript stops complaining", "You just turned TypeScript into JavaScript. You get zero type safety and the bugs are back.", "Use unknown and narrow the type. Or generate types from your API/database schema."],
+        ["Ignoring ESLint warnings", "Warnings are not errors, the app still works", "Warnings become bugs. Unused variables hide dead code. Missing deps cause stale closures.", "Fix warnings as you go. Run eslint --max-warnings=0 in CI."],
+        ["Giant components", "Everything in one file is easier to find", "500-line components are impossible to test, reuse, or understand. Every change risks breaking something.", "Extract when a component exceeds 150 lines or handles more than one responsibility."]
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "error",
+      "title": "The One Rule of Cutting Corners",
+      "body": "Never cut corners on security. You can refactor ugly code. You can add tests later. You can redesign the UI. You cannot un-leak passwords. You cannot un-breach a database. Security shortcuts are permanent."
+    },
+    {
+      "type": "text",
+      "heading": "The 80/20 Rule -- Ruthless Scope Cutting",
+      "headingLevel": 2,
+      "body": "Twenty percent of your features will deliver eighty percent of the value. Find those features and build them first. Everything else is a nice-to-have that you can add after launch. Most nice-to-haves will never actually be needed."
+    },
+    {
+      "type": "list",
+      "heading": "How to Cut Scope Like a Pro",
+      "items": [
+        "List every feature you want. Now cut half of them. Now cut half again. What is left is your MVP.",
+        "Ask: if I launched without this feature, would anyone notice? If no, cut it.",
+        "Replace build with buy. Do not build auth, payments, email, file uploads, analytics, or search. Use a service.",
+        "Launch with one user role, one payment plan, one language, one theme. Add complexity after you have users.",
+        "Use a spreadsheet instead of an admin dashboard. Use email instead of in-app notifications. Use manual processes instead of automation.",
+        "If a feature takes more than 2 days, ask if there is a simpler version that takes 2 hours."
+      ]
+    },
+    {
+      "type": "table",
+      "heading": "Feature Triage Matrix",
+      "headers": ["Priority", "Feature Type", "Example", "Action"],
+      "rows": [
+        ["P0 -- Launch Blocker", "Core value prop", "Users can create and share posts", "Build this first"],
+        ["P1 -- First Week", "Basic usability", "Password reset, error pages, mobile layout", "Build right after launch"],
+        ["P2 -- First Month", "Retention features", "Email notifications, user profiles, search", "Build when you have 100 users"],
+        ["P3 -- Maybe Never", "Nice to have", "Dark mode, i18n, advanced analytics, custom themes", "Build when users ask for it"]
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Rapid Iteration Workflow",
+      "headingLevel": 2,
+      "body": "Shipping fast is not just about building fast. It is about getting feedback fast, deciding fast, and deploying fast. You need a workflow where an idea goes from your brain to a user's screen in hours, not weeks."
+    },
+    {
+      "type": "list",
+      "heading": "The Speed Workflow",
+      "ordered": true,
+      "items": [
+        "Idea lands -- write it down in one sentence. If you cannot explain it in one sentence, you do not understand it yet.",
+        "Branch off main. Name it feature/short-description. No Jira ticket needed for experiments.",
+        "Build the smallest possible version. If it takes more than a day, you are building too much.",
+        "Push to git. Vercel creates a preview URL automatically. Share it with one person and ask: does this solve the problem?",
+        "If yes, merge to main. Auto-deploy. It is live. If no, either iterate or delete the branch. Do not hoard unfinished branches.",
+        "Monitor errors with Sentry. Watch analytics. Listen to users. Repeat from step 1."
+      ]
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "lib/features.ts",
+      "description": "A dead-simple feature flag system. No third-party service needed for your MVP. When you need A/B testing and user targeting, upgrade to LaunchDarkly or Vercel Feature Flags.",
+      "code": "// Simple feature flags -- good enough for an MVP\nconst FEATURES = {\n  newPricing: process.env.NEXT_PUBLIC_FF_NEW_PRICING === 'true',\n  betaEditor: process.env.NEXT_PUBLIC_FF_BETA_EDITOR === 'true',\n  darkMode: process.env.NEXT_PUBLIC_FF_DARK_MODE === 'true',\n} as const;\n\nexport function isFeatureEnabled(feature: keyof typeof FEATURES): boolean {\n  return FEATURES[feature] ?? false;\n}\n\n// Usage in a component\nimport { isFeatureEnabled } from '@/lib/features';\n\nexport function PricingPage() {\n  if (isFeatureEnabled('newPricing')) {\n    return <NewPricingTable />;\n  }\n  return <OldPricingTable />;\n}"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "lib/hotfix.ts",
+      "description": "A quick-deploy script for emergencies. When something breaks in production, you do not have time for a full PR review. Fix it, test the critical path, deploy.",
+      "code": "// package.json scripts for rapid deployment\n// \"hotfix\": \"git stash && git checkout main && git pull && git checkout -b hotfix/$(date +%s)\"\n// \"deploy:now\": \"vercel --prod\"\n\n// Emergency checklist -- paste into your team chat:\n// 1. What broke? (one sentence)\n// 2. Who is affected? (all users / subset / internal only)\n// 3. Can we revert? (git revert HEAD && vercel --prod)\n// 4. If not, fix forward: branch, fix, test critical path, deploy\n// 5. Post-mortem in 24 hours, not now"
+    },
+    {
+      "type": "text",
+      "heading": "The Complete Rapid Development Cheat Sheet",
+      "headingLevel": 2,
+      "body": "Here is your entire rapid development playbook condensed into one table. Bookmark this. Every tool, every command, every shortcut you need to go from nothing to deployed."
+    },
+    {
+      "type": "table",
+      "heading": "Zero to Deployed Cheat Sheet",
+      "headers": ["Task", "Tool", "Time", "Command or Action"],
+      "rows": [
+        ["Scaffold project", "create-next-app", "60 seconds", "npx create-next-app@latest my-app --typescript --tailwind --eslint --app"],
+        ["Add UI components", "shadcn/ui", "30 seconds each", "npx shadcn@latest add button card dialog table"],
+        ["Add authentication", "NextAuth.js", "5 minutes", "npm install next-auth, create API route, add providers"],
+        ["Add database", "Prisma + SQLite", "3 minutes", "npx prisma init --datasource-provider sqlite, write schema, npx prisma migrate dev"],
+        ["Add payments", "Stripe", "10 minutes", "npm install stripe, create checkout endpoint, handle webhook"],
+        ["Add email", "Resend", "2 minutes", "npm install resend, call resend.emails.send()"],
+        ["Add file uploads", "UploadThing", "5 minutes", "npm install uploadthing, define file router, drop in component"],
+        ["Deploy", "Vercel", "30 seconds", "npx vercel"],
+        ["Monitor errors", "Sentry", "5 minutes", "npx @sentry/wizard@latest -i nextjs"],
+        ["Generate code", "AI (Claude)", "Varies", "Describe what you want, paste the output, review and adjust"]
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "The Math of Shipping Fast",
+      "body": "Using this stack, you can go from zero to a deployed app with auth, database, payments, and email in under 45 minutes. Not a toy demo -- a real app that real users can sign up for and pay you money. The bottleneck is no longer technology. It is deciding what to build."
+    }
+  ]
+}

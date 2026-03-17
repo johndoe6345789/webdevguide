@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "10. Design Patterns",
+  "headingLevel": 2,
+  "body": "Design patterns are reusable solutions to common problems. In React, several patterns help you build flexible, maintainable components. Knowing when to use each pattern is a hallmark of an experienced developer."
+}

@@ -1,0 +1,6 @@
+{
+  "type": "code",
+  "language": "python",
+  "filename": "app/__init__.py",
+  "code": "from flask import Flask\nfrom flask_cors import CORS\n\ndef create_app():\n    app = Flask(__name__)\n\n    # Allow your React frontend to talk to this backend\n    CORS(app)\n\n    # Load configuration\n    app.config[\"SECRET_KEY\"] = \"your-secret-key-here\"\n\n    # Register blueprints (we will create these next)\n    from app.api.items import items_bp\n    app.register_blueprint(items_bp, url_prefix=\"/api\")\n\n    return app"
+}

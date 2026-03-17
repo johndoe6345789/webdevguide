@@ -1,0 +1,4 @@
+{
+  "type": "text",
+  "body": "In the Hello World example, the / route is an endpoint. Let us create a proper API endpoint that returns structured data instead of plain text."
+}

@@ -1,0 +1,9 @@
+{
+  "type": "list",
+  "ordered": false,
+  "items": [
+    "Blueprint(\"items\", __name__) — Creates a new blueprint with the name \"items\". The name is used internally by Flask.",
+    "@items_bp.route(...) — Notice we use items_bp instead of app. The routes belong to the blueprint, not directly to the app.",
+    "<int:item_id> — This is a URL parameter. Flask will capture whatever number is in the URL and pass it to your function. So /api/items/42 would set item_id to 42."
+  ]
+}

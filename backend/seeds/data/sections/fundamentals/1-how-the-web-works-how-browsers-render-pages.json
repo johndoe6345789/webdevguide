@@ -1,0 +1,46 @@
+{
+  "type": "accordion",
+  "title": "How Browsers Render Pages",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "When the browser receives an HTML response, it does not simply display it. It goes through a multi-step rendering pipeline to turn raw code into pixels on your screen."
+    },
+    {
+      "type": "step",
+      "step": 1,
+      "title": "Parse HTML into the DOM",
+      "body": "The browser reads the HTML top to bottom and builds a tree structure called the **Document Object Model (DOM)**. Each HTML tag becomes a node in the tree. When it encounters a `<link>` or `<script>` tag, it fetches those resources."
+    },
+    {
+      "type": "step",
+      "step": 2,
+      "title": "Parse CSS into the CSSOM",
+      "body": "All CSS is parsed into a separate tree called the **CSS Object Model (CSSOM)**. This includes external stylesheets, `<style>` tags, and inline styles. The browser resolves which rules apply to which elements using CSS specificity."
+    },
+    {
+      "type": "step",
+      "step": 3,
+      "title": "Build the Render Tree",
+      "body": "The DOM and CSSOM are combined into a **render tree** that contains only the visible elements with their computed styles. Elements with `display: none` are excluded entirely."
+    },
+    {
+      "type": "step",
+      "step": 4,
+      "title": "Layout (Reflow)",
+      "body": "The browser calculates the exact position and size of every element in the render tree. This is called **layout** or **reflow**. Changes to element sizes or positions trigger a new layout pass."
+    },
+    {
+      "type": "step",
+      "step": 5,
+      "title": "Paint and Composite",
+      "body": "The browser draws each layer of pixels and then composites them together into the final image you see. GPU-accelerated properties like `transform` and `opacity` can skip the layout step, making them faster to animate."
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "Performance tip",
+      "body": "Changing layout properties (width, height, top, left, margin) forces the browser to recalculate layout for many elements. Prefer `transform` and `opacity` for animations -- they only trigger the paint and composite steps."
+    }
+  ]
+}

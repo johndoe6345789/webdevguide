@@ -1,0 +1,9 @@
+{
+  "type": "list",
+  "ordered": false,
+  "items": [
+    "threading.Lock() — Imagine two customers ordering at the same time. Without a lock, both orders might try to write to the file simultaneously, corrupting the data. The lock makes them take turns. This is called thread safety.",
+    "with open(DATA_FILE, \"r\") as f — Opens the file for reading (\"r\"). The with keyword automatically closes the file when done, even if an error occurs.",
+    "json.load(f) / json.dump(items, f) — These convert between Python data and JSON format. load reads JSON from a file into Python. dump writes Python data as JSON to a file."
+  ]
+}

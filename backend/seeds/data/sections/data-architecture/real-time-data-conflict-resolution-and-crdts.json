@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Conflict Resolution and CRDTs",
+  "headingLevel": 3,
+  "body": "When multiple users edit the same data simultaneously, conflicts arise. There are several strategies to handle this."
+}

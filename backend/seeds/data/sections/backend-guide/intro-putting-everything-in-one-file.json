@@ -1,0 +1,4 @@
+{
+  "type": "text",
+  "body": "Putting everything in one file works for tiny projects, but once you have more than a few endpoints, it becomes a mess. We organize code into folders for the same reason restaurants have separate rooms."
+}

@@ -1,0 +1,14 @@
+{
+  "type": "cardGrid",
+  "columns": 2,
+  "cards": [
+    {
+      "title": "JSON files are fine for:",
+      "body": "Small projects with less than 1000 records. Single-user applications. Prototyping and learning. Configuration data."
+    },
+    {
+      "title": "Use a database when you need:",
+      "body": "Multiple users accessing data at the same time. Thousands of records. Complex queries (like searching or filtering). Data relationships (users have posts, posts have comments)."
+    }
+  ]
+}

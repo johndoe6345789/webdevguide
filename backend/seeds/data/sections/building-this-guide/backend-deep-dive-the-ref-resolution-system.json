@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "The $ref Resolution System",
+  "headingLevel": 3,
+  "body": "The `$ref` resolution system is inspired by JSON Schema references. It lets you split a single monolithic JSON file into many small, focused files. The root file `index.json` maps section slugs to file references like `{\"$ref\": \"sections/getting-started.json\"}`. At seed time, the `resolve_ref` function walks the entire JSON tree recursively. When it encounters a `$ref` key, it loads the referenced file, resolves any nested `$ref` pointers within it, and replaces the reference object with the resolved content."
+}

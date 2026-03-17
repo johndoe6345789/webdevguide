@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 2,
+  "title": "Prioritize by impact and risk",
+  "body": "Not all debt is equal. Security vulnerabilities and bugs in payment code are urgent. Messy CSS in an internal admin page can wait. Rank each item by: severity (critical, high, medium, low) and effort (hours, days, weeks).",
+  "code": "# Example prioritization matrix\n| Item                          | Severity | Effort | Priority |\n|-------------------------------|----------|--------|----------|\n| SQL injection in search       | Critical | 2 hrs  | P0       |\n| No tests on payment flow      | High     | 2 days | P1       |\n| Outdated React version        | Medium   | 1 week | P2       |\n| Inconsistent naming in utils  | Low      | 3 hrs  | P3       |",
+  "language": "text"
+}

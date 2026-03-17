@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 1,
+  "title": "Create a Data File",
+  "body": "Create a data folder and add a JSON file:",
+  "code": "[\n  {\n    \"id\": 1,\n    \"name\": \"Learn HTML\",\n    \"completed\": true\n  },\n  {\n    \"id\": 2,\n    \"name\": \"Learn CSS\",\n    \"completed\": true\n  },\n  {\n    \"id\": 3,\n    \"name\": \"Learn Flask\",\n    \"completed\": false\n  }\n]",
+  "language": "json"
+}

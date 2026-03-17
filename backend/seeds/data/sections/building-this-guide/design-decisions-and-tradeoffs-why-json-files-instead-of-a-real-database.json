@@ -1,0 +1,11 @@
+{
+  "type": "accordion",
+  "title": "Why JSON files instead of a real database?",
+  "defaultExpanded": false,
+  "blocks": [
+    {
+      "type": "text",
+      "body": "JSON files are simpler to author, version control, and review in pull requests. Content changes show up as clean diffs. There is no need for migrations, schema management, or a database server. The tradeoff is no query language and everything loads into memory. This works perfectly for a content site with no user-generated data -- the entire dataset fits comfortably in memory."
+    }
+  ]
+}

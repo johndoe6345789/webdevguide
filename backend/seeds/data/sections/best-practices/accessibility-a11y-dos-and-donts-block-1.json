@@ -1,0 +1,29 @@
+{
+  "type": "tabs",
+  "tabs": [
+    {
+      "label": "DON'T: Div Soup",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "html",
+          "filename": "index.html",
+          "description": "Using divs and spans for everything. Screen readers cannot distinguish navigation from content from buttons. Keyboard users cannot interact with clickable divs.",
+          "code": "<!-- BAD: no semantic meaning, inaccessible -->\n<div class=\"header\">\n  <div class=\"logo\">MySite</div>\n  <div class=\"nav\">\n    <div class=\"nav-item\" onclick=\"goTo('/home')\">Home</div>\n    <div class=\"nav-item\" onclick=\"goTo('/about')\">About</div>\n  </div>\n</div>\n<div class=\"content\">\n  <div class=\"page-title\">Welcome to MySite</div>\n  <div class=\"section-title\">Our Services</div>\n  <div class=\"text\">We offer web development...</div>\n  <div class=\"btn\" onclick=\"signUp()\">Sign Up</div>\n</div>\n<div class=\"footer\">\n  <div class=\"text\">Copyright 2025</div>\n</div>"
+        }
+      ]
+    },
+    {
+      "label": "DO: Semantic HTML",
+      "blocks": [
+        {
+          "type": "code",
+          "language": "html",
+          "filename": "index.html",
+          "description": "Proper semantic elements provide meaning to screen readers, enable keyboard navigation, and improve SEO -- all for free.",
+          "code": "<!-- GOOD: semantic, accessible, keyboard-navigable -->\n<header>\n  <a href=\"/\" aria-label=\"MySite home\">\n    <img src=\"/logo.svg\" alt=\"MySite\" />\n  </a>\n  <nav aria-label=\"Main navigation\">\n    <ul>\n      <li><a href=\"/home\">Home</a></li>\n      <li><a href=\"/about\">About</a></li>\n    </ul>\n  </nav>\n</header>\n<main>\n  <h1>Welcome to MySite</h1>\n  <section aria-labelledby=\"services-heading\">\n    <h2 id=\"services-heading\">Our Services</h2>\n    <p>We offer web development...</p>\n    <button type=\"button\" onclick=\"signUp()\">Sign Up</button>\n  </section>\n</main>\n<footer>\n  <p><small>&copy; 2025 MySite</small></p>\n</footer>"
+        }
+      ]
+    }
+  ]
+}

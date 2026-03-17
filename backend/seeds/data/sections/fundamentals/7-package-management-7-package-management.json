@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "7. Package Management",
+  "headingLevel": 2,
+  "body": "Package managers handle installing, updating, and removing third-party libraries (dependencies) in your project. Understanding them is essential for every JavaScript project."
+}

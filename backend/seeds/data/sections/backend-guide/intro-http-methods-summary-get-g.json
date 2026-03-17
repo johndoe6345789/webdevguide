@@ -1,0 +1,5 @@
+{
+  "type": "alert",
+  "severity": "info",
+  "body": "HTTP methods summary: GET = \"give me data\", POST = \"here is new data, save it\", PUT = \"here is updated data, replace the old version\", DELETE = \"remove this data.\""
+}

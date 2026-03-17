@@ -1,0 +1,5 @@
+{
+  "type": "code",
+  "language": "json",
+  "code": "{\n  \"message\": \"Hello from the backend!\",\n  \"status\": \"success\"\n}"
+}

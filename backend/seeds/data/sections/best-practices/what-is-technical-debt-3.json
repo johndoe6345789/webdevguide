@@ -1,0 +1,42 @@
+{
+  "type": "cardGrid",
+  "columns": 3,
+  "cards": [
+    {
+      "title": "SonarQube",
+      "body": "Static analysis tool that scans your codebase for bugs, code smells, and security vulnerabilities. Assigns a technical debt rating to your project.",
+      "icon": "Scanner",
+      "chip": "Analysis"
+    },
+    {
+      "title": "ESLint Reports",
+      "body": "Run eslint --format json to get a machine-readable report of all rule violations. Track the count over time to see if debt is growing or shrinking.",
+      "icon": "Rule",
+      "chip": "Linting"
+    },
+    {
+      "title": "Test Coverage",
+      "body": "Use jest --coverage or pytest --cov to see what percentage of your code is executed during tests. Low coverage on critical paths is a red flag.",
+      "icon": "Assessment",
+      "chip": "Testing"
+    },
+    {
+      "title": "npm audit",
+      "body": "Built into npm. Run npm audit to find known vulnerabilities in your dependency tree. Use npm audit fix to auto-patch where possible.",
+      "icon": "Security",
+      "chip": "Dependencies"
+    },
+    {
+      "title": "Bundle Analyzer",
+      "body": "Tools like webpack-bundle-analyzer or @next/bundle-analyzer visualize what is in your JavaScript bundle so you can spot bloated dependencies.",
+      "icon": "PieChart",
+      "chip": "Performance"
+    },
+    {
+      "title": "Lighthouse",
+      "body": "Built into Chrome DevTools. Audits performance, accessibility, SEO, and best practices. Gives you a score and specific recommendations.",
+      "icon": "Speed",
+      "chip": "Audit"
+    }
+  ]
+}

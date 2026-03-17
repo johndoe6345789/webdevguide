@@ -1,0 +1,54 @@
+{
+  "type": "cardGrid",
+  "columns": 3,
+  "cards": [
+    {
+      "title": "Over-Engineering",
+      "body": "Building a microservices architecture for a todo app. Start simple -- a monolith can handle millions of users. Optimize when you have real performance data, not imagined future requirements.",
+      "icon": "Architecture",
+      "chip": "Common"
+    },
+    {
+      "title": "Premature Optimization",
+      "body": "Spending days optimizing a function that runs once per page load. Profile first, then optimize the actual bottleneck. 90% of performance problems come from 10% of the code.",
+      "icon": "Speed",
+      "chip": "Common"
+    },
+    {
+      "title": "Not Reading Error Messages",
+      "body": "Staring at the screen saying 'it does not work' instead of reading the error message. Error messages tell you exactly what is wrong and often which line. Read them carefully, top to bottom.",
+      "icon": "ErrorOutline",
+      "chip": "Critical"
+    },
+    {
+      "title": "Tutorial Hell",
+      "body": "Watching 50 tutorials without building anything. Tutorials give you false confidence. Close the tutorial and build something real. You learn by debugging your own broken code, not watching someone else's working code.",
+      "icon": "School",
+      "chip": "Common"
+    },
+    {
+      "title": "Skipping Version Control",
+      "body": "Saving files as project_v2_final_FINAL2.zip instead of using Git. Git is non-negotiable. Learn git add, commit, push, branch, and merge. Everything else can wait.",
+      "icon": "History",
+      "chip": "Critical"
+    },
+    {
+      "title": "Ignoring Mobile Users",
+      "body": "Building a desktop-only site when over 60% of web traffic is mobile. Start with mobile-first CSS. If it looks good on a phone, it is easy to scale up. The reverse is painful.",
+      "icon": "PhoneIphone",
+      "chip": "Common"
+    },
+    {
+      "title": "No Error Handling",
+      "body": "The happy path works, but any unexpected input crashes the app. Always handle: network failures, empty data, invalid input, missing permissions, and timeouts. Users will find every edge case.",
+      "icon": "Warning",
+      "chip": "Critical"
+    },
+    {
+      "title": "Not Testing Edge Cases",
+      "body": "Testing that 2 + 2 = 4 but not what happens when the input is null, negative, or a string. Edge cases are where bugs hide: empty arrays, max integers, special characters, concurrent requests.",
+      "icon": "BugReport",
+      "chip": "Common"
+    }
+  ]
+}

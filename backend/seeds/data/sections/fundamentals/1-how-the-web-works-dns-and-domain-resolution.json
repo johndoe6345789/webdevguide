@@ -1,0 +1,34 @@
+{
+  "type": "accordion",
+  "title": "DNS and Domain Resolution",
+  "defaultExpanded": true,
+  "blocks": [
+    {
+      "type": "text",
+      "body": "Computers communicate using IP addresses like `93.184.216.34`, but humans prefer names like `example.com`. The **Domain Name System (DNS)** is the phone book of the internet -- it translates domain names into IP addresses."
+    },
+    {
+      "type": "step",
+      "step": 1,
+      "title": "You type a URL",
+      "body": "Your browser checks its local cache to see if it already knows the IP address for this domain. If not, it asks your operating system, which checks its own cache."
+    },
+    {
+      "type": "step",
+      "step": 2,
+      "title": "Recursive DNS lookup",
+      "body": "If no cache has the answer, your ISP's DNS resolver asks the root name servers, which point to the TLD servers (.com, .org), which point to the authoritative name server for the domain."
+    },
+    {
+      "type": "step",
+      "step": 3,
+      "title": "IP address returned",
+      "body": "The authoritative name server returns the IP address. Your browser caches it and now knows where to send the request. This entire process typically takes 20-120 milliseconds."
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "body": "You can see DNS resolution yourself. Open a terminal and run `nslookup example.com` or `dig example.com` to see the IP address a domain resolves to."
+    }
+  ]
+}

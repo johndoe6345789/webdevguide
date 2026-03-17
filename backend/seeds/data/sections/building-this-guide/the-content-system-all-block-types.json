@@ -1,0 +1,72 @@
+{
+  "type": "table",
+  "heading": "All Block Types",
+  "headers": [
+    "Type",
+    "Purpose",
+    "Required Fields",
+    "Optional Fields"
+  ],
+  "rows": [
+    [
+      "text",
+      "Paragraph text with optional heading",
+      "body",
+      "heading, headingLevel (2|3|4)"
+    ],
+    [
+      "code",
+      "Syntax-highlighted code with copy button",
+      "code, language",
+      "filename, description"
+    ],
+    [
+      "list",
+      "Ordered or unordered list",
+      "items[]",
+      "ordered (bool), heading"
+    ],
+    [
+      "alert",
+      "Colored callout box",
+      "severity (info|warning|success|error), body",
+      "title"
+    ],
+    [
+      "step",
+      "Numbered step in a tutorial",
+      "step (number), title, body",
+      "code, language"
+    ],
+    [
+      "tabs",
+      "Tabbed content panels",
+      "tabs[{label, blocks[]}]",
+      "(none)"
+    ],
+    [
+      "accordion",
+      "Expandable/collapsible section",
+      "title, blocks[]",
+      "defaultExpanded (bool)"
+    ],
+    [
+      "table",
+      "Data table with headers and rows",
+      "headers[], rows[[]]",
+      "heading"
+    ],
+    [
+      "cardGrid",
+      "Grid of feature cards",
+      "cards[{title, body}]",
+      "columns (number), icon, chip"
+    ],
+    [
+      "image",
+      "Inline image",
+      "src, alt",
+      "caption"
+    ]
+  ]
+}

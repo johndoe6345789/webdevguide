@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "5. TypeScript Basics",
+  "headingLevel": 2,
+  "body": "TypeScript is JavaScript with a type system. It catches entire categories of bugs at edit time instead of runtime and provides excellent editor autocompletion. Every modern React project uses TypeScript."
+}

@@ -1,0 +1,7 @@
+{
+  "type": "code",
+  "language": "text",
+  "filename": "Git Branch Flow",
+  "description": "A simple branching strategy. Never commit directly to main. Every change goes through a feature branch with a pull request and CI checks.",
+  "code": "main (protected -- requires PR + CI pass to merge)\n  |\n  |--- feature/add-user-auth  (developer works here)\n  |     |\n  |     |-- commit: feat: add login form component\n  |     |-- commit: feat: add JWT authentication endpoint\n  |     |-- commit: test: add auth flow integration tests\n  |     |\n  |     |-> Pull Request #42: \"Add user authentication\"\n  |         - CI runs: lint, test, build (must all pass)\n  |         - Code review: at least 1 approval required\n  |         - Merge: squash and merge into main\n  |\n  |--- fix/cart-total-bug  (hotfix branch)\n        |\n        |-- commit: fix: use integer math for cart totals to avoid floating point errors\n        |\n        |-> Pull Request #43: \"Fix cart total rounding error\"\n            - Same CI + review process"
+}

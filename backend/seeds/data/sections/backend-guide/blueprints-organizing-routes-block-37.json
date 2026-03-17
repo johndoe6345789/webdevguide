@@ -1,0 +1,6 @@
+{
+  "type": "code",
+  "language": "python",
+  "filename": "app/api/items.py",
+  "code": "from flask import Blueprint, jsonify\n\n# Create a blueprint named \"items\"\nitems_bp = Blueprint(\"items\", __name__)\n\n@items_bp.route(\"/items\", methods=[\"GET\"])\ndef get_items():\n    return jsonify({\n        \"items\": [\n            {\"id\": 1, \"name\": \"First item\"},\n            {\"id\": 2, \"name\": \"Second item\"}\n        ]\n    })\n\n@items_bp.route(\"/items/<int:item_id>\", methods=[\"GET\"])\ndef get_item(item_id):\n    return jsonify({\n        \"id\": item_id,\n        \"name\": f\"Item {item_id}\"\n    })"
+}

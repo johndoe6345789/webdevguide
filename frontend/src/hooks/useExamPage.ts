@@ -6,7 +6,9 @@ import { useAppSelector } from '@/store/hooks';
 type ExamView = 'setup' | 'active' | 'results';
 
 export function useExamPage() {
-  const { activeExam, result, history, reviewMode } = useAppSelector((s) => s.exam);
+  const {
+    activeExam, result, history, reviewMode,
+  } = useAppSelector((s) => s.exam);
   const { questions: questionBank } = useExamQuestions(30);
   const actions = useExamActions(questionBank);
   const [showConfirmSubmit, setShowConfirmSubmit] = useState(false);
@@ -17,12 +19,19 @@ export function useExamPage() {
     return 'setup';
   }, [result, activeExam]);
 
-  const currentQuestion = activeExam?.questions[activeExam.currentIndex] ?? null;
-  const answeredCount = activeExam ? Object.keys(activeExam.answers).length : 0;
+  const currentQuestion =
+    activeExam?.questions[activeExam.currentIndex]
+    ?? null;
+  const answeredCount = activeExam
+    ? Object.keys(activeExam.answers).length : 0;
 
   const timeRemaining = useMemo(() => {
     if (!activeExam) return 0;
-    const elapsed = Math.floor((Date.now() - new Date(activeExam.startedAt).getTime()) / 1000);
+    const elapsed = Math.floor(
+      (Date.now()
+        - new Date(activeExam.startedAt).getTime())
+        / 1000,
+    );
     return Math.max(activeExam.timeLimit - elapsed, 0);
   }, [activeExam]);
 

@@ -1,0 +1,26 @@
+{
+  "type": "cardGrid",
+  "columns": 2,
+  "cards": [
+    {
+      "title": "Last Write Wins (LWW)",
+      "body": "The most recent update overwrites previous ones. Simple but can lose data. Acceptable for user profiles and settings where the latest value is always correct.",
+      "chip": "Simple"
+    },
+    {
+      "title": "Optimistic Locking",
+      "body": "Each record has a version number. When updating, you send the version you read. If it has changed, the update is rejected and the user must retry. Used by most CRUD applications.",
+      "chip": "Common"
+    },
+    {
+      "title": "Operational Transform (OT)",
+      "body": "Transforms concurrent operations so they can be applied in any order and produce the same result. Used by Google Docs. Complex to implement correctly.",
+      "chip": "Complex"
+    },
+    {
+      "title": "CRDTs",
+      "body": "Conflict-free Replicated Data Types are data structures that can be merged without conflicts by design. Used by Figma, Linear, and Yjs for real-time collaboration. The most robust solution.",
+      "chip": "Advanced"
+    }
+  ]
+}

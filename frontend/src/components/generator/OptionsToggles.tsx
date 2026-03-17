@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
@@ -12,26 +13,29 @@ interface Props {
   config: GeneratorConfig;
 }
 
-const TOGGLES: { key: keyof Pick<GeneratorConfig, 'useTypeScript' | 'useMui' | 'useRedux' | 'includeTests'>; label: string }[] = [
-  { key: 'useTypeScript', label: 'Use TypeScript' },
-  { key: 'useMui', label: 'Use Material UI' },
-  { key: 'useRedux', label: 'Use Redux State' },
-  { key: 'includeTests', label: 'Include Test File' },
-];
+type ToggleKey = 'useTypeScript' | 'useMui' | 'useRedux' | 'includeTests';
+const TOGGLE_KEYS: ToggleKey[] = ['useTypeScript', 'useMui', 'useRedux', 'includeTests'];
 
 export default function OptionsToggles({ config }: Props) {
+  const t = useTranslations('generator');
   const dispatch = useAppDispatch();
+  const labels: Record<ToggleKey, string> = {
+    useTypeScript: t('useTypeScript'),
+    useMui: t('useMui'),
+    useRedux: t('useRedux'),
+    includeTests: t('includeTests'),
+  };
   return (
     <Box>
-      <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>Options</Typography>
+      <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>{t('options')}</Typography>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-        {TOGGLES.map(({ key, label }) => (
+        {TOGGLE_KEYS.map((key) => (
           <FormControlLabel
             key={key}
             control={
               <Switch checked={config[key]} onChange={(e) => dispatch(updateConfig({ [key]: e.target.checked }))} size="small" />
             }
-            label={label}
+            label={labels[key]}
           />
         ))}
       </Box>

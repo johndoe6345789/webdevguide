@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 3,
+  "title": "Create the Auth Blueprint",
+  "body": "This blueprint handles user login and gives out JWT tokens:",
+  "code": "from flask import Blueprint, jsonify, request\nfrom flask_jwt_extended import create_access_token\n\nauth_bp = Blueprint(\"auth\", __name__)\n\n# In a real app, you would store users in a database.\n# For learning, we use a simple dictionary.\nUSERS = {\n    \"admin\": \"password123\",\n    \"student\": \"learning456\"\n}\n\n@auth_bp.route(\"/login\", methods=[\"POST\"])\ndef login():\n    data = request.get_json()\n\n    if not data or \"username\" not in data or \"password\" not in data:\n        return jsonify({\"error\": \"Username and password are required\"}), 400\n\n    username = data[\"username\"]\n    password = data[\"password\"]\n\n    # Check if the username exists and the password matches\n    if username not in USERS or USERS[username] != password:\n        return jsonify({\"error\": \"Invalid username or password\"}), 401\n\n    # Create a JWT token for this user\n    access_token = create_access_token(identity=username)\n\n    return jsonify({\n        \"message\": \"Login successful\",\n        \"access_token\": access_token\n    }), 200",
+  "language": "python"
+}

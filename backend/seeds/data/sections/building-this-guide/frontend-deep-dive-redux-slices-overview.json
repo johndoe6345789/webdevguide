@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Redux Slices Overview",
+  "headingLevel": 3,
+  "body": "Each slice manages a specific domain of state. The slices use createAsyncThunk for API calls and standard reducers for synchronous state updates."
+}

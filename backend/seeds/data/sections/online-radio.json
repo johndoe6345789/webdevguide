@@ -1,0 +1,320 @@
+{
+  "title": "Building an Online Radio Station",
+  "slug": "online-radio",
+  "description": "Create a live internet radio station with scheduled programming, DJ mixing, live broadcasting, and listener interaction",
+  "icon": "Radio",
+  "order": 23,
+  "estimatedMinutes": 40,
+  "difficulty": "advanced",
+  "prerequisites": ["fundamentals", "backend-guide", "music-platform"],
+  "keyPoints": [
+    "Live audio streaming with Icecast/Liquidsoap",
+    "Schedule-based programming",
+    "DJ live broadcasting",
+    "Listener chat and requests",
+    "Stream metadata and now-playing"
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "heading": "How Internet Radio Works",
+      "headingLevel": 2,
+      "body": "Internet radio follows a source-server-listener pipeline. A source client (Liquidsoap, BUTT, or Mixxx) encodes audio and pushes it to a streaming server (Icecast2). Icecast accepts incoming source connections, multiplexes them, and serves the stream to any number of HTTP listeners. A web application wraps the experience with a player, show schedule, chat, and metadata display."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        { "title": "Icecast2 Server", "body": "Open-source streaming media server that accepts source input and relays audio to listeners over HTTP.", "icon": "Cloud", "chip": "Infrastructure" },
+        { "title": "Liquidsoap", "body": "Programmable audio stream generator with playlist rotation, crossfading, and live DJ fallback.", "icon": "MusicNote", "chip": "Source Client" },
+        { "title": "Flask API", "body": "REST backend managing shows, schedules, song requests, and stream metadata polling.", "icon": "Api", "chip": "Backend" },
+        { "title": "React Player", "body": "Web audio player with volume control, now-playing info, and stream quality selector.", "icon": "PlayCircle", "chip": "Frontend" },
+        { "title": "WebSocket Chat", "body": "Real-time listener chat room and song request system via Flask-SocketIO.", "icon": "Chat", "chip": "Real-Time" },
+        { "title": "FFmpeg", "body": "Handles audio transcoding, recording live shows, and format conversion for archives.", "icon": "Transform", "chip": "Tooling" }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Icecast2 + Liquidsoap Docker Setup",
+      "headingLevel": 2,
+      "body": "We run Icecast2 as the streaming server and Liquidsoap as the automated source client. Docker Compose ties them together with a shared network so Liquidsoap can push audio to Icecast on port 8000."
+    },
+    {
+      "type": "code",
+      "language": "yaml",
+      "filename": "docker-compose.yml",
+      "description": "Docker Compose stack for Icecast2 streaming server and Liquidsoap source client.",
+      "code": "version: \"3.8\"\n\nservices:\n  icecast:\n    image: infiniteproject/icecast:2.4.4\n    ports:\n      - \"8000:8000\"\n    volumes:\n      - ./icecast.xml:/etc/icecast2/icecast.xml\n    environment:\n      ICECAST_SOURCE_PASSWORD: source_pw_change_me\n      ICECAST_ADMIN_PASSWORD: admin_pw_change_me\n      ICECAST_RELAY_PASSWORD: relay_pw_change_me\n    restart: unless-stopped\n\n  liquidsoap:\n    image: savonet/liquidsoap:v2.2.5\n    volumes:\n      - ./radio.liq:/etc/liquidsoap/radio.liq\n      - ./music:/music\n      - ./jingles:/jingles\n    depends_on:\n      - icecast\n    command: [\"liquidsoap\", \"/etc/liquidsoap/radio.liq\"]\n    restart: unless-stopped\n\n  api:\n    build: ./backend\n    ports:\n      - \"5000:5000\"\n    environment:\n      DATABASE_URL: postgresql://radio:radio@db:5432/radio_db\n      ICECAST_URL: http://icecast:8000\n      SECRET_KEY: change-me-in-production\n    depends_on:\n      - db\n      - icecast\n\n  db:\n    image: postgres:16-alpine\n    environment:\n      POSTGRES_USER: radio\n      POSTGRES_PASSWORD: radio\n      POSTGRES_DB: radio_db\n    volumes:\n      - pgdata:/var/lib/postgresql/data\n    ports:\n      - \"5432:5432\"\n\nvolumes:\n  pgdata:"
+    },
+    {
+      "type": "code",
+      "language": "xml",
+      "filename": "icecast.xml",
+      "description": "Icecast2 configuration with source, relay, and admin passwords plus mount points.",
+      "code": "<icecast>\n  <location>My Online Radio</location>\n  <admin>admin@example.com</admin>\n\n  <limits>\n    <clients>200</clients>\n    <sources>4</sources>\n    <queue-size>524288</queue-size>\n    <client-timeout>30</client-timeout>\n    <header-timeout>15</header-timeout>\n    <source-timeout>10</source-timeout>\n    <burst-size>65535</burst-size>\n  </limits>\n\n  <authentication>\n    <source-password>source_pw_change_me</source-password>\n    <relay-password>relay_pw_change_me</relay-password>\n    <admin-user>admin</admin-user>\n    <admin-password>admin_pw_change_me</admin-password>\n  </authentication>\n\n  <hostname>localhost</hostname>\n\n  <listen-socket>\n    <port>8000</port>\n  </listen-socket>\n\n  <mount type=\"normal\">\n    <mount-name>/live</mount-name>\n    <fallback-mount>/autodj</fallback-mount>\n    <fallback-override>1</fallback-override>\n  </mount>\n\n  <mount type=\"normal\">\n    <mount-name>/autodj</mount-name>\n  </mount>\n\n  <fileserve>1</fileserve>\n\n  <paths>\n    <logdir>/var/log/icecast2</logdir>\n    <webroot>/usr/share/icecast2/web</webroot>\n    <adminroot>/usr/share/icecast2/admin</adminroot>\n  </paths>\n\n  <logging>\n    <accesslog>access.log</accesslog>\n    <errorlog>error.log</errorlog>\n    <loglevel>3</loglevel>\n  </logging>\n</icecast>"
+    },
+    {
+      "type": "text",
+      "heading": "Liquidsoap Automated Playlist Script",
+      "headingLevel": 2,
+      "body": "Liquidsoap is a powerful audio stream language. The script below defines playlists for different genres, rotates them by time of day, adds jingles between songs, applies crossfade transitions, and outputs to Icecast. When a live DJ connects, Liquidsoap automatically switches to the live input and falls back to the auto-DJ when the DJ disconnects."
+    },
+    {
+      "type": "code",
+      "language": "ruby",
+      "filename": "radio.liq",
+      "description": "Liquidsoap script with genre playlists, time-based rotation, jingles, crossfade, and live DJ fallback.",
+      "code": "#!/usr/bin/liquidsoap\n\nlog.file.set(true)\nlog.file.path.set(\"/tmp/radio.log\")\n\n# --- Playlists by genre ---\nrock = playlist(mode=\"randomize\", reload=3600, \"/music/rock\")\npop = playlist(mode=\"randomize\", reload=3600, \"/music/pop\")\njazz = playlist(mode=\"randomize\", reload=3600, \"/music/jazz\")\nelectronic = playlist(mode=\"randomize\", reload=3600, \"/music/electronic\")\njingles = playlist(mode=\"randomize\", reload=600, \"/jingles\")\n\n# --- Time-based rotation ---\n# Morning (6-10): pop, Midday (10-14): rock,\n# Afternoon (14-18): jazz, Evening (18-24): electronic,\n# Night (0-6): jazz\nautodj = switch([\n  ({ 6h-10h }, pop),\n  ({ 10h-14h }, rock),\n  ({ 14h-18h }, jazz),\n  ({ 18h-0h },  electronic),\n  ({ true },    jazz)\n])\n\n# --- Insert jingle every 3 songs ---\nradio = rotate(weights=[1, 3], [jingles, autodj])\n\n# --- Crossfade transitions ---\nradio = crossfade(duration=4.0, radio)\n\n# --- Normalize loudness ---\nradio = normalize(radio)\n\n# --- Live DJ input (DJs connect to port 8001) ---\nlive = input.harbor(\"live\", port=8001, password=\"dj_secret\")\n\n# Switch to live when DJ connects, fall back to autodj\nfull = fallback(track_sensitive=false, [live, radio])\n\n# --- Output to Icecast ---\n# AutoDJ mount\noutput.icecast(\n  %mp3(bitrate=192, samplerate=44100, stereo=true),\n  host=\"icecast\",\n  port=8000,\n  password=\"source_pw_change_me\",\n  mount=\"/autodj\",\n  name=\"My Radio - AutoDJ\",\n  description=\"Automated playlist rotation\",\n  genre=\"Various\",\n  url=\"https://myradio.example.com\",\n  radio\n)\n\n# Live/fallback mount\noutput.icecast(\n  %mp3(bitrate=192, samplerate=44100, stereo=true),\n  host=\"icecast\",\n  port=8000,\n  password=\"source_pw_change_me\",\n  mount=\"/live\",\n  name=\"My Radio - Live\",\n  description=\"Live DJ or automated fallback\",\n  genre=\"Various\",\n  url=\"https://myradio.example.com\",\n  full\n)"
+    },
+    {
+      "type": "text",
+      "heading": "Database Schema: Shows, Schedules, and DJs",
+      "headingLevel": 2,
+      "body": "The database tracks DJs (linked to user accounts), shows with recurring schedules, and individual episodes. The schedule uses day-of-week and time slots to drive both the UI calendar and the Liquidsoap playlist selector."
+    },
+    {
+      "type": "code",
+      "language": "sql",
+      "filename": "schema.sql",
+      "description": "PostgreSQL schema for radio shows, schedules, DJs, song requests, and chat messages.",
+      "code": "CREATE TABLE djs (\n  id SERIAL PRIMARY KEY,\n  user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,\n  name VARCHAR(100) NOT NULL,\n  bio TEXT DEFAULT '',\n  avatar_url VARCHAR(512),\n  is_active BOOLEAN DEFAULT true,\n  created_at TIMESTAMP DEFAULT NOW()\n);\n\nCREATE TABLE shows (\n  id SERIAL PRIMARY KEY,\n  title VARCHAR(200) NOT NULL,\n  slug VARCHAR(220) UNIQUE NOT NULL,\n  description TEXT DEFAULT '',\n  genre VARCHAR(60),\n  cover_image_url VARCHAR(512),\n  dj_id INTEGER REFERENCES djs(id) ON DELETE SET NULL,\n  is_active BOOLEAN DEFAULT true,\n  created_at TIMESTAMP DEFAULT NOW()\n);\n\nCREATE TABLE schedules (\n  id SERIAL PRIMARY KEY,\n  show_id INTEGER NOT NULL REFERENCES shows(id) ON DELETE CASCADE,\n  day_of_week INTEGER NOT NULL CHECK (day_of_week BETWEEN 0 AND 6),\n  start_time TIME NOT NULL,\n  end_time TIME NOT NULL,\n  is_recurring BOOLEAN DEFAULT true,\n  specific_date DATE,\n  UNIQUE (day_of_week, start_time)\n);\nCREATE INDEX idx_schedules_day ON schedules(day_of_week, start_time);\n\nCREATE TABLE episodes (\n  id SERIAL PRIMARY KEY,\n  show_id INTEGER NOT NULL REFERENCES shows(id) ON DELETE CASCADE,\n  title VARCHAR(200),\n  aired_at TIMESTAMP NOT NULL,\n  duration_seconds INTEGER,\n  recording_url VARCHAR(512),\n  listener_peak INTEGER DEFAULT 0,\n  created_at TIMESTAMP DEFAULT NOW()\n);\n\nCREATE TABLE song_requests (\n  id SERIAL PRIMARY KEY,\n  listener_name VARCHAR(60) NOT NULL,\n  artist VARCHAR(120) NOT NULL,\n  title VARCHAR(200) NOT NULL,\n  message TEXT DEFAULT '',\n  votes INTEGER DEFAULT 0,\n  status VARCHAR(20) DEFAULT 'pending',\n  created_at TIMESTAMP DEFAULT NOW()\n);\nCREATE INDEX idx_requests_status ON song_requests(status, votes DESC);\n\nCREATE TABLE chat_messages (\n  id SERIAL PRIMARY KEY,\n  listener_name VARCHAR(60) NOT NULL,\n  message TEXT NOT NULL,\n  created_at TIMESTAMP DEFAULT NOW()\n);\nCREATE INDEX idx_chat_created ON chat_messages(created_at DESC);"
+    },
+    {
+      "type": "text",
+      "heading": "Scheduled Programming API",
+      "headingLevel": 2,
+      "body": "The Flask API manages show schedules, returns the current and upcoming shows, and provides CRUD for DJs and episodes. The scheduler also powers the Liquidsoap playlist selection by genre."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/shows.py",
+      "description": "Flask blueprint for show schedules, current/upcoming show lookup, and DJ management.",
+      "code": "from flask import Blueprint, request, jsonify\nfrom db import get_db\nfrom datetime import datetime, time, timedelta\n\nshows_bp = Blueprint(\"shows\", __name__)\n\nDAY_NAMES = [\"Monday\", \"Tuesday\", \"Wednesday\", \"Thursday\", \"Friday\", \"Saturday\", \"Sunday\"]\n\n@shows_bp.route(\"/schedule\", methods=[\"GET\"])\ndef get_weekly_schedule():\n    \"\"\"Return the full weekly schedule grouped by day.\"\"\"\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT s.day_of_week, s.start_time, s.end_time,\n               sh.title, sh.slug, sh.genre, sh.cover_image_url,\n               d.name AS dj_name, d.avatar_url AS dj_avatar\n        FROM schedules s\n        JOIN shows sh ON sh.id = s.show_id\n        LEFT JOIN djs d ON d.id = sh.dj_id\n        WHERE sh.is_active = true AND s.is_recurring = true\n        ORDER BY s.day_of_week, s.start_time\n    \"\"\")\n    cols = [desc[0] for desc in cur.description]\n    rows = [dict(zip(cols, row)) for row in cur.fetchall()]\n\n    schedule = {}\n    for row in rows:\n        day = DAY_NAMES[row[\"day_of_week\"]]\n        row[\"start_time\"] = row[\"start_time\"].strftime(\"%H:%M\")\n        row[\"end_time\"] = row[\"end_time\"].strftime(\"%H:%M\")\n        schedule.setdefault(day, []).append(row)\n\n    return jsonify(schedule=schedule)\n\n@shows_bp.route(\"/now-playing\", methods=[\"GET\"])\ndef get_current_show():\n    \"\"\"Return the currently airing show based on day and time.\"\"\"\n    now = datetime.now()\n    day_of_week = now.weekday()\n    current_time = now.time()\n\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT sh.title, sh.slug, sh.genre, sh.cover_image_url, sh.description,\n               d.name AS dj_name, d.avatar_url AS dj_avatar,\n               s.start_time, s.end_time\n        FROM schedules s\n        JOIN shows sh ON sh.id = s.show_id\n        LEFT JOIN djs d ON d.id = sh.dj_id\n        WHERE s.day_of_week = %s\n          AND s.start_time <= %s AND s.end_time > %s\n          AND sh.is_active = true\n        LIMIT 1\n    \"\"\", (day_of_week, current_time, current_time))\n    row = cur.fetchone()\n    if not row:\n        return jsonify(show=None, message=\"AutoDJ is playing\")\n\n    cols = [desc[0] for desc in cur.description]\n    show = dict(zip(cols, row))\n    show[\"start_time\"] = show[\"start_time\"].strftime(\"%H:%M\")\n    show[\"end_time\"] = show[\"end_time\"].strftime(\"%H:%M\")\n    return jsonify(show=show)\n\n@shows_bp.route(\"/upcoming\", methods=[\"GET\"])\ndef get_upcoming_shows():\n    \"\"\"Return the next 5 upcoming shows.\"\"\"\n    now = datetime.now()\n    day = now.weekday()\n    current_time = now.time()\n\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT sh.title, sh.slug, sh.genre, sh.cover_image_url,\n               d.name AS dj_name, s.day_of_week, s.start_time, s.end_time\n        FROM schedules s\n        JOIN shows sh ON sh.id = s.show_id\n        LEFT JOIN djs d ON d.id = sh.dj_id\n        WHERE sh.is_active = true AND s.is_recurring = true\n          AND (s.day_of_week > %s OR (s.day_of_week = %s AND s.start_time > %s))\n        ORDER BY s.day_of_week, s.start_time\n        LIMIT 5\n    \"\"\", (day, day, current_time))\n    cols = [desc[0] for desc in cur.description]\n    upcoming = []\n    for row in cur.fetchall():\n        show = dict(zip(cols, row))\n        show[\"day_name\"] = DAY_NAMES[show[\"day_of_week\"]]\n        show[\"start_time\"] = show[\"start_time\"].strftime(\"%H:%M\")\n        show[\"end_time\"] = show[\"end_time\"].strftime(\"%H:%M\")\n        upcoming.append(show)\n    return jsonify(upcoming=upcoming)"
+    },
+    {
+      "type": "text",
+      "heading": "Live DJ Broadcasting",
+      "headingLevel": 2,
+      "body": "DJs connect to the station using broadcasting software. Icecast receives their stream on the /live mount point, while Liquidsoap handles automatic fallback to the AutoDJ playlist when no live source is connected."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "BUTT Configuration",
+          "content": "**BUTT (Broadcast Using This Tool)** is a free, lightweight encoder.\n\n1. Download BUTT from https://danielnoethen.de/butt/\n2. Open Settings > Main:\n   - **Server**: Add new Icecast server\n   - **Address**: your-server.example.com\n   - **Port**: 8000\n   - **Password**: source_pw_change_me\n   - **Mount**: /live\n   - **Codec**: MP3, 192 kbps, 44100 Hz, Stereo\n3. Select your microphone/mixer as the audio input\n4. Click the Play button to start broadcasting\n\nWhen BUTT connects, Icecast's fallback-override causes the /live mount to switch from AutoDJ to the live source. When BUTT disconnects, Icecast reverts to the /autodj fallback mount automatically."
+        },
+        {
+          "label": "Mixxx Configuration",
+          "content": "**Mixxx** is an open-source DJ mixing application with direct Icecast support.\n\n1. Open Mixxx > Preferences > Live Broadcasting\n2. Set **Type**: Icecast 2\n3. **Host**: your-server.example.com\n4. **Port**: 8000\n5. **Mount**: /live\n6. **Password**: source_pw_change_me\n7. **Encoding**: MP3, 192 kbps\n8. Enable broadcasting and start mixing tracks\n\nMixxx sends the full mix output (both decks, crossfader, and effects) directly to Icecast."
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "variant": "info",
+      "title": "Fallback Behavior",
+      "body": "The Icecast configuration uses fallback-mount and fallback-override on the /live mount. When a DJ connects, their audio replaces the AutoDJ stream for all listeners on /live. When the DJ disconnects, Icecast automatically switches back to /autodj. Listeners experience a seamless transition without needing to reconnect."
+    },
+    {
+      "type": "text",
+      "heading": "Now-Playing Metadata",
+      "headingLevel": 2,
+      "body": "Icecast exposes stream status via an XML endpoint. We poll this from Flask and push updates to connected listeners via WebSocket. The metadata includes the current song title, artist, listener count, and stream bitrate."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/metadata.py",
+      "description": "Flask endpoint that polls Icecast status XML and returns current track metadata. Background thread pushes updates via SocketIO.",
+      "code": "import requests\nimport xml.etree.ElementTree as ET\nfrom flask import Blueprint, jsonify, current_app\nfrom threading import Thread\nimport time\n\nmetadata_bp = Blueprint(\"metadata\", __name__)\n\ndef parse_icecast_status(icecast_url):\n    \"\"\"Poll Icecast status.xsl and extract mount metadata.\"\"\"\n    try:\n        resp = requests.get(f\"{icecast_url}/status-json.xsl\", timeout=3)\n        data = resp.json()\n        source = data.get(\"icestats\", {}).get(\"source\", {})\n        # Handle single mount or list of mounts\n        if isinstance(source, list):\n            source = next((s for s in source if \"/live\" in s.get(\"listenurl\", \"\")), source[0])\n        title = source.get(\"title\", \"Unknown\")\n        parts = title.split(\" - \", 1)\n        return {\n            \"artist\": parts[0].strip() if len(parts) > 1 else \"Unknown\",\n            \"title\": parts[1].strip() if len(parts) > 1 else title,\n            \"full_title\": title,\n            \"listeners\": source.get(\"listeners\", 0),\n            \"peak_listeners\": source.get(\"listener_peak\", 0),\n            \"bitrate\": source.get(\"bitrate\", 192),\n            \"genre\": source.get(\"genre\", \"Various\"),\n            \"server_name\": source.get(\"server_name\", \"My Radio\"),\n            \"mount\": source.get(\"listenurl\", \"\")\n        }\n    except Exception as e:\n        return {\"artist\": \"Unknown\", \"title\": \"Stream offline\", \"listeners\": 0, \"error\": str(e)}\n\n@metadata_bp.route(\"/now-playing\", methods=[\"GET\"])\ndef now_playing():\n    icecast_url = current_app.config.get(\"ICECAST_URL\", \"http://icecast:8000\")\n    meta = parse_icecast_status(icecast_url)\n    return jsonify(meta)\n\ndef start_metadata_broadcaster(app, socketio, interval=5):\n    \"\"\"Background thread that pushes metadata changes to all listeners.\"\"\"\n    last_title = None\n    def broadcast_loop():\n        nonlocal last_title\n        with app.app_context():\n            icecast_url = app.config.get(\"ICECAST_URL\", \"http://icecast:8000\")\n            while True:\n                meta = parse_icecast_status(icecast_url)\n                if meta.get(\"full_title\") != last_title:\n                    last_title = meta.get(\"full_title\")\n                    socketio.emit(\"now_playing\", meta, namespace=\"/radio\")\n                time.sleep(interval)\n    thread = Thread(target=broadcast_loop, daemon=True)\n    thread.start()"
+    },
+    {
+      "type": "text",
+      "heading": "Web Player",
+      "headingLevel": 2,
+      "body": "The React player connects directly to the Icecast HTTP stream using the HTML5 audio element. It supports volume control, mute toggle, and displays now-playing metadata received via WebSocket."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/RadioPlayer.tsx",
+      "description": "React radio player component with stream playback, volume control, now-playing display, and WebSocket metadata updates.",
+      "code": "import { useState, useRef, useEffect, useCallback } from 'react';\nimport { io, Socket } from 'socket.io-client';\n\ninterface NowPlaying {\n  artist: string;\n  title: string;\n  listeners: number;\n  bitrate: number;\n  genre: string;\n}\n\nconst STREAM_URL = '/icecast/live'; // Proxied through nginx\nconst QUALITIES = [\n  { label: 'High (192k)', url: '/icecast/live' },\n  { label: 'Medium (128k)', url: '/icecast/live-128' },\n  { label: 'Low (64k)', url: '/icecast/live-64' },\n];\n\nexport default function RadioPlayer() {\n  const audioRef = useRef<HTMLAudioElement>(null);\n  const [isPlaying, setIsPlaying] = useState(false);\n  const [volume, setVolume] = useState(0.8);\n  const [isMuted, setIsMuted] = useState(false);\n  const [quality, setQuality] = useState(QUALITIES[0]);\n  const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);\n  const [socketConnected, setSocketConnected] = useState(false);\n\n  useEffect(() => {\n    const socket: Socket = io('/radio', { transports: ['websocket'] });\n    socket.on('connect', () => setSocketConnected(true));\n    socket.on('disconnect', () => setSocketConnected(false));\n    socket.on('now_playing', (data: NowPlaying) => setNowPlaying(data));\n    return () => { socket.disconnect(); };\n  }, []);\n\n  useEffect(() => {\n    if (audioRef.current) {\n      audioRef.current.volume = isMuted ? 0 : volume;\n    }\n  }, [volume, isMuted]);\n\n  const togglePlay = useCallback(() => {\n    const audio = audioRef.current;\n    if (!audio) return;\n    if (isPlaying) {\n      audio.pause();\n      audio.src = '';\n      setIsPlaying(false);\n    } else {\n      audio.src = quality.url;\n      audio.play().then(() => setIsPlaying(true)).catch(console.error);\n    }\n  }, [isPlaying, quality]);\n\n  const handleQualityChange = (q: typeof QUALITIES[number]) => {\n    setQuality(q);\n    if (isPlaying && audioRef.current) {\n      audioRef.current.src = q.url;\n      audioRef.current.play().catch(console.error);\n    }\n  };\n\n  return (\n    <div className=\"radio-player\">\n      <audio ref={audioRef} preload=\"none\" />\n\n      <div className=\"now-playing\">\n        {nowPlaying ? (\n          <>\n            <span className=\"artist\">{nowPlaying.artist}</span>\n            <span className=\"separator\"> &mdash; </span>\n            <span className=\"track-title\">{nowPlaying.title}</span>\n            <span className=\"listeners\">{nowPlaying.listeners} listeners</span>\n          </>\n        ) : (\n          <span className=\"offline\">Connecting...</span>\n        )}\n      </div>\n\n      <div className=\"controls\">\n        <button onClick={togglePlay} className=\"play-btn\">\n          {isPlaying ? 'Stop' : 'Play'}\n        </button>\n\n        <button onClick={() => setIsMuted(!isMuted)} className=\"mute-btn\">\n          {isMuted ? 'Unmute' : 'Mute'}\n        </button>\n\n        <input\n          type=\"range\" min={0} max={1} step={0.01}\n          value={isMuted ? 0 : volume}\n          onChange={e => { setVolume(parseFloat(e.target.value)); setIsMuted(false); }}\n          className=\"volume-slider\"\n        />\n\n        <select\n          value={quality.label}\n          onChange={e => {\n            const q = QUALITIES.find(q => q.label === e.target.value);\n            if (q) handleQualityChange(q);\n          }}\n        >\n          {QUALITIES.map(q => (\n            <option key={q.label} value={q.label}>{q.label}</option>\n          ))}\n        </select>\n      </div>\n    </div>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Listener Chat & Song Requests",
+      "headingLevel": 2,
+      "body": "Flask-SocketIO powers the real-time chat room. Listeners can send messages and submit song requests. Requests are stored in the database and DJs can view and fulfill them from the admin panel."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "sockets/chat.py",
+      "description": "Flask-SocketIO event handlers for listener chat, song requests, and vote-based request queue.",
+      "code": "from flask_socketio import emit, join_room\nfrom db import get_db\nfrom datetime import datetime\n\ndef register_chat_events(socketio):\n    @socketio.on(\"connect\", namespace=\"/radio\")\n    def on_connect():\n        join_room(\"listeners\")\n        # Send recent chat history\n        db = get_db()\n        cur = db.cursor()\n        cur.execute(\"\"\"\n            SELECT listener_name, message, created_at\n            FROM chat_messages ORDER BY created_at DESC LIMIT 50\n        \"\"\")\n        history = [{\"name\": r[0], \"message\": r[1], \"time\": r[2].isoformat()}\n                   for r in reversed(cur.fetchall())]\n        emit(\"chat_history\", history)\n\n    @socketio.on(\"send_message\", namespace=\"/radio\")\n    def on_message(data):\n        name = data.get(\"name\", \"Anonymous\")[:60]\n        message = data.get(\"message\", \"\")[:500]\n        if not message.strip():\n            return\n        db = get_db()\n        cur = db.cursor()\n        cur.execute(\n            \"INSERT INTO chat_messages (listener_name, message) VALUES (%s, %s) RETURNING created_at\",\n            (name, message)\n        )\n        created_at = cur.fetchone()[0]\n        db.commit()\n        emit(\"new_message\", {\n            \"name\": name, \"message\": message, \"time\": created_at.isoformat()\n        }, room=\"listeners\")\n\n    @socketio.on(\"song_request\", namespace=\"/radio\")\n    def on_song_request(data):\n        name = data.get(\"name\", \"Anonymous\")[:60]\n        artist = data.get(\"artist\", \"\")[:120]\n        title = data.get(\"title\", \"\")[:200]\n        message = data.get(\"message\", \"\")[:300]\n        if not artist or not title:\n            emit(\"error\", {\"message\": \"Artist and title are required\"})\n            return\n        db = get_db()\n        cur = db.cursor()\n        cur.execute(\"\"\"\n            INSERT INTO song_requests (listener_name, artist, title, message)\n            VALUES (%s, %s, %s, %s) RETURNING id, created_at\n        \"\"\", (name, artist, title, message))\n        row = cur.fetchone()\n        db.commit()\n        emit(\"request_received\", {\n            \"id\": row[0], \"name\": name, \"artist\": artist,\n            \"title\": title, \"time\": row[1].isoformat()\n        }, room=\"listeners\")\n\n    @socketio.on(\"vote_request\", namespace=\"/radio\")\n    def on_vote(data):\n        request_id = data.get(\"request_id\")\n        if not request_id:\n            return\n        db = get_db()\n        cur = db.cursor()\n        cur.execute(\"\"\"\n            UPDATE song_requests SET votes = votes + 1\n            WHERE id = %s AND status = 'pending'\n            RETURNING id, votes\n        \"\"\", (request_id,))\n        row = cur.fetchone()\n        if row:\n            db.commit()\n            emit(\"vote_updated\", {\"id\": row[0], \"votes\": row[1]}, room=\"listeners\")"
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/ListenerChat.tsx",
+      "description": "React chat component with message history, song request form, and real-time updates.",
+      "code": "import { useState, useEffect, useRef } from 'react';\nimport { Socket } from 'socket.io-client';\n\ninterface ChatMessage {\n  name: string;\n  message: string;\n  time: string;\n}\n\ninterface SongRequest {\n  id: number;\n  name: string;\n  artist: string;\n  title: string;\n  votes?: number;\n  time: string;\n}\n\ninterface Props {\n  socket: Socket;\n  listenerName: string;\n}\n\nexport default function ListenerChat({ socket, listenerName }: Props) {\n  const [messages, setMessages] = useState<ChatMessage[]>([]);\n  const [requests, setRequests] = useState<SongRequest[]>([]);\n  const [input, setInput] = useState('');\n  const [reqArtist, setReqArtist] = useState('');\n  const [reqTitle, setReqTitle] = useState('');\n  const [tab, setTab] = useState<'chat' | 'requests'>('chat');\n  const bottomRef = useRef<HTMLDivElement>(null);\n\n  useEffect(() => {\n    socket.on('chat_history', (history: ChatMessage[]) => setMessages(history));\n    socket.on('new_message', (msg: ChatMessage) =>\n      setMessages(prev => [...prev.slice(-200), msg])\n    );\n    socket.on('request_received', (req: SongRequest) =>\n      setRequests(prev => [req, ...prev].slice(0, 50))\n    );\n    socket.on('vote_updated', (data: { id: number; votes: number }) =>\n      setRequests(prev =>\n        prev.map(r => r.id === data.id ? { ...r, votes: data.votes } : r)\n      )\n    );\n    return () => {\n      socket.off('chat_history');\n      socket.off('new_message');\n      socket.off('request_received');\n      socket.off('vote_updated');\n    };\n  }, [socket]);\n\n  useEffect(() => {\n    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });\n  }, [messages]);\n\n  const sendMessage = () => {\n    if (!input.trim()) return;\n    socket.emit('send_message', { name: listenerName, message: input });\n    setInput('');\n  };\n\n  const submitRequest = () => {\n    if (!reqArtist.trim() || !reqTitle.trim()) return;\n    socket.emit('song_request', {\n      name: listenerName, artist: reqArtist, title: reqTitle\n    });\n    setReqArtist('');\n    setReqTitle('');\n  };\n\n  return (\n    <div className=\"listener-chat\">\n      <div className=\"chat-tabs\">\n        <button className={tab === 'chat' ? 'active' : ''} onClick={() => setTab('chat')}>Chat</button>\n        <button className={tab === 'requests' ? 'active' : ''} onClick={() => setTab('requests')}>Requests</button>\n      </div>\n\n      {tab === 'chat' ? (\n        <>\n          <div className=\"chat-messages\">\n            {messages.map((msg, i) => (\n              <div key={i} className=\"chat-msg\">\n                <strong>{msg.name}:</strong> {msg.message}\n                <time>{new Date(msg.time).toLocaleTimeString()}</time>\n              </div>\n            ))}\n            <div ref={bottomRef} />\n          </div>\n          <div className=\"chat-input\">\n            <input value={input} onChange={e => setInput(e.target.value)}\n              onKeyDown={e => e.key === 'Enter' && sendMessage()}\n              placeholder=\"Type a message...\" maxLength={500} />\n            <button onClick={sendMessage}>Send</button>\n          </div>\n        </>\n      ) : (\n        <>\n          <div className=\"request-list\">\n            {requests.map(req => (\n              <div key={req.id} className=\"song-request\">\n                <span className=\"req-song\">{req.artist} - {req.title}</span>\n                <span className=\"req-by\">by {req.name}</span>\n                <button onClick={() => socket.emit('vote_request', { request_id: req.id })}>\n                  +1 ({req.votes || 0})\n                </button>\n              </div>\n            ))}\n          </div>\n          <div className=\"request-form\">\n            <input value={reqArtist} onChange={e => setReqArtist(e.target.value)}\n              placeholder=\"Artist\" maxLength={120} />\n            <input value={reqTitle} onChange={e => setReqTitle(e.target.value)}\n              placeholder=\"Song title\" maxLength={200}\n              onKeyDown={e => e.key === 'Enter' && submitRequest()} />\n            <button onClick={submitRequest}>Request</button>\n          </div>\n        </>\n      )}\n    </div>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Show Schedule UI",
+      "headingLevel": 2,
+      "body": "The schedule component fetches the weekly timetable from the API and renders it as a grid. Each slot shows the show name, DJ, genre, and time range. The current show is highlighted, and a countdown timer shows when the next show starts."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "components/ShowSchedule.tsx",
+      "description": "React weekly schedule grid with current show highlight and countdown to next show.",
+      "code": "import { useState, useEffect } from 'react';\n\ninterface ScheduleSlot {\n  title: string;\n  slug: string;\n  genre: string;\n  cover_image_url: string | null;\n  dj_name: string | null;\n  dj_avatar: string | null;\n  start_time: string;\n  end_time: string;\n}\n\ninterface ScheduleData {\n  [day: string]: ScheduleSlot[];\n}\n\nconst DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];\n\nexport default function ShowSchedule() {\n  const [schedule, setSchedule] = useState<ScheduleData>({});\n  const [loading, setLoading] = useState(true);\n\n  useEffect(() => {\n    fetch('/api/shows/schedule')\n      .then(r => r.json())\n      .then(data => { setSchedule(data.schedule); setLoading(false); })\n      .catch(() => setLoading(false));\n  }, []);\n\n  const now = new Date();\n  const todayName = DAYS[now.getDay() === 0 ? 6 : now.getDay() - 1];\n  const currentTime = now.toTimeString().slice(0, 5);\n\n  const isCurrentSlot = (day: string, slot: ScheduleSlot) =>\n    day === todayName && slot.start_time <= currentTime && slot.end_time > currentTime;\n\n  if (loading) return <div>Loading schedule...</div>;\n\n  return (\n    <div className=\"schedule-grid\">\n      {DAYS.map(day => (\n        <div key={day} className={`schedule-day ${day === todayName ? 'today' : ''}`}>\n          <h3>{day}</h3>\n          {(schedule[day] || []).map((slot, i) => (\n            <div key={i} className={`schedule-slot ${isCurrentSlot(day, slot) ? 'on-air' : ''}`}>\n              <span className=\"slot-time\">{slot.start_time} - {slot.end_time}</span>\n              <span className=\"slot-title\">{slot.title}</span>\n              <span className=\"slot-genre\">{slot.genre}</span>\n              {slot.dj_name && <span className=\"slot-dj\">with {slot.dj_name}</span>}\n            </div>\n          ))}\n          {!(schedule[day] || []).length && (\n            <div className=\"schedule-slot empty\">AutoDJ all day</div>\n          )}\n        </div>\n      ))}\n    </div>\n  );\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Podcast / Replay System",
+      "headingLevel": 2,
+      "body": "Live shows can be recorded for on-demand replay. A background task uses FFmpeg to capture the Icecast stream during scheduled shows. Archived episodes are served as downloadable files and can be published as a podcast via an RSS feed."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "services/recorder.py",
+      "description": "Background service that records live shows from Icecast using FFmpeg, saves to disk, and registers episodes in the database.",
+      "code": "import subprocess\nimport os\nfrom datetime import datetime, timedelta\nfrom threading import Thread\nfrom db import get_db\n\nRECORDINGS_DIR = \"/recordings\"\nICECAST_STREAM = \"http://icecast:8000/live\"\n\ndef record_show(show_id: int, show_title: str, duration_seconds: int):\n    \"\"\"Record the Icecast stream for the given duration.\"\"\"\n    os.makedirs(RECORDINGS_DIR, exist_ok=True)\n    timestamp = datetime.now().strftime(\"%Y%m%d_%H%M\")\n    filename = f\"{show_title.replace(' ', '_')}_{timestamp}.mp3\"\n    filepath = os.path.join(RECORDINGS_DIR, filename)\n\n    cmd = [\n        \"ffmpeg\", \"-y\",\n        \"-i\", ICECAST_STREAM,\n        \"-t\", str(duration_seconds),\n        \"-acodec\", \"libmp3lame\",\n        \"-ab\", \"192k\",\n        \"-ar\", \"44100\",\n        filepath\n    ]\n\n    process = subprocess.run(cmd, capture_output=True, timeout=duration_seconds + 60)\n\n    if os.path.exists(filepath) and os.path.getsize(filepath) > 0:\n        db = get_db()\n        cur = db.cursor()\n        cur.execute(\"\"\"\n            INSERT INTO episodes (show_id, title, aired_at, duration_seconds, recording_url)\n            VALUES (%s, %s, %s, %s, %s)\n        \"\"\", (show_id, f\"{show_title} - {timestamp}\", datetime.now(),\n              duration_seconds, f\"/recordings/{filename}\"))\n        db.commit()\n        return filepath\n    return None\n\ndef schedule_recording(app, show_id: int, show_title: str, duration_seconds: int):\n    \"\"\"Start recording in a background thread.\"\"\"\n    def _record():\n        with app.app_context():\n            record_show(show_id, show_title, duration_seconds)\n    thread = Thread(target=_record, daemon=True)\n    thread.start()\n    return thread"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/podcast.py",
+      "description": "RSS 2.0 podcast feed generator for archived radio show episodes.",
+      "code": "from flask import Blueprint, Response, request\nfrom db import get_db\nfrom xml.etree.ElementTree import Element, SubElement, tostring\nfrom datetime import datetime\n\npodcast_bp = Blueprint(\"podcast\", __name__)\n\n@podcast_bp.route(\"/feed.xml\", methods=[\"GET\"])\ndef podcast_feed():\n    base_url = request.host_url.rstrip(\"/\")\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT e.title, e.aired_at, e.duration_seconds, e.recording_url,\n               s.title AS show_title, s.description AS show_desc\n        FROM episodes e\n        JOIN shows s ON s.id = e.show_id\n        WHERE e.recording_url IS NOT NULL\n        ORDER BY e.aired_at DESC\n        LIMIT 100\n    \"\"\")\n    cols = [d[0] for d in cur.description]\n    episodes = [dict(zip(cols, row)) for row in cur.fetchall()]\n\n    rss = Element(\"rss\", version=\"2.0\")\n    rss.set(\"xmlns:itunes\", \"http://www.itunes.com/dtds/podcast-1.0.dtd\")\n    channel = SubElement(rss, \"channel\")\n    SubElement(channel, \"title\").text = \"My Radio - Show Archive\"\n    SubElement(channel, \"link\").text = base_url\n    SubElement(channel, \"description\").text = \"Archived shows from My Radio station\"\n    SubElement(channel, \"language\").text = \"en\"\n\n    for ep in episodes:\n        item = SubElement(channel, \"item\")\n        SubElement(item, \"title\").text = ep[\"title\"]\n        SubElement(item, \"description\").text = f\"From {ep['show_title']}: {ep.get('show_desc', '')}\"\n        SubElement(item, \"pubDate\").text = ep[\"aired_at\"].strftime(\"%a, %d %b %Y %H:%M:%S +0000\")\n        enclosure = SubElement(item, \"enclosure\")\n        enclosure.set(\"url\", f\"{base_url}{ep['recording_url']}\")\n        enclosure.set(\"type\", \"audio/mpeg\")\n        enclosure.set(\"length\", \"0\")\n        if ep[\"duration_seconds\"]:\n            itunes_dur = SubElement(item, \"itunes:duration\")\n            itunes_dur.text = str(ep[\"duration_seconds\"])\n\n    xml_bytes = tostring(rss, encoding=\"unicode\", xml_declaration=True)\n    return Response(xml_bytes, mimetype=\"application/rss+xml\")"
+    },
+    {
+      "type": "text",
+      "heading": "Analytics & Listener Tracking",
+      "headingLevel": 2,
+      "body": "We track listener counts over time by periodically sampling the Icecast status. This data powers a dashboard showing peak listening times, geographic distribution (via GeoIP on access logs), and per-show popularity."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "services/analytics.py",
+      "description": "Background service that samples Icecast listener stats and stores time-series data for dashboard analytics.",
+      "code": "from db import get_db\nfrom routes.metadata import parse_icecast_status\nfrom threading import Thread\nfrom datetime import datetime\nimport time\n\ndef create_analytics_table(db):\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        CREATE TABLE IF NOT EXISTS listener_stats (\n            id SERIAL PRIMARY KEY,\n            timestamp TIMESTAMP NOT NULL DEFAULT NOW(),\n            mount VARCHAR(100) NOT NULL,\n            listeners INTEGER NOT NULL DEFAULT 0,\n            peak_listeners INTEGER NOT NULL DEFAULT 0\n        );\n        CREATE INDEX IF NOT EXISTS idx_stats_time ON listener_stats(timestamp DESC);\n    \"\"\")\n    db.commit()\n\ndef sample_listeners(icecast_url):\n    \"\"\"Take a snapshot of current listener counts.\"\"\"\n    meta = parse_icecast_status(icecast_url)\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        INSERT INTO listener_stats (mount, listeners, peak_listeners)\n        VALUES (%s, %s, %s)\n    \"\"\", (meta.get(\"mount\", \"/live\"), meta.get(\"listeners\", 0),\n          meta.get(\"peak_listeners\", 0)))\n    db.commit()\n\ndef start_analytics_collector(app, interval=60):\n    \"\"\"Collect listener stats every `interval` seconds.\"\"\"\n    def collector():\n        with app.app_context():\n            create_analytics_table(get_db())\n            icecast_url = app.config.get(\"ICECAST_URL\", \"http://icecast:8000\")\n            while True:\n                try:\n                    sample_listeners(icecast_url)\n                except Exception as e:\n                    app.logger.error(f\"Analytics error: {e}\")\n                time.sleep(interval)\n    Thread(target=collector, daemon=True).start()"
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "routes/analytics.py",
+      "description": "Flask endpoints for listener analytics: hourly chart data, peak times, and show popularity.",
+      "code": "from flask import Blueprint, jsonify, request\nfrom db import get_db\n\nanalytics_bp = Blueprint(\"analytics\", __name__)\n\n@analytics_bp.route(\"/hourly\", methods=[\"GET\"])\ndef hourly_stats():\n    \"\"\"Listener counts aggregated by hour for the last 24 hours.\"\"\"\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT date_trunc('hour', timestamp) AS hour,\n               AVG(listeners)::int AS avg_listeners,\n               MAX(peak_listeners) AS peak_listeners\n        FROM listener_stats\n        WHERE timestamp > NOW() - INTERVAL '24 hours'\n        GROUP BY hour\n        ORDER BY hour\n    \"\"\")\n    cols = [d[0] for d in cur.description]\n    rows = [dict(zip(cols, r)) for r in cur.fetchall()]\n    for r in rows:\n        r[\"hour\"] = r[\"hour\"].isoformat()\n    return jsonify(stats=rows)\n\n@analytics_bp.route(\"/peak-times\", methods=[\"GET\"])\ndef peak_times():\n    \"\"\"Find the hours with highest average listenership.\"\"\"\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT EXTRACT(HOUR FROM timestamp)::int AS hour_of_day,\n               AVG(listeners)::int AS avg_listeners\n        FROM listener_stats\n        WHERE timestamp > NOW() - INTERVAL '7 days'\n        GROUP BY hour_of_day\n        ORDER BY avg_listeners DESC\n        LIMIT 5\n    \"\"\")\n    cols = [d[0] for d in cur.description]\n    return jsonify(peak_times=[dict(zip(cols, r)) for r in cur.fetchall()])\n\n@analytics_bp.route(\"/show-popularity\", methods=[\"GET\"])\ndef show_popularity():\n    \"\"\"Average listeners during each show's time slot.\"\"\"\n    db = get_db()\n    cur = db.cursor()\n    cur.execute(\"\"\"\n        SELECT sh.title, sh.genre, d.name AS dj_name,\n               AVG(ls.listeners)::int AS avg_listeners,\n               MAX(ls.peak_listeners) AS peak_listeners,\n               COUNT(DISTINCT DATE(ls.timestamp)) AS episodes_tracked\n        FROM shows sh\n        JOIN schedules sc ON sc.show_id = sh.id\n        LEFT JOIN djs d ON d.id = sh.dj_id\n        JOIN listener_stats ls ON\n             EXTRACT(DOW FROM ls.timestamp) = sc.day_of_week\n             AND ls.timestamp::time BETWEEN sc.start_time AND sc.end_time\n        WHERE ls.timestamp > NOW() - INTERVAL '30 days'\n        GROUP BY sh.id, sh.title, sh.genre, d.name\n        ORDER BY avg_listeners DESC\n    \"\"\")\n    cols = [d[0] for d in cur.description]\n    return jsonify(shows=[dict(zip(cols, r)) for r in cur.fetchall()])"
+    },
+    {
+      "type": "text",
+      "heading": "Mobile PWA Support",
+      "headingLevel": 2,
+      "body": "A Progressive Web App lets listeners install the radio on their phone's home screen. The key features are a service worker for offline shell caching, a web app manifest for installability, and the Media Session API for lock-screen controls."
+    },
+    {
+      "type": "code",
+      "language": "json",
+      "filename": "public/manifest.json",
+      "description": "Web App Manifest for installable radio PWA with theme colors and icons.",
+      "code": "{\n  \"name\": \"My Online Radio\",\n  \"short_name\": \"MyRadio\",\n  \"description\": \"Listen to live radio with scheduled shows, DJ mixes, and listener chat\",\n  \"start_url\": \"/\",\n  \"display\": \"standalone\",\n  \"background_color\": \"#1a1a2e\",\n  \"theme_color\": \"#e94560\",\n  \"orientation\": \"any\",\n  \"icons\": [\n    { \"src\": \"/icons/icon-192.png\", \"sizes\": \"192x192\", \"type\": \"image/png\" },\n    { \"src\": \"/icons/icon-512.png\", \"sizes\": \"512x512\", \"type\": \"image/png\" }\n  ],\n  \"categories\": [\"music\", \"entertainment\"]\n}"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "hooks/useMediaSession.ts",
+      "description": "React hook that integrates with the Media Session API for lock-screen playback controls and now-playing display on mobile.",
+      "code": "import { useEffect } from 'react';\n\ninterface MediaSessionOptions {\n  title: string;\n  artist: string;\n  album?: string;\n  artworkUrl?: string;\n  onPlay: () => void;\n  onPause: () => void;\n  onStop: () => void;\n}\n\nexport function useMediaSession(opts: MediaSessionOptions) {\n  useEffect(() => {\n    if (!('mediaSession' in navigator)) return;\n\n    navigator.mediaSession.metadata = new MediaMetadata({\n      title: opts.title,\n      artist: opts.artist,\n      album: opts.album || 'My Online Radio',\n      artwork: opts.artworkUrl\n        ? [{ src: opts.artworkUrl, sizes: '512x512', type: 'image/png' }]\n        : [],\n    });\n\n    navigator.mediaSession.setActionHandler('play', opts.onPlay);\n    navigator.mediaSession.setActionHandler('pause', opts.onPause);\n    navigator.mediaSession.setActionHandler('stop', opts.onStop);\n\n    return () => {\n      navigator.mediaSession.setActionHandler('play', null);\n      navigator.mediaSession.setActionHandler('pause', null);\n      navigator.mediaSession.setActionHandler('stop', null);\n    };\n  }, [opts.title, opts.artist, opts.artworkUrl]);\n}"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "service-worker.ts",
+      "description": "Service worker providing offline app shell caching and background audio playback support.",
+      "code": "const CACHE_NAME = 'radio-shell-v1';\nconst SHELL_URLS = [\n  '/',\n  '/index.html',\n  '/manifest.json',\n  '/icons/icon-192.png',\n  '/icons/icon-512.png',\n];\n\nself.addEventListener('install', (event: ExtendableEvent) => {\n  event.waitUntil(\n    caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL_URLS))\n  );\n});\n\nself.addEventListener('activate', (event: ExtendableEvent) => {\n  event.waitUntil(\n    caches.keys().then(keys =>\n      Promise.all(\n        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))\n      )\n    )\n  );\n});\n\nself.addEventListener('fetch', (event: FetchEvent) => {\n  const url = new URL(event.request.url);\n\n  // Never cache the audio stream or API calls\n  if (url.pathname.startsWith('/icecast') ||\n      url.pathname.startsWith('/api') ||\n      url.pathname.startsWith('/socket.io')) {\n    return;\n  }\n\n  event.respondWith(\n    caches.match(event.request).then(cached =>\n      cached || fetch(event.request).then(response => {\n        if (response.ok && event.request.method === 'GET') {\n          const clone = response.clone();\n          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));\n        }\n        return response;\n      })\n    )\n  );\n});"
+    },
+    {
+      "type": "alert",
+      "variant": "warning",
+      "title": "Broadcasting Licenses & Legal Requirements",
+      "body": "Streaming copyrighted music on the internet requires performance licenses. In the United States, you need licenses from ASCAP, BMI, and SESAC for the underlying musical compositions, and a statutory license from SoundExchange for the sound recordings. You must also comply with DMCA rules: no pre-announcing specific songs, no playing more than 3 tracks from one album in a 3-hour window, and no artist-on-demand programming. International broadcasters must comply with their local collecting societies (PRS in the UK, GEMA in Germany, etc.). Failure to obtain proper licensing can result in significant fines. Consider royalty-free music libraries or Creative Commons content if licensing costs are prohibitive."
+    },
+    {
+      "type": "accordion",
+      "items": [
+        {
+          "title": "How do I get an ASCAP/BMI license for internet radio?",
+          "content": "Both ASCAP and BMI offer non-interactive streaming licenses for internet radio stations. Visit their websites and apply for a \"New Media\" or \"Internet Radio\" license. Fees are typically based on your revenue or a flat annual minimum. SESAC licenses are negotiated individually. You will also need a SoundExchange license for the actual sound recordings, which uses a per-performance royalty rate set by the Copyright Royalty Board."
+        },
+        {
+          "title": "Can I stream royalty-free music instead?",
+          "content": "Yes. Services like Free Music Archive, Incompetech, and ccMixter offer Creative Commons-licensed tracks. Ensure you comply with the specific CC license terms (attribution, non-commercial, etc.). Some artists on platforms like Bandcamp and SoundCloud also allow streaming with permission. This is the simplest legal path for hobby stations."
+        },
+        {
+          "title": "What are the DMCA rules for internet radio?",
+          "content": "The DMCA provides a statutory license for non-interactive webcasting (where listeners cannot choose specific songs). Key rules: you may not pre-announce songs or playlists, you may not play more than 3 songs from one album in a 3-hour window (or 4 from a box set), you may not play more than 2 consecutive songs by the same artist, and you cannot offer archived programs that listeners can access on demand in a way that mimics interactive streaming."
+        },
+        {
+          "title": "Do I need an FCC license for internet radio?",
+          "content": "No. The FCC regulates over-the-air broadcast radio (AM/FM) but does not license internet-only stations. However, you are still subject to copyright law, and your content must comply with applicable laws regarding obscenity and other restricted content."
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "Flask Application Wiring",
+      "headingLevel": 2,
+      "body": "The main application file initializes Flask, registers all blueprints, sets up SocketIO, and starts the background metadata broadcaster and analytics collector."
+    },
+    {
+      "type": "code",
+      "language": "python",
+      "filename": "app.py",
+      "description": "Main Flask application with SocketIO initialization, blueprint registration, and background service startup.",
+      "code": "from flask import Flask\nfrom flask_socketio import SocketIO\nfrom flask_cors import CORS\nimport os\n\napp = Flask(__name__)\napp.config[\"SECRET_KEY\"] = os.environ.get(\"SECRET_KEY\", \"dev-secret\")\napp.config[\"ICECAST_URL\"] = os.environ.get(\"ICECAST_URL\", \"http://icecast:8000\")\napp.config[\"DATABASE_URL\"] = os.environ.get(\"DATABASE_URL\", \"postgresql://radio:radio@db:5432/radio_db\")\n\nCORS(app)\nsocketio = SocketIO(app, cors_allowed_origins=\"*\", async_mode=\"threading\")\n\n# Register blueprints\nfrom routes.shows import shows_bp\nfrom routes.metadata import metadata_bp\nfrom routes.podcast import podcast_bp\nfrom routes.analytics import analytics_bp\n\napp.register_blueprint(shows_bp, url_prefix=\"/api/shows\")\napp.register_blueprint(metadata_bp, url_prefix=\"/api/metadata\")\napp.register_blueprint(podcast_bp, url_prefix=\"/api/podcast\")\napp.register_blueprint(analytics_bp, url_prefix=\"/api/analytics\")\n\n# Register SocketIO events\nfrom sockets.chat import register_chat_events\nregister_chat_events(socketio)\n\n# Start background services\nfrom routes.metadata import start_metadata_broadcaster\nfrom services.analytics import start_analytics_collector\n\nstart_metadata_broadcaster(app, socketio, interval=5)\nstart_analytics_collector(app, interval=60)\n\nif __name__ == \"__main__\":\n    socketio.run(app, host=\"0.0.0.0\", port=5000, debug=True)"
+    },
+    {
+      "type": "list",
+      "heading": "Production Deployment Checklist",
+      "headingLevel": 2,
+      "variant": "checklist",
+      "items": [
+        "Change all default passwords in icecast.xml and docker-compose.yml",
+        "Place Icecast behind an nginx reverse proxy with SSL termination",
+        "Set Icecast client limits based on your server bandwidth (each listener uses ~24 KB/s at 192 kbps)",
+        "Enable Icecast access logging for listener analytics",
+        "Configure Liquidsoap to restart automatically if it crashes (Docker restart policy)",
+        "Set up monitoring alerts for when the stream goes offline (no active source)",
+        "Use a CDN or relay servers for stations expecting more than 500 concurrent listeners",
+        "Back up recordings and database regularly",
+        "Obtain required broadcasting licenses before going live with copyrighted content",
+        "Test mobile playback on iOS Safari (which has autoplay restrictions)"
+      ]
+    },
+    {
+      "type": "table",
+      "heading": "Technology Stack Summary",
+      "headers": ["Component", "Technology", "Purpose"],
+      "rows": [
+        ["Streaming Server", "Icecast 2.4+", "Accept source input, relay to listeners over HTTP"],
+        ["Source Client", "Liquidsoap 2.2+", "Automated playlists, crossfade, DJ fallback"],
+        ["Live DJ Software", "BUTT / Mixxx", "DJs connect and broadcast live audio"],
+        ["Backend API", "Flask + Flask-SocketIO", "REST API, WebSocket chat, metadata polling"],
+        ["Database", "PostgreSQL 16", "Shows, schedules, requests, analytics"],
+        ["Frontend", "React + TypeScript", "Player, schedule, chat, request UI"],
+        ["Audio Transcoding", "FFmpeg", "Recording shows, format conversion"],
+        ["Containerization", "Docker Compose", "Full stack orchestration"]
+      ]
+    }
+  ]
+}

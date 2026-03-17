@@ -1,0 +1,7 @@
+{
+  "type": "code",
+  "language": "typescript",
+  "filename": "frontend/src/store/hooks.ts",
+  "description": "Typed hooks that infer RootState and AppDispatch from the store. Use these instead of plain useDispatch/useSelector.",
+  "code": "import { useDispatch, useSelector } from 'react-redux';\nimport type { AppDispatch, RootState } from './store';\n\nexport const useAppDispatch = useDispatch.withTypes<AppDispatch>();\nexport const useAppSelector = useSelector.withTypes<RootState>();"
+}

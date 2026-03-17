@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Blueprint Structure",
+  "headingLevel": 3,
+  "body": "Each API module is a Flask Blueprint with its own URL prefix. Blueprints keep the code organized and allow each module to define its own routes independently. The guide blueprint serves section listings, full section content, and navigation. The exam blueprint serves random questions, filtered questions, and categories. The glossary blueprint serves terms, categories, and search."
+}

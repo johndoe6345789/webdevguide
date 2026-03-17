@@ -1,0 +1,7 @@
+{
+  "type": "code",
+  "language": "python",
+  "filename": "backend/app/services/exam_service.py",
+  "description": "The exam service handles random question sampling, category listing, and filtering.",
+  "code": "import random\nfrom app.utils.db import get_db\n\ndef get_random_questions(count=30):\n    questions = get_db().read(\"exam_questions\")\n    if len(questions) <= count:\n        random.shuffle(questions)\n        return questions\n    return random.sample(questions, count)\n\ndef get_categories():\n    questions = get_db().read(\"exam_questions\")\n    counts = {}\n    for q in questions:\n        cat = q.get(\"category\", \"Uncategorized\")\n        counts[cat] = counts.get(cat, 0) + 1\n    return [{\"category\": c, \"count\": n} for c, n in sorted(counts.items())]\n\ndef filter_questions(category=None, difficulty=None):\n    questions = get_db().read(\"exam_questions\")\n    if category:\n        questions = [q for q in questions if q.get(\"category\") == category]\n    if difficulty:\n        questions = [q for q in questions if q.get(\"difficulty\") == difficulty]\n    return questions"
+}

@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "DevOps",
+  "headingLevel": 2,
+  "body": "The project uses Docker for containerization and GitHub Actions for continuous integration. Two docker-compose files handle production and development environments. The CI pipeline validates code quality, builds artifacts, and verifies Docker containers on every push."
+}

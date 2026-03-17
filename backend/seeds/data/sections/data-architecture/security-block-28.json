@@ -1,0 +1,6 @@
+{
+  "type": "code",
+  "language": "typescript",
+  "filename": "Password hashing with bcrypt",
+  "code": "import bcrypt from 'bcrypt';\n\nconst SALT_ROUNDS = 12;\n\n// Hash a password before storing it\nasync function hashPassword(plainText: string): Promise<string> {\n  return bcrypt.hash(plainText, SALT_ROUNDS);\n}\n\n// Verify a password during login\nasync function verifyPassword(plainText: string, hash: string): Promise<boolean> {\n  return bcrypt.compare(plainText, hash);\n}\n\n// Usage in a registration endpoint\nrouter.post('/register', async (req, res) => {\n  const { email, username, password } = req.body;\n  const hashedPassword = await hashPassword(password);\n\n  const user = await prisma.user.create({\n    data: { email, username, password: hashedPassword },\n  });\n\n  res.status(201).json({ id: user.id, email: user.email });\n});"
+}

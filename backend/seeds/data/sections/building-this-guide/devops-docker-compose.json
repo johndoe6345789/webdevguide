@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Docker Compose",
+  "headingLevel": 3,
+  "body": "Two docker-compose files handle different environments. The production file (`docker-compose.yml`) builds and runs containers with production settings. The development file (`docker-compose.dev.yml`) adds volume mounts so code changes on the host are reflected inside the container without rebuilding."
+}

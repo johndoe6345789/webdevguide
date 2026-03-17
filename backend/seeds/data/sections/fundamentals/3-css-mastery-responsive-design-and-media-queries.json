@@ -1,0 +1,52 @@
+{
+  "type": "accordion",
+  "title": "Responsive Design and Media Queries",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "Responsive design means your site looks good on any screen size -- phone, tablet, laptop, or large monitor. The key tools are **media queries**, **relative units**, and **flexible layouts**."
+    },
+    {
+      "type": "code",
+      "language": "css",
+      "filename": "responsive.css",
+      "code": "/* Mobile-first approach: write base styles for mobile,\n   then add complexity for larger screens */\n\n.container {\n  padding: 1rem;\n  max-width: 1200px;\n  margin: 0 auto;\n}\n\n/* Stack cards vertically on mobile */\n.card-grid {\n  display: grid;\n  grid-template-columns: 1fr;\n  gap: 1rem;\n}\n\n/* 2 columns on tablets (768px and up) */\n@media (min-width: 768px) {\n  .card-grid {\n    grid-template-columns: repeat(2, 1fr);\n  }\n}\n\n/* 3 columns on desktops (1024px and up) */\n@media (min-width: 1024px) {\n  .card-grid {\n    grid-template-columns: repeat(3, 1fr);\n  }\n}\n\n/* Responsive typography with clamp() */\nh1 {\n  /* Minimum 1.5rem, preferred 4vw, maximum 3rem */\n  font-size: clamp(1.5rem, 4vw, 3rem);\n}\n\n/* Hide elements at certain sizes */\n.desktop-only {\n  display: none;\n}\n\n@media (min-width: 1024px) {\n  .desktop-only {\n    display: block;\n  }\n}"
+    },
+    {
+      "type": "table",
+      "heading": "Common breakpoints",
+      "headers": [
+        "Name",
+        "Min-width",
+        "Target"
+      ],
+      "rows": [
+        [
+          "sm",
+          "640px",
+          "Large phones (landscape)"
+        ],
+        [
+          "md",
+          "768px",
+          "Tablets"
+        ],
+        [
+          "lg",
+          "1024px",
+          "Laptops"
+        ],
+        [
+          "xl",
+          "1280px",
+          "Desktops"
+        ],
+        [
+          "2xl",
+          "1536px",
+          "Large monitors"
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Git & Collaboration Do's and Don'ts",
+  "headingLevel": 2,
+  "body": "Your Git history is documentation. Every commit message, every branch name, and every pull request tells the story of why your code changed. A clean Git workflow makes it easy to find when a bug was introduced, understand why a decision was made, and onboard new team members."
+}

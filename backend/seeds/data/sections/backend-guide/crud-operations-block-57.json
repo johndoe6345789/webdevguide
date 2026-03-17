@@ -1,0 +1,10 @@
+{
+  "type": "list",
+  "ordered": false,
+  "items": [
+    "request.get_json() — When the frontend sends data (like a new item to create), it arrives as JSON in the request body. This function extracts it into a Python dictionary you can work with.",
+    "return jsonify(data), 201 — The number after the comma is the HTTP status code. 200 means OK, 201 means Created, 400 means Bad Request, 404 means Not Found.",
+    "next((i for i in items if i[\"id\"] == item_id), None) — This searches through the list to find the item with the matching ID. If no match is found, it returns None (Python's way of saying \"nothing\").",
+    "data.get(\"completed\", False) — This tries to get the \"completed\" value from the data. If it does not exist, it uses False as a default."
+  ]
+}

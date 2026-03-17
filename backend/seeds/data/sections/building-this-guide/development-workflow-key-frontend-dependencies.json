@@ -1,0 +1,76 @@
+{
+  "type": "table",
+  "heading": "Key Frontend Dependencies",
+  "headers": [
+    "Package",
+    "Version",
+    "Purpose"
+  ],
+  "rows": [
+    [
+      "next",
+      "15.x",
+      "React framework with App Router and SSR"
+    ],
+    [
+      "react / react-dom",
+      "19.x",
+      "UI library"
+    ],
+    [
+      "@mui/material + @mui/icons-material",
+      "6.x",
+      "Component library and icon set"
+    ],
+    [
+      "@emotion/react + @emotion/styled + @emotion/cache",
+      "11.x",
+      "CSS-in-JS for MUI styling"
+    ],
+    [
+      "@reduxjs/toolkit",
+      "2.x",
+      "State management with slices and async thunks"
+    ],
+    [
+      "redux-persist",
+      "6.x",
+      "Persist Redux state to localStorage"
+    ],
+    [
+      "react-redux",
+      "9.x",
+      "React bindings for Redux"
+    ],
+    [
+      "axios",
+      "1.x",
+      "HTTP client for API calls"
+    ],
+    [
+      "next-intl",
+      "4.x",
+      "Internationalization with locale routing"
+    ],
+    [
+      "typescript",
+      "5.x",
+      "Type checking"
+    ],
+    [
+      "eslint + eslint-config-next",
+      "9.x / 15.x",
+      "Linting"
+    ],
+    [
+      "jest + @testing-library/react",
+      "29.x / 16.x",
+      "Unit testing"
+    ],
+    [
+      "@playwright/test",
+      "1.x",
+      "End-to-end testing"
+    ]
+  ]
+}

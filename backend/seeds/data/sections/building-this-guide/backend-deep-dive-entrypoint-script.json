@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Entrypoint Script",
+  "headingLevel": 3,
+  "body": "In production, the Docker container does not run Flask directly. Instead, `entrypoint.py` first seeds the database by invoking `flask seed-db` as a subprocess, then starts gunicorn with configurable host, port, and worker count. This ensures the database is always freshly populated when the container starts."
+}

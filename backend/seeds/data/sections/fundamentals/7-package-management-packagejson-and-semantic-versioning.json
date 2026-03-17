@@ -1,0 +1,64 @@
+{
+  "type": "accordion",
+  "title": "package.json and Semantic Versioning",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "The `package.json` file is the manifest of your project. It lists your dependencies, scripts, metadata, and configuration. Understanding its structure and version notation is critical for managing a project."
+    },
+    {
+      "type": "code",
+      "language": "json",
+      "filename": "package.json",
+      "code": "{\n  \"name\": \"my-app\",\n  \"version\": \"1.0.0\",\n  \"private\": true,\n  \"scripts\": {\n    \"dev\": \"next dev\",\n    \"build\": \"next build\",\n    \"start\": \"next start\",\n    \"lint\": \"eslint . --fix\",\n    \"test\": \"vitest\",\n    \"test:coverage\": \"vitest --coverage\"\n  },\n  \"dependencies\": {\n    \"next\": \"^14.2.0\",\n    \"react\": \"^18.3.0\",\n    \"react-dom\": \"^18.3.0\"\n  },\n  \"devDependencies\": {\n    \"@types/react\": \"^18.3.0\",\n    \"eslint\": \"^8.57.0\",\n    \"typescript\": \"^5.4.0\",\n    \"vitest\": \"^1.6.0\"\n  }\n}"
+    },
+    {
+      "type": "text",
+      "heading": "Semantic Versioning (SemVer)",
+      "headingLevel": 3,
+      "body": "Versions follow the format **MAJOR.MINOR.PATCH** (e.g., `2.4.1`). A MAJOR bump means breaking changes. MINOR means new features (backward compatible). PATCH means bug fixes."
+    },
+    {
+      "type": "table",
+      "heading": "Version range notation in package.json",
+      "headers": [
+        "Notation",
+        "Meaning",
+        "Example: if current is 2.4.1"
+      ],
+      "rows": [
+        [
+          "^2.4.1",
+          "Compatible with 2.x.x (allows minor and patch updates)",
+          "Installs 2.4.1 to 2.99.99"
+        ],
+        [
+          "~2.4.1",
+          "Approximately 2.4.x (allows only patch updates)",
+          "Installs 2.4.1 to 2.4.99"
+        ],
+        [
+          "2.4.1",
+          "Exact version only",
+          "Installs exactly 2.4.1"
+        ],
+        [
+          ">=2.4.1",
+          "Anything at or above this version",
+          "Installs 2.4.1 or higher"
+        ],
+        [
+          "*",
+          "Any version",
+          "Installs latest available"
+        ]
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "Always commit your lockfile",
+      "body": "Lockfiles (`package-lock.json`, `yarn.lock`, or `pnpm-lock.yaml`) record the exact version of every dependency installed. They ensure everyone on your team gets the same versions. Always commit them to version control."
+    }
+  ]
+}

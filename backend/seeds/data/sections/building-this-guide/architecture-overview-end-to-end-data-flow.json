@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "End-to-End Data Flow",
+  "headingLevel": 3,
+  "body": "Understanding how data moves through the system is critical to working with this codebase. Follow these ten steps from JSON file to rendered page."
+}

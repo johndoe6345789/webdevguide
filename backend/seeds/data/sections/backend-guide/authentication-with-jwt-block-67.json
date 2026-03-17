@@ -1,0 +1,8 @@
+{
+  "type": "list",
+  "ordered": false,
+  "items": [
+    "@jwt_required() — This decorator tells Flask: \"Before running this function, check that the request includes a valid JWT token. If it does not, automatically return a 401 error.\"",
+    "get_jwt_identity() — This extracts the username from the token, so you know who is making the request."
+  ]
+}

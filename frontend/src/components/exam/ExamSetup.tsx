@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import History from '@mui/icons-material/History';
 import PlayArrow from '@mui/icons-material/PlayArrow';
 import Box from '@mui/material/Box';
@@ -15,30 +16,35 @@ import { useExamSetup } from '@/hooks/useExamSetup';
 interface ExamSetupProps { onStart: () => void }
 
 export default function ExamSetup({ onStart }: ExamSetupProps) {
+  const t = useTranslations('exam');
   const { history, bestScore, avgScore } = useExamSetup();
+  const hl = history.length;
   return (
     <>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
         <Box>
-          <Typography variant="h3" component="h1" fontWeight={700} gutterBottom>Web Development Exam</Typography>
+          <Typography variant="h3" component="h1" fontWeight={700} gutterBottom>{t('title')}</Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mb: 4, maxWidth: 600 }}>
-            Test your web development knowledge with a timed, randomized exam. Each attempt draws 30 questions at random from the question bank. You need 70% to pass.
+            {t('examDescription')}
           </Typography>
         </Box>
-        <BookmarkButton title="Web Development Exam" path="/exam" section="Exam" />
+        <BookmarkButton title={t('title')} path="/exam" section="Exam" />
       </Box>
       <ExamInfoCards />
       <Box sx={{ textAlign: 'center', mb: 6 }}>
-        <Button variant="contained" size="large" startIcon={<PlayArrow />} onClick={onStart} sx={{ px: 6, py: 1.5, fontSize: '1.1rem' }}>Start Exam</Button>
+        <Button variant="contained" size="large"
+          startIcon={<PlayArrow />} onClick={onStart}
+          sx={{ px: 6, py: 1.5, fontSize: '1.1rem' }}>{t('startExam')}</Button>
       </Box>
-      {history.length > 0 && (
+      {hl > 0 && (
         <>
           <Divider sx={{ mb: 4 }} />
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
             <History color="action" />
-            <Typography variant="h5" fontWeight={600}>Exam History</Typography>
+            <Typography variant="h5" fontWeight={600}>{t('history')}</Typography>
           </Box>
-          <ExamSetupStats totalAttempts={history.length} bestScore={bestScore} avgScore={avgScore} />
+          <ExamSetupStats totalAttempts={hl}
+            bestScore={bestScore} avgScore={avgScore} />
           <ExamHistory history={history} bestScore={bestScore} />
         </>
       )}

@@ -1,0 +1,5 @@
+{
+  "type": "alert",
+  "severity": "info",
+  "body": "Golden rule: Never send raw error details to the frontend in production. Log the real error on the server and send a generic message to the user."
+}

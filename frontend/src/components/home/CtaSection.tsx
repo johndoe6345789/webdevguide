@@ -1,31 +1,38 @@
 'use client';
 
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import { Link } from '@/i18n/navigation';
+import CtaBackground from './CtaBackground';
+import CtaButtons from './CtaButtons';
 
 interface CtaSectionProps {
   title: string;
   subtitle: string;
   buttonLabel: string;
+  secondaryLabel: string;
 }
 
-export default function CtaSection({ title, subtitle, buttonLabel }: CtaSectionProps) {
+export default function CtaSection(
+  { title, subtitle, buttonLabel, secondaryLabel }:
+  CtaSectionProps,
+) {
   return (
-    <Box sx={{ background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)', color: 'white', py: { xs: 6, md: 8 }, textAlign: 'center' }}>
-      <Container maxWidth="sm">
-        <Typography variant="h4" component="h2" fontWeight={700} gutterBottom>
+    <CtaBackground>
+      <Container maxWidth="sm" sx={{ position: 'relative', zIndex: 1 }}>
+        <Typography
+          variant="h3"
+          component="h2"
+          fontWeight={800}
+          gutterBottom
+          sx={{ fontSize: { xs: '1.8rem', md: '2.5rem' }, lineHeight: 1.2 }}
+        >
           {title}
         </Typography>
-        <Typography variant="body1" sx={{ mb: 4, opacity: 0.9 }}>
+        <Typography variant="body1" sx={{ mb: 5, opacity: 0.85, lineHeight: 1.7 }}>
           {subtitle}
         </Typography>
-        <Button component={Link} href="/getting-started" variant="contained" size="large" sx={{ bgcolor: 'white', color: '#0891b2', '&:hover': { bgcolor: 'grey.100' }, px: 4, py: 1.5 }}>
-          {buttonLabel}
-        </Button>
+        <CtaButtons buttonLabel={buttonLabel} secondaryLabel={secondaryLabel} />
       </Container>
-    </Box>
+    </CtaBackground>
   );
 }

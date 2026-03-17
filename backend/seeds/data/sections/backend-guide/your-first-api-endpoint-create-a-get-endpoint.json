@@ -1,0 +1,8 @@
+{
+  "type": "step",
+  "step": 1,
+  "title": "Create a GET Endpoint",
+  "body": "Update your app.py file:",
+  "code": "from flask import Flask, jsonify\n\napp = Flask(__name__)\n\n@app.route(\"/api/hello\", methods=[\"GET\"])\ndef api_hello():\n    return jsonify({\n        \"message\": \"Hello from the backend!\",\n        \"status\": \"success\"\n    })",
+  "language": "python"
+}

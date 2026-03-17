@@ -1,0 +1,21 @@
+{
+  "type": "accordion",
+  "title": "Props and the Children Pattern",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "**Props** are how you pass data from a parent component to a child component. They flow one way (top down) and are read-only -- a child component cannot modify its own props."
+    },
+    {
+      "type": "code",
+      "language": "tsx",
+      "filename": "UserCard.tsx",
+      "code": "// Define props with a TypeScript interface\ninterface UserCardProps {\n  name: string;\n  email: string;\n  avatar?: string;        // Optional\n  onFollow?: () => void;  // Optional callback\n  children?: React.ReactNode; // Optional nested content\n}\n\nfunction UserCard({ name, email, avatar, onFollow, children }: UserCardProps) {\n  return (\n    <div className=\"card\">\n      {avatar && <img src={avatar} alt={`${name}'s avatar`} />}\n      <h3>{name}</h3>\n      <p>{email}</p>\n      {children}\n      {onFollow && <button onClick={onFollow}>Follow</button>}\n    </div>\n  );\n}\n\n// Usage\nfunction App() {\n  return (\n    <div>\n      <UserCard name=\"Alice\" email=\"alice@example.com\" />\n\n      <UserCard\n        name=\"Bob\"\n        email=\"bob@example.com\"\n        avatar=\"/bob.jpg\"\n        onFollow={() => console.log('Followed Bob!')}\n      >\n        <p>Bob is a software engineer.</p>\n      </UserCard>\n    </div>\n  );\n}"
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "body": "**Strings** use quotes: `name=\"Alice\"`. Everything else uses curly braces: `age={30}`, `onClick={handleClick}`, `isActive={true}`. A boolean prop written without a value (like `<Card featured />`) defaults to `true`."
+    }
+  ]
+}

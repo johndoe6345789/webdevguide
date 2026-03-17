@@ -1,0 +1,36 @@
+{
+  "type": "table",
+  "heading": "Color Contrast Minimums (WCAG)",
+  "headers": [
+    "Element",
+    "Minimum Ratio (AA)",
+    "Enhanced Ratio (AAA)",
+    "How to Check"
+  ],
+  "rows": [
+    [
+      "Normal text (under 18px)",
+      "4.5:1",
+      "7:1",
+      "Chrome DevTools color picker or WebAIM contrast checker"
+    ],
+    [
+      "Large text (18px+ bold or 24px+)",
+      "3:1",
+      "4.5:1",
+      "Same tools -- large text has a lower threshold"
+    ],
+    [
+      "UI components and icons",
+      "3:1",
+      "Not defined",
+      "Borders, focus indicators, icons must be distinguishable"
+    ],
+    [
+      "Non-text contrast (charts, graphs)",
+      "3:1",
+      "Not defined",
+      "Adjacent colors in charts must have sufficient contrast"
+    ]
+  ]
+}

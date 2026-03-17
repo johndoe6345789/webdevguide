@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Docker Multi-Stage Builds",
+  "headingLevel": 3,
+  "body": "The backend Dockerfile uses a two-stage build. The builder stage installs Python dependencies into a prefix directory. The runtime stage copies only the installed packages and application code, keeping the final image small. The frontend uses Next.js standalone output mode for a minimal production image."
+}

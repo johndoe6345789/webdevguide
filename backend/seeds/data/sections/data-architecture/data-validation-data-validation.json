@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Data Validation",
+  "headingLevel": 2,
+  "body": "Never trust data from the client. Validate every piece of input at every layer: the browser form, the API endpoint, and the database constraints. This defense-in-depth approach catches bad data early and prevents entire categories of bugs."
+}

@@ -1,0 +1,7 @@
+{
+  "type": "code",
+  "language": "typescript",
+  "filename": "src/components/Modal.tsx",
+  "description": "An accessible modal with focus trapping, keyboard dismissal, and proper ARIA attributes. Click-only interfaces exclude keyboard and screen reader users.",
+  "code": "import { useEffect, useRef } from \"react\";\n\ninterface ModalProps {\n  isOpen: boolean;\n  onClose: () => void;\n  title: string;\n  children: React.ReactNode;\n}\n\nexport function Modal({ isOpen, onClose, title, children }: ModalProps) {\n  const dialogRef = useRef<HTMLDialogElement>(null);\n\n  useEffect(() => {\n    const dialog = dialogRef.current;\n    if (!dialog) return;\n\n    if (isOpen) {\n      dialog.showModal(); // Native focus trapping!\n    } else {\n      dialog.close();\n    }\n  }, [isOpen]);\n\n  return (\n    <dialog\n      ref={dialogRef}\n      aria-labelledby=\"modal-title\"\n      onClose={onClose}\n      onKeyDown={(e) => e.key === \"Escape\" && onClose()}\n    >\n      <header>\n        <h2 id=\"modal-title\">{title}</h2>\n        <button\n          type=\"button\"\n          onClick={onClose}\n          aria-label=\"Close dialog\"\n        >\n          &times;\n        </button>\n      </header>\n      <div>{children}</div>\n    </dialog>\n  );\n}"
+}

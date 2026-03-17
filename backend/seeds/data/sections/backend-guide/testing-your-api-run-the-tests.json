@@ -1,0 +1,6 @@
+{
+  "type": "step",
+  "step": 4,
+  "title": "Run the Tests",
+  "body": "From your project root, run pytest:"
+}

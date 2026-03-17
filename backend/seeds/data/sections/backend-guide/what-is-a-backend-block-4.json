@@ -1,0 +1,21 @@
+{
+  "type": "cardGrid",
+  "columns": 3,
+  "cards": [
+    {
+      "title": "Frontend (Dining Room)",
+      "body": "What the user sees — buttons, text, images, forms. Built with React, HTML, and CSS. Runs in the user's browser.",
+      "icon": "Restaurant"
+    },
+    {
+      "title": "Backend (Kitchen)",
+      "body": "Where data is stored and processed — user accounts, saved items, calculations. Runs on a server. The user never sees this code.",
+      "icon": "Storage"
+    },
+    {
+      "title": "API (Waiter)",
+      "body": "The messenger between frontend and backend. The frontend sends a request, the backend processes it, and the API carries the response back.",
+      "icon": "Sync"
+    }
+  ]
+}

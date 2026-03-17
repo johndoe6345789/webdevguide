@@ -1,0 +1,6 @@
+{
+  "type": "alert",
+  "severity": "error",
+  "title": "Never Trust User Input",
+  "body": "Every piece of data that comes from a user -- form fields, URL parameters, cookies, HTTP headers -- must be treated as potentially malicious. Always validate, sanitize, and parameterize."
+}

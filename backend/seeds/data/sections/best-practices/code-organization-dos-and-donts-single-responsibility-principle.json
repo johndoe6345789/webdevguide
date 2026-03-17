@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Single Responsibility Principle",
+  "headingLevel": 3,
+  "body": "Every component, function, and module should do one thing and do it well. When a component handles data fetching, state management, form validation, and rendering all at once, it becomes impossible to test, reuse, or modify without breaking something."
+}

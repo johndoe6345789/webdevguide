@@ -1,0 +1,54 @@
+{
+  "type": "table",
+  "heading": "ORM comparison",
+  "headers": [
+    "ORM",
+    "Approach",
+    "Type Safety",
+    "Migrations",
+    "Learning Curve",
+    "Best For"
+  ],
+  "rows": [
+    [
+      "Prisma",
+      "Schema-first (prisma.schema)",
+      "Excellent (generated types)",
+      "Built-in (prisma migrate)",
+      "Low",
+      "New projects, type-safety lovers"
+    ],
+    [
+      "Drizzle",
+      "Code-first (TypeScript)",
+      "Excellent (inferred from schema)",
+      "Built-in (drizzle-kit)",
+      "Medium",
+      "SQL lovers who want types"
+    ],
+    [
+      "TypeORM",
+      "Decorator-based classes",
+      "Good (decorators)",
+      "Built-in",
+      "Medium",
+      "NestJS projects, Java/C# devs"
+    ],
+    [
+      "Sequelize",
+      "Class-based models",
+      "Moderate (manual types)",
+      "Built-in",
+      "Medium",
+      "Legacy projects, wide ecosystem"
+    ],
+    [
+      "Knex.js",
+      "Query builder (not ORM)",
+      "Manual",
+      "Built-in",
+      "Low",
+      "Complex SQL, full control"
+    ]
+  ]
+}

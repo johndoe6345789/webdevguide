@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "How to Add a New Guide Section",
+  "headingLevel": 2,
+  "body": "One of the best features of this architecture is how easy it is to add new content. No backend code changes are needed. No new React components. Just follow these five steps."
+}

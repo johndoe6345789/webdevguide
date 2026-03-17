@@ -1,0 +1,73 @@
+{
+  "type": "accordion",
+  "title": "Type Narrowing and Utility Types",
+  "blocks": [
+    {
+      "type": "text",
+      "body": "**Type narrowing** is how TypeScript figures out a more specific type from a broader one inside a conditional block. **Utility types** are built-in type transformations that save you from rewriting common patterns."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "narrowing.ts",
+      "code": "// typeof narrowing\nfunction formatValue(value: string | number): string {\n  if (typeof value === 'string') {\n    return value.toUpperCase(); // TypeScript knows it's a string here\n  }\n  return value.toFixed(2); // TypeScript knows it's a number here\n}\n\n// Discriminated unions (the most powerful narrowing pattern)\ninterface LoadingState {\n  status: 'loading';\n}\n\ninterface SuccessState {\n  status: 'success';\n  data: string[];\n}\n\ninterface ErrorState {\n  status: 'error';\n  message: string;\n}\n\ntype RequestState = LoadingState | SuccessState | ErrorState;\n\nfunction renderState(state: RequestState): string {\n  switch (state.status) {\n    case 'loading':\n      return 'Loading...';\n    case 'success':\n      return `Found ${state.data.length} items`; // data is available\n    case 'error':\n      return `Error: ${state.message}`; // message is available\n  }\n}\n\n// Type guards with 'in' operator\nfunction isUser(value: User | AdminUser): value is AdminUser {\n  return 'permissions' in value;\n}"
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "utility-types.ts",
+      "code": "interface User {\n  id: number;\n  name: string;\n  email: string;\n  password: string;\n  createdAt: Date;\n}\n\n// Partial<T>: all properties become optional\ntype UpdateUserInput = Partial<User>;\n// { id?: number; name?: string; email?: string; ... }\n\n// Required<T>: all properties become required\ntype StrictUser = Required<User>;\n\n// Pick<T, K>: select only specific properties\ntype UserPreview = Pick<User, 'id' | 'name'>;\n// { id: number; name: string }\n\n// Omit<T, K>: remove specific properties\ntype PublicUser = Omit<User, 'password'>;\n// { id: number; name: string; email: string; createdAt: Date }\n\n// Record<K, V>: create an object type with specific keys and value types\ntype Roles = 'admin' | 'editor' | 'viewer';\ntype RolePermissions = Record<Roles, string[]>;\n// { admin: string[]; editor: string[]; viewer: string[] }\n\n// Readonly<T>: all properties become readonly\ntype FrozenUser = Readonly<User>;\n\n// ReturnType<T>: extract the return type of a function\nfunction fetchUser() {\n  return { id: 1, name: 'Alice' };\n}\ntype FetchResult = ReturnType<typeof fetchUser>;\n// { id: number; name: string }"
+    },
+    {
+      "type": "table",
+      "heading": "Utility types quick reference",
+      "headers": [
+        "Utility",
+        "What it does",
+        "Example"
+      ],
+      "rows": [
+        [
+          "Partial<T>",
+          "Makes all properties optional",
+          "Partial<User> for update forms"
+        ],
+        [
+          "Required<T>",
+          "Makes all properties required",
+          "Required<Config> for validation"
+        ],
+        [
+          "Pick<T, K>",
+          "Selects specific properties",
+          "Pick<User, 'id' | 'name'> for lists"
+        ],
+        [
+          "Omit<T, K>",
+          "Removes specific properties",
+          "Omit<User, 'password'> for API responses"
+        ],
+        [
+          "Record<K, V>",
+          "Object with typed keys and values",
+          "Record<string, number> for counts"
+        ],
+        [
+          "Readonly<T>",
+          "Prevents reassignment",
+          "Readonly<Config> for constants"
+        ],
+        [
+          "ReturnType<T>",
+          "Extracts function return type",
+          "ReturnType<typeof fetch>"
+        ],
+        [
+          "NonNullable<T>",
+          "Removes null and undefined",
+          "NonNullable<string | null>"
+        ]
+      ]
+    }
+  ]
+}

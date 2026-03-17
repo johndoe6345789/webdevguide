@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "heading": "Schema Design",
+  "headingLevel": 2,
+  "body": "A well-designed schema prevents expensive refactors, slow queries, and data integrity bugs. Whether you use SQL or NoSQL, the principles of normalization, relationships, and indexing apply."
+}
