@@ -17,6 +17,7 @@ def get_categories():
 def search_terms(query):
     """Search terms by name and definition (case-insensitive)."""
     q = query.lower()
-    return get_db().find("glossary_terms", lambda t:
-        q in t.get("term", "").lower() or q in t.get("definition", "").lower()
-    )
+
+    def matches(t):
+        return q in t.get("term", "").lower() or q in t.get("definition", "").lower()
+    return get_db().find("glossary_terms", matches)
