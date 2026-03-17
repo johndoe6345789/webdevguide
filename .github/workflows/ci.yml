@@ -119,9 +119,11 @@ jobs:
 
       - name: Validate required variables
         if: matrix.image == 'webdevguide-frontend'
+        env:
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
         run: |
-          if [ -z "${{ vars.NEXT_PUBLIC_API_URL }}" ]; then
-            echo "Error: vars.NEXT_PUBLIC_API_URL is not set or empty. Refusing to build frontend image with fallback API URL."
+          if [ -z "$NEXT_PUBLIC_API_URL" ]; then
+            echo "Error: NEXT_PUBLIC_API_URL is not set or empty. Refusing to build frontend image with fallback API URL."
             exit 1
           fi
 
