@@ -665,9 +665,31 @@
     },
     {
       "type": "text",
+      "heading": "Multi-Platform Builds",
+      "headingLevel": 2,
+      "body": "By default, Docker builds images only for the CPU architecture of the machine you are building on (usually `amd64`). But if you deploy to ARM servers (AWS Graviton, Raspberry Pi) or your teammates use Apple Silicon Macs, you need images that work on both `amd64` and `arm64`. Docker Buildx with QEMU makes this possible from a single machine."
+    },
+    {
+      "type": "code",
+      "language": "bash",
+      "description": "Building a multi-platform image locally using Docker Buildx and QEMU.",
+      "code": "# 1. Install QEMU emulation support (one-time setup)\ndocker run --rm --privileged multiarch/qemu-user-static --reset -p yes\n\n# 2. Create a Buildx builder that supports multi-platform\ndocker buildx create --name multiplatform --use\ndocker buildx inspect --bootstrap\n\n# 3. Build and push a multi-platform image\ndocker buildx build \\\n  --platform linux/amd64,linux/arm64 \\\n  --tag ghcr.io/youruser/myapp-backend:latest \\\n  --push \\\n  ./backend\n\n# 4. Verify the manifest lists both architectures\ndocker manifest inspect ghcr.io/youruser/myapp-backend:latest"
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Multi-platform images use manifests",
+      "body": "A multi-platform image is not two separate images -- it is a single image reference (tag) backed by a **manifest list**. When you `docker pull`, Docker automatically selects the right architecture for your machine. You push once, and it works everywhere."
+    },
+    {
+      "type": "text",
+      "body": "In CI/CD pipelines (like GitHub Actions), you typically use `docker/setup-qemu-action` and `docker/setup-buildx-action` to handle the setup automatically. See the **CI/CD with GitHub Actions** section for a complete workflow example."
+    },
+    {
+      "type": "text",
       "heading": "You Know Docker!",
       "headingLevel": 2,
-      "body": "You now understand what Docker is, how to write a Dockerfile, build and run containers, orchestrate multi-container setups with Docker Compose, and configure separate development and production environments."
+      "body": "You now understand what Docker is, how to write a Dockerfile, build and run containers, orchestrate multi-container setups with Docker Compose, configure separate development and production environments, and build multi-platform images for amd64 and arm64."
     },
     {
       "type": "text",
@@ -680,6 +702,7 @@
     "A Dockerfile is a recipe for building an image; docker build and docker run are the two essential commands",
     "Docker Compose lets you define and run multi-container setups with a single YAML file",
     "Use volume mounts in development for live code reloading, and baked-in images for production",
+    "Multi-platform builds with Buildx and QEMU let you produce images for both amd64 and arm64 from a single machine",
     "Always check container logs first when troubleshooting issues"
   ]
 }
