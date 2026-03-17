@@ -145,6 +145,13 @@ jobs:
             type=sha
             type=raw,value=latest
 
+      - name: Ensure NEXT_PUBLIC_API_URL is set
+        run: |
+          if [ -z "${{ vars.NEXT_PUBLIC_API_URL }}" ]; then
+            echo "Error: vars.NEXT_PUBLIC_API_URL is not set or empty. Refusing to build latest frontend image with fallback API URL."
+            exit 1
+          fi
+
       - name: Build and push frontend image
         uses: docker/build-push-action@v6
         with:
