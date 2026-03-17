@@ -65,7 +65,8 @@ def create_app(config_name=None):
 
         # ── Navigation (derived from sections) ──
         nav = [
-            {"id": s["id"], "title": s["title"], "slug": s["slug"], "order": s.get("order", 0), "icon": s.get("icon", "")}
+            {"id": s["id"], "title": s["title"], "slug": s["slug"],
+             "order": s.get("order", 0), "icon": s.get("icon", "")}
             for s in sorted(sections, key=lambda s: s.get("order", 0))
         ]
         database.write("navigation", nav)
