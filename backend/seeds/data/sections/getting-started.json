@@ -47,6 +47,12 @@
       "body": "Everything we use in this guide is completely free. You do not need to buy any software, subscriptions, or courses."
     },
     {
+      "type": "alert",
+      "severity": "warning",
+      "title": "Take Your Time",
+      "body": "If you have never used a terminal before, some of these steps might feel unfamiliar. That is completely normal. Go at your own pace, and do not be afraid to re-read a step before moving on."
+    },
+    {
       "type": "text",
       "heading": "Installing Your Tools",
       "headingLevel": 2,
@@ -221,6 +227,68 @@
       ]
     },
     {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Windows",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Quick-check: open Command Prompt or the VS Code terminal and run these three commands to confirm everything is ready."
+            },
+            {
+              "type": "code",
+              "code": "node --version\nnpm --version\ngit --version\ncode --version",
+              "language": "bash"
+            },
+            {
+              "type": "alert",
+              "severity": "info",
+              "body": "If any command says 'is not recognized as an internal or external command', close your terminal and reopen it. Windows sometimes needs a fresh terminal to detect newly installed programs."
+            }
+          ]
+        },
+        {
+          "label": "Mac",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Quick-check: open Terminal or the VS Code terminal and run these commands to confirm everything is ready."
+            },
+            {
+              "type": "code",
+              "code": "node --version\nnpm --version\ngit --version\ncode --version",
+              "language": "bash"
+            },
+            {
+              "type": "alert",
+              "severity": "info",
+              "body": "If 'code' is not found, open VS Code, press Cmd+Shift+P, type 'shell command', and select 'Install code command in PATH'."
+            }
+          ]
+        },
+        {
+          "label": "Linux",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Quick-check: open a terminal and run these commands to confirm everything is ready."
+            },
+            {
+              "type": "code",
+              "code": "node --version\nnpm --version\ngit --version\ncode --version",
+              "language": "bash"
+            },
+            {
+              "type": "alert",
+              "severity": "info",
+              "body": "If 'node' returns a very old version (below 18), consider installing a newer version via NodeSource or using nvm (Node Version Manager)."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "type": "text",
       "heading": "Creating Your First React Project",
       "headingLevel": 2,
@@ -308,6 +376,22 @@
       "type": "code",
       "code": "  ▲ Next.js 15.x.x\n  - Local:   http://localhost:3000",
       "language": "bash"
+    },
+    {
+      "type": "text",
+      "body": "Here is a more complete picture of what the terminal output looks like when the dev server starts successfully:"
+    },
+    {
+      "type": "code",
+      "description": "Full npm run dev output in the terminal",
+      "code": "$ npm run dev\n\n> my-website@0.1.0 dev\n> next dev --turbopack\n\n  ▲ Next.js 15.x.x (Turbopack)\n  - Local:        http://localhost:3000\n  - Network:      http://192.168.1.42:3000\n  - Environments: .env.local\n\n ✓ Starting...\n ✓ Ready in 1.8s",
+      "language": "bash"
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "What Does \"localhost\" Mean?",
+      "body": "localhost is your own computer acting as a web server. The :3000 part is the port number — think of it like a door number on a building. Your website is running behind door 3000 on your own machine. Nobody else on the internet can see it."
     },
     {
       "type": "step",
@@ -408,6 +492,12 @@
       "body": "Click on it to open it in the editor."
     },
     {
+      "type": "alert",
+      "severity": "info",
+      "title": "Quick Open Shortcut",
+      "body": "You can also press Ctrl+P (Cmd+P on Mac) and type page.tsx to jump straight to the file. This shortcut becomes invaluable as your projects grow."
+    },
+    {
       "type": "step",
       "step": 2,
       "title": "Find the Main Heading",
@@ -434,6 +524,62 @@
     },
     {
       "type": "text",
+      "heading": "Try a Simple Component Modification",
+      "headingLevel": 3,
+      "body": "Now that you have the basics working, let us try something slightly more interesting. Replace the contents of your page.tsx with the following code to add a button that does something when clicked:"
+    },
+    {
+      "type": "code",
+      "description": "A simple interactive component with a button",
+      "code": "\"use client\";\n\nimport { useState } from \"react\";\n\nexport default function Home() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <main style={{ padding: \"2rem\", fontFamily: \"sans-serif\" }}>\n      <h1>My First Interactive Page</h1>\n      <p>You have clicked the button {count} times.</p>\n      <button\n        onClick={() => setCount(count + 1)}\n        style={{\n          padding: \"0.5rem 1rem\",\n          fontSize: \"1rem\",\n          cursor: \"pointer\",\n        }}\n      >\n        Click me!\n      </button>\n    </main>\n  );\n}",
+      "language": "tsx"
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "What is \"use client\"?",
+      "body": "Next.js components are server components by default. Adding \"use client\" at the top tells Next.js this component needs to run in the browser because it uses interactive features like useState. Do not worry about this distinction yet — we will cover it in detail later."
+    },
+    {
+      "type": "text",
+      "heading": "Creating and Editing Files — A Walkthrough",
+      "headingLevel": 2,
+      "body": "As you build projects, you will constantly create new files and edit existing ones. Let us practice by adding a simple About page to your website."
+    },
+    {
+      "type": "step",
+      "step": 1,
+      "title": "Create a New Folder",
+      "body": "In the VS Code file explorer on the left, right-click on the src/app folder and select New Folder. Name it about. In Next.js, each folder inside src/app becomes a route on your website, so this will create a page at localhost:3000/about."
+    },
+    {
+      "type": "step",
+      "step": 2,
+      "title": "Create the Page File",
+      "body": "Right-click on the new about folder and select New File. Name it page.tsx. This is the file Next.js will render when someone visits /about."
+    },
+    {
+      "type": "step",
+      "step": 3,
+      "title": "Add Content to Your About Page",
+      "body": "Type or paste the following code into the new file:",
+      "code": "export default function AboutPage() {\n  return (\n    <main style={{ padding: \"2rem\", fontFamily: \"sans-serif\" }}>\n      <h1>About Me</h1>\n      <p>Hi! I am learning web development.</p>\n      <p>This is my About page, and I created it myself.</p>\n      <a href=\"/\">Go back home</a>\n    </main>\n  );\n}",
+      "language": "tsx"
+    },
+    {
+      "type": "step",
+      "step": 4,
+      "title": "Visit Your New Page",
+      "body": "Save the file (Ctrl+S / Cmd+S) and open your browser to http://localhost:3000/about. You should see your new About page. Click the \"Go back home\" link to return to the home page."
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "You Just Created a Multi-Page Website!",
+      "body": "Every new folder with a page.tsx file inside src/app becomes a new page on your website. This is how Next.js routing works — no configuration needed."
+    },
+    {
+      "type": "text",
       "heading": "Stopping and Starting the Dev Server",
       "headingLevel": 2,
       "body": "The development server is the program that turns your code into a website you can view in the browser. Here is how to control it."
@@ -455,10 +601,179 @@
       ]
     },
     {
+      "type": "code",
+      "description": "How stopping the dev server looks in the terminal",
+      "code": "  ✓ Ready in 1.8s\n  ○ Compiling / ...\n  ✓ Compiled / in 1.2s\n^C\n$",
+      "language": "bash"
+    },
+    {
+      "type": "text",
+      "body": "The ^C symbol you see in the terminal is the visual representation of pressing Ctrl+C. After that, the terminal returns to the normal command prompt ($), meaning the server has stopped and the terminal is ready for new commands."
+    },
+    {
       "type": "alert",
       "severity": "info",
       "title": "Tip",
       "body": "You only need the server running while you are actively developing. It is perfectly fine to stop it when you are done for the day and start it again later. Your files are saved on your computer regardless of whether the server is running."
+    },
+    {
+      "type": "text",
+      "heading": "Using Browser DevTools",
+      "headingLevel": 2,
+      "body": "Every modern browser has built-in developer tools that let you inspect your website, debug problems, and experiment with changes. Learning to use DevTools early will save you a lot of time."
+    },
+    {
+      "type": "code",
+      "description": "Opening DevTools in your browser",
+      "code": "# Open DevTools in any browser:\n# Press F12 on your keyboard\n#   — or —\n# Right-click anywhere on the page and select \"Inspect\"\n#   — or —\n# Use the keyboard shortcut:\n#   Windows / Linux: Ctrl + Shift + I\n#   Mac:             Cmd + Option + I",
+      "language": "bash"
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "What Can DevTools Do?",
+      "body": "The Elements tab shows the HTML structure of your page. The Console tab shows errors and lets you run JavaScript. The Network tab shows every file your page loads. For now, just get comfortable opening DevTools with F12 — we will use specific tabs in later chapters."
+    },
+    {
+      "type": "text",
+      "heading": "Reading Error Messages",
+      "headingLevel": 2,
+      "body": "Errors are a normal part of coding. The key skill is not avoiding errors — it is reading them and knowing what to do. Let us look at a common example."
+    },
+    {
+      "type": "text",
+      "body": "Suppose you accidentally have a typo in your component. For example, writing <mian> instead of <main>:"
+    },
+    {
+      "type": "code",
+      "description": "Example of code with a typo that causes a warning",
+      "code": "export default function Home() {\n  return (\n    <mian>  {/* <-- typo! Should be <main> */}\n      <h1>Hello!</h1>\n    </mian>\n  );\n}",
+      "language": "tsx"
+    },
+    {
+      "type": "text",
+      "body": "This particular typo will not crash your app, but the browser console (DevTools > Console) may show a warning. Here is a more dramatic error — forgetting to close a JSX tag:"
+    },
+    {
+      "type": "code",
+      "description": "An error that Next.js shows in the browser and terminal",
+      "code": "  x Expected closing tag for `<h1>`\n   ,-[src/app/page.tsx:4:1]\n 3 |     <main>\n 4 |       <h1>Hello!\n   :       ^^^^\n 5 |       <p>Welcome to my site.</p>\n   :       ^^\n 6 |     </main>\n   `----\n\n  Caused by:\n    Parsing ecmascript failed",
+      "language": "bash"
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "How to Read an Error Message",
+      "body": "Error messages follow a pattern: (1) what went wrong — e.g. 'Expected closing tag for <h1>', (2) where it happened — the file name and line number, and (3) a visual pointer showing the exact spot. Always start by reading the first line of the error, then look at the file and line number it mentions."
+    },
+    {
+      "type": "text",
+      "heading": "Common Commands Reference",
+      "headingLevel": 2,
+      "body": "Here is a quick reference of the commands you will use most often as a beginner. Bookmark this section — you will come back to it."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Command",
+        "What It Does",
+        "When To Use It"
+      ],
+      "rows": [
+        [
+          "npm run dev",
+          "Starts the development server so you can view your site in the browser",
+          "Every time you begin working on your project"
+        ],
+        [
+          "npm install",
+          "Downloads all the packages your project depends on (listed in package.json)",
+          "After cloning a project or when someone adds a new dependency"
+        ],
+        [
+          "npm install <package>",
+          "Adds a new package (library) to your project",
+          "When you need new functionality, e.g. npm install axios"
+        ],
+        [
+          "npx create-next-app@latest",
+          "Creates a brand-new Next.js project from scratch",
+          "Only when starting a new project"
+        ],
+        [
+          "git status",
+          "Shows which files have been changed since your last save point (commit)",
+          "Before committing, to review what changed"
+        ],
+        [
+          "git add .",
+          "Stages all changed files so they are ready to be committed",
+          "After making changes you want to save"
+        ],
+        [
+          "git commit -m \"message\"",
+          "Saves a snapshot of your staged changes with a description",
+          "When you reach a good stopping point"
+        ],
+        [
+          "Ctrl + C",
+          "Stops the currently running process in the terminal",
+          "When you need to stop the dev server or any stuck command"
+        ],
+        [
+          "cd folder-name",
+          "Changes your terminal's current directory to the specified folder",
+          "To navigate into your project folder before running commands"
+        ],
+        [
+          "ls (or dir on Windows)",
+          "Lists files and folders in the current directory",
+          "To see what is in the current folder"
+        ]
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "Tip: Use the Up Arrow Key",
+      "body": "Press the Up arrow key in the terminal to cycle through your previous commands. This saves you from retyping npm run dev every time you restart the server."
+    },
+    {
+      "type": "text",
+      "heading": "Common First-Day Problems",
+      "headingLevel": 2,
+      "body": "Almost everyone runs into at least one of these issues on their first day. Do not panic — they all have simple fixes."
+    },
+    {
+      "type": "accordion",
+      "items": [
+        {
+          "title": "Port 3000 is already in use",
+          "body": "This means another program (or another dev server you forgot to stop) is already using port 3000. You have two options:\n\n1. Find and stop the other process. On Mac/Linux run: lsof -i :3000 then kill the process. On Windows run: netstat -ano | findstr :3000 then use Task Manager to end it.\n\n2. Start your dev server on a different port instead:\n\nnpm run dev -- --port 3001\n\nThen visit http://localhost:3001 in your browser."
+        },
+        {
+          "title": "'node' is not recognized / command not found",
+          "body": "This means Node.js is not installed, or your terminal cannot find it. Try these steps:\n\n1. Close your terminal completely and reopen it. Newly installed programs sometimes are not detected until you open a fresh terminal.\n\n2. If that does not work, reinstall Node.js from nodejs.org and make sure to check the option to add it to your PATH during installation.\n\n3. On Mac, if you installed via Homebrew, you may need to run the PATH commands that Homebrew printed after installation."
+        },
+        {
+          "title": "Permission errors (EACCES or EPERM)",
+          "body": "This usually happens on Mac or Linux when you try to install packages globally without the right permissions. Never use 'sudo npm install' for project dependencies — that creates files owned by root and causes more problems.\n\nInstead:\n- For global packages, configure npm to use a directory you own: mkdir ~/.npm-global && npm config set prefix '~/.npm-global' and add ~/.npm-global/bin to your PATH.\n- For project-level installs, make sure you own the project folder: chown -R $(whoami) my-website/"
+        },
+        {
+          "title": "'npm run dev' starts but the page is blank or shows an error",
+          "body": "First, check the terminal for error messages — they usually tell you exactly what is wrong and on which line.\n\nCommon causes:\n- A syntax error in your code (missing bracket, unclosed tag). Check the line number in the error message.\n- You are editing the wrong file. Make sure you are editing src/app/page.tsx, not a file in node_modules.\n- The browser is caching an old version. Try a hard refresh: Ctrl+Shift+R (Cmd+Shift+R on Mac).\n\nIf nothing works, you can always start fresh: delete the my-website folder and run npx create-next-app@latest my-website again."
+        },
+        {
+          "title": "'npx create-next-app' hangs or is very slow",
+          "body": "This command downloads files from the internet, so it depends on your connection speed. On slow connections it can take several minutes. If it seems truly stuck:\n\n1. Press Ctrl+C to cancel it.\n2. Delete the partially created folder: rm -rf my-website (or delete it in your file explorer).\n3. Try again. Sometimes the npm registry is slow temporarily.\n4. If you are behind a corporate firewall or VPN, try disconnecting from the VPN temporarily."
+        }
+      ]
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "When in Doubt, Read the Error Message",
+      "body": "It is tempting to immediately search the internet when something breaks. But 90% of the time, the error message itself tells you exactly what went wrong and where. Always read the full error message first before searching for help."
     },
     {
       "type": "text",

@@ -6,7 +6,11 @@
   "order": 21,
   "estimatedMinutes": 50,
   "difficulty": "advanced",
-  "prerequisites": ["fundamentals", "backend-guide", "docker-deployment"],
+  "prerequisites": [
+    "fundamentals",
+    "backend-guide",
+    "docker-deployment"
+  ],
   "keyPoints": [
     "Video upload and storage",
     "Transcoding pipeline",
@@ -25,12 +29,42 @@
       "type": "cardGrid",
       "columns": 3,
       "cards": [
-        { "title": "Upload Service", "body": "Chunked uploads with progress tracking, format validation, and metadata extraction.", "icon": "CloudUpload", "chip": "Backend" },
-        { "title": "Transcoding Pipeline", "body": "FFmpeg-based worker that converts uploads into multiple resolutions and HLS segments.", "icon": "Transform", "chip": "Backend" },
-        { "title": "Streaming Server", "body": "HLS manifest and segment delivery with CDN integration for global reach.", "icon": "Stream", "chip": "Infrastructure" },
-        { "title": "Video Player", "body": "React component with hls.js for adaptive streaming, quality selection, and custom controls.", "icon": "PlayCircle", "chip": "Frontend" },
-        { "title": "Engagement Layer", "body": "Comments, likes, view counts, subscriptions, and real-time notifications.", "icon": "ThumbUp", "chip": "Full-Stack" },
-        { "title": "Discovery Engine", "body": "Full-text search, trending algorithms, category browsing, and basic recommendations.", "icon": "Explore", "chip": "Full-Stack" }
+        {
+          "title": "Upload Service",
+          "body": "Chunked uploads with progress tracking, format validation, and metadata extraction.",
+          "icon": "CloudUpload",
+          "chip": "Backend"
+        },
+        {
+          "title": "Transcoding Pipeline",
+          "body": "FFmpeg-based worker that converts uploads into multiple resolutions and HLS segments.",
+          "icon": "Transform",
+          "chip": "Backend"
+        },
+        {
+          "title": "Streaming Server",
+          "body": "HLS manifest and segment delivery with CDN integration for global reach.",
+          "icon": "Stream",
+          "chip": "Infrastructure"
+        },
+        {
+          "title": "Video Player",
+          "body": "React component with hls.js for adaptive streaming, quality selection, and custom controls.",
+          "icon": "PlayCircle",
+          "chip": "Frontend"
+        },
+        {
+          "title": "Engagement Layer",
+          "body": "Comments, likes, view counts, subscriptions, and real-time notifications.",
+          "icon": "ThumbUp",
+          "chip": "Full-Stack"
+        },
+        {
+          "title": "Discovery Engine",
+          "body": "Full-text search, trending algorithms, category browsing, and basic recommendations.",
+          "icon": "Explore",
+          "chip": "Full-Stack"
+        }
       ]
     },
     {
@@ -49,14 +83,42 @@
     {
       "type": "table",
       "heading": "Video Processing Status Flow",
-      "headers": ["Status", "Description", "Triggered By"],
+      "headers": [
+        "Status",
+        "Description",
+        "Triggered By"
+      ],
       "rows": [
-        ["uploading", "File chunks are being received from the client", "Upload initiation"],
-        ["uploaded", "All chunks received and assembled into a single file", "Final chunk received"],
-        ["processing", "Transcoding into multiple resolutions and HLS segments", "Transcode worker picks up job"],
-        ["ready", "All renditions complete, HLS master playlist generated", "Worker finishes all renditions"],
-        ["failed", "Transcoding encountered an error", "FFmpeg error or timeout"],
-        ["removed", "Video was deleted by owner or moderation", "User or admin action"]
+        [
+          "uploading",
+          "File chunks are being received from the client",
+          "Upload initiation"
+        ],
+        [
+          "uploaded",
+          "All chunks received and assembled into a single file",
+          "Final chunk received"
+        ],
+        [
+          "processing",
+          "Transcoding into multiple resolutions and HLS segments",
+          "Transcode worker picks up job"
+        ],
+        [
+          "ready",
+          "All renditions complete, HLS master playlist generated",
+          "Worker finishes all renditions"
+        ],
+        [
+          "failed",
+          "Transcoding encountered an error",
+          "FFmpeg error or timeout"
+        ],
+        [
+          "removed",
+          "Video was deleted by owner or moderation",
+          "User or admin action"
+        ]
       ]
     },
     {
@@ -358,13 +420,43 @@
     {
       "type": "table",
       "heading": "Infrastructure Cost Estimates",
-      "headers": ["Component", "Small Scale (100 videos)", "Medium Scale (10K videos)", "Key Cost Driver"],
+      "headers": [
+        "Component",
+        "Small Scale (100 videos)",
+        "Medium Scale (10K videos)",
+        "Key Cost Driver"
+      ],
       "rows": [
-        ["Storage", "~50 GB ($1-2/mo)", "~5 TB ($100-150/mo)", "Raw + transcoded files per video"],
-        ["Bandwidth/CDN", "~$5-10/mo", "~$200-500/mo", "Views x resolution x duration"],
-        ["Transcoding CPU", "Minimal (shared server)", "Dedicated workers ($50-100/mo)", "Number of uploads per day"],
-        ["Database", "Shared PostgreSQL", "Dedicated instance ($30-50/mo)", "Comment and analytics volume"],
-        ["Object Storage", "S3 Standard ($0.023/GB)", "S3 IA for old content ($0.0125/GB)", "Lifecycle policies reduce cost"]
+        [
+          "Storage",
+          "~50 GB ($1-2/mo)",
+          "~5 TB ($100-150/mo)",
+          "Raw + transcoded files per video"
+        ],
+        [
+          "Bandwidth/CDN",
+          "~$5-10/mo",
+          "~$200-500/mo",
+          "Views x resolution x duration"
+        ],
+        [
+          "Transcoding CPU",
+          "Minimal (shared server)",
+          "Dedicated workers ($50-100/mo)",
+          "Number of uploads per day"
+        ],
+        [
+          "Database",
+          "Shared PostgreSQL",
+          "Dedicated instance ($30-50/mo)",
+          "Comment and analytics volume"
+        ],
+        [
+          "Object Storage",
+          "S3 Standard ($0.023/GB)",
+          "S3 IA for old content ($0.0125/GB)",
+          "Lifecycle policies reduce cost"
+        ]
       ]
     },
     {
@@ -417,6 +509,40 @@
       "severity": "success",
       "title": "Congratulations",
       "body": "You now have a blueprint for a full video platform: chunked uploads, FFmpeg transcoding to multiple resolutions, HLS adaptive streaming, a React player with quality selection, engagement features, search and discovery, analytics, and moderation. Start with local development using Docker Compose, then move to cloud storage and a CDN as your audience grows."
+    }
+  ],
+  "references": [
+    {
+      "id": "mdn2024video",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "HTML Video Element",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video"
+    },
+    {
+      "id": "mdn2024mse",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "Media Source Extensions API",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Media_Source_Extensions_API"
+    },
+    {
+      "id": "hlsjs2024",
+      "authors": "video-dev",
+      "year": "2024",
+      "title": "HLS.js Documentation",
+      "source": "GitHub",
+      "url": "https://github.com/video-dev/hls.js/"
+    },
+    {
+      "id": "ffmpeg2024",
+      "authors": "FFmpeg",
+      "year": "2024",
+      "title": "FFmpeg Documentation",
+      "source": "FFmpeg",
+      "url": "https://ffmpeg.org/documentation.html"
     }
   ]
 }

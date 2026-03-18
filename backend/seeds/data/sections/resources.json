@@ -81,15 +81,63 @@
     {
       "type": "table",
       "heading": "Platform comparison",
-      "headers": ["Platform", "Cost", "Best For", "Format", "Standout Feature"],
+      "headers": [
+        "Platform",
+        "Cost",
+        "Best For",
+        "Format",
+        "Standout Feature"
+      ],
       "rows": [
-        ["freeCodeCamp", "Free", "Beginners, full curriculum", "Interactive exercises + projects", "3,000+ hours of free content with certifications"],
-        ["Scrimba", "Free / $20/mo", "Visual learners, React", "Interactive screencasts (pause and edit)", "You can edit the instructor's code as they teach"],
-        ["Codecademy", "Free / $40/mo", "Beginners, structured paths", "Browser-based coding exercises", "Step-by-step career paths with guided projects"],
-        ["Exercism", "Free", "Language practice, mentoring", "Code challenges with mentor feedback", "Real human mentors review your solutions"],
-        ["Frontend Mentor", "Free / $8/mo", "Building portfolio projects", "Design mockups to build", "Real-world designs with assets provided"],
-        ["LeetCode", "Free / $35/mo", "Interview preparation", "Algorithm challenges", "Company-tagged problems for interview prep"],
-        ["The Odin Project", "Free", "Full-stack beginners", "Curated curriculum with readings + projects", "Open-source, community-driven, completely free"]
+        [
+          "freeCodeCamp",
+          "Free",
+          "Beginners, full curriculum",
+          "Interactive exercises + projects",
+          "3,000+ hours of free content with certifications"
+        ],
+        [
+          "Scrimba",
+          "Free / $20/mo",
+          "Visual learners, React",
+          "Interactive screencasts (pause and edit)",
+          "You can edit the instructor's code as they teach"
+        ],
+        [
+          "Codecademy",
+          "Free / $40/mo",
+          "Beginners, structured paths",
+          "Browser-based coding exercises",
+          "Step-by-step career paths with guided projects"
+        ],
+        [
+          "Exercism",
+          "Free",
+          "Language practice, mentoring",
+          "Code challenges with mentor feedback",
+          "Real human mentors review your solutions"
+        ],
+        [
+          "Frontend Mentor",
+          "Free / $8/mo",
+          "Building portfolio projects",
+          "Design mockups to build",
+          "Real-world designs with assets provided"
+        ],
+        [
+          "LeetCode",
+          "Free / $35/mo",
+          "Interview preparation",
+          "Algorithm challenges",
+          "Company-tagged problems for interview prep"
+        ],
+        [
+          "The Odin Project",
+          "Free",
+          "Full-stack beginners",
+          "Curated curriculum with readings + projects",
+          "Open-source, community-driven, completely free"
+        ]
       ]
     },
     {
@@ -389,16 +437,61 @@
     {
       "type": "table",
       "heading": "Recommended newsletters",
-      "headers": ["Newsletter", "Focus", "Frequency", "Why Subscribe"],
+      "headers": [
+        "Newsletter",
+        "Focus",
+        "Frequency",
+        "Why Subscribe"
+      ],
       "rows": [
-        ["JavaScript Weekly", "JavaScript ecosystem", "Weekly", "The most comprehensive roundup of JS news, articles, and releases"],
-        ["React Status", "React ecosystem", "Weekly", "Curated React news, tutorials, and library releases"],
-        ["Node Weekly", "Node.js ecosystem", "Weekly", "Backend JavaScript news, updates, and best practices"],
-        ["CSS Weekly", "CSS and design", "Weekly", "CSS tricks, new features, and layout techniques"],
-        ["TLDR", "Tech industry", "Daily", "A 5-minute summary of the most important tech news each day"],
-        ["Bytes", "JavaScript", "Twice weekly", "JavaScript news delivered with humor. Short and fun to read"],
-        ["This Week in React", "React and React Native", "Weekly", "Deep coverage of the React ecosystem with context and analysis"],
-        ["Frontend Focus", "Frontend development", "Weekly", "Browser updates, web standards, performance, and accessibility"]
+        [
+          "JavaScript Weekly",
+          "JavaScript ecosystem",
+          "Weekly",
+          "The most comprehensive roundup of JS news, articles, and releases"
+        ],
+        [
+          "React Status",
+          "React ecosystem",
+          "Weekly",
+          "Curated React news, tutorials, and library releases"
+        ],
+        [
+          "Node Weekly",
+          "Node.js ecosystem",
+          "Weekly",
+          "Backend JavaScript news, updates, and best practices"
+        ],
+        [
+          "CSS Weekly",
+          "CSS and design",
+          "Weekly",
+          "CSS tricks, new features, and layout techniques"
+        ],
+        [
+          "TLDR",
+          "Tech industry",
+          "Daily",
+          "A 5-minute summary of the most important tech news each day"
+        ],
+        [
+          "Bytes",
+          "JavaScript",
+          "Twice weekly",
+          "JavaScript news delivered with humor. Short and fun to read"
+        ],
+        [
+          "This Week in React",
+          "React and React Native",
+          "Weekly",
+          "Deep coverage of the React ecosystem with context and analysis"
+        ],
+        [
+          "Frontend Focus",
+          "Frontend development",
+          "Weekly",
+          "Browser updates, web standards, performance, and accessibility"
+        ]
       ]
     },
     {
@@ -415,17 +508,57 @@
           "blocks": [
             {
               "type": "table",
-              "headers": ["Property", "Values", "What It Does"],
+              "headers": [
+                "Property",
+                "Values",
+                "What It Does"
+              ],
               "rows": [
-                ["display", "flex | grid", "Enables flex or grid layout on the container"],
-                ["justify-content", "flex-start | center | space-between | space-around | space-evenly", "Distributes items along the main axis"],
-                ["align-items", "flex-start | center | stretch | baseline", "Aligns items along the cross axis"],
-                ["flex-direction", "row | column | row-reverse | column-reverse", "Sets the direction of flex items"],
-                ["flex-wrap", "nowrap | wrap | wrap-reverse", "Controls whether items wrap to new lines"],
-                ["gap", "10px | 1rem", "Sets spacing between flex/grid items"],
-                ["grid-template-columns", "repeat(3, 1fr) | 200px auto 1fr", "Defines column sizes in a grid"],
-                ["grid-template-rows", "auto | 100px 1fr 2fr", "Defines row sizes in a grid"],
-                ["place-items", "center | start end", "Shorthand for align-items + justify-items (grid)"]
+                [
+                  "display",
+                  "flex | grid",
+                  "Enables flex or grid layout on the container"
+                ],
+                [
+                  "justify-content",
+                  "flex-start | center | space-between | space-around | space-evenly",
+                  "Distributes items along the main axis"
+                ],
+                [
+                  "align-items",
+                  "flex-start | center | stretch | baseline",
+                  "Aligns items along the cross axis"
+                ],
+                [
+                  "flex-direction",
+                  "row | column | row-reverse | column-reverse",
+                  "Sets the direction of flex items"
+                ],
+                [
+                  "flex-wrap",
+                  "nowrap | wrap | wrap-reverse",
+                  "Controls whether items wrap to new lines"
+                ],
+                [
+                  "gap",
+                  "10px | 1rem",
+                  "Sets spacing between flex/grid items"
+                ],
+                [
+                  "grid-template-columns",
+                  "repeat(3, 1fr) | 200px auto 1fr",
+                  "Defines column sizes in a grid"
+                ],
+                [
+                  "grid-template-rows",
+                  "auto | 100px 1fr 2fr",
+                  "Defines row sizes in a grid"
+                ],
+                [
+                  "place-items",
+                  "center | start end",
+                  "Shorthand for align-items + justify-items (grid)"
+                ]
               ]
             },
             {
@@ -441,22 +574,67 @@
           "blocks": [
             {
               "type": "table",
-              "headers": ["Command", "What It Does"],
+              "headers": [
+                "Command",
+                "What It Does"
+              ],
               "rows": [
-                ["git init", "Initialize a new repository"],
-                ["git clone <url>", "Copy a remote repository to your machine"],
-                ["git status", "Show changed, staged, and untracked files"],
-                ["git add <file>", "Stage a file for commit (use . for all files)"],
-                ["git commit -m \"message\"", "Create a commit with staged changes"],
-                ["git push origin <branch>", "Push commits to the remote repository"],
-                ["git pull origin <branch>", "Fetch and merge remote changes"],
-                ["git checkout -b <branch>", "Create and switch to a new branch"],
-                ["git merge <branch>", "Merge a branch into the current branch"],
-                ["git log --oneline", "Show compact commit history"],
-                ["git diff", "Show unstaged changes"],
-                ["git stash / git stash pop", "Temporarily save and restore uncommitted changes"],
-                ["git reset --soft HEAD~1", "Undo the last commit but keep changes staged"],
-                ["git rebase main", "Replay your branch commits on top of main"]
+                [
+                  "git init",
+                  "Initialize a new repository"
+                ],
+                [
+                  "git clone <url>",
+                  "Copy a remote repository to your machine"
+                ],
+                [
+                  "git status",
+                  "Show changed, staged, and untracked files"
+                ],
+                [
+                  "git add <file>",
+                  "Stage a file for commit (use . for all files)"
+                ],
+                [
+                  "git commit -m \"message\"",
+                  "Create a commit with staged changes"
+                ],
+                [
+                  "git push origin <branch>",
+                  "Push commits to the remote repository"
+                ],
+                [
+                  "git pull origin <branch>",
+                  "Fetch and merge remote changes"
+                ],
+                [
+                  "git checkout -b <branch>",
+                  "Create and switch to a new branch"
+                ],
+                [
+                  "git merge <branch>",
+                  "Merge a branch into the current branch"
+                ],
+                [
+                  "git log --oneline",
+                  "Show compact commit history"
+                ],
+                [
+                  "git diff",
+                  "Show unstaged changes"
+                ],
+                [
+                  "git stash / git stash pop",
+                  "Temporarily save and restore uncommitted changes"
+                ],
+                [
+                  "git reset --soft HEAD~1",
+                  "Undo the last commit but keep changes staged"
+                ],
+                [
+                  "git rebase main",
+                  "Replay your branch commits on top of main"
+                ]
               ]
             }
           ]
@@ -466,18 +644,62 @@
           "blocks": [
             {
               "type": "table",
-              "headers": ["Hook", "Purpose", "Common Usage"],
+              "headers": [
+                "Hook",
+                "Purpose",
+                "Common Usage"
+              ],
               "rows": [
-                ["useState", "Local component state", "const [count, setCount] = useState(0)"],
-                ["useEffect", "Side effects (fetch, subscribe, DOM)", "useEffect(() => { fetchData() }, [dep])"],
-                ["useContext", "Access context values", "const theme = useContext(ThemeContext)"],
-                ["useRef", "Mutable ref that persists across renders", "const inputRef = useRef<HTMLInputElement>(null)"],
-                ["useMemo", "Memoize expensive calculations", "const filtered = useMemo(() => filter(list), [list])"],
-                ["useCallback", "Memoize function references", "const handler = useCallback(() => {}, [dep])"],
-                ["useReducer", "Complex state with actions", "const [state, dispatch] = useReducer(reducer, init)"],
-                ["useId", "Generate unique IDs for accessibility", "const id = useId()"],
-                ["useTransition", "Mark non-urgent state updates", "const [isPending, startTransition] = useTransition()"],
-                ["use (React 19)", "Read resources in render (promises, context)", "const data = use(fetchPromise)"]
+                [
+                  "useState",
+                  "Local component state",
+                  "const [count, setCount] = useState(0)"
+                ],
+                [
+                  "useEffect",
+                  "Side effects (fetch, subscribe, DOM)",
+                  "useEffect(() => { fetchData() }, [dep])"
+                ],
+                [
+                  "useContext",
+                  "Access context values",
+                  "const theme = useContext(ThemeContext)"
+                ],
+                [
+                  "useRef",
+                  "Mutable ref that persists across renders",
+                  "const inputRef = useRef<HTMLInputElement>(null)"
+                ],
+                [
+                  "useMemo",
+                  "Memoize expensive calculations",
+                  "const filtered = useMemo(() => filter(list), [list])"
+                ],
+                [
+                  "useCallback",
+                  "Memoize function references",
+                  "const handler = useCallback(() => {}, [dep])"
+                ],
+                [
+                  "useReducer",
+                  "Complex state with actions",
+                  "const [state, dispatch] = useReducer(reducer, init)"
+                ],
+                [
+                  "useId",
+                  "Generate unique IDs for accessibility",
+                  "const id = useId()"
+                ],
+                [
+                  "useTransition",
+                  "Mark non-urgent state updates",
+                  "const [isPending, startTransition] = useTransition()"
+                ],
+                [
+                  "use (React 19)",
+                  "Read resources in render (promises, context)",
+                  "const data = use(fetchPromise)"
+                ]
               ]
             }
           ]
@@ -576,14 +798,42 @@
     },
     {
       "type": "table",
-      "headers": ["Platform", "Type", "Best For"],
+      "headers": [
+        "Platform",
+        "Type",
+        "Best For"
+      ],
       "rows": [
-        ["LinkedIn", "General job board + networking", "Full-time positions, networking with recruiters"],
-        ["Wellfound (AngelList)", "Startup job board", "Early-stage startup roles, often with equity"],
-        ["Upwork / Fiverr", "Freelance marketplaces", "First paid projects, building client reviews"],
-        ["Remote.co / We Work Remotely", "Remote job boards", "Remote-first and distributed companies"],
-        ["Hacker News (monthly thread)", "Community job postings", "Startup roles posted directly by founders"],
-        ["GitHub Jobs / Stack Overflow Jobs", "Developer-focused job boards", "Companies that specifically want technical talent"]
+        [
+          "LinkedIn",
+          "General job board + networking",
+          "Full-time positions, networking with recruiters"
+        ],
+        [
+          "Wellfound (AngelList)",
+          "Startup job board",
+          "Early-stage startup roles, often with equity"
+        ],
+        [
+          "Upwork / Fiverr",
+          "Freelance marketplaces",
+          "First paid projects, building client reviews"
+        ],
+        [
+          "Remote.co / We Work Remotely",
+          "Remote job boards",
+          "Remote-first and distributed companies"
+        ],
+        [
+          "Hacker News (monthly thread)",
+          "Community job postings",
+          "Startup roles posted directly by founders"
+        ],
+        [
+          "GitHub Jobs / Stack Overflow Jobs",
+          "Developer-focused job boards",
+          "Companies that specifically want technical talent"
+        ]
       ]
     },
     {
@@ -597,6 +847,40 @@
       "heading": "What to Do Next",
       "headingLevel": 2,
       "body": "Do not try to consume every resource on this page. Pick one interactive platform to practice coding, one YouTube channel to watch, and one community to join. Build a project using what you learn, then come back for more resources when you are ready for the next challenge."
+    }
+  ],
+  "references": [
+    {
+      "id": "mdn2024",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "MDN Web Docs",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/"
+    },
+    {
+      "id": "freecodecamp2024",
+      "authors": "freeCodeCamp",
+      "year": "2024",
+      "title": "freeCodeCamp — Learn to Code",
+      "source": "freeCodeCamp",
+      "url": "https://www.freecodecamp.org/"
+    },
+    {
+      "id": "odin2024",
+      "authors": "The Odin Project",
+      "year": "2024",
+      "title": "The Odin Project",
+      "source": "The Odin Project",
+      "url": "https://www.theodinproject.com/"
+    },
+    {
+      "id": "eloquentjs",
+      "authors": "Haverbeke, M.",
+      "year": "2024",
+      "title": "Eloquent JavaScript (4th Edition)",
+      "source": "No Starch Press",
+      "url": "https://eloquentjavascript.net/"
     }
   ]
 }

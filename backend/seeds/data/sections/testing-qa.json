@@ -60,6 +60,143 @@
       "body": "Write many unit tests (fast, cheap), fewer component tests (medium speed), and a handful of E2E tests (slow, expensive). This pyramid shape gives you the best balance of confidence and speed. If your test suite takes 30 minutes to run, nobody will run it."
     },
     {
+      "type": "table",
+      "heading": "The Testing Pyramid in Practice",
+      "headers": [
+        "Test Type",
+        "Speed",
+        "Confidence",
+        "Cost to Write",
+        "Cost to Maintain",
+        "When to Use"
+      ],
+      "rows": [
+        [
+          "Unit",
+          "Milliseconds",
+          "Low-Medium (tests isolated logic only)",
+          "Low",
+          "Low",
+          "Pure functions, utilities, data transformations, business rules"
+        ],
+        [
+          "Integration",
+          "Seconds",
+          "Medium-High (tests real interactions)",
+          "Medium",
+          "Medium",
+          "API routes with database, service-to-service calls, middleware chains"
+        ],
+        [
+          "Component",
+          "Milliseconds-Seconds",
+          "Medium (tests UI behavior in isolation)",
+          "Medium",
+          "Medium",
+          "Interactive components, forms, conditional rendering, accessibility"
+        ],
+        [
+          "End-to-End",
+          "Seconds-Minutes",
+          "Very High (tests the real system)",
+          "High",
+          "High",
+          "Critical user flows: signup, checkout, payments, onboarding"
+        ],
+        [
+          "Performance",
+          "Seconds-Minutes",
+          "Medium (catches regressions)",
+          "Medium",
+          "Low",
+          "Pages with large data sets, expensive computations, Core Web Vitals"
+        ]
+      ]
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Unit Test",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Unit tests isolate a single function or module and verify its output for given inputs. They run in milliseconds and are the foundation of any test suite."
+            },
+            {
+              "type": "code",
+              "language": "typescript",
+              "filename": "src/utils/__tests__/math.test.ts",
+              "description": "A unit test for a pure function -- no dependencies, no side effects, just input and output.",
+              "code": "import { clamp, lerp } from '../math';\n\ndescribe('clamp', () => {\n  it('returns value when within range', () => {\n    expect(clamp(5, 0, 10)).toBe(5);\n  });\n\n  it('returns min when value is below range', () => {\n    expect(clamp(-3, 0, 10)).toBe(0);\n  });\n\n  it('returns max when value is above range', () => {\n    expect(clamp(15, 0, 10)).toBe(10);\n  });\n});\n\ndescribe('lerp (linear interpolation)', () => {\n  it('returns start when t is 0', () => {\n    expect(lerp(0, 100, 0)).toBe(0);\n  });\n\n  it('returns end when t is 1', () => {\n    expect(lerp(0, 100, 1)).toBe(100);\n  });\n\n  it('returns midpoint when t is 0.5', () => {\n    expect(lerp(0, 100, 0.5)).toBe(50);\n  });\n});"
+            }
+          ]
+        },
+        {
+          "label": "Integration Test",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Integration tests verify that multiple units work together correctly. They test real interactions -- your API handler talking to a real database, or your service layer calling another service."
+            },
+            {
+              "type": "code",
+              "language": "typescript",
+              "filename": "src/services/__tests__/userService.integration.test.ts",
+              "description": "An integration test that creates a user in a real test database and verifies the full round trip.",
+              "code": "import { createUser, getUserByEmail } from '../userService';\nimport { db } from '../../db';\nimport { users } from '../../db/schema';\n\n// Use a real test database -- not mocks\nbeforeEach(async () => {\n  await db.delete(users); // Clear the table before each test\n});\n\nafterAll(async () => {\n  await db.delete(users);\n  await db.$client.end(); // Close the connection pool\n});\n\ndescribe('User Service (integration)', () => {\n  it('creates a user and retrieves it by email', async () => {\n    const created = await createUser({\n      name: 'Alice',\n      email: 'alice@example.com',\n      password: 'securePassword123',\n    });\n\n    expect(created.id).toBeDefined();\n    expect(created.email).toBe('alice@example.com');\n\n    const found = await getUserByEmail('alice@example.com');\n    expect(found).not.toBeNull();\n    expect(found!.name).toBe('Alice');\n  });\n\n  it('hashes the password before storing', async () => {\n    const created = await createUser({\n      name: 'Bob',\n      email: 'bob@example.com',\n      password: 'plaintext',\n    });\n\n    // The stored password should NOT be plaintext\n    const raw = await db.select().from(users).where(\n      users.id.equals(created.id)\n    );\n    expect(raw[0].passwordHash).not.toBe('plaintext');\n  });\n\n  it('rejects duplicate emails', async () => {\n    await createUser({\n      name: 'Alice',\n      email: 'alice@example.com',\n      password: 'password1',\n    });\n\n    await expect(\n      createUser({\n        name: 'Alice 2',\n        email: 'alice@example.com',\n        password: 'password2',\n      })\n    ).rejects.toThrow(/duplicate/i);\n  });\n});"
+            }
+          ]
+        },
+        {
+          "label": "E2E Test",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "End-to-end tests launch a real browser and interact with your full application stack -- frontend, backend, and database. They catch integration issues that no other test type can find."
+            },
+            {
+              "type": "code",
+              "language": "typescript",
+              "filename": "tests/e2e/checkout.spec.ts",
+              "description": "An E2E test that walks through the entire checkout flow in a real browser.",
+              "code": "import { test, expect } from '@playwright/test';\n\ntest.describe('Checkout flow', () => {\n  test('user can add item to cart and complete purchase', async ({ page }) => {\n    // Browse to a product\n    await page.goto('/products');\n    await page.getByText('Wireless Headphones').click();\n\n    // Add to cart\n    await page.getByRole('button', { name: 'Add to Cart' }).click();\n    await expect(page.getByTestId('cart-count')).toHaveText('1');\n\n    // Go to cart and checkout\n    await page.getByRole('link', { name: 'Cart' }).click();\n    await expect(page).toHaveURL('/cart');\n    await page.getByRole('button', { name: 'Checkout' }).click();\n\n    // Fill shipping info\n    await page.getByLabel('Full Name').fill('Alice Smith');\n    await page.getByLabel('Address').fill('123 Main St');\n    await page.getByLabel('City').fill('Portland');\n    await page.getByLabel('ZIP').fill('97201');\n\n    // Submit order\n    await page.getByRole('button', { name: 'Place Order' }).click();\n\n    // Verify confirmation\n    await expect(page).toHaveURL(/\\/orders\\//);\n    await expect(page.getByText('Order confirmed')).toBeVisible();\n  });\n});"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "step",
+      "step": 1,
+      "title": "Setting Up Testing from Scratch",
+      "body": "Install your test runner and essential libraries. For most JavaScript projects, you need a runner (Jest or Vitest), a DOM testing library, and optionally an E2E framework."
+    },
+    {
+      "type": "step",
+      "step": 2,
+      "title": "Install core testing dependencies",
+      "body": "Pick one of these stacks depending on your project. Vitest is faster for Vite-based projects; Jest works everywhere.",
+      "code": "# Option A: Jest + React Testing Library\nnpm install --save-dev jest @types/jest ts-jest \\\n  @testing-library/react @testing-library/jest-dom \\\n  @testing-library/user-event jest-environment-jsdom\n\n# Option B: Vitest + React Testing Library (for Vite projects)\nnpm install --save-dev vitest @testing-library/react \\\n  @testing-library/jest-dom @testing-library/user-event \\\n  jsdom\n\n# Option C: Add E2E on top of either stack\nnpm init playwright@latest",
+      "language": "bash"
+    },
+    {
+      "type": "step",
+      "step": 3,
+      "title": "Configure your test runner",
+      "body": "Create a configuration file that tells the runner where to find tests, what environment to use, and how to handle TypeScript and path aliases.",
+      "code": "// vitest.config.ts (for Vitest projects)\nimport { defineConfig } from 'vitest/config';\nimport react from '@vitejs/plugin-react';\n\nexport default defineConfig({\n  plugins: [react()],\n  test: {\n    environment: 'jsdom',\n    globals: true,\n    setupFiles: ['./src/test/setup.ts'],\n    include: ['src/**/*.{test,spec}.{ts,tsx}'],\n    coverage: {\n      provider: 'v8',\n      reporter: ['text', 'html', 'lcov'],\n      exclude: ['node_modules/', 'src/test/'],\n    },\n  },\n});",
+      "language": "typescript"
+    },
+    {
+      "type": "step",
+      "step": 4,
+      "title": "Write your first test and run it",
+      "body": "Create a simple test file to verify everything is wired up correctly. If this passes, your testing infrastructure is ready.",
+      "code": "// src/utils/__tests__/smoke.test.ts\nimport { describe, it, expect } from 'vitest'; // or remove this line for Jest\n\ndescribe('smoke test', () => {\n  it('can run basic assertions', () => {\n    expect(1 + 1).toBe(2);\n    expect('hello').toContain('ell');\n    expect([1, 2, 3]).toHaveLength(3);\n  });\n});\n\n// Run it:\n// npx vitest run   (Vitest)\n// npx jest          (Jest)",
+      "language": "typescript"
+    },
+    {
       "type": "text",
       "heading": "Unit Testing with Jest",
       "headingLevel": 2,
@@ -121,6 +258,13 @@
       "code": "import { render, screen, waitFor } from '@testing-library/react';\nimport UserList from '../UserList';\n\n// Mock the global fetch function\nglobal.fetch = jest.fn();\n\nconst mockUsers = [\n  { id: '1', name: 'Alice', email: 'alice@example.com' },\n  { id: '2', name: 'Bob', email: 'bob@example.com' },\n];\n\nbeforeEach(() => {\n  (fetch as jest.Mock).mockReset();\n});\n\ndescribe('UserList', () => {\n  it('shows a loading spinner while fetching', () => {\n    // Return a promise that never resolves to keep loading state\n    (fetch as jest.Mock).mockReturnValue(new Promise(() => {}));\n    render(<UserList />);\n    expect(screen.getByText('Loading...')).toBeInTheDocument();\n  });\n\n  it('renders users after successful fetch', async () => {\n    (fetch as jest.Mock).mockResolvedValue({\n      ok: true,\n      json: async () => mockUsers,\n    });\n\n    render(<UserList />);\n\n    // Wait for users to appear\n    await waitFor(() => {\n      expect(screen.getByText('Alice')).toBeInTheDocument();\n      expect(screen.getByText('Bob')).toBeInTheDocument();\n    });\n  });\n\n  it('shows an error message when fetch fails', async () => {\n    (fetch as jest.Mock).mockRejectedValue(new Error('Network error'));\n\n    render(<UserList />);\n\n    await waitFor(() => {\n      expect(screen.getByText(/failed to load users/i)).toBeInTheDocument();\n    });\n  });\n\n  it('shows empty state when no users exist', async () => {\n    (fetch as jest.Mock).mockResolvedValue({\n      ok: true,\n      json: async () => [],\n    });\n\n    render(<UserList />);\n\n    await waitFor(() => {\n      expect(screen.getByText(/no users found/i)).toBeInTheDocument();\n    });\n  });\n});"
     },
     {
+      "type": "code",
+      "language": "tsx",
+      "filename": "src/components/__tests__/ProfileCard.snapshot.test.tsx",
+      "description": "Snapshot testing captures the rendered output and compares it against a saved reference. Useful for catching unintended UI changes, but update snapshots intentionally.",
+      "code": "import { render } from '@testing-library/react';\nimport ProfileCard from '../ProfileCard';\n\ndescribe('ProfileCard snapshots', () => {\n  it('matches snapshot for a standard user', () => {\n    const { container } = render(\n      <ProfileCard\n        name=\"Alice Johnson\"\n        email=\"alice@example.com\"\n        role=\"developer\"\n        avatarUrl=\"/avatars/alice.jpg\"\n      />\n    );\n\n    expect(container).toMatchSnapshot();\n  });\n\n  it('matches snapshot for an admin user', () => {\n    const { container } = render(\n      <ProfileCard\n        name=\"Bob Admin\"\n        email=\"bob@example.com\"\n        role=\"admin\"\n        avatarUrl=\"/avatars/bob.jpg\"\n        isAdmin\n      />\n    );\n\n    expect(container).toMatchSnapshot();\n  });\n\n  it('matches snapshot with no avatar', () => {\n    const { container } = render(\n      <ProfileCard\n        name=\"Charlie\"\n        email=\"charlie@example.com\"\n        role=\"viewer\"\n      />\n    );\n\n    // Use inline snapshot for small components\n    expect(container.querySelector('.avatar-placeholder')).toMatchInlineSnapshot(`\n      <div class=\"avatar-placeholder\">\n        C\n      </div>\n    `);\n  });\n});"
+    },
+    {
       "type": "text",
       "heading": "End-to-End Testing with Playwright",
       "headingLevel": 2,
@@ -157,6 +301,99 @@
     },
     {
       "type": "text",
+      "heading": "Cypress E2E Testing",
+      "headingLevel": 3,
+      "body": "Cypress is another popular E2E testing framework. It runs inside the browser alongside your application, giving you time-travel debugging and automatic waiting. Here is the same login test written in Cypress for comparison."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "cypress/e2e/login.cy.ts",
+      "description": "The same login flow tested with Cypress. Notice how Cypress chains commands and automatically waits for elements.",
+      "code": "describe('Login flow', () => {\n  it('user can log in with valid credentials', () => {\n    cy.visit('/login');\n\n    // Cypress automatically waits for elements to appear\n    cy.findByLabelText('Email').type('alice@example.com');\n    cy.findByLabelText('Password').type('securePassword123');\n    cy.findByRole('button', { name: 'Sign In' }).click();\n\n    // Should redirect to dashboard\n    cy.url().should('include', '/dashboard');\n    cy.findByText('Welcome, Alice').should('be.visible');\n  });\n\n  it('shows validation errors for empty fields', () => {\n    cy.visit('/login');\n    cy.findByRole('button', { name: 'Sign In' }).click();\n\n    // Both fields should show validation errors\n    cy.findByText('Email is required').should('be.visible');\n    cy.findByText('Password is required').should('be.visible');\n  });\n\n  it('persists session across page reloads', () => {\n    // Log in first\n    cy.visit('/login');\n    cy.findByLabelText('Email').type('alice@example.com');\n    cy.findByLabelText('Password').type('securePassword123');\n    cy.findByRole('button', { name: 'Sign In' }).click();\n    cy.url().should('include', '/dashboard');\n\n    // Reload and verify still logged in\n    cy.reload();\n    cy.findByText('Welcome, Alice').should('be.visible');\n  });\n});"
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Jest",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Jest is the most widely-used JavaScript testing framework, developed by Meta. It includes a test runner, assertion library, mocking, and code coverage all in one package. It works out of the box with most React projects."
+            },
+            {
+              "type": "list",
+              "ordered": false,
+              "items": [
+                "Built-in mocking, spying, and fake timers -- no extra libraries needed",
+                "Snapshot testing for UI regression detection",
+                "Parallel test execution across worker threads",
+                "Widely supported: huge ecosystem of plugins and community resources",
+                "Can be slower on large projects due to the transform pipeline"
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Vitest",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Vitest is the native test runner for Vite projects. It reuses your Vite config, so there is zero extra configuration for path aliases, plugins, and transforms. It is significantly faster than Jest for Vite-based projects."
+            },
+            {
+              "type": "list",
+              "ordered": false,
+              "items": [
+                "Shares your Vite config -- no duplicate transform setup",
+                "Native ESM support without workarounds",
+                "Hot module replacement (HMR) for instant re-runs in watch mode",
+                "Jest-compatible API -- migration is mostly find-and-replace",
+                "Built-in UI mode for visual test exploration (vitest --ui)",
+                "Faster startup and execution than Jest for Vite projects"
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Playwright",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "Playwright is a cross-browser E2E testing framework from Microsoft. It supports Chromium, Firefox, and WebKit with a single API. It provides auto-waiting, trace recording, and runs tests in true browser contexts."
+            },
+            {
+              "type": "list",
+              "ordered": false,
+              "items": [
+                "Cross-browser testing: Chromium, Firefox, WebKit, plus mobile emulation",
+                "Auto-waits for elements to be actionable before interacting",
+                "Trace viewer for debugging failed tests with screenshots and DOM snapshots",
+                "Parallel execution by default -- each test gets a fresh browser context",
+                "API testing built in -- test REST endpoints without a browser",
+                "Codegen tool records your browser actions and generates test code"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "heading": "API Testing with supertest",
+      "headingLevel": 2,
+      "body": "For Node.js/Express backends, supertest lets you send HTTP requests to your app without starting a real server. It is the standard tool for testing Express routes, middleware, and error handling."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "src/api/__tests__/users.api.test.ts",
+      "description": "Testing REST API endpoints with supertest. Each test sends a real HTTP request to the Express app and asserts the response.",
+      "code": "import request from 'supertest';\nimport { app } from '../../app';\nimport { db } from '../../db';\nimport { users } from '../../db/schema';\n\nbeforeEach(async () => {\n  await db.delete(users);\n});\n\nafterAll(async () => {\n  await db.$client.end();\n});\n\ndescribe('POST /api/users', () => {\n  it('creates a new user and returns 201', async () => {\n    const res = await request(app)\n      .post('/api/users')\n      .send({ name: 'Alice', email: 'alice@test.com', password: 'secure123' })\n      .expect('Content-Type', /json/)\n      .expect(201);\n\n    expect(res.body).toMatchObject({\n      name: 'Alice',\n      email: 'alice@test.com',\n    });\n    expect(res.body.password).toBeUndefined(); // Never expose passwords\n    expect(res.body.id).toBeDefined();\n  });\n\n  it('returns 400 for missing required fields', async () => {\n    const res = await request(app)\n      .post('/api/users')\n      .send({ name: 'Alice' }) // Missing email and password\n      .expect(400);\n\n    expect(res.body.errors).toBeDefined();\n  });\n\n  it('returns 409 for duplicate email', async () => {\n    // Create first user\n    await request(app)\n      .post('/api/users')\n      .send({ name: 'Alice', email: 'alice@test.com', password: 'secure123' });\n\n    // Try to create another with the same email\n    const res = await request(app)\n      .post('/api/users')\n      .send({ name: 'Bob', email: 'alice@test.com', password: 'other456' })\n      .expect(409);\n\n    expect(res.body.error).toMatch(/already exists/i);\n  });\n});\n\ndescribe('GET /api/users/:id', () => {\n  it('returns the user for a valid id', async () => {\n    const created = await request(app)\n      .post('/api/users')\n      .send({ name: 'Alice', email: 'alice@test.com', password: 'secure123' });\n\n    const res = await request(app)\n      .get(`/api/users/${created.body.id}`)\n      .expect(200);\n\n    expect(res.body.name).toBe('Alice');\n  });\n\n  it('returns 404 for non-existent user', async () => {\n    await request(app)\n      .get('/api/users/00000000-0000-0000-0000-000000000000')\n      .expect(404);\n  });\n});"
+    },
+    {
+      "type": "text",
       "heading": "API Testing with pytest",
       "headingLevel": 2,
       "body": "Your Flask backend needs tests too. pytest is Python's most popular testing framework. We use Flask's built-in test client to send fake HTTP requests to our API without starting a real server."
@@ -180,6 +417,13 @@
       "heading": "Mocking Strategies",
       "headingLevel": 2,
       "body": "Real applications depend on external services -- APIs, databases, timers, and random number generators. In tests, you replace these with mocks: fake versions that you control. This makes your tests fast, deterministic, and independent of external systems."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "src/services/__tests__/paymentService.test.ts",
+      "description": "A comprehensive mock and stub example showing how to replace external service dependencies with controlled fakes.",
+      "code": "import { processPayment } from '../paymentService';\nimport * as stripeClient from '../../lib/stripe';\nimport * as emailService from '../../lib/email';\nimport * as logger from '../../lib/logger';\n\n// Stub the Stripe client -- replace with a controlled fake\njest.mock('../../lib/stripe');\njest.mock('../../lib/email');\njest.mock('../../lib/logger');\n\nconst mockStripe = stripeClient as jest.Mocked<typeof stripeClient>;\nconst mockEmail = emailService as jest.Mocked<typeof emailService>;\n\ndescribe('processPayment', () => {\n  beforeEach(() => {\n    jest.clearAllMocks();\n  });\n\n  it('charges the card and sends a receipt email', async () => {\n    // Arrange: stub Stripe to return a successful charge\n    mockStripe.createCharge.mockResolvedValue({\n      id: 'ch_123',\n      amount: 4999,\n      status: 'succeeded',\n    });\n    mockEmail.sendReceipt.mockResolvedValue(undefined);\n\n    // Act\n    const result = await processPayment({\n      userId: 'user_1',\n      amount: 4999,\n      cardToken: 'tok_visa',\n    });\n\n    // Assert: Stripe was called with correct args\n    expect(mockStripe.createCharge).toHaveBeenCalledWith({\n      amount: 4999,\n      currency: 'usd',\n      source: 'tok_visa',\n    });\n\n    // Assert: receipt email was sent\n    expect(mockEmail.sendReceipt).toHaveBeenCalledWith(\n      'user_1',\n      expect.objectContaining({ chargeId: 'ch_123' })\n    );\n\n    expect(result.success).toBe(true);\n  });\n\n  it('returns failure and logs error when Stripe rejects', async () => {\n    // Arrange: stub Stripe to fail\n    mockStripe.createCharge.mockRejectedValue(\n      new Error('Card declined')\n    );\n\n    // Act\n    const result = await processPayment({\n      userId: 'user_1',\n      amount: 4999,\n      cardToken: 'tok_declined',\n    });\n\n    // Assert\n    expect(result.success).toBe(false);\n    expect(result.error).toBe('Card declined');\n    expect(mockEmail.sendReceipt).not.toHaveBeenCalled();\n    expect(logger.error).toHaveBeenCalled();\n  });\n});"
     },
     {
       "type": "tabs",
@@ -260,10 +504,103 @@
       "code": "{\n  \"preset\": \"ts-jest\",\n  \"testEnvironment\": \"jsdom\",\n  \"setupFilesAfterSetup\": [\"@testing-library/jest-dom\"],\n  \"moduleNameMapper\": {\n    \"^@/(.*)$\": \"<rootDir>/src/$1\"\n  },\n  \"collectCoverageFrom\": [\n    \"src/**/*.{ts,tsx}\",\n    \"!src/**/*.d.ts\",\n    \"!src/**/index.ts\",\n    \"!src/types/**\"\n  ],\n  \"coverageThresholds\": {\n    \"global\": {\n      \"branches\": 70,\n      \"functions\": 80,\n      \"lines\": 80,\n      \"statements\": 80\n    }\n  }\n}"
     },
     {
+      "type": "code",
+      "language": "typescript",
+      "filename": "vitest.config.coverage.ts",
+      "description": "Coverage configuration for Vitest with v8 provider. Generates HTML reports and enforces thresholds in CI.",
+      "code": "import { defineConfig } from 'vitest/config';\nimport react from '@vitejs/plugin-react';\n\nexport default defineConfig({\n  plugins: [react()],\n  test: {\n    environment: 'jsdom',\n    coverage: {\n      provider: 'v8',\n      reporter: ['text', 'text-summary', 'html', 'lcov'],\n      reportsDirectory: './coverage',\n      include: ['src/**/*.{ts,tsx}'],\n      exclude: [\n        'src/**/*.d.ts',\n        'src/**/*.test.{ts,tsx}',\n        'src/**/*.spec.{ts,tsx}',\n        'src/test/**',\n        'src/types/**',\n        'src/**/index.ts',\n      ],\n      // Fail CI if coverage drops below these thresholds\n      thresholds: {\n        lines: 80,\n        functions: 80,\n        branches: 70,\n        statements: 80,\n      },\n    },\n  },\n});"
+    },
+    {
       "type": "alert",
       "severity": "warning",
       "title": "Do not chase 100% coverage",
       "body": "100% code coverage does not mean your code is bug-free. It means every line was executed, not that every edge case was tested. Aim for 80% coverage on meaningful code. Spending hours testing getter functions and CSS class toggling is a poor use of time. Focus on business logic, data transformations, and error handling."
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "Write tests for every bug you fix",
+      "body": "When you find and fix a bug, write a test that would have caught it. This prevents the bug from ever coming back (a regression). Over time, your test suite becomes a catalog of every mistake your codebase has ever made -- and a guarantee it will not make them again. This is one of the highest-value testing habits you can build."
+    },
+    {
+      "type": "text",
+      "heading": "Performance Testing",
+      "headingLevel": 2,
+      "body": "Performance tests catch regressions that make your app slower. You can measure render times, bundle sizes, and Core Web Vitals to ensure changes do not degrade the user experience."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "filename": "tests/performance/render.perf.test.tsx",
+      "description": "Performance test that measures component render time and enforces a budget. Catches performance regressions before they reach production.",
+      "code": "import { render } from '@testing-library/react';\nimport { performance } from 'perf_hooks';\nimport DataTable from '../../src/components/DataTable';\n\n// Generate a large dataset\nconst largeDataset = Array.from({ length: 1000 }, (_, i) => ({\n  id: i,\n  name: `User ${i}`,\n  email: `user${i}@example.com`,\n  role: i % 3 === 0 ? 'admin' : 'member',\n  createdAt: new Date(2024, 0, i + 1).toISOString(),\n}));\n\ndescribe('DataTable performance', () => {\n  it('renders 1000 rows within 200ms', () => {\n    const start = performance.now();\n\n    render(\n      <DataTable\n        data={largeDataset}\n        columns={['name', 'email', 'role', 'createdAt']}\n      />\n    );\n\n    const duration = performance.now() - start;\n\n    // Enforce a performance budget\n    expect(duration).toBeLessThan(200);\n    console.log(`Rendered 1000 rows in ${duration.toFixed(1)}ms`);\n  });\n\n  it('re-renders efficiently when a single row changes', () => {\n    const { rerender } = render(\n      <DataTable data={largeDataset} columns={['name', 'email']} />\n    );\n\n    // Change just one row\n    const updatedData = [...largeDataset];\n    updatedData[500] = { ...updatedData[500], name: 'Updated User' };\n\n    const start = performance.now();\n    rerender(<DataTable data={updatedData} columns={['name', 'email']} />);\n    const duration = performance.now() - start;\n\n    // Re-render should be faster than initial render\n    expect(duration).toBeLessThan(100);\n  });\n});\n\ndescribe('Bundle size check', () => {\n  it('main bundle stays under 250KB gzipped', async () => {\n    const fs = await import('fs');\n    const zlib = await import('zlib');\n    const path = await import('path');\n\n    const bundlePath = path.join(__dirname, '../../dist/assets/index.js');\n    if (!fs.existsSync(bundlePath)) return; // Skip if no build\n\n    const content = fs.readFileSync(bundlePath);\n    const gzipped = zlib.gzipSync(content);\n    const sizeKB = gzipped.length / 1024;\n\n    expect(sizeKB).toBeLessThan(250);\n    console.log(`Bundle size: ${sizeKB.toFixed(1)}KB gzipped`);\n  });\n});"
+    },
+    {
+      "type": "accordion",
+      "title": "Testing Recipes: Common Patterns",
+      "defaultExpanded": false,
+      "blocks": [
+        {
+          "type": "text",
+          "heading": "Testing Forms",
+          "headingLevel": 4,
+          "body": "Fill fields, submit, and assert on validation errors or success states."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "src/components/__tests__/ContactForm.test.tsx",
+          "code": "import { render, screen } from '@testing-library/react';\nimport userEvent from '@testing-library/user-event';\nimport ContactForm from '../ContactForm';\n\ntest('shows validation errors for empty required fields', async () => {\n  const user = userEvent.setup();\n  render(<ContactForm onSubmit={jest.fn()} />);\n\n  await user.click(screen.getByRole('button', { name: /submit/i }));\n\n  expect(screen.getByText(/name is required/i)).toBeInTheDocument();\n  expect(screen.getByText(/email is required/i)).toBeInTheDocument();\n});\n\ntest('calls onSubmit with form data when valid', async () => {\n  const handleSubmit = jest.fn();\n  const user = userEvent.setup();\n  render(<ContactForm onSubmit={handleSubmit} />);\n\n  await user.type(screen.getByLabelText(/name/i), 'Alice');\n  await user.type(screen.getByLabelText(/email/i), 'alice@test.com');\n  await user.type(screen.getByLabelText(/message/i), 'Hello!');\n  await user.click(screen.getByRole('button', { name: /submit/i }));\n\n  expect(handleSubmit).toHaveBeenCalledWith({\n    name: 'Alice',\n    email: 'alice@test.com',\n    message: 'Hello!',\n  });\n});"
+        },
+        {
+          "type": "text",
+          "heading": "Testing API Calls",
+          "headingLevel": 4,
+          "body": "Mock fetch or use MSW to intercept network requests and return controlled responses."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "filename": "src/hooks/__tests__/useFetch.test.ts",
+          "code": "import { renderHook, waitFor } from '@testing-library/react';\nimport { useFetch } from '../useFetch';\nimport { server } from '../../test/mocks/server';\nimport { http, HttpResponse } from 'msw';\n\ntest('returns data on successful fetch', async () => {\n  server.use(\n    http.get('/api/posts', () =>\n      HttpResponse.json([{ id: 1, title: 'Test Post' }])\n    )\n  );\n\n  const { result } = renderHook(() => useFetch('/api/posts'));\n\n  await waitFor(() => {\n    expect(result.current.data).toEqual([{ id: 1, title: 'Test Post' }]);\n    expect(result.current.loading).toBe(false);\n    expect(result.current.error).toBeNull();\n  });\n});\n\ntest('returns error on failed fetch', async () => {\n  server.use(\n    http.get('/api/posts', () =>\n      HttpResponse.json({ error: 'Server error' }, { status: 500 })\n    )\n  );\n\n  const { result } = renderHook(() => useFetch('/api/posts'));\n\n  await waitFor(() => {\n    expect(result.current.error).toBeTruthy();\n    expect(result.current.data).toBeNull();\n  });\n});"
+        },
+        {
+          "type": "text",
+          "heading": "Testing Auth Flows",
+          "headingLevel": 4,
+          "body": "Wrap components in an auth context provider and test both authenticated and unauthenticated states."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "src/components/__tests__/ProtectedRoute.test.tsx",
+          "code": "import { render, screen } from '@testing-library/react';\nimport { MemoryRouter } from 'react-router-dom';\nimport { AuthProvider } from '../../contexts/AuthContext';\nimport ProtectedRoute from '../ProtectedRoute';\n\nfunction renderWithAuth(ui: React.ReactElement, { user = null } = {}) {\n  return render(\n    <AuthProvider initialUser={user}>\n      <MemoryRouter>{ui}</MemoryRouter>\n    </AuthProvider>\n  );\n}\n\ntest('shows content when user is authenticated', () => {\n  renderWithAuth(\n    <ProtectedRoute><h1>Secret Page</h1></ProtectedRoute>,\n    { user: { id: '1', name: 'Alice' } }\n  );\n  expect(screen.getByText('Secret Page')).toBeInTheDocument();\n});\n\ntest('redirects to login when user is not authenticated', () => {\n  renderWithAuth(\n    <ProtectedRoute><h1>Secret Page</h1></ProtectedRoute>\n  );\n  expect(screen.queryByText('Secret Page')).not.toBeInTheDocument();\n});"
+        },
+        {
+          "type": "text",
+          "heading": "Testing Error States",
+          "headingLevel": 4,
+          "body": "Deliberately trigger errors and verify that error boundaries, fallback UIs, and error messages behave correctly."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "src/components/__tests__/ErrorBoundary.test.tsx",
+          "code": "import { render, screen } from '@testing-library/react';\nimport ErrorBoundary from '../ErrorBoundary';\n\n// A component that always throws\nfunction BrokenComponent() {\n  throw new Error('Something went wrong');\n}\n\n// Suppress console.error noise in test output\nbeforeEach(() => jest.spyOn(console, 'error').mockImplementation(() => {}));\nafterEach(() => jest.restoreAllMocks());\n\ntest('renders fallback UI when child throws', () => {\n  render(\n    <ErrorBoundary fallback={<p>Something broke</p>}>\n      <BrokenComponent />\n    </ErrorBoundary>\n  );\n\n  expect(screen.getByText('Something broke')).toBeInTheDocument();\n});\n\ntest('renders children when no error occurs', () => {\n  render(\n    <ErrorBoundary fallback={<p>Something broke</p>}>\n      <p>Everything is fine</p>\n    </ErrorBoundary>\n  );\n\n  expect(screen.getByText('Everything is fine')).toBeInTheDocument();\n  expect(screen.queryByText('Something broke')).not.toBeInTheDocument();\n});"
+        },
+        {
+          "type": "text",
+          "heading": "Testing Async Operations",
+          "headingLevel": 4,
+          "body": "Use waitFor, findBy queries, and fake timers to test loading states, debounced inputs, and polling logic."
+        },
+        {
+          "type": "code",
+          "language": "tsx",
+          "filename": "src/components/__tests__/AsyncSearch.test.tsx",
+          "code": "import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';\nimport userEvent from '@testing-library/user-event';\nimport AsyncSearch from '../AsyncSearch';\n\njest.useFakeTimers();\n\ntest('shows loading indicator while searching, then shows results', async () => {\n  const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });\n  render(<AsyncSearch />);\n\n  // Type a search query\n  await user.type(screen.getByRole('searchbox'), 'react');\n\n  // Advance past the debounce delay\n  jest.advanceTimersByTime(500);\n\n  // Loading indicator should appear\n  expect(screen.getByText(/searching/i)).toBeInTheDocument();\n\n  // Wait for results to replace the loading indicator\n  await waitForElementToBeRemoved(() => screen.queryByText(/searching/i));\n\n  // Results should now be visible\n  expect(screen.getByTestId('search-results')).toBeInTheDocument();\n});"
+        }
+      ]
     },
     {
       "type": "text",
@@ -350,7 +687,7 @@
       "type": "alert",
       "severity": "success",
       "title": "Your testing toolkit is complete",
-      "body": "You now know how to write unit tests with Jest, component tests with React Testing Library, E2E tests with Playwright, and API tests with pytest. You know how to mock dependencies, measure coverage, and run tests in CI. Start with the most critical parts of your application and expand coverage over time."
+      "body": "You now know how to write unit tests with Jest, component tests with React Testing Library, E2E tests with Playwright and Cypress, integration tests with real databases, and API tests with supertest and pytest. You know how to mock dependencies, measure coverage, write performance tests, and run everything in CI. Start with the most critical parts of your application and expand coverage over time."
     }
   ],
   "references": [
@@ -383,6 +720,46 @@
       "year": "2009",
       "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
       "source": "Prentice Hall"
+    },
+    {
+      "id": "playwright2024",
+      "authors": "Microsoft",
+      "year": "2024",
+      "title": "Playwright Documentation",
+      "source": "Playwright",
+      "url": "https://playwright.dev/docs/intro"
+    },
+    {
+      "id": "vitest2024",
+      "authors": "Vitest Team",
+      "year": "2024",
+      "title": "Vitest Documentation",
+      "source": "Vitest",
+      "url": "https://vitest.dev/guide/"
+    },
+    {
+      "id": "rtl2024",
+      "authors": "Testing Library",
+      "year": "2024",
+      "title": "React Testing Library Documentation",
+      "source": "Testing Library",
+      "url": "https://testing-library.com/docs/react-testing-library/intro/"
+    },
+    {
+      "id": "msw2024",
+      "authors": "Kettmann, A.",
+      "year": "2024",
+      "title": "Mock Service Worker Documentation",
+      "source": "MSW",
+      "url": "https://mswjs.io/docs/"
+    },
+    {
+      "id": "supertest2024",
+      "authors": "VisionMedia",
+      "year": "2024",
+      "title": "SuperTest: HTTP assertions for Node.js",
+      "source": "GitHub",
+      "url": "https://github.com/ladjs/supertest"
     }
   ]
 }

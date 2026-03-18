@@ -6,7 +6,11 @@
   "order": 13,
   "estimatedMinutes": 180,
   "difficulty": "intermediate",
-  "prerequisites": ["react-fundamentals", "flask-basics", "sql-databases"],
+  "prerequisites": [
+    "react-fundamentals",
+    "flask-basics",
+    "sql-databases"
+  ],
   "keyPoints": [
     "Design a social-graph database schema with users, posts, follows, likes, and comments",
     "Implement JWT authentication with refresh tokens",
@@ -26,12 +30,42 @@
       "type": "cardGrid",
       "columns": 3,
       "cards": [
-        { "title": "JWT Auth", "body": "Register, login, and protected routes with access and refresh tokens.", "icon": "Lock", "chip": "Backend" },
-        { "title": "User Profiles", "body": "Avatar upload, bio, and public profile pages.", "icon": "AccountCircle", "chip": "Full-Stack" },
-        { "title": "Post Creation", "body": "Rich text posts with image attachments.", "icon": "Create", "chip": "Full-Stack" },
-        { "title": "News Feed", "body": "Chronological feed from followed users with infinite scroll.", "icon": "DynamicFeed", "chip": "Full-Stack" },
-        { "title": "Likes & Comments", "body": "Nested comment threads and like toggles with counts.", "icon": "ThumbUp", "chip": "Full-Stack" },
-        { "title": "Notifications", "body": "Real-time alerts when someone likes, comments, or follows.", "icon": "Notifications", "chip": "WebSocket" }
+        {
+          "title": "JWT Auth",
+          "body": "Register, login, and protected routes with access and refresh tokens.",
+          "icon": "Lock",
+          "chip": "Backend"
+        },
+        {
+          "title": "User Profiles",
+          "body": "Avatar upload, bio, and public profile pages.",
+          "icon": "AccountCircle",
+          "chip": "Full-Stack"
+        },
+        {
+          "title": "Post Creation",
+          "body": "Rich text posts with image attachments.",
+          "icon": "Create",
+          "chip": "Full-Stack"
+        },
+        {
+          "title": "News Feed",
+          "body": "Chronological feed from followed users with infinite scroll.",
+          "icon": "DynamicFeed",
+          "chip": "Full-Stack"
+        },
+        {
+          "title": "Likes & Comments",
+          "body": "Nested comment threads and like toggles with counts.",
+          "icon": "ThumbUp",
+          "chip": "Full-Stack"
+        },
+        {
+          "title": "Notifications",
+          "body": "Real-time alerts when someone likes, comments, or follows.",
+          "icon": "Notifications",
+          "chip": "WebSocket"
+        }
       ]
     },
     {
@@ -43,63 +77,191 @@
     {
       "type": "table",
       "heading": "users",
-      "headers": ["Column", "Type", "Constraints"],
+      "headers": [
+        "Column",
+        "Type",
+        "Constraints"
+      ],
       "rows": [
-        ["id", "SERIAL", "PRIMARY KEY"],
-        ["username", "VARCHAR(30)", "UNIQUE NOT NULL"],
-        ["email", "VARCHAR(120)", "UNIQUE NOT NULL"],
-        ["password_hash", "VARCHAR(256)", "NOT NULL"],
-        ["display_name", "VARCHAR(60)", ""],
-        ["bio", "TEXT", ""],
-        ["avatar_url", "VARCHAR(512)", ""],
-        ["created_at", "TIMESTAMP", "DEFAULT NOW()"]
+        [
+          "id",
+          "SERIAL",
+          "PRIMARY KEY"
+        ],
+        [
+          "username",
+          "VARCHAR(30)",
+          "UNIQUE NOT NULL"
+        ],
+        [
+          "email",
+          "VARCHAR(120)",
+          "UNIQUE NOT NULL"
+        ],
+        [
+          "password_hash",
+          "VARCHAR(256)",
+          "NOT NULL"
+        ],
+        [
+          "display_name",
+          "VARCHAR(60)",
+          ""
+        ],
+        [
+          "bio",
+          "TEXT",
+          ""
+        ],
+        [
+          "avatar_url",
+          "VARCHAR(512)",
+          ""
+        ],
+        [
+          "created_at",
+          "TIMESTAMP",
+          "DEFAULT NOW()"
+        ]
       ]
     },
     {
       "type": "table",
       "heading": "posts",
-      "headers": ["Column", "Type", "Constraints"],
+      "headers": [
+        "Column",
+        "Type",
+        "Constraints"
+      ],
       "rows": [
-        ["id", "SERIAL", "PRIMARY KEY"],
-        ["author_id", "INTEGER", "REFERENCES users(id) ON DELETE CASCADE"],
-        ["body", "TEXT", "NOT NULL"],
-        ["image_url", "VARCHAR(512)", ""],
-        ["created_at", "TIMESTAMP", "DEFAULT NOW()"]
+        [
+          "id",
+          "SERIAL",
+          "PRIMARY KEY"
+        ],
+        [
+          "author_id",
+          "INTEGER",
+          "REFERENCES users(id) ON DELETE CASCADE"
+        ],
+        [
+          "body",
+          "TEXT",
+          "NOT NULL"
+        ],
+        [
+          "image_url",
+          "VARCHAR(512)",
+          ""
+        ],
+        [
+          "created_at",
+          "TIMESTAMP",
+          "DEFAULT NOW()"
+        ]
       ]
     },
     {
       "type": "table",
       "heading": "follows",
-      "headers": ["Column", "Type", "Constraints"],
+      "headers": [
+        "Column",
+        "Type",
+        "Constraints"
+      ],
       "rows": [
-        ["follower_id", "INTEGER", "REFERENCES users(id) ON DELETE CASCADE"],
-        ["following_id", "INTEGER", "REFERENCES users(id) ON DELETE CASCADE"],
-        ["created_at", "TIMESTAMP", "DEFAULT NOW()"],
-        ["", "", "PRIMARY KEY (follower_id, following_id)"]
+        [
+          "follower_id",
+          "INTEGER",
+          "REFERENCES users(id) ON DELETE CASCADE"
+        ],
+        [
+          "following_id",
+          "INTEGER",
+          "REFERENCES users(id) ON DELETE CASCADE"
+        ],
+        [
+          "created_at",
+          "TIMESTAMP",
+          "DEFAULT NOW()"
+        ],
+        [
+          "",
+          "",
+          "PRIMARY KEY (follower_id, following_id)"
+        ]
       ]
     },
     {
       "type": "table",
       "heading": "likes",
-      "headers": ["Column", "Type", "Constraints"],
+      "headers": [
+        "Column",
+        "Type",
+        "Constraints"
+      ],
       "rows": [
-        ["user_id", "INTEGER", "REFERENCES users(id) ON DELETE CASCADE"],
-        ["post_id", "INTEGER", "REFERENCES posts(id) ON DELETE CASCADE"],
-        ["created_at", "TIMESTAMP", "DEFAULT NOW()"],
-        ["", "", "PRIMARY KEY (user_id, post_id)"]
+        [
+          "user_id",
+          "INTEGER",
+          "REFERENCES users(id) ON DELETE CASCADE"
+        ],
+        [
+          "post_id",
+          "INTEGER",
+          "REFERENCES posts(id) ON DELETE CASCADE"
+        ],
+        [
+          "created_at",
+          "TIMESTAMP",
+          "DEFAULT NOW()"
+        ],
+        [
+          "",
+          "",
+          "PRIMARY KEY (user_id, post_id)"
+        ]
       ]
     },
     {
       "type": "table",
       "heading": "comments",
-      "headers": ["Column", "Type", "Constraints"],
+      "headers": [
+        "Column",
+        "Type",
+        "Constraints"
+      ],
       "rows": [
-        ["id", "SERIAL", "PRIMARY KEY"],
-        ["post_id", "INTEGER", "REFERENCES posts(id) ON DELETE CASCADE"],
-        ["author_id", "INTEGER", "REFERENCES users(id) ON DELETE CASCADE"],
-        ["parent_id", "INTEGER", "REFERENCES comments(id) ON DELETE CASCADE"],
-        ["body", "TEXT", "NOT NULL"],
-        ["created_at", "TIMESTAMP", "DEFAULT NOW()"]
+        [
+          "id",
+          "SERIAL",
+          "PRIMARY KEY"
+        ],
+        [
+          "post_id",
+          "INTEGER",
+          "REFERENCES posts(id) ON DELETE CASCADE"
+        ],
+        [
+          "author_id",
+          "INTEGER",
+          "REFERENCES users(id) ON DELETE CASCADE"
+        ],
+        [
+          "parent_id",
+          "INTEGER",
+          "REFERENCES comments(id) ON DELETE CASCADE"
+        ],
+        [
+          "body",
+          "TEXT",
+          "NOT NULL"
+        ],
+        [
+          "created_at",
+          "TIMESTAMP",
+          "DEFAULT NOW()"
+        ]
       ]
     },
     {
@@ -236,6 +398,40 @@
       "heading": "Summary",
       "headingLevel": 2,
       "body": "You have built the core of a social platform: JWT authentication, user profiles, a cursor-paginated news feed with infinite scroll, likes with optimistic UI updates, nested comments, follow/unfollow, and real-time WebSocket notifications. This architecture scales well and covers the fundamental patterns you will find in production social applications."
+    }
+  ],
+  "references": [
+    {
+      "id": "mdn2024websockets",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "WebSockets API",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API"
+    },
+    {
+      "id": "rfc6455",
+      "authors": "Fette, I. and Melnikov, A.",
+      "year": "2011",
+      "title": "RFC 6455 — The WebSocket Protocol",
+      "source": "IETF",
+      "url": "https://datatracker.ietf.org/doc/html/rfc6455"
+    },
+    {
+      "id": "oauth2024",
+      "authors": "OAuth",
+      "year": "2024",
+      "title": "OAuth 2.0 Documentation",
+      "source": "OAuth.net",
+      "url": "https://oauth.net/2/"
+    },
+    {
+      "id": "socketio2024",
+      "authors": "Socket.IO",
+      "year": "2024",
+      "title": "Socket.IO Documentation",
+      "source": "Socket.IO",
+      "url": "https://socket.io/docs/v4/"
     }
   ]
 }

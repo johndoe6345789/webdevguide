@@ -319,7 +319,7 @@
                 {
                   "type": "code",
                   "language": "typescript",
-                  "code": "// 'any' removes all type safety\nfunction processData(data: any) {\n  // TypeScript cannot help you here \u2014 no autocomplete,\n  // no error checking, nothing\n  return data.name.toUpperCase();\n}"
+                  "code": "// 'any' removes all type safety\nfunction processData(data: any) {\n  // TypeScript cannot help you here — no autocomplete,\n  // no error checking, nothing\n  return data.name.toUpperCase();\n}"
                 }
               ]
             },
@@ -431,7 +431,7 @@
     {
       "type": "code",
       "language": "bash",
-      "code": "\u2714 No ESLint warnings or errors"
+      "code": "✔ No ESLint warnings or errors"
     },
     {
       "type": "text",
@@ -586,11 +586,11 @@
       "columns": 2,
       "cards": [
         {
-          "title": "ESLint \u2014 Code Quality",
+          "title": "ESLint — Code Quality",
           "body": "Finds bugs and logic errors. Enforces best practices. Catches React and accessibility issues. Asks: \"Is this code correct?\""
         },
         {
-          "title": "Prettier \u2014 Code Formatting",
+          "title": "Prettier — Code Formatting",
           "body": "Handles indentation and spacing. Manages line length and wrapping. Adds or removes semicolons consistently. Asks: \"Does this code look clean?\""
         }
       ]
@@ -630,6 +630,40 @@
       "heading": "You Know ESLint!",
       "headingLevel": 2,
       "body": "You now understand what ESLint is, why it matters, how to read its warnings, and how to customize it. Let ESLint watch your back while you focus on building great things."
+    }
+  ],
+  "references": [
+    {
+      "id": "eslint2024docs",
+      "authors": "OpenJS Foundation",
+      "year": "2024",
+      "title": "ESLint Documentation",
+      "source": "ESLint",
+      "url": "https://eslint.org/docs/latest/"
+    },
+    {
+      "id": "zakas2024eslint",
+      "authors": "Zakas, N.C.",
+      "year": "2024",
+      "title": "Getting Started with ESLint",
+      "source": "ESLint",
+      "url": "https://eslint.org/docs/latest/use/getting-started"
+    },
+    {
+      "id": "airbnb2024style",
+      "authors": "Airbnb",
+      "year": "2024",
+      "title": "Airbnb JavaScript Style Guide",
+      "source": "GitHub",
+      "url": "https://github.com/airbnb/javascript"
+    },
+    {
+      "id": "prettier2024docs",
+      "authors": "Prettier",
+      "year": "2024",
+      "title": "Prettier Documentation",
+      "source": "Prettier",
+      "url": "https://prettier.io/docs/en/"
     }
   ]
 }

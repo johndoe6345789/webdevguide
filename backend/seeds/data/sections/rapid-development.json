@@ -30,14 +30,35 @@
     {
       "type": "table",
       "heading": "MVP vs Perfect -- When to Cut Corners",
-      "headers": ["Cut This Corner", "Never Cut This Corner"],
+      "headers": [
+        "Cut This Corner",
+        "Never Cut This Corner"
+      ],
       "rows": [
-        ["Pixel-perfect design -- use a component library", "Authentication and authorization -- never roll your own crypto"],
-        ["Full test coverage -- test critical paths only", "Input validation -- never trust user input"],
-        ["Microservices architecture -- start with a monolith", "HTTPS and secure headers -- security from day one"],
-        ["Custom design system -- use Tailwind and shadcn/ui", "Database backups -- you will lose data eventually"],
-        ["Internationalization -- launch in one language first", "Environment variables -- never hardcode secrets"],
-        ["Advanced caching -- optimize when you have traffic", "Error boundaries -- catch crashes before users see them"]
+        [
+          "Pixel-perfect design -- use a component library",
+          "Authentication and authorization -- never roll your own crypto"
+        ],
+        [
+          "Full test coverage -- test critical paths only",
+          "Input validation -- never trust user input"
+        ],
+        [
+          "Microservices architecture -- start with a monolith",
+          "HTTPS and secure headers -- security from day one"
+        ],
+        [
+          "Custom design system -- use Tailwind and shadcn/ui",
+          "Database backups -- you will lose data eventually"
+        ],
+        [
+          "Internationalization -- launch in one language first",
+          "Environment variables -- never hardcode secrets"
+        ],
+        [
+          "Advanced caching -- optimize when you have traffic",
+          "Error boundaries -- catch crashes before users see them"
+        ]
       ]
     },
     {
@@ -526,15 +547,55 @@
     {
       "type": "table",
       "heading": "Dangerous Shortcuts",
-      "headers": ["Anti-Pattern", "Why It Feels Fast", "Why It Costs You Later", "Do This Instead"],
+      "headers": [
+        "Anti-Pattern",
+        "Why It Feels Fast",
+        "Why It Costs You Later",
+        "Do This Instead"
+      ],
       "rows": [
-        ["No TypeScript", "Less typing, no type errors to fix", "Bugs in production that types would have caught at build time. Refactoring becomes terrifying.", "Use TypeScript from the start. The 10% overhead saves 10x in debugging."],
-        ["No tests on critical paths", "Ship features faster without writing tests", "Payment processing breaks silently. User signup fails on edge cases. You find out from angry users.", "Test auth, payments, and data mutations. Skip testing UI layout."],
-        ["No error boundaries", "Less code to write", "One component crash takes down your entire app. Users see a white screen.", "Wrap major sections in error boundaries. Five minutes of work prevents total app crashes."],
-        ["Hardcoded secrets", "Quick and easy, no env file to manage", "Secrets in git history. Leaked API keys. Compromised accounts.", "Use .env files from day one. It takes 30 seconds to set up."],
-        ["any everywhere", "TypeScript stops complaining", "You just turned TypeScript into JavaScript. You get zero type safety and the bugs are back.", "Use unknown and narrow the type. Or generate types from your API/database schema."],
-        ["Ignoring ESLint warnings", "Warnings are not errors, the app still works", "Warnings become bugs. Unused variables hide dead code. Missing deps cause stale closures.", "Fix warnings as you go. Run eslint --max-warnings=0 in CI."],
-        ["Giant components", "Everything in one file is easier to find", "500-line components are impossible to test, reuse, or understand. Every change risks breaking something.", "Extract when a component exceeds 150 lines or handles more than one responsibility."]
+        [
+          "No TypeScript",
+          "Less typing, no type errors to fix",
+          "Bugs in production that types would have caught at build time. Refactoring becomes terrifying.",
+          "Use TypeScript from the start. The 10% overhead saves 10x in debugging."
+        ],
+        [
+          "No tests on critical paths",
+          "Ship features faster without writing tests",
+          "Payment processing breaks silently. User signup fails on edge cases. You find out from angry users.",
+          "Test auth, payments, and data mutations. Skip testing UI layout."
+        ],
+        [
+          "No error boundaries",
+          "Less code to write",
+          "One component crash takes down your entire app. Users see a white screen.",
+          "Wrap major sections in error boundaries. Five minutes of work prevents total app crashes."
+        ],
+        [
+          "Hardcoded secrets",
+          "Quick and easy, no env file to manage",
+          "Secrets in git history. Leaked API keys. Compromised accounts.",
+          "Use .env files from day one. It takes 30 seconds to set up."
+        ],
+        [
+          "any everywhere",
+          "TypeScript stops complaining",
+          "You just turned TypeScript into JavaScript. You get zero type safety and the bugs are back.",
+          "Use unknown and narrow the type. Or generate types from your API/database schema."
+        ],
+        [
+          "Ignoring ESLint warnings",
+          "Warnings are not errors, the app still works",
+          "Warnings become bugs. Unused variables hide dead code. Missing deps cause stale closures.",
+          "Fix warnings as you go. Run eslint --max-warnings=0 in CI."
+        ],
+        [
+          "Giant components",
+          "Everything in one file is easier to find",
+          "500-line components are impossible to test, reuse, or understand. Every change risks breaking something.",
+          "Extract when a component exceeds 150 lines or handles more than one responsibility."
+        ]
       ]
     },
     {
@@ -564,12 +625,37 @@
     {
       "type": "table",
       "heading": "Feature Triage Matrix",
-      "headers": ["Priority", "Feature Type", "Example", "Action"],
+      "headers": [
+        "Priority",
+        "Feature Type",
+        "Example",
+        "Action"
+      ],
       "rows": [
-        ["P0 -- Launch Blocker", "Core value prop", "Users can create and share posts", "Build this first"],
-        ["P1 -- First Week", "Basic usability", "Password reset, error pages, mobile layout", "Build right after launch"],
-        ["P2 -- First Month", "Retention features", "Email notifications, user profiles, search", "Build when you have 100 users"],
-        ["P3 -- Maybe Never", "Nice to have", "Dark mode, i18n, advanced analytics, custom themes", "Build when users ask for it"]
+        [
+          "P0 -- Launch Blocker",
+          "Core value prop",
+          "Users can create and share posts",
+          "Build this first"
+        ],
+        [
+          "P1 -- First Week",
+          "Basic usability",
+          "Password reset, error pages, mobile layout",
+          "Build right after launch"
+        ],
+        [
+          "P2 -- First Month",
+          "Retention features",
+          "Email notifications, user profiles, search",
+          "Build when you have 100 users"
+        ],
+        [
+          "P3 -- Maybe Never",
+          "Nice to have",
+          "Dark mode, i18n, advanced analytics, custom themes",
+          "Build when users ask for it"
+        ]
       ]
     },
     {
@@ -614,18 +700,73 @@
     {
       "type": "table",
       "heading": "Zero to Deployed Cheat Sheet",
-      "headers": ["Task", "Tool", "Time", "Command or Action"],
+      "headers": [
+        "Task",
+        "Tool",
+        "Time",
+        "Command or Action"
+      ],
       "rows": [
-        ["Scaffold project", "create-next-app", "60 seconds", "npx create-next-app@latest my-app --typescript --tailwind --eslint --app"],
-        ["Add UI components", "shadcn/ui", "30 seconds each", "npx shadcn@latest add button card dialog table"],
-        ["Add authentication", "NextAuth.js", "5 minutes", "npm install next-auth, create API route, add providers"],
-        ["Add database", "Prisma + SQLite", "3 minutes", "npx prisma init --datasource-provider sqlite, write schema, npx prisma migrate dev"],
-        ["Add payments", "Stripe", "10 minutes", "npm install stripe, create checkout endpoint, handle webhook"],
-        ["Add email", "Resend", "2 minutes", "npm install resend, call resend.emails.send()"],
-        ["Add file uploads", "UploadThing", "5 minutes", "npm install uploadthing, define file router, drop in component"],
-        ["Deploy", "Vercel", "30 seconds", "npx vercel"],
-        ["Monitor errors", "Sentry", "5 minutes", "npx @sentry/wizard@latest -i nextjs"],
-        ["Generate code", "AI (Claude)", "Varies", "Describe what you want, paste the output, review and adjust"]
+        [
+          "Scaffold project",
+          "create-next-app",
+          "60 seconds",
+          "npx create-next-app@latest my-app --typescript --tailwind --eslint --app"
+        ],
+        [
+          "Add UI components",
+          "shadcn/ui",
+          "30 seconds each",
+          "npx shadcn@latest add button card dialog table"
+        ],
+        [
+          "Add authentication",
+          "NextAuth.js",
+          "5 minutes",
+          "npm install next-auth, create API route, add providers"
+        ],
+        [
+          "Add database",
+          "Prisma + SQLite",
+          "3 minutes",
+          "npx prisma init --datasource-provider sqlite, write schema, npx prisma migrate dev"
+        ],
+        [
+          "Add payments",
+          "Stripe",
+          "10 minutes",
+          "npm install stripe, create checkout endpoint, handle webhook"
+        ],
+        [
+          "Add email",
+          "Resend",
+          "2 minutes",
+          "npm install resend, call resend.emails.send()"
+        ],
+        [
+          "Add file uploads",
+          "UploadThing",
+          "5 minutes",
+          "npm install uploadthing, define file router, drop in component"
+        ],
+        [
+          "Deploy",
+          "Vercel",
+          "30 seconds",
+          "npx vercel"
+        ],
+        [
+          "Monitor errors",
+          "Sentry",
+          "5 minutes",
+          "npx @sentry/wizard@latest -i nextjs"
+        ],
+        [
+          "Generate code",
+          "AI (Claude)",
+          "Varies",
+          "Describe what you want, paste the output, review and adjust"
+        ]
       ]
     },
     {
@@ -633,6 +774,38 @@
       "severity": "info",
       "title": "The Math of Shipping Fast",
       "body": "Using this stack, you can go from zero to a deployed app with auth, database, payments, and email in under 45 minutes. Not a toy demo -- a real app that real users can sign up for and pay you money. The bottleneck is no longer technology. It is deciding what to build."
+    }
+  ],
+  "references": [
+    {
+      "id": "mcconnell1996rapid",
+      "authors": "McConnell, S.",
+      "year": "1996",
+      "title": "Rapid Development: Taming Wild Software Schedules",
+      "source": "Microsoft Press"
+    },
+    {
+      "id": "vite2024docs",
+      "authors": "Vite",
+      "year": "2024",
+      "title": "Vite Documentation",
+      "source": "Vite",
+      "url": "https://vitejs.dev/guide/"
+    },
+    {
+      "id": "vercel2024docs",
+      "authors": "Vercel",
+      "year": "2024",
+      "title": "Vercel Documentation",
+      "source": "Vercel",
+      "url": "https://vercel.com/docs"
+    },
+    {
+      "id": "ries2011lean",
+      "authors": "Ries, E.",
+      "year": "2011",
+      "title": "The Lean Startup",
+      "source": "Crown Business"
     }
   ]
 }

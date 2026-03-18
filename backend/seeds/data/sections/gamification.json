@@ -6,7 +6,10 @@
   "order": 30,
   "estimatedMinutes": 35,
   "difficulty": "intermediate",
-  "prerequisites": ["fundamentals", "backend-guide"],
+  "prerequisites": [
+    "fundamentals",
+    "backend-guide"
+  ],
   "keyPoints": [
     "XP and leveling systems",
     "Achievements and badges",
@@ -110,18 +113,62 @@
     {
       "type": "table",
       "heading": "XP Reward Schedule",
-      "headers": ["Action", "XP Amount", "Category"],
+      "headers": [
+        "Action",
+        "XP Amount",
+        "Category"
+      ],
       "rows": [
-        ["Complete profile", "+50", "Onboarding"],
-        ["Invite a friend", "+30", "Growth"],
-        ["First post ever", "+25", "Milestone"],
-        ["Report a bug", "+20", "Quality"],
-        ["Answer accepted", "+15", "Helpfulness"],
-        ["Create a post", "+10", "Content"],
-        ["Receive an upvote", "+5", "Social"],
-        ["Leave a comment", "+3", "Engagement"],
-        ["Daily login", "+2", "Retention"],
-        ["Share a post", "+2", "Distribution"]
+        [
+          "Complete profile",
+          "+50",
+          "Onboarding"
+        ],
+        [
+          "Invite a friend",
+          "+30",
+          "Growth"
+        ],
+        [
+          "First post ever",
+          "+25",
+          "Milestone"
+        ],
+        [
+          "Report a bug",
+          "+20",
+          "Quality"
+        ],
+        [
+          "Answer accepted",
+          "+15",
+          "Helpfulness"
+        ],
+        [
+          "Create a post",
+          "+10",
+          "Content"
+        ],
+        [
+          "Receive an upvote",
+          "+5",
+          "Social"
+        ],
+        [
+          "Leave a comment",
+          "+3",
+          "Engagement"
+        ],
+        [
+          "Daily login",
+          "+2",
+          "Retention"
+        ],
+        [
+          "Share a post",
+          "+2",
+          "Distribution"
+        ]
       ]
     },
     {
@@ -147,17 +194,57 @@
     {
       "type": "table",
       "heading": "Level Progression Table",
-      "headers": ["Level", "Total XP Required", "XP from Previous Level"],
+      "headers": [
+        "Level",
+        "Total XP Required",
+        "XP from Previous Level"
+      ],
       "rows": [
-        ["1", "0", "—"],
-        ["2", "100 (283 technically, but we start at 100)", "100"],
-        ["3", "520", "237"],
-        ["5", "1,118", "—"],
-        ["10", "3,162", "—"],
-        ["15", "5,809", "—"],
-        ["20", "8,944", "—"],
-        ["30", "16,432", "—"],
-        ["50", "35,355", "—"]
+        [
+          "1",
+          "0",
+          "—"
+        ],
+        [
+          "2",
+          "100 (283 technically, but we start at 100)",
+          "100"
+        ],
+        [
+          "3",
+          "520",
+          "237"
+        ],
+        [
+          "5",
+          "1,118",
+          "—"
+        ],
+        [
+          "10",
+          "3,162",
+          "—"
+        ],
+        [
+          "15",
+          "5,809",
+          "—"
+        ],
+        [
+          "20",
+          "8,944",
+          "—"
+        ],
+        [
+          "30",
+          "16,432",
+          "—"
+        ],
+        [
+          "50",
+          "35,355",
+          "—"
+        ]
       ]
     },
     {
@@ -175,17 +262,47 @@
         {
           "type": "table",
           "heading": "Feature Unlocks by Level",
-          "headers": ["Level", "Feature Unlocked"],
+          "headers": [
+            "Level",
+            "Feature Unlocked"
+          ],
           "rows": [
-            ["1", "View content, upvote"],
-            ["3", "Leave comments"],
-            ["5", "Create posts"],
-            ["8", "Upload images"],
-            ["10", "Moderate comments (flag/report)"],
-            ["15", "Create polls"],
-            ["20", "Custom flair and profile badge"],
-            ["30", "Access beta features"],
-            ["50", "Community moderator tools"]
+            [
+              "1",
+              "View content, upvote"
+            ],
+            [
+              "3",
+              "Leave comments"
+            ],
+            [
+              "5",
+              "Create posts"
+            ],
+            [
+              "8",
+              "Upload images"
+            ],
+            [
+              "10",
+              "Moderate comments (flag/report)"
+            ],
+            [
+              "15",
+              "Create polls"
+            ],
+            [
+              "20",
+              "Custom flair and profile badge"
+            ],
+            [
+              "30",
+              "Access beta features"
+            ],
+            [
+              "50",
+              "Community moderator tools"
+            ]
           ]
         },
         {
@@ -423,12 +540,37 @@
     {
       "type": "table",
       "heading": "Reward Schedule Types",
-      "headers": ["Schedule", "Pattern", "Engagement Level", "Example"],
+      "headers": [
+        "Schedule",
+        "Pattern",
+        "Engagement Level",
+        "Example"
+      ],
       "rows": [
-        ["Fixed Ratio", "Every Nth action", "Moderate", "Every 10th comment earns bonus XP"],
-        ["Fixed Interval", "Same time every day", "Moderate", "Daily login bonus at midnight"],
-        ["Variable Ratio", "Random chance per action", "Very High", "Random loot drops after posting"],
-        ["Variable Interval", "Random timing", "High", "Surprise bonus XP at random times"]
+        [
+          "Fixed Ratio",
+          "Every Nth action",
+          "Moderate",
+          "Every 10th comment earns bonus XP"
+        ],
+        [
+          "Fixed Interval",
+          "Same time every day",
+          "Moderate",
+          "Daily login bonus at midnight"
+        ],
+        [
+          "Variable Ratio",
+          "Random chance per action",
+          "Very High",
+          "Random loot drops after posting"
+        ],
+        [
+          "Variable Interval",
+          "Random timing",
+          "High",
+          "Surprise bonus XP at random times"
+        ]
       ]
     },
     {
@@ -557,6 +699,39 @@
       "filename": "services/engagement_pipeline.py",
       "description": "Central engagement pipeline that orchestrates all gamification systems after any user action",
       "code": "from datetime import datetime\nfrom services.xp_service import award_xp, XP_REWARDS\nfrom services.streak_service import record_activity\nfrom services.achievement_service import check_achievements\nfrom services.quest_service import track_quest_progress\nfrom services.event_service import apply_event_xp_bonus\n\n\ndef handle_user_action(\n    user_id: int,\n    action: str,\n    source_type: str = None,\n    source_id: int = None,\n) -> dict:\n    \"\"\"Central handler called after every meaningful user action.\n\n    Orchestrates XP, streaks, quests, achievements, and events\n    in a single transaction-safe pipeline.\n\n    Args:\n        user_id: The acting user's ID.\n        action: Action key matching XP_REWARDS (e.g., 'create_post').\n        source_type: The entity type (e.g., 'post', 'comment').\n        source_id: The entity's ID for audit trail.\n\n    Returns:\n        A dict of everything that happened, for the frontend to display.\n    \"\"\"\n    result = {\n        \"xp\": None,\n        \"streak\": None,\n        \"achievements\": [],\n        \"quests_completed\": [],\n        \"event_bonus\": False,\n    }\n\n    # 1. Award XP (with event bonus if active)\n    base_xp = XP_REWARDS.get(action, 0)\n    if base_xp > 0:\n        boosted_xp = apply_event_xp_bonus(base_xp)\n        xp_result = award_xp(user_id, boosted_xp, action, source_type, source_id)\n        result[\"xp\"] = xp_result\n        result[\"event_bonus\"] = boosted_xp > base_xp\n\n    # 2. Update streak\n    streak_result = record_activity(user_id)\n    result[\"streak\"] = streak_result\n\n    # 3. Track quest progress\n    completed = track_quest_progress(user_id, action)\n    result[\"quests_completed\"] = completed\n\n    # 4. Check achievements (runs after XP and streak are updated)\n    newly_unlocked = check_achievements(user_id)\n    result[\"achievements\"] = newly_unlocked\n\n    return result\n\n\n# Example: a single comment triggers the entire pipeline\n#\n# In your route handler:\n#   comment = save_comment(data)\n#   engagement = handle_user_action(\n#       user_id=current_user.id,\n#       action='leave_comment',\n#       source_type='comment',\n#       source_id=comment.id,\n#   )\n#   return jsonify({\n#       'comment': comment.to_dict(),\n#       'engagement': engagement,  # frontend uses this for toasts\n#   })"
+    }
+  ],
+  "references": [
+    {
+      "id": "deterding2011gamification",
+      "authors": "Deterding, S. et al.",
+      "year": "2011",
+      "title": "From Game Design Elements to Gamefulness: Defining Gamification",
+      "source": "Proceedings of the 15th International Academic MindTrek Conference",
+      "url": "https://doi.org/10.1145/2181037.2181040"
+    },
+    {
+      "id": "mdn2024cssanimations",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "Using CSS Animations",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations/Using_CSS_animations"
+    },
+    {
+      "id": "zichermann2011gamification",
+      "authors": "Zichermann, G. and Cunningham, C.",
+      "year": "2011",
+      "title": "Gamification by Design",
+      "source": "O'Reilly Media"
+    },
+    {
+      "id": "mdn2024localstorage",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "Window.localStorage",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage"
     }
   ]
 }

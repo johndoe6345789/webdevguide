@@ -6,7 +6,10 @@
   "order": 32,
   "estimatedMinutes": 40,
   "difficulty": "advanced",
-  "prerequisites": ["fundamentals", "backend-guide"],
+  "prerequisites": [
+    "fundamentals",
+    "backend-guide"
+  ],
   "keyPoints": [
     "Event-driven architecture decouples producers from consumers, letting systems scale and evolve independently",
     "Pub/sub and message queues buffer work and guarantee delivery even when consumers crash or lag behind",
@@ -58,15 +61,47 @@
     {
       "type": "table",
       "heading": "When to Use Event-Driven vs Request/Response",
-      "headers": ["Scenario", "Pattern", "Why"],
+      "headers": [
+        "Scenario",
+        "Pattern",
+        "Why"
+      ],
       "rows": [
-        ["Fetching a user profile for display", "Request/Response", "You need the data right now to render the page. Synchronous is simpler."],
-        ["Sending a welcome email after signup", "Event-Driven", "The signup response should not wait for the email to send. Fire and forget."],
-        ["Processing uploaded images (resize, thumbnail)", "Message Queue", "CPU-intensive work should not block the upload response. Queue it for a worker."],
-        ["Live chat between users", "WebSocket (Event-Driven)", "Both sides need to send messages at any time. Persistent bidirectional connection."],
-        ["Dashboard showing live order counts", "SSE (Event-Driven)", "Server pushes updates. Client only needs to listen. SSE is simpler than WebSocket."],
-        ["Stripe notifying you of a payment", "Webhook (Event-Driven)", "External service POSTs to your endpoint when an event occurs. You react."],
-        ["Audit trail for financial transactions", "Event Sourcing", "You need a complete history of every change, not just the current state."]
+        [
+          "Fetching a user profile for display",
+          "Request/Response",
+          "You need the data right now to render the page. Synchronous is simpler."
+        ],
+        [
+          "Sending a welcome email after signup",
+          "Event-Driven",
+          "The signup response should not wait for the email to send. Fire and forget."
+        ],
+        [
+          "Processing uploaded images (resize, thumbnail)",
+          "Message Queue",
+          "CPU-intensive work should not block the upload response. Queue it for a worker."
+        ],
+        [
+          "Live chat between users",
+          "WebSocket (Event-Driven)",
+          "Both sides need to send messages at any time. Persistent bidirectional connection."
+        ],
+        [
+          "Dashboard showing live order counts",
+          "SSE (Event-Driven)",
+          "Server pushes updates. Client only needs to listen. SSE is simpler than WebSocket."
+        ],
+        [
+          "Stripe notifying you of a payment",
+          "Webhook (Event-Driven)",
+          "External service POSTs to your endpoint when an event occurs. You react."
+        ],
+        [
+          "Audit trail for financial transactions",
+          "Event Sourcing",
+          "You need a complete history of every change, not just the current state."
+        ]
       ]
     },
     {
@@ -249,13 +284,43 @@
     {
       "type": "table",
       "heading": "WebSocket Events Lifecycle",
-      "headers": ["Event", "Direction", "When It Fires", "Typical Action"],
+      "headers": [
+        "Event",
+        "Direction",
+        "When It Fires",
+        "Typical Action"
+      ],
       "rows": [
-        ["connect", "Server -> Client", "Connection established and authenticated", "Update UI to 'connected', join rooms, fetch initial data"],
-        ["message", "Bidirectional", "Either side sends a message", "Display in UI (client) or broadcast to room (server)"],
-        ["disconnect", "Server -> Client", "Connection lost (network, server restart, timeout)", "Show 'disconnected' banner, attempt reconnect"],
-        ["connect_error", "Client", "Connection attempt fails (bad auth, server down)", "Show error message, retry with backoff"],
-        ["reconnect", "Client", "Successfully reconnected after disconnect", "Re-join rooms, sync missed messages"]
+        [
+          "connect",
+          "Server -> Client",
+          "Connection established and authenticated",
+          "Update UI to 'connected', join rooms, fetch initial data"
+        ],
+        [
+          "message",
+          "Bidirectional",
+          "Either side sends a message",
+          "Display in UI (client) or broadcast to room (server)"
+        ],
+        [
+          "disconnect",
+          "Server -> Client",
+          "Connection lost (network, server restart, timeout)",
+          "Show 'disconnected' banner, attempt reconnect"
+        ],
+        [
+          "connect_error",
+          "Client",
+          "Connection attempt fails (bad auth, server down)",
+          "Show error message, retry with backoff"
+        ],
+        [
+          "reconnect",
+          "Client",
+          "Successfully reconnected after disconnect",
+          "Re-join rooms, sync missed messages"
+        ]
       ]
     },
     {
@@ -286,14 +351,35 @@
           "blocks": [
             {
               "type": "table",
-              "headers": ["Aspect", "Detail"],
+              "headers": [
+                "Aspect",
+                "Detail"
+              ],
               "rows": [
-                ["Direction", "Bidirectional -- both client and server can send at any time"],
-                ["Protocol", "ws:// or wss:// -- upgrades from HTTP to a persistent TCP connection"],
-                ["Reconnect", "Must be implemented manually or with a library (socket.io handles it)"],
-                ["Proxy support", "Can be tricky -- some proxies and firewalls block WebSocket upgrades"],
-                ["Use when", "Chat, games, collaborative editing -- both sides send frequently"],
-                ["Complexity", "Higher -- requires WebSocket server, connection management, heartbeats"]
+                [
+                  "Direction",
+                  "Bidirectional -- both client and server can send at any time"
+                ],
+                [
+                  "Protocol",
+                  "ws:// or wss:// -- upgrades from HTTP to a persistent TCP connection"
+                ],
+                [
+                  "Reconnect",
+                  "Must be implemented manually or with a library (socket.io handles it)"
+                ],
+                [
+                  "Proxy support",
+                  "Can be tricky -- some proxies and firewalls block WebSocket upgrades"
+                ],
+                [
+                  "Use when",
+                  "Chat, games, collaborative editing -- both sides send frequently"
+                ],
+                [
+                  "Complexity",
+                  "Higher -- requires WebSocket server, connection management, heartbeats"
+                ]
               ]
             }
           ]
@@ -303,14 +389,35 @@
           "blocks": [
             {
               "type": "table",
-              "headers": ["Aspect", "Detail"],
+              "headers": [
+                "Aspect",
+                "Detail"
+              ],
               "rows": [
-                ["Direction", "One-way -- server pushes to client only. Client uses regular HTTP for requests."],
-                ["Protocol", "Standard HTTP with text/event-stream content type"],
-                ["Reconnect", "Built-in -- the browser automatically reconnects with Last-Event-ID header"],
-                ["Proxy support", "Excellent -- works through any HTTP proxy, CDN, or load balancer"],
-                ["Use when", "Live dashboards, notifications, progress updates -- server pushes, client listens"],
-                ["Complexity", "Low -- just a streaming HTTP response on the server, EventSource API on the client"]
+                [
+                  "Direction",
+                  "One-way -- server pushes to client only. Client uses regular HTTP for requests."
+                ],
+                [
+                  "Protocol",
+                  "Standard HTTP with text/event-stream content type"
+                ],
+                [
+                  "Reconnect",
+                  "Built-in -- the browser automatically reconnects with Last-Event-ID header"
+                ],
+                [
+                  "Proxy support",
+                  "Excellent -- works through any HTTP proxy, CDN, or load balancer"
+                ],
+                [
+                  "Use when",
+                  "Live dashboards, notifications, progress updates -- server pushes, client listens"
+                ],
+                [
+                  "Complexity",
+                  "Low -- just a streaming HTTP response on the server, EventSource API on the client"
+                ]
               ]
             }
           ]
@@ -320,14 +427,35 @@
           "blocks": [
             {
               "type": "table",
-              "headers": ["Aspect", "Detail"],
+              "headers": [
+                "Aspect",
+                "Detail"
+              ],
               "rows": [
-                ["Direction", "Simulated push -- client makes repeated requests, server holds the response until data is available"],
-                ["Protocol", "Standard HTTP -- no special protocol or API needed"],
-                ["Reconnect", "Built into the pattern -- client immediately sends a new request after each response"],
-                ["Proxy support", "Universal -- plain HTTP requests work everywhere"],
-                ["Use when", "Fallback when SSE or WebSocket is not available. Legacy browser support."],
-                ["Complexity", "Medium -- simple concept but wastes server resources holding connections open"]
+                [
+                  "Direction",
+                  "Simulated push -- client makes repeated requests, server holds the response until data is available"
+                ],
+                [
+                  "Protocol",
+                  "Standard HTTP -- no special protocol or API needed"
+                ],
+                [
+                  "Reconnect",
+                  "Built into the pattern -- client immediately sends a new request after each response"
+                ],
+                [
+                  "Proxy support",
+                  "Universal -- plain HTTP requests work everywhere"
+                ],
+                [
+                  "Use when",
+                  "Fallback when SSE or WebSocket is not available. Legacy browser support."
+                ],
+                [
+                  "Complexity",
+                  "Medium -- simple concept but wastes server resources holding connections open"
+                ]
               ]
             }
           ]
@@ -521,13 +649,31 @@
     {
       "type": "table",
       "heading": "Event Sourcing: Pros and Cons",
-      "headers": ["Pros", "Cons"],
+      "headers": [
+        "Pros",
+        "Cons"
+      ],
       "rows": [
-        ["Complete audit trail -- every change is recorded permanently", "Increased complexity -- requires different mental model than CRUD"],
-        ["Time travel -- rebuild state at any point in history", "Eventual consistency -- read models may lag behind writes"],
-        ["Event replay -- build new projections from existing events", "Storage growth -- events accumulate forever (snapshotting helps)"],
-        ["Debugging -- trace exactly what happened and when", "Schema evolution -- changing event schemas requires careful migration"],
-        ["Undo/redo -- reverse events to undo actions", "Querying -- cannot easily query current state without projections"]
+        [
+          "Complete audit trail -- every change is recorded permanently",
+          "Increased complexity -- requires different mental model than CRUD"
+        ],
+        [
+          "Time travel -- rebuild state at any point in history",
+          "Eventual consistency -- read models may lag behind writes"
+        ],
+        [
+          "Event replay -- build new projections from existing events",
+          "Storage growth -- events accumulate forever (snapshotting helps)"
+        ],
+        [
+          "Debugging -- trace exactly what happened and when",
+          "Schema evolution -- changing event schemas requires careful migration"
+        ],
+        [
+          "Undo/redo -- reverse events to undo actions",
+          "Querying -- cannot easily query current state without projections"
+        ]
       ]
     },
     {
@@ -666,17 +812,94 @@
     {
       "type": "table",
       "heading": "Event Pattern Decision Matrix",
-      "headers": ["Scenario", "Recommended Pattern", "Why"],
+      "headers": [
+        "Scenario",
+        "Recommended Pattern",
+        "Why"
+      ],
       "rows": [
-        ["Real-time chat between users", "WebSocket", "Both client and server need to send messages at any time. Bidirectional, persistent connection."],
-        ["Live dashboard showing metrics", "Server-Sent Events (SSE)", "Server pushes updates, client only listens. Simpler than WebSocket, auto-reconnects."],
-        ["Background image processing", "Celery task queue", "CPU-intensive work must not block the web request. Queue with retries ensures completion."],
-        ["Payment notification from Stripe", "Webhook receiver", "External service POSTs events to your endpoint. Verify signature and process."],
-        ["Audit trail requirement", "Event sourcing", "Need complete history of every change, time travel, and replay capability."],
-        ["Cross-component UI updates", "Event bus or state manager", "Decouple React components that do not share a parent. Use Redux/Zustand for complex state."],
-        ["Microservice communication", "Message queue (RabbitMQ/Redis)", "Decouple services, buffer messages, guarantee delivery even if consumer is temporarily down."],
-        ["IoT sensor data ingestion", "Stream processing (Kafka)", "High throughput, ordered, durable log. Process millions of events per second."]
+        [
+          "Real-time chat between users",
+          "WebSocket",
+          "Both client and server need to send messages at any time. Bidirectional, persistent connection."
+        ],
+        [
+          "Live dashboard showing metrics",
+          "Server-Sent Events (SSE)",
+          "Server pushes updates, client only listens. Simpler than WebSocket, auto-reconnects."
+        ],
+        [
+          "Background image processing",
+          "Celery task queue",
+          "CPU-intensive work must not block the web request. Queue with retries ensures completion."
+        ],
+        [
+          "Payment notification from Stripe",
+          "Webhook receiver",
+          "External service POSTs events to your endpoint. Verify signature and process."
+        ],
+        [
+          "Audit trail requirement",
+          "Event sourcing",
+          "Need complete history of every change, time travel, and replay capability."
+        ],
+        [
+          "Cross-component UI updates",
+          "Event bus or state manager",
+          "Decouple React components that do not share a parent. Use Redux/Zustand for complex state."
+        ],
+        [
+          "Microservice communication",
+          "Message queue (RabbitMQ/Redis)",
+          "Decouple services, buffer messages, guarantee delivery even if consumer is temporarily down."
+        ],
+        [
+          "IoT sensor data ingestion",
+          "Stream processing (Kafka)",
+          "High throughput, ordered, durable log. Process millions of events per second."
+        ]
       ]
+    }
+  ],
+  "references": [
+    {
+      "id": "mdn2024events",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "Introduction to Events",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events"
+    },
+    {
+      "id": "fowler2017eventdriven",
+      "authors": "Fowler, M.",
+      "year": "2017",
+      "title": "What do you mean by Event-Driven?",
+      "source": "martinfowler.com",
+      "url": "https://martinfowler.com/articles/201701-event-driven.html"
+    },
+    {
+      "id": "mdn2024customevent",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "CustomEvent",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent"
+    },
+    {
+      "id": "rabbitmq2024",
+      "authors": "Broadcom",
+      "year": "2024",
+      "title": "RabbitMQ Documentation",
+      "source": "RabbitMQ",
+      "url": "https://www.rabbitmq.com/docs"
+    },
+    {
+      "id": "gamma1994patterns",
+      "authors": "Gamma, E. et al.",
+      "year": "1994",
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "source": "Addison-Wesley"
     }
   ]
 }

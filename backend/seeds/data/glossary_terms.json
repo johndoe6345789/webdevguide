@@ -7,9 +7,20 @@
     "relatedTerms": [
       "Component",
       "JSX",
-      "Virtual DOM"
+      "npm run dev",
+      "Node.js"
     ],
-    "example": "React powers websites like Facebook, Instagram, Netflix, and Airbnb."
+    "example": "React powers websites like Facebook, Instagram, Netflix, and Airbnb.",
+    "links": [
+      {
+        "label": "React Docs",
+        "url": "https://react.dev"
+      },
+      {
+        "label": "React Tutorial",
+        "url": "https://react.dev/learn"
+      }
+    ]
   },
   {
     "id": 2,
@@ -17,11 +28,18 @@
     "definition": "A reusable piece of your website. Like how a car is made of parts (engine, wheels, seats), a website is made of components (header, button, card). Each component is its own little piece of code that handles one thing.",
     "category": "Core Concepts",
     "relatedTerms": [
-      "React",
       "Props",
-      "State"
+      "State",
+      "JSX",
+      "import/export"
     ],
-    "example": "A 'Button' component can be reused everywhere on your site with different text and colors."
+    "example": "A 'Button' component can be reused everywhere on your site with different text and colors.",
+    "links": [
+      {
+        "label": "React Components",
+        "url": "https://react.dev/learn/your-first-component"
+      }
+    ]
   },
   {
     "id": 3,
@@ -33,7 +51,13 @@
       "Component",
       "TypeScript"
     ],
-    "example": "<Button color='blue'>Click Me</Button> is JSX - it looks like HTML but it's inside a JavaScript file."
+    "example": "<Button color='blue'>Click Me</Button> is JSX - it looks like HTML but it's inside a JavaScript file.",
+    "links": [
+      {
+        "label": "React JSX",
+        "url": "https://react.dev/learn/writing-markup-with-jsx"
+      }
+    ]
   },
   {
     "id": 4,
@@ -45,7 +69,13 @@
       "State",
       "TypeScript"
     ],
-    "example": "<UserCard name='Alice' age={25} /> - 'name' and 'age' are props being passed to the UserCard component."
+    "example": "<UserCard name='Alice' age={25} /> - 'name' and 'age' are props being passed to the UserCard component.",
+    "links": [
+      {
+        "label": "React Props",
+        "url": "https://react.dev/learn/passing-props-to-a-component"
+      }
+    ]
   },
   {
     "id": 5,
@@ -53,11 +83,17 @@
     "definition": "Data that can change over time inside a reusable building block. Think of it like a building block's memory. When this data changes, the screen automatically updates to reflect it. For example, a counter button keeps track of how many times it's been clicked.",
     "category": "Core Concepts",
     "relatedTerms": [
-      "Props",
-      "Redux",
-      "Hook"
+      "Component",
+      "Hook",
+      "Redux"
     ],
-    "example": "A shopping cart's item count is state - it changes when you add or remove items."
+    "example": "A shopping cart's item count is state - it changes when you add or remove items.",
+    "links": [
+      {
+        "label": "React State",
+        "url": "https://react.dev/learn/state-a-components-memory"
+      }
+    ]
   },
   {
     "id": 6,
@@ -66,10 +102,16 @@
     "category": "Core Concepts",
     "relatedTerms": [
       "State",
-      "Component",
-      "Custom Hook"
+      "Custom Hook",
+      "Component"
     ],
-    "example": "useState lets a component remember a value. useEffect lets it run code when something changes."
+    "example": "useState lets a component remember a value. useEffect lets it run code when something changes.",
+    "links": [
+      {
+        "label": "React Hooks",
+        "url": "https://react.dev/reference/react/hooks"
+      }
+    ]
   },
   {
     "id": 7,
@@ -101,11 +143,16 @@
     "definition": "Document Object Model. It's the browser's representation of your webpage as a tree of objects. Every element on the page (paragraph, button, image) is a node in this tree. The web's programming language can read and change the DOM to update what you see.",
     "category": "Web Basics",
     "relatedTerms": [
-      "Virtual DOM",
-      "HTML",
-      "JavaScript"
+      "DevTools",
+      "Virtual DOM"
     ],
-    "example": "When you right-click 'Inspect' on a webpage, you're looking at the DOM."
+    "example": "When you right-click 'Inspect' on a webpage, you're looking at the DOM.",
+    "links": [
+      {
+        "label": "MDN DOM",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model"
+      }
+    ]
   },
   {
     "id": 10,
@@ -117,7 +164,17 @@
       "JavaScript",
       "DOM"
     ],
-    "example": "<h1>Hello World</h1> creates a big heading that says 'Hello World'."
+    "example": "<h1>Hello World</h1> creates a big heading that says 'Hello World'.",
+    "links": [
+      {
+        "label": "MDN HTML",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTML"
+      },
+      {
+        "label": "W3Schools HTML",
+        "url": "https://www.w3schools.com/html"
+      }
+    ]
   },
   {
     "id": 11,
@@ -129,7 +186,17 @@
       "Material UI",
       "Responsive Design"
     ],
-    "example": "color: blue; font-size: 20px; makes text blue and 20 pixels tall."
+    "example": "color: blue; font-size: 20px; makes text blue and 20 pixels tall.",
+    "links": [
+      {
+        "label": "MDN CSS",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS"
+      },
+      {
+        "label": "CSS-Tricks",
+        "url": "https://css-tricks.com"
+      }
+    ]
   },
   {
     "id": 12,
@@ -137,11 +204,22 @@
     "definition": "The programming language of the web. Every browser can run it. It makes websites interactive - handling button clicks, fetching data, showing/hiding things, validating forms. Many popular website-building libraries are written in it.",
     "category": "Web Basics",
     "relatedTerms": [
+      "Node.js",
       "TypeScript",
-      "React",
-      "Node.js"
+      "console.log",
+      "Variable"
     ],
-    "example": "When you click 'Add to Cart' and the cart count updates without reloading the page - that's JavaScript."
+    "example": "When you click 'Add to Cart' and the cart count updates without reloading the page - that's JavaScript.",
+    "links": [
+      {
+        "label": "MDN JavaScript Guide",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide"
+      },
+      {
+        "label": "javascript.info",
+        "url": "https://javascript.info"
+      }
+    ]
   },
   {
     "id": 13,
@@ -151,9 +229,19 @@
     "relatedTerms": [
       "JavaScript",
       "TSX",
-      "Interface"
+      "Syntax Error"
     ],
-    "example": "function greet(name: string) - TypeScript ensures 'name' is always text, never accidentally a number."
+    "example": "function greet(name: string) - TypeScript ensures 'name' is always text, never accidentally a number.",
+    "links": [
+      {
+        "label": "TypeScript Docs",
+        "url": "https://www.typescriptlang.org/docs"
+      },
+      {
+        "label": "TS Playground",
+        "url": "https://www.typescriptlang.org/play"
+      }
+    ]
   },
   {
     "id": 14,
@@ -177,7 +265,17 @@
       "Backend",
       "REST"
     ],
-    "example": "{ \"name\": \"Alice\", \"age\": 25 } is JSON representing a person."
+    "example": "{ \"name\": \"Alice\", \"age\": 25 } is JSON representing a person.",
+    "links": [
+      {
+        "label": "json.org",
+        "url": "https://www.json.org"
+      },
+      {
+        "label": "MDN JSON",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON"
+      }
+    ]
   },
   {
     "id": 16,
@@ -189,7 +287,13 @@
       "Backend",
       "Endpoint"
     ],
-    "example": "When a weather app shows today's forecast, it got that data by asking a weather API."
+    "example": "When a weather app shows today's forecast, it got that data by asking a weather API.",
+    "links": [
+      {
+        "label": "MDN APIs",
+        "url": "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Introduction"
+      }
+    ]
   },
   {
     "id": 17,
@@ -201,7 +305,17 @@
       "HTTP",
       "Endpoint"
     ],
-    "example": "GET /api/users fetches all users. POST /api/users creates a new user."
+    "example": "GET /api/users fetches all users. POST /api/users creates a new user.",
+    "links": [
+      {
+        "label": "MDN HTTP",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP"
+      },
+      {
+        "label": "REST API Tutorial",
+        "url": "https://restfulapi.net"
+      }
+    ]
   },
   {
     "id": 18,
@@ -239,7 +353,13 @@
       "Python",
       "REST"
     ],
-    "example": "@app.route('/api/hello') creates an endpoint that responds when someone visits /api/hello."
+    "example": "@app.route('/api/hello') creates an endpoint that responds when someone visits /api/hello.",
+    "links": [
+      {
+        "label": "Flask Docs",
+        "url": "https://flask.palletsprojects.com"
+      }
+    ]
   },
   {
     "id": 21,
@@ -248,10 +368,20 @@
     "category": "Frameworks",
     "relatedTerms": [
       "React",
-      "App Router",
-      "SSR"
+      "npm run dev",
+      "SSR/SSG/ISR"
     ],
-    "example": "Creating a file at app/about/page.tsx automatically creates a /about page on your website."
+    "example": "Creating a file at app/about/page.tsx automatically creates a /about page on your website.",
+    "links": [
+      {
+        "label": "Next.js Docs",
+        "url": "https://nextjs.org/docs"
+      },
+      {
+        "label": "Next.js Tutorial",
+        "url": "https://nextjs.org/learn"
+      }
+    ]
   },
   {
     "id": 22,
@@ -263,7 +393,13 @@
       "CSS",
       "Theme"
     ],
-    "example": "import Button from '@mui/material/Button' gives you a styled, accessible button component instantly."
+    "example": "import Button from '@mui/material/Button' gives you a styled, accessible button component instantly.",
+    "links": [
+      {
+        "label": "MUI Docs",
+        "url": "https://mui.com/material-ui"
+      }
+    ]
   },
   {
     "id": 23,
@@ -276,7 +412,17 @@
       "Store",
       "Slice"
     ],
-    "example": "A shopping cart state in Redux can be accessed from the header, the cart page, and the checkout - all reading the same data."
+    "example": "A shopping cart state in Redux can be accessed from the header, the cart page, and the checkout - all reading the same data.",
+    "links": [
+      {
+        "label": "Redux Docs",
+        "url": "https://redux.js.org"
+      },
+      {
+        "label": "Redux Toolkit",
+        "url": "https://redux-toolkit.js.org"
+      }
+    ]
   },
   {
     "id": 24,
@@ -320,11 +466,23 @@
     "definition": "A package manager for downloading and managing code libraries. It comes bundled with the tool that runs the web's programming language outside a browser. When you run 'npm install', it downloads all the libraries your project needs.",
     "category": "Tools",
     "relatedTerms": [
+      "npm run dev",
+      "npm install",
+      "npm run build",
       "Node.js",
-      "package.json",
-      "yarn"
+      "package.json"
     ],
-    "example": "npm install @mui/material downloads the Material UI library into your project."
+    "example": "npm install @mui/material downloads the Material UI library into your project.",
+    "links": [
+      {
+        "label": "npm Docs",
+        "url": "https://docs.npmjs.com"
+      },
+      {
+        "label": "npm Registry",
+        "url": "https://www.npmjs.com"
+      }
+    ]
   },
   {
     "id": 28,
@@ -332,11 +490,22 @@
     "definition": "A way to run the web's programming language outside the browser (on your computer or a server). It's what makes tools like package managers, development servers, and code-preparation tools work. You need it installed to develop modern websites.",
     "category": "Tools",
     "relatedTerms": [
+      "npm run dev",
+      "npm install",
       "npm",
-      "JavaScript",
-      "Backend"
+      "JavaScript"
     ],
-    "example": "When you run 'npm run dev', Node.js is what actually starts the development server."
+    "example": "When you run 'npm run dev', Node.js is what actually starts the development server.",
+    "links": [
+      {
+        "label": "Node.js Docs",
+        "url": "https://nodejs.org/en/docs"
+      },
+      {
+        "label": "Node.js Download",
+        "url": "https://nodejs.org"
+      }
+    ]
   },
   {
     "id": 29,
@@ -344,11 +513,18 @@
     "definition": "A file in your project root that lists all the libraries (dependencies) your project uses, plus scripts for common tasks. It's like a recipe card - it tells anyone exactly what ingredients (packages) and instructions (scripts) are needed.",
     "category": "Tools",
     "relatedTerms": [
-      "npm",
-      "Dependencies",
-      "Scripts"
+      "npm install",
+      "npm run dev",
+      "node_modules",
+      "Dependency"
     ],
-    "example": "\"dependencies\": { \"react\": \"^19.0.0\" } means your project needs React version 19 or later."
+    "example": "\"dependencies\": { \"react\": \"^19.0.0\" } means your project needs React version 19 or later.",
+    "links": [
+      {
+        "label": "npm package.json",
+        "url": "https://docs.npmjs.com/cli/v10/configuring-npm/package-json"
+      }
+    ]
   },
   {
     "id": 30,
@@ -357,10 +533,16 @@
     "category": "Tools",
     "relatedTerms": [
       "Linting",
-      "TypeScript",
-      "Code Quality"
+      "IDE",
+      "Formatting"
     ],
-    "example": "ESLint will warn you if you create a variable but never use it, or if you forget to handle an error."
+    "example": "ESLint will warn you if you create a variable but never use it, or if you forget to handle an error.",
+    "links": [
+      {
+        "label": "ESLint Docs",
+        "url": "https://eslint.org/docs/latest"
+      }
+    ]
   },
   {
     "id": 31,
@@ -368,11 +550,22 @@
     "definition": "A version control system that tracks changes to your code over time. It's like 'Save As' with superpowers - you can go back to any previous version, work on features without breaking the main code, and collaborate with others.",
     "category": "Tools",
     "relatedTerms": [
-      "GitHub",
-      "Commit",
-      "Branch"
+      "git clone",
+      "git commit",
+      "git push",
+      "GitHub"
     ],
-    "example": "If you break something, 'git checkout' can take your code back to when it was working."
+    "example": "If you break something, 'git checkout' can take your code back to when it was working.",
+    "links": [
+      {
+        "label": "Git Docs",
+        "url": "https://git-scm.com/doc"
+      },
+      {
+        "label": "Pro Git Book",
+        "url": "https://git-scm.com/book/en/v2"
+      }
+    ]
   },
   {
     "id": 32,
@@ -381,10 +574,20 @@
     "category": "Tools",
     "relatedTerms": [
       "Git",
-      "Repository",
-      "Pull Request"
+      "Pull Request",
+      "git push"
     ],
-    "example": "React itself is hosted on GitHub - anyone can read its source code and suggest improvements."
+    "example": "React itself is hosted on GitHub - anyone can read its source code and suggest improvements.",
+    "links": [
+      {
+        "label": "GitHub Docs",
+        "url": "https://docs.github.com"
+      },
+      {
+        "label": "GitHub Skills",
+        "url": "https://skills.github.com"
+      }
+    ]
   },
   {
     "id": 33,
@@ -392,11 +595,21 @@
     "definition": "A tool that packages your application and everything it needs (libraries, settings, runtime) into a container. Containers run the same everywhere, solving the 'works on my machine' problem. Like a shipping container that works on any ship.",
     "category": "DevOps",
     "relatedTerms": [
-      "Container",
       "Docker Compose",
-      "Image"
+      "Docker Container",
+      "npm run build"
     ],
-    "example": "docker-compose up starts your entire app (frontend + backend + database) with one command."
+    "example": "docker-compose up starts your entire app (frontend + backend + database) with one command.",
+    "links": [
+      {
+        "label": "Docker Docs",
+        "url": "https://docs.docker.com"
+      },
+      {
+        "label": "Docker Hub",
+        "url": "https://hub.docker.com"
+      }
+    ]
   },
   {
     "id": 34,
@@ -405,10 +618,16 @@
     "category": "DevOps",
     "relatedTerms": [
       "Docker",
-      "Container",
-      "YAML"
+      "Docker Container",
+      "Port"
     ],
-    "example": "docker-compose.yml might define a frontend on port 3000, backend on port 5000, and a database on port 5432."
+    "example": "docker-compose.yml might define a frontend on port 3000, backend on port 5000, and a database on port 5432.",
+    "links": [
+      {
+        "label": "Compose Docs",
+        "url": "https://docs.docker.com/compose"
+      }
+    ]
   },
   {
     "id": 35,
@@ -488,8 +707,8 @@
     "definition": "The process of putting your website on the internet so anyone can visit it. You take your code from your computer and upload it to a server. Cloud hosting services make this very easy.",
     "category": "DevOps",
     "relatedTerms": [
-      "Vercel",
-      "Server",
+      "Deployment Pipeline",
+      "npm run build",
       "CI/CD"
     ],
     "example": "Running 'git push' can automatically deploy your site to Vercel in about 30 seconds."
@@ -504,7 +723,13 @@
       "Next.js",
       "Hosting"
     ],
-    "example": "Connect your GitHub repo to Vercel, and every push to main automatically updates your live website."
+    "example": "Connect your GitHub repo to Vercel, and every push to main automatically updates your live website.",
+    "links": [
+      {
+        "label": "Vercel Docs",
+        "url": "https://vercel.com/docs"
+      }
+    ]
   },
   {
     "id": 43,
@@ -552,7 +777,17 @@
       "Token",
       "Backend"
     ],
-    "example": "After login, the server returns a JWT. Your frontend includes it in every API request: Authorization: Bearer eyJhbG..."
+    "example": "After login, the server returns a JWT. Your frontend includes it in every API request: Authorization: Bearer eyJhbG...",
+    "links": [
+      {
+        "label": "jwt.io",
+        "url": "https://jwt.io"
+      },
+      {
+        "label": "RFC 7519",
+        "url": "https://datatracker.ietf.org/doc/html/rfc7519"
+      }
+    ]
   },
   {
     "id": 47,
@@ -596,9 +831,10 @@
     "definition": "A text-based way of giving commands to your computer. Also called command line, console, or shell. You type commands instead of clicking buttons. Essential for web development (running servers, installing packages, using version-tracking tools).",
     "category": "Tools",
     "relatedTerms": [
-      "Shell",
-      "Command Line",
-      "Bash"
+      "CLI",
+      "npm run dev",
+      "Ctrl+C",
+      "Git"
     ],
     "example": "Typing 'npm run dev' in the terminal starts your development server."
   },
@@ -608,9 +844,10 @@
     "definition": "Integrated Development Environment. A fancy text editor designed for writing code, with features like syntax highlighting, auto-completion, error detection, and debugging tools. VS Code is the most popular free IDE.",
     "category": "Tools",
     "relatedTerms": [
-      "VS Code",
-      "Editor",
-      "Development"
+      "DevTools",
+      "Linting",
+      "Formatting",
+      "Terminal"
     ],
     "example": "VS Code highlights your code in different colors, suggests completions, and catches errors as you type."
   },
@@ -680,9 +917,9 @@
     "definition": "The process of converting your development code into optimized code ready for production. Building compresses files, removes unused code, and bundles everything into efficient packages. Like compiling a manuscript into a printed book.",
     "category": "DevOps",
     "relatedTerms": [
-      "Production",
-      "Bundle",
-      "Deploy"
+      "npm run build",
+      "Deployment Pipeline",
+      "npm run dev"
     ],
     "example": "'npm run build' creates an optimized version of your site in a .next folder, ready to deploy."
   },
@@ -692,9 +929,8 @@
     "definition": "A development feature where changes you make to code instantly appear in the browser without losing the current page data. You save a file, and the change shows up in milliseconds. Massively speeds up development.",
     "category": "Tools",
     "relatedTerms": [
-      "Development",
-      "Next.js",
-      "DX"
+      "Hot Module Replacement",
+      "npm run dev"
     ],
     "example": "Change a button's color in your code, save, and see it update in the browser instantly - no manual refresh needed."
   },
@@ -708,7 +944,17 @@
       "Semantic HTML",
       "Screen Reader"
     ],
-    "example": "Adding alt text to images means screen readers can describe the image to visually impaired users."
+    "example": "Adding alt text to images means screen readers can describe the image to visually impaired users.",
+    "links": [
+      {
+        "label": "W3C WCAG",
+        "url": "https://www.w3.org/WAI/standards-guidelines/wcag"
+      },
+      {
+        "label": "a11y Project",
+        "url": "https://www.a11yproject.com"
+      }
+    ]
   },
   {
     "id": 60,
@@ -720,7 +966,13 @@
       "SSR",
       "Performance"
     ],
-    "example": "Adding a descriptive <title> and <meta description> helps Google understand what your page is about."
+    "example": "Adding a descriptive <title> and <meta description> helps Google understand what your page is about.",
+    "links": [
+      {
+        "label": "Google SEO Guide",
+        "url": "https://developers.google.com/search/docs/fundamentals/seo-starter-guide"
+      }
+    ]
   },
   {
     "id": 61,
@@ -732,7 +984,17 @@
       "JWT",
       "Token"
     ],
-    "example": "Clicking 'Sign in with Google' uses OAuth 2.0 - Google verifies you, then tells the app you're legit."
+    "example": "Clicking 'Sign in with Google' uses OAuth 2.0 - Google verifies you, then tells the app you're legit.",
+    "links": [
+      {
+        "label": "OAuth.net",
+        "url": "https://oauth.net/2"
+      },
+      {
+        "label": "RFC 6749",
+        "url": "https://datatracker.ietf.org/doc/html/rfc6749"
+      }
+    ]
   },
   {
     "id": 62,
@@ -744,7 +1006,13 @@
       "Backend",
       "HTTP"
     ],
-    "example": "Your frontend at localhost:3000 can't call your backend at localhost:5000 unless the backend enables CORS for that origin."
+    "example": "Your frontend at localhost:3000 can't call your backend at localhost:5000 unless the backend enables CORS for that origin.",
+    "links": [
+      {
+        "label": "MDN CORS",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS"
+      }
+    ]
   },
   {
     "id": 63,
@@ -984,7 +1252,17 @@
       "ORM",
       "NoSQL"
     ],
-    "example": "SELECT name, email FROM users WHERE age > 18 ORDER BY name fetches adult users sorted by name."
+    "example": "SELECT name, email FROM users WHERE age > 18 ORDER BY name fetches adult users sorted by name.",
+    "links": [
+      {
+        "label": "W3Schools SQL",
+        "url": "https://www.w3schools.com/sql"
+      },
+      {
+        "label": "SQLBolt",
+        "url": "https://sqlbolt.com"
+      }
+    ]
   },
   {
     "id": 83,
@@ -1032,7 +1310,13 @@
       "Database",
       "Session"
     ],
-    "example": "Store frequently accessed user profiles in Redis so they load in 1ms instead of 50ms from the main database."
+    "example": "Store frequently accessed user profiles in Redis so they load in 1ms instead of 50ms from the main database.",
+    "links": [
+      {
+        "label": "Redis Docs",
+        "url": "https://redis.io/docs"
+      }
+    ]
   },
   {
     "id": 87,
@@ -1064,11 +1348,21 @@
     "definition": "Continuous Integration / Continuous Delivery. Automating the process of checking and releasing code. Every time you push code, tests run automatically, and passing code is automatically published to production.",
     "category": "DevOps",
     "relatedTerms": [
+      "Deployment Pipeline",
       "GitHub Actions",
-      "Deployment",
-      "Testing"
+      "git push"
     ],
-    "example": "Push to main -> tests run automatically -> if all pass -> site deploys automatically. No manual steps needed."
+    "example": "Push to main -> tests run automatically -> if all pass -> site deploys automatically. No manual steps needed.",
+    "links": [
+      {
+        "label": "GitHub Actions",
+        "url": "https://docs.github.com/en/actions"
+      },
+      {
+        "label": "CI/CD Overview",
+        "url": "https://www.redhat.com/en/topics/devops/what-is-ci-cd"
+      }
+    ]
   },
   {
     "id": 90,
@@ -1092,7 +1386,17 @@
       "GitHub",
       "YAML"
     ],
-    "example": "A workflow that runs 'npm test' on every pull request, blocking the merge if any tests fail."
+    "example": "A workflow that runs 'npm test' on every pull request, blocking the merge if any tests fail.",
+    "links": [
+      {
+        "label": "Actions Docs",
+        "url": "https://docs.github.com/en/actions"
+      },
+      {
+        "label": "Actions Marketplace",
+        "url": "https://github.com/marketplace?type=actions"
+      }
+    ]
   },
   {
     "id": 92,
@@ -1464,7 +1768,13 @@
       "API",
       "HTTPS/TLS"
     ],
-    "example": "When you visit a website, your browser sends an HTTP GET request and the server responds with the page's HTML."
+    "example": "When you visit a website, your browser sends an HTTP GET request and the server responds with the page's HTML.",
+    "links": [
+      {
+        "label": "MDN HTTP",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP"
+      }
+    ]
   },
   {
     "id": 123,
@@ -1500,7 +1810,17 @@
       "Jest",
       "TDD"
     ],
-    "example": "A test for an add function: expect(add(2, 3)).toBe(5). If someone breaks the function, the test catches it."
+    "example": "A test for an add function: expect(add(2, 3)).toBe(5). If someone breaks the function, the test catches it.",
+    "links": [
+      {
+        "label": "Jest Docs",
+        "url": "https://jestjs.io"
+      },
+      {
+        "label": "Cypress Docs",
+        "url": "https://docs.cypress.io"
+      }
+    ]
   },
   {
     "id": 126,
@@ -1536,7 +1856,17 @@
       "Docker Compose",
       "GitHub Actions"
     ],
-    "example": "name: my-app\\nversion: 1.0\\nservices:\\n  web:\\n    port: 3000"
+    "example": "name: my-app\\nversion: 1.0\\nservices:\\n  web:\\n    port: 3000",
+    "links": [
+      {
+        "label": "YAML Spec",
+        "url": "https://yaml.org/spec/1.2.2"
+      },
+      {
+        "label": "Learn YAML",
+        "url": "https://learnxinyminutes.com/docs/yaml"
+      }
+    ]
   },
   {
     "id": 129,
@@ -1561,5 +1891,1256 @@
       "Code Review"
     ],
     "example": "You create a pull request with your new login feature. A teammate reviews it, approves it, and merges it into main."
+  },
+  {
+    "id": 131,
+    "term": "npm run dev",
+    "definition": "The command you type in your terminal to start a local development server. It launches your website on your own computer so you can see changes live as you code. When you stop it (Ctrl+C), the site goes offline.",
+    "category": "Commands",
+    "relatedTerms": [
+      "localhost",
+      "Port",
+      "Ctrl+C",
+      "Node.js",
+      "Hot Module Replacement"
+    ],
+    "example": "Open a terminal in your project folder, type npm run dev, then open your browser to http://localhost:3000.",
+    "links": [
+      {
+        "label": "npm Scripts",
+        "url": "https://docs.npmjs.com/cli/v10/using-npm/scripts"
+      }
+    ]
+  },
+  {
+    "id": 132,
+    "term": "npm start",
+    "definition": "A command that runs your project. In many setups it does the same thing as npm run dev. The difference depends on how the project author configured it.",
+    "category": "Commands",
+    "relatedTerms": [
+      "npm run dev",
+      "package.json"
+    ],
+    "example": "npm start is the default command; npm run dev is a custom script name the project author chose."
+  },
+  {
+    "id": 133,
+    "term": "npm install",
+    "definition": "Downloads all the code libraries your project depends on. When you clone a project for the first time, this is usually the first command you run. It reads the project config file and downloads everything into a node_modules folder.",
+    "category": "Commands",
+    "relatedTerms": [
+      "node_modules",
+      "package.json",
+      "npm run dev"
+    ],
+    "example": "After cloning a project: cd my-project && npm install — then you are ready to run it.",
+    "links": [
+      {
+        "label": "npm install Docs",
+        "url": "https://docs.npmjs.com/cli/v10/commands/npm-install"
+      }
+    ]
+  },
+  {
+    "id": 134,
+    "term": "npm run build",
+    "definition": "A command that compiles your project into optimized files ready for a live server. It bundles, minifies, and optimizes your code so it loads as fast as possible for real users.",
+    "category": "Commands",
+    "relatedTerms": [
+      "npm run dev",
+      "Deployment Pipeline",
+      "Build"
+    ],
+    "example": "npm run build creates an optimized version in a dist/ or .next/ folder that you upload to your server.",
+    "links": [
+      {
+        "label": "npm Scripts",
+        "url": "https://docs.npmjs.com/cli/v10/using-npm/scripts"
+      }
+    ]
+  },
+  {
+    "id": 135,
+    "term": "localhost",
+    "definition": "Your own computer acting as a web server. When you see http://localhost:3000 it means the website is running on your machine, not on the internet. Only you can see it. The number after the colon is the port.",
+    "category": "Fundamentals",
+    "relatedTerms": [
+      "Port",
+      "npm run dev",
+      "DevTools"
+    ],
+    "example": "http://localhost:3000 means \"my computer, door number 3000\".",
+    "links": [
+      {
+        "label": "MDN localhost",
+        "url": "https://developer.mozilla.org/en-US/docs/Glossary/Localhost"
+      }
+    ]
+  },
+  {
+    "id": 136,
+    "term": "Port",
+    "definition": "A number that identifies which program should receive network traffic on your computer. Think of your computer as an apartment building — the port is the apartment number. Different programs listen on different ports so they do not clash.",
+    "category": "Fundamentals",
+    "relatedTerms": [
+      "localhost",
+      "npm run dev"
+    ],
+    "example": "Port 3000 for the website, port 5000 for the server — two programs running at the same time without conflict."
+  },
+  {
+    "id": 137,
+    "term": "node_modules",
+    "definition": "A folder that contains all the downloaded code libraries your project uses. Created automatically when you run npm install. Never edit files in it and never upload it to version control.",
+    "category": "Project Structure",
+    "relatedTerms": [
+      "npm install",
+      "package.json",
+      ".gitignore"
+    ],
+    "example": "A typical node_modules folder can contain thousands of small packages totalling hundreds of megabytes."
+  },
+  {
+    "id": 138,
+    "term": ".gitignore",
+    "definition": "A file that tells version control which files and folders to ignore. You use it to keep large, generated, or secret files out of your code repository.",
+    "category": "Project Structure",
+    "relatedTerms": [
+      ".env",
+      "node_modules",
+      "Git"
+    ],
+    "example": "Adding node_modules/ to .gitignore prevents thousands of library files from being uploaded to your repository."
+  },
+  {
+    "id": 139,
+    "term": ".env",
+    "definition": "A file where you store secret or environment-specific settings like passwords, keys, and web addresses. Your code reads values from this file at runtime. Never commit this file to version control.",
+    "category": "Project Structure",
+    "relatedTerms": [
+      ".gitignore",
+      "Environment Variable",
+      "localhost"
+    ],
+    "example": "DATABASE_URL=postgres://user:pass@localhost:5432/mydb — a typical line in a .env file."
+  },
+  {
+    "id": 140,
+    "term": "console.log",
+    "definition": "A command that prints a message to the developer console. It is the simplest way to debug your code — you put it in your code to see what value a variable has at that point.",
+    "category": "Commands",
+    "relatedTerms": [
+      "DevTools",
+      "Debugging",
+      "Breakpoint",
+      "Variable"
+    ],
+    "example": "console.log(\"user is:\", user) — prints the user variable so you can inspect it.",
+    "links": [
+      {
+        "label": "MDN console.log",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/console/log_static"
+      }
+    ]
+  },
+  {
+    "id": 141,
+    "term": "DevTools",
+    "definition": "A set of debugging tools built into every web browser. Press F12 to open them. You can inspect page elements, see network requests, read console messages, and debug code.",
+    "category": "Tools",
+    "relatedTerms": [
+      "console.log",
+      "Breakpoint",
+      "Debugging",
+      "DOM"
+    ],
+    "example": "Right-click any element on a web page and choose \"Inspect\" to see its markup and styling.",
+    "links": [
+      {
+        "label": "Chrome DevTools",
+        "url": "https://developer.chrome.com/docs/devtools"
+      },
+      {
+        "label": "Firefox DevTools",
+        "url": "https://firefox-source-docs.mozilla.org/devtools-user"
+      }
+    ]
+  },
+  {
+    "id": 142,
+    "term": "import/export",
+    "definition": "The way you share code between files. \"export\" makes a function or variable available to other files. \"import\" pulls it in. This lets you split your code across many small files instead of one giant one.",
+    "category": "Fundamentals",
+    "relatedTerms": [
+      "Component",
+      "node_modules",
+      "Function"
+    ],
+    "example": "export function add(a, b) { return a + b } in math.js, then import { add } from \"./math\" in another file.",
+    "links": [
+      {
+        "label": "MDN import",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import"
+      },
+      {
+        "label": "MDN export",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export"
+      }
+    ]
+  },
+  {
+    "id": 143,
+    "term": "git clone",
+    "definition": "A command that downloads a complete copy of a code repository to your computer. It is how you get someone else's project onto your local machine, ready to work on.",
+    "category": "Commands",
+    "relatedTerms": [
+      "git commit",
+      "git push",
+      "npm install",
+      "Git"
+    ],
+    "example": "git clone https://github.com/user/project.git — downloads the project into a new folder.",
+    "links": [
+      {
+        "label": "Git Clone Docs",
+        "url": "https://git-scm.com/docs/git-clone"
+      }
+    ]
+  },
+  {
+    "id": 144,
+    "term": "git commit",
+    "definition": "A command that saves a snapshot of your current changes with a message describing what you did. Think of it like a save point in a video game — you can always go back to it.",
+    "category": "Commands",
+    "relatedTerms": [
+      "git push",
+      "git clone",
+      "Git"
+    ],
+    "example": "git add . && git commit -m \"fix login button\" — stages all changes and saves them with a description.",
+    "links": [
+      {
+        "label": "Git Commit Docs",
+        "url": "https://git-scm.com/docs/git-commit"
+      }
+    ]
+  },
+  {
+    "id": 145,
+    "term": "git push",
+    "definition": "A command that uploads your saved snapshots (commits) to a remote server so others can see them. Until you push, your work only exists on your own computer.",
+    "category": "Commands",
+    "relatedTerms": [
+      "git commit",
+      "Pull Request",
+      "Deployment Pipeline"
+    ],
+    "example": "git push origin main — sends your commits to the main branch on the remote server.",
+    "links": [
+      {
+        "label": "Git Push Docs",
+        "url": "https://git-scm.com/docs/git-push"
+      }
+    ]
+  },
+  {
+    "id": 146,
+    "term": "Callback",
+    "definition": "A function you hand to another function, saying \"call me when you are done.\" It is how early web code handled things that take time, like fetching data.",
+    "category": "Fundamentals",
+    "relatedTerms": [
+      "Promise",
+      "async/await",
+      "Function"
+    ],
+    "example": "setTimeout(function() { alert(\"done!\") }, 1000) — the function inside runs after one second."
+  },
+  {
+    "id": 147,
+    "term": "Promise",
+    "definition": "An object that represents a value you do not have yet but will get later. Like an order receipt at a restaurant — you do not have the food yet, but the receipt promises it is coming.",
+    "category": "Fundamentals",
+    "relatedTerms": [
+      "async/await",
+      "Callback",
+      "Function"
+    ],
+    "example": "fetch(\"/api/users\") returns a promise. When the data arrives, the promise resolves with the response.",
+    "links": [
+      {
+        "label": "MDN Promises",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+      }
+    ]
+  },
+  {
+    "id": 148,
+    "term": "async/await",
+    "definition": "A way to write code that waits for slow operations (like fetching data) without freezing the page. It makes asynchronous code read like normal top-to-bottom code.",
+    "category": "Fundamentals",
+    "relatedTerms": [
+      "Promise",
+      "Callback",
+      "Function"
+    ],
+    "example": "const data = await fetch(\"/api/users\") — waits for the data, then continues to the next line.",
+    "links": [
+      {
+        "label": "MDN async/await",
+        "url": "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises"
+      }
+    ]
+  },
+  {
+    "id": 149,
+    "term": "Array",
+    "definition": "An ordered list of values. You access items by their position number (starting from zero). Arrays are one of the most common data structures.",
+    "category": "Fundamentals",
+    "relatedTerms": [
+      "Object",
+      "map/filter/reduce",
+      "Loop"
+    ],
+    "example": "const colors = [\"red\", \"green\", \"blue\"]; colors[0] is \"red\".",
+    "links": [
+      {
+        "label": "MDN Array",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array"
+      }
+    ]
+  },
+  {
+    "id": 150,
+    "term": "Object",
+    "definition": "A collection of named values (key-value pairs). Unlike a list where you access items by position, you access object values by name.",
+    "category": "Fundamentals",
+    "relatedTerms": [
+      "Array",
+      "JSON",
+      "Props"
+    ],
+    "example": "const user = { name: \"Alice\", age: 30 }; user.name is \"Alice\"."
+  },
+  {
+    "id": 151,
+    "term": "map/filter/reduce",
+    "definition": "Three essential list operations. Map transforms every item. Filter keeps only items that pass a test. Reduce combines all items into one value.",
+    "category": "Fundamentals",
+    "relatedTerms": [
+      "Array",
+      "Callback",
+      "Loop"
+    ],
+    "example": "[1,2,3].map(n => n * 2) gives [2,4,6]. [1,2,3].filter(n => n > 1) gives [2,3].",
+    "links": [
+      {
+        "label": "MDN Array Methods",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array#instance_methods"
+      }
+    ]
+  },
+  {
+    "id": 152,
+    "term": "Variable",
+    "definition": "A named container for a value. You create one with const (cannot change), let (can change), or var (old style, avoid). Choosing good variable names makes your code readable.",
+    "category": "Fundamentals",
+    "relatedTerms": [
+      "const/let/var",
+      "Scope",
+      "String"
+    ],
+    "example": "const name = \"Alice\"; let score = 0; score = score + 10;",
+    "links": [
+      {
+        "label": "MDN Variables",
+        "url": "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/First_steps/Variables"
+      }
+    ]
+  },
+  {
+    "id": 153,
+    "term": "const/let/var",
+    "definition": "Three ways to create a variable. \"const\" cannot be reassigned — use it by default. \"let\" can be reassigned later. \"var\" is the old way with confusing rules — avoid it.",
+    "category": "Fundamentals",
+    "relatedTerms": [
+      "Variable",
+      "Scope"
+    ],
+    "example": "const PI = 3.14 (never changes). let count = 0; count++ (changes). Avoid var."
+  },
+  {
+    "id": 154,
+    "term": "Function",
+    "definition": "A reusable block of code that does one thing. You give it a name, optionally some inputs (parameters), and it gives back an output (return value).",
+    "category": "Fundamentals",
+    "relatedTerms": [
+      "Callback",
+      "async/await",
+      "Scope",
+      "Variable"
+    ],
+    "example": "function greet(name) { return \"Hello \" + name; } — greet(\"Alice\") returns \"Hello Alice\".",
+    "links": [
+      {
+        "label": "MDN Functions",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions"
+      }
+    ]
+  },
+  {
+    "id": 155,
+    "term": "Syntax Error",
+    "definition": "An error caused by typing something the programming language does not understand — like a missing bracket or a forgotten comma. Your code editor usually highlights these in red.",
+    "category": "Debugging",
+    "relatedTerms": [
+      "Runtime Error",
+      "DevTools",
+      "Linting"
+    ],
+    "example": "const x = (1 + 2 — missing closing parenthesis. The editor will show a red squiggly line."
+  },
+  {
+    "id": 156,
+    "term": "Runtime Error",
+    "definition": "An error that happens while the program is running. The code looks valid, but something goes wrong during execution — like trying to read a property on something that does not exist.",
+    "category": "Debugging",
+    "relatedTerms": [
+      "Syntax Error",
+      "console.log",
+      "Debugging"
+    ],
+    "example": "user.name crashes if user is undefined — the code is valid, but there is no user to read from."
+  },
+  {
+    "id": 157,
+    "term": "Breakpoint",
+    "definition": "A marker you set in your code that tells the browser to pause execution at that line. When it pauses, you can inspect every variable and step through code line by line.",
+    "category": "Debugging",
+    "relatedTerms": [
+      "DevTools",
+      "console.log",
+      "Debugging"
+    ],
+    "example": "Click the line number in the Sources tab of DevTools to set a breakpoint."
+  },
+  {
+    "id": 158,
+    "term": "String",
+    "definition": "A piece of text in your code. You create one by wrapping text in quotes (single, double, or backticks). Backticks let you embed variables inside the text.",
+    "category": "Fundamentals",
+    "relatedTerms": [
+      "Template Literal",
+      "Variable"
+    ],
+    "example": "const greeting = `Hello, ${name}!` — inserts the name variable into the text."
+  },
+  {
+    "id": 159,
+    "term": "Template Literal",
+    "definition": "A string wrapped in backticks instead of quotes. You can insert variables and expressions directly using ${...} instead of awkward string concatenation with plus signs.",
+    "category": "Fundamentals",
+    "relatedTerms": [
+      "String",
+      "Variable"
+    ],
+    "example": "`Your score is ${score}/100` instead of \"Your score is \" + score + \"/100\"."
+  },
+  {
+    "id": 160,
+    "term": "Conditional",
+    "definition": "Code that runs only when a condition is true. The most common form is if/else — your program makes decisions like \"if the user is logged in, show the dashboard; otherwise, show the login page.\"",
+    "category": "Fundamentals",
+    "relatedTerms": [
+      "Variable",
+      "Function",
+      "Loop"
+    ],
+    "example": "if (age >= 18) { show(\"Welcome\") } else { show(\"Too young\") }"
+  },
+  {
+    "id": 161,
+    "term": "Loop",
+    "definition": "Code that repeats the same action multiple times. A \"for\" loop runs a set number of times. A \"while\" loop runs until a condition becomes false.",
+    "category": "Fundamentals",
+    "relatedTerms": [
+      "Array",
+      "map/filter/reduce",
+      "Conditional"
+    ],
+    "example": "for (let i = 0; i < 5; i++) { console.log(i) } — prints 0, 1, 2, 3, 4."
+  },
+  {
+    "id": 162,
+    "term": "Boilerplate",
+    "definition": "Repetitive setup code you need before you can start writing the interesting parts. Frameworks and templates exist to reduce boilerplate so you can focus on your actual feature.",
+    "category": "General",
+    "relatedTerms": [
+      "npm run dev",
+      "Build",
+      "package.json"
+    ],
+    "example": "npx create-next-app generates all the boilerplate for a new project — dozens of config files you would otherwise write by hand."
+  },
+  {
+    "id": 163,
+    "term": "Linting",
+    "definition": "Automatic code checking that catches mistakes and enforces style rules before you even run your code. A linter flags problems like unused variables or missing semicolons.",
+    "category": "Tools",
+    "relatedTerms": [
+      "ESLint",
+      "Formatting",
+      "IDE"
+    ],
+    "example": "A linter might warn: \"variable x is declared but never used\" — saving you from a bug."
+  },
+  {
+    "id": 164,
+    "term": "Formatting",
+    "definition": "Automatically making your code look consistent — fixing indentation, spacing, and line breaks. A tool like Prettier does this on save so your whole team's code looks the same.",
+    "category": "Tools",
+    "relatedTerms": [
+      "Linting",
+      "IDE"
+    ],
+    "example": "Press save and Prettier reformats messy code into clean, consistent style instantly."
+  },
+  {
+    "id": 165,
+    "term": "README",
+    "definition": "A text file at the top of a project that explains what it does, how to set it up, and how to use it. It is the first thing people see when they visit your code repository.",
+    "category": "Project Structure",
+    "relatedTerms": [
+      "Git",
+      ".gitignore",
+      "package.json"
+    ],
+    "example": "A good README has: what the project does, how to install it, how to run it, and how to contribute."
+  },
+  {
+    "id": 166,
+    "term": "CLI",
+    "definition": "Command Line Interface. A way to control a program by typing text commands instead of clicking buttons. Many developer tools are CLI-only.",
+    "category": "Tools",
+    "relatedTerms": [
+      "Terminal",
+      "npm run dev",
+      "Git"
+    ],
+    "example": "git, npm, and docker are all CLI tools — you type commands like git status instead of clicking a button."
+  },
+  {
+    "id": 167,
+    "term": "Debugging",
+    "definition": "The process of finding and fixing problems in your code. It involves reading error messages, adding log statements, and methodically narrowing down where things go wrong.",
+    "category": "Debugging",
+    "relatedTerms": [
+      "console.log",
+      "DevTools",
+      "Breakpoint",
+      "Syntax Error",
+      "Runtime Error"
+    ],
+    "example": "Page shows a blank screen. Open DevTools, see an error in the console, find the line, fix the typo — it works."
+  },
+  {
+    "id": 168,
+    "term": "Deployment Pipeline",
+    "definition": "An automated sequence of steps that takes your code from a saved snapshot to a live website. Typically: run tests, compile the project, push to a server, verify it works.",
+    "category": "DevOps",
+    "relatedTerms": [
+      "CI/CD",
+      "git push",
+      "npm run build"
+    ],
+    "example": "You push code, the pipeline runs tests (2 min), builds (3 min), deploys (1 min) — site updated automatically."
+  },
+  {
+    "id": 169,
+    "term": "Hot Module Replacement",
+    "definition": "A feature that updates your page instantly when you save a file — without a full page reload. It swaps out just the changed code so you keep your scroll position and form inputs.",
+    "category": "Tools",
+    "relatedTerms": [
+      "npm run dev",
+      "Hot Reload"
+    ],
+    "example": "Change a button color, press save, see the color change in your browser within a second — no refresh needed."
+  },
+  {
+    "id": 170,
+    "term": "Scope",
+    "definition": "Where a variable is visible and accessible in your code. A variable created inside a function can only be used inside that function. Understanding scope prevents bugs.",
+    "category": "Fundamentals",
+    "relatedTerms": [
+      "Variable",
+      "const/let/var",
+      "Function"
+    ],
+    "example": "let x = 1 inside a function is invisible outside it. const y = 2 at the top level is visible everywhere in that file."
+  },
+  {
+    "id": 171,
+    "term": "Ctrl+C",
+    "definition": "The keyboard shortcut to stop a running command in your terminal. When your development server is running and you want to stop it, press Ctrl+C.",
+    "category": "Commands",
+    "relatedTerms": [
+      "npm run dev",
+      "Terminal"
+    ],
+    "example": "Dev server is running. Press Ctrl+C to stop it. Then you can run a different command."
+  },
+  {
+    "id": 172,
+    "term": "Payload",
+    "definition": "The data carried inside a token or request, like the contents of an envelope. When your app sends or receives information, the payload is the actual useful data being transported.",
+    "category": "Security",
+    "relatedTerms": [
+      "JWT",
+      "Access Token",
+      "Request Body"
+    ],
+    "example": "A login token’s payload might contain your user ID and when the token expires.",
+    "links": [
+      {
+        "label": "JWT Payload",
+        "url": "https://jwt.io/introduction"
+      }
+    ]
+  },
+  {
+    "id": 173,
+    "term": "Access Token",
+    "definition": "A short-lived pass that proves you are logged in, sent with every request to protected resources. It typically expires after minutes or hours for security.",
+    "category": "Security",
+    "relatedTerms": [
+      "JWT",
+      "Refresh Token",
+      "Authentication"
+    ],
+    "example": "After logging in, the server gives you an access token. Your app sends it with every request so the server knows who you are.",
+    "links": [
+      {
+        "label": "OAuth Access Tokens",
+        "url": "https://oauth.net/2/access-tokens/"
+      }
+    ]
+  },
+  {
+    "id": 174,
+    "term": "Refresh Token",
+    "definition": "A longer-lived credential used to get a new access token when the old one expires, without logging in again. It stays stored securely and is only sent when you need a fresh access token.",
+    "category": "Security",
+    "relatedTerms": [
+      "Access Token",
+      "JWT",
+      "Authentication"
+    ],
+    "example": "Your access token expires after 15 minutes. Instead of making you log in again, the app uses the refresh token to silently get a new one.",
+    "links": [
+      {
+        "label": "Refresh Tokens",
+        "url": "https://oauth.net/2/refresh-tokens/"
+      }
+    ]
+  },
+  {
+    "id": 175,
+    "term": "Hash",
+    "definition": "A one-way scramble of data (like a password) into a fixed-length string. You cannot reverse it back to the original, which is what makes it useful for storing passwords securely.",
+    "category": "Security",
+    "relatedTerms": [
+      "Salt",
+      "Authentication",
+      "JWT"
+    ],
+    "example": "The password 'hello123' might become 'a1b2c3d4e5...' after hashing. Even a tiny change in the input produces a completely different hash.",
+    "links": [
+      {
+        "label": "Hashing Explained",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html"
+      }
+    ]
+  },
+  {
+    "id": 176,
+    "term": "Salt",
+    "definition": "Random data added to a password before hashing, so two identical passwords produce different hashes. This prevents attackers from using precomputed tables to crack passwords.",
+    "category": "Security",
+    "relatedTerms": [
+      "Hash",
+      "Authentication"
+    ],
+    "example": "Two users both pick 'password123' as their password, but each gets a unique random salt added, so their stored hashes look completely different."
+  },
+  {
+    "id": 177,
+    "term": "Decorator",
+    "definition": "A special marker (starting with @) you put above a function to modify its behaviour without changing the function itself. It wraps extra functionality around the original code.",
+    "category": "Backend",
+    "relatedTerms": [
+      "Route",
+      "Blueprint",
+      "Flask"
+    ],
+    "example": "@app.route('/home') is a decorator that tells your server to run the function below it when someone visits the /home URL.",
+    "links": [
+      {
+        "label": "Python Decorators",
+        "url": "https://realpython.com/primer-on-python-decorators/"
+      }
+    ]
+  },
+  {
+    "id": 178,
+    "term": "Fixture",
+    "definition": "Pre-made test data or setup code that runs before your tests, so each test starts from a known state. This saves you from writing the same setup code over and over.",
+    "category": "Testing",
+    "relatedTerms": [
+      "Test Case",
+      "Mock",
+      "Testing"
+    ],
+    "example": "A fixture might create a test user and log them in, so every test that needs a logged-in user can just use that fixture.",
+    "links": [
+      {
+        "label": "Pytest Fixtures",
+        "url": "https://docs.pytest.org/en/stable/how-to/fixtures.html"
+      }
+    ]
+  },
+  {
+    "id": 179,
+    "term": "Assertion",
+    "definition": "A statement in a test that checks whether something is true. If the check fails, the test fails and tells you exactly what went wrong.",
+    "category": "Testing",
+    "relatedTerms": [
+      "Test Case",
+      "Testing",
+      "Happy Path"
+    ],
+    "example": "assert result == 42 checks that the result is 42. If it is not, the test fails with a clear error message."
+  },
+  {
+    "id": 180,
+    "term": "Test Case",
+    "definition": "A single test that checks one specific behaviour. A test file contains many test cases, each verifying that a small piece of your code works correctly.",
+    "category": "Testing",
+    "relatedTerms": [
+      "Assertion",
+      "Testing",
+      "Happy Path",
+      "Sad Path"
+    ],
+    "example": "'test_login_with_valid_password' is one test case. 'test_login_with_wrong_password' is another. Together they cover the login feature."
+  },
+  {
+    "id": 181,
+    "term": "Mock",
+    "definition": "A fake version of a real thing (like a database or external service) used in tests so you can test code in isolation. Mocks let you control exactly what the fake thing returns.",
+    "category": "Testing",
+    "relatedTerms": [
+      "Fixture",
+      "Test Case",
+      "Testing"
+    ],
+    "example": "Instead of calling a real payment service during tests, you use a mock that always returns 'payment successful'.",
+    "links": [
+      {
+        "label": "Python unittest.mock",
+        "url": "https://docs.python.org/3/library/unittest.mock.html"
+      }
+    ]
+  },
+  {
+    "id": 182,
+    "term": "Happy Path",
+    "definition": "The test scenario where everything works perfectly — valid input, no errors, expected output. It verifies that your code works under ideal conditions.",
+    "category": "Testing",
+    "relatedTerms": [
+      "Sad Path",
+      "Test Case",
+      "Testing"
+    ],
+    "example": "Testing login with a correct username and password is the happy path — you expect it to succeed."
+  },
+  {
+    "id": 183,
+    "term": "Sad Path",
+    "definition": "The test scenario where something goes wrong — invalid input, missing data, errors — to verify your code handles failure gracefully instead of crashing.",
+    "category": "Testing",
+    "relatedTerms": [
+      "Happy Path",
+      "Test Case",
+      "Exception"
+    ],
+    "example": "Testing login with a wrong password is a sad path — you expect it to show an error message, not crash."
+  },
+  {
+    "id": 184,
+    "term": "Blueprint",
+    "definition": "A way to organize a large web application into smaller, reusable pieces, each handling a specific feature (like users, products, or authentication). It keeps your code tidy as it grows.",
+    "category": "Backend",
+    "relatedTerms": [
+      "Flask",
+      "Route",
+      "Module"
+    ],
+    "example": "Your app might have a users blueprint for sign-up and login, and a products blueprint for listing and searching items.",
+    "links": [
+      {
+        "label": "Flask Blueprints",
+        "url": "https://flask.palletsprojects.com/en/latest/blueprints/"
+      }
+    ]
+  },
+  {
+    "id": 185,
+    "term": "Factory Pattern",
+    "definition": "A design pattern where a function creates and configures an object for you, instead of you building it manually every time. It keeps creation logic in one place.",
+    "category": "Backend",
+    "relatedTerms": [
+      "Flask",
+      "Blueprint",
+      "Testing"
+    ],
+    "example": "A create_app() function builds your entire web application with all its settings, routes, and database connections — you just call it.",
+    "links": [
+      {
+        "label": "Flask Application Factory",
+        "url": "https://flask.palletsprojects.com/en/latest/patterns/appfactories/"
+      }
+    ]
+  },
+  {
+    "id": 186,
+    "term": "Service Layer",
+    "definition": "A code layer that contains your business logic, sitting between the web routes (which handle requests) and the data layer (which talks to storage). It keeps your route code thin and your logic reusable.",
+    "category": "Architecture",
+    "relatedTerms": [
+      "Route",
+      "Backend",
+      "ORM"
+    ],
+    "example": "Instead of putting order-total calculations directly in a route, you put them in an order service that any route can call."
+  },
+  {
+    "id": 187,
+    "term": "Virtual Environment",
+    "definition": "An isolated folder on your computer that holds a project's installed libraries separately, so different projects do not interfere with each other. Each project gets its own clean set of dependencies.",
+    "category": "Backend",
+    "relatedTerms": [
+      "pip",
+      "requirements.txt",
+      "node_modules"
+    ],
+    "example": "Project A needs version 1.0 of a library and Project B needs version 2.0 — virtual environments let them coexist without conflicts.",
+    "links": [
+      {
+        "label": "Python Virtual Environments",
+        "url": "https://docs.python.org/3/tutorial/venv.html"
+      }
+    ]
+  },
+  {
+    "id": 188,
+    "term": "pip",
+    "definition": "The package manager for installing code libraries on the server side. It downloads and installs libraries from a public registry, similar to how npm works for front-end projects.",
+    "category": "Backend",
+    "relatedTerms": [
+      "requirements.txt",
+      "Virtual Environment",
+      "npm"
+    ],
+    "example": "Running 'pip install flask' downloads and installs the Flask library so you can use it in your project.",
+    "links": [
+      {
+        "label": "pip Documentation",
+        "url": "https://pip.pypa.io/en/stable/"
+      }
+    ]
+  },
+  {
+    "id": 189,
+    "term": "requirements.txt",
+    "definition": "A file listing all the server-side libraries your project needs, with version numbers. Anyone can install everything at once by pointing the package manager at this file.",
+    "category": "Backend",
+    "relatedTerms": [
+      "pip",
+      "Virtual Environment",
+      "package.json"
+    ],
+    "example": "Your requirements.txt might contain 'flask==3.0.0' and 'sqlalchemy==2.0.0'. Running 'pip install -r requirements.txt' installs them all."
+  },
+  {
+    "id": 190,
+    "term": "Exception",
+    "definition": "An error that happens while code is running. Your program can catch it and handle it gracefully (like showing an error message) instead of crashing entirely.",
+    "category": "Backend",
+    "relatedTerms": [
+      "Try/Except",
+      "Debugging",
+      "Sad Path"
+    ],
+    "example": "Trying to divide by zero raises an exception. If you catch it, you can show 'Cannot divide by zero' instead of crashing.",
+    "links": [
+      {
+        "label": "Python Exceptions",
+        "url": "https://docs.python.org/3/tutorial/errors.html"
+      }
+    ]
+  },
+  {
+    "id": 191,
+    "term": "Try/Except",
+    "definition": "A pattern for handling errors: 'try this code, and if it fails, run this recovery code instead.' It prevents your whole program from crashing when something unexpected happens.",
+    "category": "Backend",
+    "relatedTerms": [
+      "Exception",
+      "Debugging"
+    ],
+    "example": "try: result = 10 / 0 except: print('Oops, cannot divide by zero!') — the program keeps running instead of crashing.",
+    "links": [
+      {
+        "label": "Python Try/Except",
+        "url": "https://docs.python.org/3/tutorial/errors.html#handling-exceptions"
+      }
+    ]
+  },
+  {
+    "id": 192,
+    "term": "Dictionary",
+    "definition": "A collection of key-value pairs, like a real dictionary where each word has a definition. You look up values by their key name, making it fast and easy to organize related data.",
+    "category": "Backend",
+    "relatedTerms": [
+      "Object",
+      "JSON",
+      "Array"
+    ],
+    "example": "user = {'name': 'Alice', 'age': 25}. You access values like user['name'] which gives you 'Alice'.",
+    "links": [
+      {
+        "label": "Python Dictionaries",
+        "url": "https://docs.python.org/3/tutorial/datastructures.html#dictionaries"
+      }
+    ]
+  },
+  {
+    "id": 193,
+    "term": "Context Manager",
+    "definition": "A pattern (using the 'with' keyword) that automatically handles setup and cleanup for you. It ensures resources like files or connections are properly closed even if an error occurs.",
+    "category": "Backend",
+    "relatedTerms": [
+      "Exception",
+      "Try/Except"
+    ],
+    "example": "with open('data.txt') as f: content = f.read() — the file is automatically closed when the block ends, even if an error happens.",
+    "links": [
+      {
+        "label": "Python Context Managers",
+        "url": "https://docs.python.org/3/reference/datamodel.html#context-managers"
+      }
+    ]
+  },
+  {
+    "id": 194,
+    "term": "Request Body",
+    "definition": "The data you send along with a web request, typically when creating or updating something. It is like filling out a form and clicking submit — the form data is the request body.",
+    "category": "Web Basics",
+    "relatedTerms": [
+      "HTTP Methods",
+      "JSON",
+      "Endpoint"
+    ],
+    "example": "When you sign up on a website, your name, email, and password are sent in the request body to the server."
+  },
+  {
+    "id": 195,
+    "term": "Status Code",
+    "definition": "A three-digit number the server sends back to tell you what happened. 200 means success, 404 means not found, and 500 means the server had an internal error.",
+    "category": "Web Basics",
+    "relatedTerms": [
+      "Response",
+      "Endpoint",
+      "API"
+    ],
+    "example": "You visit a deleted page and get a 404. You submit a form successfully and get a 200 (or 201 for created).",
+    "links": [
+      {
+        "label": "HTTP Status Codes",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status"
+      }
+    ]
+  },
+  {
+    "id": 196,
+    "term": "Query Parameter",
+    "definition": "Extra information added to the end of a URL after a question mark, used to filter or modify what the server returns. Multiple parameters are separated by ampersands (&).",
+    "category": "Web Basics",
+    "relatedTerms": [
+      "Path Parameter",
+      "Endpoint",
+      "Route"
+    ],
+    "example": "/products?category=shoes&sort=price asks the server for products in the shoes category, sorted by price.",
+    "links": [
+      {
+        "label": "Query Strings",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams"
+      }
+    ]
+  },
+  {
+    "id": 197,
+    "term": "Path Parameter",
+    "definition": "A variable embedded in the URL path itself that tells the server which specific resource you want. It is part of the address, not added after a question mark.",
+    "category": "Web Basics",
+    "relatedTerms": [
+      "Query Parameter",
+      "Route",
+      "Endpoint"
+    ],
+    "example": "In /users/42, the number 42 is a path parameter — it tells the server you want the user with ID 42."
+  },
+  {
+    "id": 198,
+    "term": "HTTP Methods",
+    "definition": "The different types of web requests you can make: GET (read data), POST (create data), PUT (update data), and DELETE (remove data). They tell the server what action to take.",
+    "category": "Web Basics",
+    "relatedTerms": [
+      "HTTP",
+      "Endpoint",
+      "REST",
+      "Request Body"
+    ],
+    "example": "GET /users fetches all users. POST /users creates a new user. DELETE /users/42 removes user 42.",
+    "links": [
+      {
+        "label": "HTTP Methods",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods"
+      }
+    ]
+  },
+  {
+    "id": 199,
+    "term": "Request",
+    "definition": "A message your browser or app sends to a server asking for data or asking it to do something. Every time you click a link, submit a form, or load a page, a request is sent.",
+    "category": "Web Basics",
+    "relatedTerms": [
+      "Response",
+      "HTTP Methods",
+      "Endpoint"
+    ],
+    "example": "Typing a URL in your browser sends a GET request. Clicking a login button sends a POST request with your credentials."
+  },
+  {
+    "id": 200,
+    "term": "Response",
+    "definition": "The message a server sends back after receiving a request, containing the result — data, an error message, or a confirmation that something was done.",
+    "category": "Web Basics",
+    "relatedTerms": [
+      "Request",
+      "Status Code",
+      "JSON"
+    ],
+    "example": "You request your profile. The server responds with your name, email, and a 200 status code meaning everything is fine."
+  },
+  {
+    "id": 201,
+    "term": "Query",
+    "definition": "A question you ask a database to retrieve, insert, update, or delete data. Think of it like asking a librarian to find, shelve, or remove a specific book.",
+    "category": "Database",
+    "relatedTerms": [
+      "SQL",
+      "Database",
+      "ORM"
+    ],
+    "example": "SELECT * FROM users WHERE age > 18 is a query that asks the database for all users older than 18.",
+    "links": [
+      {
+        "label": "SQL Tutorial",
+        "url": "https://www.w3schools.com/sql/"
+      }
+    ]
+  },
+  {
+    "id": 202,
+    "term": "SQLite",
+    "definition": "A lightweight database stored as a single file on your computer. It is perfect for development and small apps because it needs no separate server to run.",
+    "category": "Database",
+    "relatedTerms": [
+      "PostgreSQL",
+      "Database",
+      "SQL"
+    ],
+    "example": "During development, your app stores all its data in a single file called app.db. No database server to install or configure.",
+    "links": [
+      {
+        "label": "SQLite",
+        "url": "https://www.sqlite.org/"
+      }
+    ]
+  },
+  {
+    "id": 203,
+    "term": "PostgreSQL",
+    "definition": "A powerful, production-grade database that runs as a separate server. It is used by large applications that need reliability, advanced features, and the ability to handle many users at once.",
+    "category": "Database",
+    "relatedTerms": [
+      "SQLite",
+      "Database",
+      "SQL"
+    ],
+    "example": "Your app uses SQLite during development, then switches to PostgreSQL for the live version that thousands of people use.",
+    "links": [
+      {
+        "label": "PostgreSQL",
+        "url": "https://www.postgresql.org/"
+      }
+    ]
+  },
+  {
+    "id": 204,
+    "term": "MongoDB",
+    "definition": "A database that stores data as flexible documents (similar to structured text files) instead of rigid tables. It is good for data that changes shape often or does not fit neatly into rows and columns.",
+    "category": "Database",
+    "relatedTerms": [
+      "NoSQL",
+      "Database",
+      "JSON"
+    ],
+    "example": "One user document might have an address field while another does not — the database handles both without complaints.",
+    "links": [
+      {
+        "label": "MongoDB",
+        "url": "https://www.mongodb.com/docs/"
+      }
+    ]
+  },
+  {
+    "id": 205,
+    "term": "Route",
+    "definition": "A URL pattern that your server listens for. When a user visits that URL, the server runs the matching code and returns a response.",
+    "category": "Backend",
+    "relatedTerms": [
+      "Flask",
+      "Endpoint",
+      "Decorator",
+      "Blueprint"
+    ],
+    "example": "The route '/users' might return a list of all users, while '/users/42' returns just one specific user."
+  },
+  {
+    "id": 206,
+    "term": "jsonify",
+    "definition": "A helper function that converts data into the lightweight text format that web browsers and apps expect when talking to a server. It also sets the right headers so the receiver knows what format the data is in.",
+    "category": "Backend",
+    "relatedTerms": [
+      "JSON",
+      "Flask",
+      "Response"
+    ],
+    "example": "return jsonify({'name': 'Alice', 'age': 25}) sends back neatly formatted data that any app can understand.",
+    "links": [
+      {
+        "label": "Flask jsonify",
+        "url": "https://flask.palletsprojects.com/en/latest/api/#flask.json.jsonify"
+      }
+    ]
+  },
+  {
+    "id": 207,
+    "term": "Flask-CORS",
+    "definition": "A library add-on that tells your server 'it is okay for websites on other addresses to make requests to me.' This is needed when your website and server run on different ports or domains.",
+    "category": "Backend",
+    "relatedTerms": [
+      "CORS",
+      "Flask",
+      "Middleware"
+    ],
+    "example": "Your website runs on port 3000 and your server on port 5000. Without Flask-CORS, the browser blocks requests between them.",
+    "links": [
+      {
+        "label": "Flask-CORS",
+        "url": "https://flask-cors.readthedocs.io/"
+      }
+    ]
+  },
+  {
+    "id": 208,
+    "term": "Middleware",
+    "definition": "Code that runs between receiving a request and sending a response, like a security guard checking everyone before they enter a building. It can modify requests, check permissions, or log activity.",
+    "category": "Backend",
+    "relatedTerms": [
+      "Request",
+      "Response",
+      "Flask-CORS",
+      "Authentication"
+    ],
+    "example": "An authentication middleware checks every incoming request for a valid token before letting it reach your route code."
+  },
+  {
+    "id": 209,
+    "term": "Module",
+    "definition": "A single file of code that can be imported and used by other files. Modules help you split a large program into manageable pieces, each with a clear purpose.",
+    "category": "Project Structure",
+    "relatedTerms": [
+      "Package",
+      "import/export",
+      "Blueprint"
+    ],
+    "example": "A file called utils.py is a module. Other files can import helper functions from it instead of rewriting the same code."
+  },
+  {
+    "id": 210,
+    "term": "Package",
+    "definition": "A folder of related modules bundled together. It has a special marker file that tells the language this folder is importable code, not just a regular directory.",
+    "category": "Project Structure",
+    "relatedTerms": [
+      "Module",
+      "npm",
+      "pip",
+      "import/export"
+    ],
+    "example": "A folder called 'services' with an __init__.py file inside it becomes a package. You can import from it like: from services import user_service."
+  },
+  {
+    "id": 211,
+    "term": "Pseudo-code",
+    "definition": "Informal, plain-English-like descriptions of what code should do, written before actual coding to plan your logic without worrying about syntax. It helps you think through problems clearly.",
+    "category": "General",
+    "relatedTerms": [
+      "Refactoring",
+      "Function"
+    ],
+    "example": "IF user is logged in THEN show dashboard ELSE redirect to login page — this is pseudo-code planning your logic."
+  },
+  {
+    "id": 212,
+    "term": "Refactoring",
+    "definition": "Rewriting existing code to make it cleaner, faster, or easier to understand, without changing what it does. The output stays the same but the code behind it improves.",
+    "category": "General",
+    "relatedTerms": [
+      "Technical Debt",
+      "Testing",
+      "Linting"
+    ],
+    "example": "You replace a 50-line function with three smaller, well-named functions. The app works the same, but the code is much easier to read.",
+    "links": [
+      {
+        "label": "Refactoring Guide",
+        "url": "https://refactoring.guru/refactoring"
+      }
+    ]
+  },
+  {
+    "id": 213,
+    "term": "Technical Debt",
+    "definition": "Shortcuts or messy code you knowingly leave in a project to save time now, knowing you will need to clean it up later. Like financial debt, it accumulates interest — the longer you wait, the harder it gets to fix.",
+    "category": "General",
+    "relatedTerms": [
+      "Refactoring",
+      "Linting",
+      "Testing"
+    ],
+    "example": "You hardcode a value instead of making it configurable to meet a deadline. That is technical debt you will need to pay back later."
   }
 ]

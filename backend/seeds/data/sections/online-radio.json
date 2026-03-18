@@ -6,7 +6,11 @@
   "order": 23,
   "estimatedMinutes": 40,
   "difficulty": "advanced",
-  "prerequisites": ["fundamentals", "backend-guide", "music-platform"],
+  "prerequisites": [
+    "fundamentals",
+    "backend-guide",
+    "music-platform"
+  ],
   "keyPoints": [
     "Live audio streaming with Icecast/Liquidsoap",
     "Schedule-based programming",
@@ -25,12 +29,42 @@
       "type": "cardGrid",
       "columns": 3,
       "cards": [
-        { "title": "Icecast2 Server", "body": "Open-source streaming media server that accepts source input and relays audio to listeners over HTTP.", "icon": "Cloud", "chip": "Infrastructure" },
-        { "title": "Liquidsoap", "body": "Programmable audio stream generator with playlist rotation, crossfading, and live DJ fallback.", "icon": "MusicNote", "chip": "Source Client" },
-        { "title": "Flask API", "body": "REST backend managing shows, schedules, song requests, and stream metadata polling.", "icon": "Api", "chip": "Backend" },
-        { "title": "React Player", "body": "Web audio player with volume control, now-playing info, and stream quality selector.", "icon": "PlayCircle", "chip": "Frontend" },
-        { "title": "WebSocket Chat", "body": "Real-time listener chat room and song request system via Flask-SocketIO.", "icon": "Chat", "chip": "Real-Time" },
-        { "title": "FFmpeg", "body": "Handles audio transcoding, recording live shows, and format conversion for archives.", "icon": "Transform", "chip": "Tooling" }
+        {
+          "title": "Icecast2 Server",
+          "body": "Open-source streaming media server that accepts source input and relays audio to listeners over HTTP.",
+          "icon": "Cloud",
+          "chip": "Infrastructure"
+        },
+        {
+          "title": "Liquidsoap",
+          "body": "Programmable audio stream generator with playlist rotation, crossfading, and live DJ fallback.",
+          "icon": "MusicNote",
+          "chip": "Source Client"
+        },
+        {
+          "title": "Flask API",
+          "body": "REST backend managing shows, schedules, song requests, and stream metadata polling.",
+          "icon": "Api",
+          "chip": "Backend"
+        },
+        {
+          "title": "React Player",
+          "body": "Web audio player with volume control, now-playing info, and stream quality selector.",
+          "icon": "PlayCircle",
+          "chip": "Frontend"
+        },
+        {
+          "title": "WebSocket Chat",
+          "body": "Real-time listener chat room and song request system via Flask-SocketIO.",
+          "icon": "Chat",
+          "chip": "Real-Time"
+        },
+        {
+          "title": "FFmpeg",
+          "body": "Handles audio transcoding, recording live shows, and format conversion for archives.",
+          "icon": "Transform",
+          "chip": "Tooling"
+        }
       ]
     },
     {
@@ -304,17 +338,87 @@
     {
       "type": "table",
       "heading": "Technology Stack Summary",
-      "headers": ["Component", "Technology", "Purpose"],
+      "headers": [
+        "Component",
+        "Technology",
+        "Purpose"
+      ],
       "rows": [
-        ["Streaming Server", "Icecast 2.4+", "Accept source input, relay to listeners over HTTP"],
-        ["Source Client", "Liquidsoap 2.2+", "Automated playlists, crossfade, DJ fallback"],
-        ["Live DJ Software", "BUTT / Mixxx", "DJs connect and broadcast live audio"],
-        ["Backend API", "Flask + Flask-SocketIO", "REST API, WebSocket chat, metadata polling"],
-        ["Database", "PostgreSQL 16", "Shows, schedules, requests, analytics"],
-        ["Frontend", "React + TypeScript", "Player, schedule, chat, request UI"],
-        ["Audio Transcoding", "FFmpeg", "Recording shows, format conversion"],
-        ["Containerization", "Docker Compose", "Full stack orchestration"]
+        [
+          "Streaming Server",
+          "Icecast 2.4+",
+          "Accept source input, relay to listeners over HTTP"
+        ],
+        [
+          "Source Client",
+          "Liquidsoap 2.2+",
+          "Automated playlists, crossfade, DJ fallback"
+        ],
+        [
+          "Live DJ Software",
+          "BUTT / Mixxx",
+          "DJs connect and broadcast live audio"
+        ],
+        [
+          "Backend API",
+          "Flask + Flask-SocketIO",
+          "REST API, WebSocket chat, metadata polling"
+        ],
+        [
+          "Database",
+          "PostgreSQL 16",
+          "Shows, schedules, requests, analytics"
+        ],
+        [
+          "Frontend",
+          "React + TypeScript",
+          "Player, schedule, chat, request UI"
+        ],
+        [
+          "Audio Transcoding",
+          "FFmpeg",
+          "Recording shows, format conversion"
+        ],
+        [
+          "Containerization",
+          "Docker Compose",
+          "Full stack orchestration"
+        ]
       ]
+    }
+  ],
+  "references": [
+    {
+      "id": "mdn2024audio",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "HTML Audio Element",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio"
+    },
+    {
+      "id": "icecast2024",
+      "authors": "Xiph.Org Foundation",
+      "year": "2024",
+      "title": "Icecast Documentation",
+      "source": "Icecast",
+      "url": "https://icecast.org/docs/"
+    },
+    {
+      "id": "mdn2024sse",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "Server-Sent Events",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events"
+    },
+    {
+      "id": "mdn2024webaudioradio",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "Web Audio API",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API"
     }
   ]
 }

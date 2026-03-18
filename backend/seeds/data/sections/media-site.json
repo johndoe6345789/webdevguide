@@ -6,7 +6,11 @@
   "order": 14,
   "estimatedMinutes": 240,
   "difficulty": "advanced",
-  "prerequisites": ["react-fundamentals", "flask-basics", "sql-databases"],
+  "prerequisites": [
+    "react-fundamentals",
+    "flask-basics",
+    "sql-databases"
+  ],
   "keyPoints": [
     "Design a CMS database schema with articles, categories, tags, and comments",
     "Build a rich text editor with TipTap and a draft/publish/schedule workflow",
@@ -28,17 +32,72 @@
       "type": "cardGrid",
       "columns": 3,
       "cards": [
-        { "title": "Content Management", "body": "Editor roles, draft/publish workflow, content scheduling, and version history.", "icon": "EditNote", "chip": "Backend" },
-        { "title": "Rich Text Editor", "body": "TipTap-based WYSIWYG with headings, images, embeds, and code blocks.", "icon": "Edit", "chip": "Frontend" },
-        { "title": "Article Layout", "body": "Typography, reading time, table of contents, and related articles.", "icon": "Article", "chip": "Frontend" },
-        { "title": "Categories & Tags", "body": "Hierarchical taxonomy, category pages, tag clouds, and breadcrumbs.", "icon": "Label", "chip": "Full-Stack" },
-        { "title": "Media Library", "body": "Image upload with Sharp/Pillow processing, thumbnails, and gallery management.", "icon": "Image", "chip": "Full-Stack" },
-        { "title": "SEO & Open Graph", "body": "Structured data, AMP pages, social sharing cards, and XML sitemaps.", "icon": "TravelExplore", "chip": "Frontend" },
-        { "title": "Advertising", "body": "Ad placements, Google AdSense integration, and paywall metered access.", "icon": "MonetizationOn", "chip": "Full-Stack" },
-        { "title": "Newsletter & RSS", "body": "Email capture, SendGrid integration, and auto-generated RSS feeds.", "icon": "RssFeed", "chip": "Backend" },
-        { "title": "Comments", "body": "Threaded comments, moderation queue, spam filtering, and reactions.", "icon": "Comment", "chip": "Full-Stack" },
-        { "title": "Analytics", "body": "Page views, read depth tracking, popular articles, and traffic sources.", "icon": "Analytics", "chip": "Full-Stack" },
-        { "title": "Performance", "body": "Image CDN, ISR/SSG for articles, lazy loading, and pagination.", "icon": "Speed", "chip": "Frontend" }
+        {
+          "title": "Content Management",
+          "body": "Editor roles, draft/publish workflow, content scheduling, and version history.",
+          "icon": "EditNote",
+          "chip": "Backend"
+        },
+        {
+          "title": "Rich Text Editor",
+          "body": "TipTap-based WYSIWYG with headings, images, embeds, and code blocks.",
+          "icon": "Edit",
+          "chip": "Frontend"
+        },
+        {
+          "title": "Article Layout",
+          "body": "Typography, reading time, table of contents, and related articles.",
+          "icon": "Article",
+          "chip": "Frontend"
+        },
+        {
+          "title": "Categories & Tags",
+          "body": "Hierarchical taxonomy, category pages, tag clouds, and breadcrumbs.",
+          "icon": "Label",
+          "chip": "Full-Stack"
+        },
+        {
+          "title": "Media Library",
+          "body": "Image upload with Sharp/Pillow processing, thumbnails, and gallery management.",
+          "icon": "Image",
+          "chip": "Full-Stack"
+        },
+        {
+          "title": "SEO & Open Graph",
+          "body": "Structured data, AMP pages, social sharing cards, and XML sitemaps.",
+          "icon": "TravelExplore",
+          "chip": "Frontend"
+        },
+        {
+          "title": "Advertising",
+          "body": "Ad placements, Google AdSense integration, and paywall metered access.",
+          "icon": "MonetizationOn",
+          "chip": "Full-Stack"
+        },
+        {
+          "title": "Newsletter & RSS",
+          "body": "Email capture, SendGrid integration, and auto-generated RSS feeds.",
+          "icon": "RssFeed",
+          "chip": "Backend"
+        },
+        {
+          "title": "Comments",
+          "body": "Threaded comments, moderation queue, spam filtering, and reactions.",
+          "icon": "Comment",
+          "chip": "Full-Stack"
+        },
+        {
+          "title": "Analytics",
+          "body": "Page views, read depth tracking, popular articles, and traffic sources.",
+          "icon": "Analytics",
+          "chip": "Full-Stack"
+        },
+        {
+          "title": "Performance",
+          "body": "Image CDN, ISR/SSG for articles, lazy loading, and pagination.",
+          "icon": "Speed",
+          "chip": "Frontend"
+        }
       ]
     },
     {
@@ -50,12 +109,32 @@
     {
       "type": "table",
       "heading": "Editor Roles",
-      "headers": ["Role", "Permissions", "Use Case"],
+      "headers": [
+        "Role",
+        "Permissions",
+        "Use Case"
+      ],
       "rows": [
-        ["Author", "Create drafts, edit own articles, upload images", "Staff writers and contributors"],
-        ["Editor", "Edit any article, approve/reject drafts, manage tags", "Senior editorial staff"],
-        ["Admin", "All permissions plus manage users, categories, and site settings", "Site owner or CTO"],
-        ["Contributor", "Submit drafts for review only, cannot publish", "Guest writers and freelancers"]
+        [
+          "Author",
+          "Create drafts, edit own articles, upload images",
+          "Staff writers and contributors"
+        ],
+        [
+          "Editor",
+          "Edit any article, approve/reject drafts, manage tags",
+          "Senior editorial staff"
+        ],
+        [
+          "Admin",
+          "All permissions plus manage users, categories, and site settings",
+          "Site owner or CTO"
+        ],
+        [
+          "Contributor",
+          "Submit drafts for review only, cannot publish",
+          "Guest writers and freelancers"
+        ]
       ]
     },
     {
@@ -74,13 +153,37 @@
     {
       "type": "table",
       "heading": "Article Status Flow",
-      "headers": ["Status", "Description", "Who Can Transition"],
+      "headers": [
+        "Status",
+        "Description",
+        "Who Can Transition"
+      ],
       "rows": [
-        ["draft", "Work in progress, only visible to author", "Author creates"],
-        ["in_review", "Submitted for editorial approval", "Author submits"],
-        ["scheduled", "Approved with a future publish date", "Editor approves and sets date"],
-        ["published", "Live on the public site", "Editor publishes or scheduler triggers"],
-        ["archived", "Removed from public view, preserved in database", "Editor archives"]
+        [
+          "draft",
+          "Work in progress, only visible to author",
+          "Author creates"
+        ],
+        [
+          "in_review",
+          "Submitted for editorial approval",
+          "Author submits"
+        ],
+        [
+          "scheduled",
+          "Approved with a future publish date",
+          "Editor approves and sets date"
+        ],
+        [
+          "published",
+          "Live on the public site",
+          "Editor publishes or scheduler triggers"
+        ],
+        [
+          "archived",
+          "Removed from public view, preserved in database",
+          "Editor archives"
+        ]
       ]
     },
     {
@@ -410,6 +513,40 @@
       "heading": "Summary",
       "headingLevel": 2,
       "body": "You have built a complete content management platform with a rich text editor supporting TipTap, Slate, and Markdown, an image upload pipeline with thumbnail generation, hierarchical categories with breadcrumbs, freeform tags with tag clouds, full-text search with autocomplete, SEO with structured data and sitemaps, advertising slots and metered paywall, newsletters with double opt-in, threaded comments with moderation and spam filtering, read depth analytics with traffic source tracking, and performance optimizations including caching and lazy loading. This architecture powers blogs, news sites, documentation platforms, and any content-driven application."
+    }
+  ],
+  "references": [
+    {
+      "id": "mdn2024mediaapis",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "Media Capture and Streams API",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Media_Capture_and_Streams_API"
+    },
+    {
+      "id": "cloudinary2024docs",
+      "authors": "Cloudinary",
+      "year": "2024",
+      "title": "Cloudinary Documentation",
+      "source": "Cloudinary",
+      "url": "https://cloudinary.com/documentation"
+    },
+    {
+      "id": "draftjs2024",
+      "authors": "Meta",
+      "year": "2024",
+      "title": "Draft.js — Rich Text Editor Framework",
+      "source": "Draft.js",
+      "url": "https://draftjs.org/"
+    },
+    {
+      "id": "mdn2024fileapi",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "File API",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/File_API"
     }
   ]
 }

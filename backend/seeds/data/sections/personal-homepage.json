@@ -6,7 +6,11 @@
   "order": 12,
   "estimatedMinutes": 120,
   "difficulty": "beginner",
-  "prerequisites": ["html-fundamentals", "css-fundamentals", "javascript-basics"],
+  "prerequisites": [
+    "html-fundamentals",
+    "css-fundamentals",
+    "javascript-basics"
+  ],
   "keyPoints": [
     "Plan your site goals, audience, content strategy, and domain name before writing code",
     "Apply design principles like visual hierarchy, typography pairing, and color theory",
@@ -30,12 +34,42 @@
       "type": "cardGrid",
       "columns": 3,
       "cards": [
-        { "title": "Define Your Goals", "body": "Decide whether you want to attract employers, freelance clients, open-source collaborators, or simply have a creative outlet.", "icon": "Flag", "chip": "Planning" },
-        { "title": "Know Your Audience", "body": "Technical recruiters skim for keywords. Design clients want visual proof. Open-source devs want GitHub links. Tailor accordingly.", "icon": "People", "chip": "Planning" },
-        { "title": "Content Strategy", "body": "Plan your sections: hero, about, skills, projects, testimonials, contact. Less is more — cut anything that doesn't serve your goal.", "icon": "Article", "chip": "Planning" },
-        { "title": "Domain Name", "body": "yourname.dev or firstname-lastname.com. Keep it short, professional, and easy to spell out loud.", "icon": "Language", "chip": "Setup" },
-        { "title": "Design Inspiration", "body": "Browse Dribbble, Awwwards, and other developer portfolios. Screenshot what you like and identify patterns.", "icon": "Palette", "chip": "Design" },
-        { "title": "Tech Stack Choice", "body": "For a first site, vanilla HTML/CSS/JS is perfect. You can always migrate to React or Next.js later.", "icon": "Build", "chip": "Setup" }
+        {
+          "title": "Define Your Goals",
+          "body": "Decide whether you want to attract employers, freelance clients, open-source collaborators, or simply have a creative outlet.",
+          "icon": "Flag",
+          "chip": "Planning"
+        },
+        {
+          "title": "Know Your Audience",
+          "body": "Technical recruiters skim for keywords. Design clients want visual proof. Open-source devs want GitHub links. Tailor accordingly.",
+          "icon": "People",
+          "chip": "Planning"
+        },
+        {
+          "title": "Content Strategy",
+          "body": "Plan your sections: hero, about, skills, projects, testimonials, contact. Less is more — cut anything that doesn't serve your goal.",
+          "icon": "Article",
+          "chip": "Planning"
+        },
+        {
+          "title": "Domain Name",
+          "body": "yourname.dev or firstname-lastname.com. Keep it short, professional, and easy to spell out loud.",
+          "icon": "Language",
+          "chip": "Setup"
+        },
+        {
+          "title": "Design Inspiration",
+          "body": "Browse Dribbble, Awwwards, and other developer portfolios. Screenshot what you like and identify patterns.",
+          "icon": "Palette",
+          "chip": "Design"
+        },
+        {
+          "title": "Tech Stack Choice",
+          "body": "For a first site, vanilla HTML/CSS/JS is perfect. You can always migrate to React or Next.js later.",
+          "icon": "Build",
+          "chip": "Setup"
+        }
       ]
     },
     {
@@ -53,14 +87,42 @@
     {
       "type": "table",
       "heading": "Core Design Principles",
-      "headers": ["Principle", "What It Means", "How to Apply"],
+      "headers": [
+        "Principle",
+        "What It Means",
+        "How to Apply"
+      ],
       "rows": [
-        ["Visual Hierarchy", "Guide the eye to the most important content first", "Use size, color, and spacing to make your name and tagline the first thing seen"],
-        ["Typography Pairing", "Use two complementary fonts — one for headings, one for body", "Try Inter + serif for body, or a monospace heading with clean sans-serif body"],
-        ["Color Theory", "Choose a primary accent color and build a palette from it", "Use a tool like coolors.co. Stick to 2-3 colors plus neutrals"],
-        ["Whitespace", "Empty space is not wasted space — it creates breathing room", "Add generous padding between sections (80-120px) and around text blocks"],
-        ["Above the Fold", "The first viewport should instantly communicate who you are", "Hero section with name, role, and one clear call-to-action"],
-        ["Consistency", "Repeating patterns create a professional feel", "Use the same border radius, spacing scale, and color for similar elements"]
+        [
+          "Visual Hierarchy",
+          "Guide the eye to the most important content first",
+          "Use size, color, and spacing to make your name and tagline the first thing seen"
+        ],
+        [
+          "Typography Pairing",
+          "Use two complementary fonts — one for headings, one for body",
+          "Try Inter + serif for body, or a monospace heading with clean sans-serif body"
+        ],
+        [
+          "Color Theory",
+          "Choose a primary accent color and build a palette from it",
+          "Use a tool like coolors.co. Stick to 2-3 colors plus neutrals"
+        ],
+        [
+          "Whitespace",
+          "Empty space is not wasted space — it creates breathing room",
+          "Add generous padding between sections (80-120px) and around text blocks"
+        ],
+        [
+          "Above the Fold",
+          "The first viewport should instantly communicate who you are",
+          "Hero section with name, role, and one clear call-to-action"
+        ],
+        [
+          "Consistency",
+          "Repeating patterns create a professional feel",
+          "Use the same border radius, spacing scale, and color for similar elements"
+        ]
       ]
     },
     {
@@ -259,13 +321,37 @@
     {
       "type": "table",
       "heading": "Common Breakpoints",
-      "headers": ["Breakpoint", "Target", "Typical Changes"],
+      "headers": [
+        "Breakpoint",
+        "Target",
+        "Typical Changes"
+      ],
       "rows": [
-        ["< 640px", "Mobile phones", "Single column, stacked elements, hamburger menu"],
-        ["640px — 768px", "Large phones / small tablets", "Two-column grids, larger touch targets"],
-        ["768px — 1024px", "Tablets", "Side-by-side layouts, visible navigation"],
-        ["1024px — 1280px", "Laptops", "Full layout with sidebar or multi-column grids"],
-        ["> 1280px", "Desktop monitors", "Max-width containers, comfortable reading widths"]
+        [
+          "< 640px",
+          "Mobile phones",
+          "Single column, stacked elements, hamburger menu"
+        ],
+        [
+          "640px — 768px",
+          "Large phones / small tablets",
+          "Two-column grids, larger touch targets"
+        ],
+        [
+          "768px — 1024px",
+          "Tablets",
+          "Side-by-side layouts, visible navigation"
+        ],
+        [
+          "1024px — 1280px",
+          "Laptops",
+          "Full layout with sidebar or multi-column grids"
+        ],
+        [
+          "> 1280px",
+          "Desktop monitors",
+          "Max-width containers, comfortable reading widths"
+        ]
       ]
     },
     {
@@ -344,13 +430,43 @@
     {
       "type": "table",
       "heading": "Core Web Vitals Targets",
-      "headers": ["Metric", "What It Measures", "Target", "How to Improve"],
+      "headers": [
+        "Metric",
+        "What It Measures",
+        "Target",
+        "How to Improve"
+      ],
       "rows": [
-        ["LCP (Largest Contentful Paint)", "Time until the biggest visible element renders", "< 2.5s", "Optimize hero image, preload fonts, use CDN"],
-        ["FID (First Input Delay)", "Time until the page responds to first click/tap", "< 100ms", "Minimize JavaScript, defer non-critical scripts"],
-        ["CLS (Cumulative Layout Shift)", "How much the layout jumps around during load", "< 0.1", "Set explicit width/height on images, reserve font space"],
-        ["INP (Interaction to Next Paint)", "Responsiveness to all interactions, not just first", "< 200ms", "Break up long tasks, use requestAnimationFrame"],
-        ["TTFB (Time to First Byte)", "Server response time", "< 800ms", "Use static hosting (Vercel/Netlify), enable caching"]
+        [
+          "LCP (Largest Contentful Paint)",
+          "Time until the biggest visible element renders",
+          "< 2.5s",
+          "Optimize hero image, preload fonts, use CDN"
+        ],
+        [
+          "FID (First Input Delay)",
+          "Time until the page responds to first click/tap",
+          "< 100ms",
+          "Minimize JavaScript, defer non-critical scripts"
+        ],
+        [
+          "CLS (Cumulative Layout Shift)",
+          "How much the layout jumps around during load",
+          "< 0.1",
+          "Set explicit width/height on images, reserve font space"
+        ],
+        [
+          "INP (Interaction to Next Paint)",
+          "Responsiveness to all interactions, not just first",
+          "< 200ms",
+          "Break up long tasks, use requestAnimationFrame"
+        ],
+        [
+          "TTFB (Time to First Byte)",
+          "Server response time",
+          "< 800ms",
+          "Use static hosting (Vercel/Netlify), enable caching"
+        ]
       ]
     },
     {
@@ -386,24 +502,44 @@
           "filename": "index.html (head)",
           "description": "Preload critical fonts and use font-display: swap to prevent invisible text during load.",
           "code": "<head>\n  <!-- Preload the most critical font weight -->\n  <link\n    rel=\"preload\"\n    href=\"/fonts/inter-var-latin.woff2\"\n    as=\"font\"\n    type=\"font/woff2\"\n    crossorigin\n  />\n\n  <style>\n    /* Self-host fonts for better performance than Google Fonts */\n    @font-face {\n      font-family: 'Inter';\n      src: url('/fonts/inter-var-latin.woff2') format('woff2');\n      font-weight: 100 900;\n      font-display: swap;  /* Show fallback font immediately */\n      unicode-range: U+0000-00FF; /* Latin characters only */\n    }\n  </style>\n</head>"
-          },
-          {
-            "type": "alert",
-            "severity": "info",
-            "title": "Self-hosting vs Google Fonts",
-            "body": "Self-hosting fonts eliminates a DNS lookup and connection to fonts.googleapis.com. Download font files from google-webfonts-helper, put them in your /fonts folder, and reference them with @font-face."
-          }
+        },
+        {
+          "type": "alert",
+          "severity": "info",
+          "title": "Self-hosting vs Google Fonts",
+          "body": "Self-hosting fonts eliminates a DNS lookup and connection to fonts.googleapis.com. Download font files from google-webfonts-helper, put them in your /fonts folder, and reference them with @font-face."
+        }
       ]
     },
     {
       "type": "table",
       "heading": "Lighthouse Performance Checklist",
-      "headers": ["Category", "Target", "Key Actions"],
+      "headers": [
+        "Category",
+        "Target",
+        "Key Actions"
+      ],
       "rows": [
-        ["Performance", "> 90", "Compress images, minify CSS/JS, defer scripts, preload fonts"],
-        ["Accessibility", "> 90", "Semantic HTML, alt text, focus styles, color contrast, skip link"],
-        ["Best Practices", "> 90", "HTTPS, no console errors, correct doctype, CSP headers"],
-        ["SEO", "> 90", "Meta description, title tag, Open Graph, structured data, mobile viewport"]
+        [
+          "Performance",
+          "> 90",
+          "Compress images, minify CSS/JS, defer scripts, preload fonts"
+        ],
+        [
+          "Accessibility",
+          "> 90",
+          "Semantic HTML, alt text, focus styles, color contrast, skip link"
+        ],
+        [
+          "Best Practices",
+          "> 90",
+          "HTTPS, no console errors, correct doctype, CSP headers"
+        ],
+        [
+          "SEO",
+          "> 90",
+          "Meta description, title tag, Open Graph, structured data, mobile viewport"
+        ]
       ]
     },
     {
@@ -477,12 +613,42 @@
     {
       "type": "table",
       "heading": "Analytics Platform Comparison",
-      "headers": ["Platform", "Privacy", "Free Tier", "Setup Complexity", "Best For"],
+      "headers": [
+        "Platform",
+        "Privacy",
+        "Free Tier",
+        "Setup Complexity",
+        "Best For"
+      ],
       "rows": [
-        ["Google Analytics 4", "Collects extensive data, requires cookie consent banner", "Unlimited", "Medium — requires consent management", "Sites that need detailed funnels and conversion tracking"],
-        ["Plausible", "No cookies, no personal data, GDPR-compliant by default", "Free for <10k views", "Easy — single script tag", "Personal sites that want simple, clean analytics"],
-        ["Umami", "Self-hosted, no cookies, open source", "Free (self-hosted)", "Medium — requires a server", "Developers who want full control and zero cost"],
-        ["Fathom", "No cookies, GDPR/CCPA compliant", "Paid ($14/mo)", "Easy — single script tag", "Businesses that need compliant analytics"]
+        [
+          "Google Analytics 4",
+          "Collects extensive data, requires cookie consent banner",
+          "Unlimited",
+          "Medium — requires consent management",
+          "Sites that need detailed funnels and conversion tracking"
+        ],
+        [
+          "Plausible",
+          "No cookies, no personal data, GDPR-compliant by default",
+          "Free for <10k views",
+          "Easy — single script tag",
+          "Personal sites that want simple, clean analytics"
+        ],
+        [
+          "Umami",
+          "Self-hosted, no cookies, open source",
+          "Free (self-hosted)",
+          "Medium — requires a server",
+          "Developers who want full control and zero cost"
+        ],
+        [
+          "Fathom",
+          "No cookies, GDPR/CCPA compliant",
+          "Paid ($14/mo)",
+          "Easy — single script tag",
+          "Businesses that need compliant analytics"
+        ]
       ]
     },
     {
@@ -593,10 +759,30 @@
       "type": "cardGrid",
       "columns": 2,
       "cards": [
-        { "title": "Accessibility Audit", "body": "Run Lighthouse and axe DevTools. Fix color contrast issues, add skip-to-content link, ensure all interactive elements are keyboard-accessible.", "icon": "Accessibility", "chip": "A11y" },
-        { "title": "Print Stylesheet", "body": "Add @media print styles to hide the nav, show URLs next to links, and format for paper. Recruiters sometimes print portfolios.", "icon": "Print", "chip": "CSS" },
-        { "title": "404 Page", "body": "Create a custom 404.html with navigation back to the homepage. GitHub Pages and Netlify both support this automatically.", "icon": "Error", "chip": "UX" },
-        { "title": "Progressive Web App", "body": "Add a manifest.json and service worker to make your site installable and available offline. Use Workbox for cache strategies.", "icon": "InstallMobile", "chip": "PWA" }
+        {
+          "title": "Accessibility Audit",
+          "body": "Run Lighthouse and axe DevTools. Fix color contrast issues, add skip-to-content link, ensure all interactive elements are keyboard-accessible.",
+          "icon": "Accessibility",
+          "chip": "A11y"
+        },
+        {
+          "title": "Print Stylesheet",
+          "body": "Add @media print styles to hide the nav, show URLs next to links, and format for paper. Recruiters sometimes print portfolios.",
+          "icon": "Print",
+          "chip": "CSS"
+        },
+        {
+          "title": "404 Page",
+          "body": "Create a custom 404.html with navigation back to the homepage. GitHub Pages and Netlify both support this automatically.",
+          "icon": "Error",
+          "chip": "UX"
+        },
+        {
+          "title": "Progressive Web App",
+          "body": "Add a manifest.json and service worker to make your site installable and available offline. Use Workbox for cache strategies.",
+          "icon": "InstallMobile",
+          "chip": "PWA"
+        }
       ]
     },
     {
@@ -610,6 +796,39 @@
       "heading": "Summary",
       "headingLevel": 2,
       "body": "Building a personal homepage is the best way to learn foundational web development. You practiced semantic HTML, responsive CSS with custom properties, JavaScript DOM manipulation, form validation, scroll animations with Intersection Observer, dark mode toggling, image optimization, and deployment. These skills transfer directly to every web project you will build in the future."
+    }
+  ],
+  "references": [
+    {
+      "id": "mdn2024html",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "HTML Basics",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/HTML_basics"
+    },
+    {
+      "id": "mdn2024responsive",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "Responsive Design",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Responsive_Design"
+    },
+    {
+      "id": "react2024components",
+      "authors": "Meta",
+      "year": "2024",
+      "title": "Your First Component",
+      "source": "React",
+      "url": "https://react.dev/learn/your-first-component"
+    },
+    {
+      "id": "krug2014dont",
+      "authors": "Krug, S.",
+      "year": "2014",
+      "title": "Don't Make Me Think, Revisited (3rd Edition)",
+      "source": "New Riders"
     }
   ]
 }

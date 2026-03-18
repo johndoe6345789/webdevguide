@@ -21,22 +21,59 @@ interface MarkdownProps {
 // ── Glossary tooltip card ─────────────────────────────────────────
 
 function GlossaryTooltip({ entry, children }: { entry: GlossaryTerm; children: ReactNode }) {
+  const { termMap } = useGlossaryTerms();
+
+  // Build numbered glossary list: the hovered term + all its related terms
+  const glossaryItems: { term: string; definition: string }[] = [
+    { term: entry.term, definition: entry.definition },
+  ];
+  for (const rt of entry.relatedTerms) {
+    const related = termMap.get(rt.toLowerCase());
+    if (related) {
+      glossaryItems.push({ term: related.term, definition: related.definition });
+    }
+  }
+
+  // Collect all links from this term and its related terms
+  const allLinks = [...(entry.links ?? [])];
+  for (const rt of entry.relatedTerms) {
+    const related = termMap.get(rt.toLowerCase());
+    if (related?.links) {
+      for (const link of related.links) {
+        if (!allLinks.some(l => l.url === link.url)) allLinks.push(link);
+      }
+    }
+  }
+
   const content = (
     <>
-      <span className="glossary-tip-header">
-        <span className="glossary-tip-term">{entry.term}</span>
-        <Chip label={entry.category} size="small" variant="outlined" className="glossary-tip-category" />
-      </span>
-      <span className="glossary-tip-definition">{entry.definition}</span>
-      {entry.example && (
-        <span className="glossary-tip-example">{entry.example}</span>
-      )}
-      {entry.relatedTerms.length > 0 && (
-        <span className="glossary-tip-related">
-          {entry.relatedTerms.map((rt) => (
-            <Chip key={rt} label={rt} size="small" className="glossary-tip-related-chip" />
-          ))}
+      <div className="glossary-tip-body">
+        <span className="glossary-tip-header">
+          <span className="glossary-tip-term">{entry.term}</span>
+          <Chip label={entry.category} size="small" variant="outlined" className="glossary-tip-category" />
         </span>
+        {entry.example && (
+          <span className="glossary-tip-example">{entry.example}</span>
+        )}
+        <ol className="glossary-tip-list">
+          {glossaryItems.map((item, i) => (
+            <li key={i} className="glossary-tip-list-item">
+              <strong>{item.term}</strong> — {item.definition}
+            </li>
+          ))}
+        </ol>
+      </div>
+      {allLinks.length > 0 && (
+        <div className="glossary-tip-footer">
+          <span className="glossary-tip-bookmarks-label">Bookmarks</span>
+          <div className="glossary-tip-bookmarks">
+            {allLinks.map((link, i) => (
+              <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="glossary-tip-bookmarks-item">
+                {link.label}
+              </a>
+            ))}
+          </div>
+        </div>
       )}
     </>
   );
@@ -46,9 +83,10 @@ function GlossaryTooltip({ entry, children }: { entry: GlossaryTerm; children: R
       title={content}
       arrow
       enterDelay={200}
-      leaveDelay={150}
+      leaveDelay={300}
       placement="top"
       classes={{ tooltip: 'glossary-tooltip' }}
+      slotProps={{ popper: { modifiers: [{ name: 'preventOverflow', options: { boundary: 'viewport' } }] } }}
     >
       <MuiLink
         href={`/glossary#${encodeURIComponent(entry.term)}`}

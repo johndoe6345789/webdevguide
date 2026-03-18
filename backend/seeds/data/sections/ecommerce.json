@@ -6,7 +6,12 @@
   "order": 15,
   "estimatedMinutes": 300,
   "difficulty": "advanced",
-  "prerequisites": ["react-fundamentals", "flask-basics", "sql-databases", "state-management"],
+  "prerequisites": [
+    "react-fundamentals",
+    "flask-basics",
+    "sql-databases",
+    "state-management"
+  ],
   "keyPoints": [
     "Choose between monolith, microservices, and headless commerce architectures",
     "Design a normalized product catalog with variants, categories, and inventory",
@@ -31,27 +36,97 @@
     {
       "type": "table",
       "heading": "Architecture Comparison",
-      "headers": ["Approach", "How It Works", "Best For", "Trade-Off"],
+      "headers": [
+        "Approach",
+        "How It Works",
+        "Best For",
+        "Trade-Off"
+      ],
       "rows": [
-        ["Monolith", "Single codebase serves HTML, handles payments, manages inventory", "MVPs, small catalogs, solo developers", "Hard to scale individual pieces independently"],
-        ["Microservices", "Separate services for catalog, cart, orders, payments, each with own DB", "Large teams, high traffic, complex domains", "Operational overhead: service mesh, distributed tracing, eventual consistency"],
-        ["Headless Commerce", "Backend API (or SaaS like Shopify/Saleor) with decoupled frontend", "Custom frontends, omnichannel (web + mobile + kiosk)", "Need to build or integrate the entire frontend yourself"],
-        ["Jamstack", "Static site generator pulls product data at build time, dynamic cart via API", "Content-heavy catalogs, maximum performance", "Rebuild required for product updates; dynamic features need serverless functions"]
+        [
+          "Monolith",
+          "Single codebase serves HTML, handles payments, manages inventory",
+          "MVPs, small catalogs, solo developers",
+          "Hard to scale individual pieces independently"
+        ],
+        [
+          "Microservices",
+          "Separate services for catalog, cart, orders, payments, each with own DB",
+          "Large teams, high traffic, complex domains",
+          "Operational overhead: service mesh, distributed tracing, eventual consistency"
+        ],
+        [
+          "Headless Commerce",
+          "Backend API (or SaaS like Shopify/Saleor) with decoupled frontend",
+          "Custom frontends, omnichannel (web + mobile + kiosk)",
+          "Need to build or integrate the entire frontend yourself"
+        ],
+        [
+          "Jamstack",
+          "Static site generator pulls product data at build time, dynamic cart via API",
+          "Content-heavy catalogs, maximum performance",
+          "Rebuild required for product updates; dynamic features need serverless functions"
+        ]
       ]
     },
     {
       "type": "cardGrid",
       "columns": 3,
       "cards": [
-        { "title": "Product Catalog", "body": "Filterable grid with categories, variants, search, and inventory tracking.", "icon": "Inventory", "chip": "Full-Stack" },
-        { "title": "Shopping Cart", "body": "Persistent cart with quantity controls, stock validation, and abandoned cart recovery.", "icon": "ShoppingCart", "chip": "Frontend" },
-        { "title": "Checkout Flow", "body": "Multi-step form with address validation, shipping options, and order summary.", "icon": "CreditCard", "chip": "Full-Stack" },
-        { "title": "Stripe Payments", "body": "Payment Intents API, webhook confirmation, refunds, and PCI compliance.", "icon": "Payment", "chip": "Backend" },
-        { "title": "Order Management", "body": "Full lifecycle tracking, email notifications, and status history.", "icon": "Receipt", "chip": "Backend" },
-        { "title": "Search & Discovery", "body": "Full-text search, faceted filters, autocomplete, and relevance ranking.", "icon": "Search", "chip": "Full-Stack" },
-        { "title": "User Accounts", "body": "Registration, login, order history, wishlists, and saved addresses.", "icon": "Person", "chip": "Full-Stack" },
-        { "title": "SEO & Analytics", "body": "Structured data, dynamic sitemaps, conversion funnels, and A/B testing.", "icon": "Analytics", "chip": "Frontend" },
-        { "title": "Admin Dashboard", "body": "Product CRUD, order management, inventory alerts, and sales reports.", "icon": "Dashboard", "chip": "Full-Stack" }
+        {
+          "title": "Product Catalog",
+          "body": "Filterable grid with categories, variants, search, and inventory tracking.",
+          "icon": "Inventory",
+          "chip": "Full-Stack"
+        },
+        {
+          "title": "Shopping Cart",
+          "body": "Persistent cart with quantity controls, stock validation, and abandoned cart recovery.",
+          "icon": "ShoppingCart",
+          "chip": "Frontend"
+        },
+        {
+          "title": "Checkout Flow",
+          "body": "Multi-step form with address validation, shipping options, and order summary.",
+          "icon": "CreditCard",
+          "chip": "Full-Stack"
+        },
+        {
+          "title": "Stripe Payments",
+          "body": "Payment Intents API, webhook confirmation, refunds, and PCI compliance.",
+          "icon": "Payment",
+          "chip": "Backend"
+        },
+        {
+          "title": "Order Management",
+          "body": "Full lifecycle tracking, email notifications, and status history.",
+          "icon": "Receipt",
+          "chip": "Backend"
+        },
+        {
+          "title": "Search & Discovery",
+          "body": "Full-text search, faceted filters, autocomplete, and relevance ranking.",
+          "icon": "Search",
+          "chip": "Full-Stack"
+        },
+        {
+          "title": "User Accounts",
+          "body": "Registration, login, order history, wishlists, and saved addresses.",
+          "icon": "Person",
+          "chip": "Full-Stack"
+        },
+        {
+          "title": "SEO & Analytics",
+          "body": "Structured data, dynamic sitemaps, conversion funnels, and A/B testing.",
+          "icon": "Analytics",
+          "chip": "Frontend"
+        },
+        {
+          "title": "Admin Dashboard",
+          "body": "Product CRUD, order management, inventory alerts, and sales reports.",
+          "icon": "Dashboard",
+          "chip": "Full-Stack"
+        }
       ]
     },
     {
@@ -108,11 +183,31 @@
     {
       "type": "table",
       "heading": "Cart Storage: Client vs Server",
-      "headers": ["Strategy", "How It Works", "Pros", "Cons"],
+      "headers": [
+        "Strategy",
+        "How It Works",
+        "Pros",
+        "Cons"
+      ],
       "rows": [
-        ["localStorage", "Cart stored as JSON in the browser", "Works without login, zero latency, simple", "Lost if user clears storage, not synced across devices"],
-        ["Server-side", "Cart stored in DB or Redis, keyed by user ID or session token", "Synced across devices, survives browser changes, enables abandoned cart emails", "Requires auth or session management, adds network latency"],
-        ["Hybrid", "localStorage for guests, merge into server cart on login", "Best of both worlds", "More complex merge logic when guest cart meets existing server cart"]
+        [
+          "localStorage",
+          "Cart stored as JSON in the browser",
+          "Works without login, zero latency, simple",
+          "Lost if user clears storage, not synced across devices"
+        ],
+        [
+          "Server-side",
+          "Cart stored in DB or Redis, keyed by user ID or session token",
+          "Synced across devices, survives browser changes, enables abandoned cart emails",
+          "Requires auth or session management, adds network latency"
+        ],
+        [
+          "Hybrid",
+          "localStorage for guests, merge into server cart on login",
+          "Best of both worlds",
+          "More complex merge logic when guest cart meets existing server cart"
+        ]
       ]
     },
     {
@@ -236,17 +331,96 @@
     {
       "type": "table",
       "heading": "Order Status Lifecycle",
-      "headers": ["Status", "Description", "Triggered By", "Email Sent"],
+      "headers": [
+        "Status",
+        "Description",
+        "Triggered By",
+        "Email Sent"
+      ],
       "rows": [
-        ["pending", "Order created, awaiting payment", "Checkout submission", "No"],
-        ["paid", "Payment confirmed by Stripe", "Stripe webhook", "Order confirmation"],
-        ["processing", "Staff is preparing the shipment", "Admin dashboard", "No"],
-        ["shipped", "Package dispatched with tracking number", "Admin dashboard", "Shipping confirmation with tracking link"],
-        ["delivered", "Package received by customer", "Tracking webhook or admin", "Delivery confirmation"],
-        ["cancelled", "Order was cancelled before shipping", "Customer or admin", "Cancellation notice"],
-        ["refunded", "Payment has been returned to customer", "Admin refund action", "Refund confirmation"],
-        ["payment_failed", "Stripe payment was declined", "Stripe webhook", "Payment failure notice with retry link"]
+        [
+          "pending",
+          "Order created, awaiting payment",
+          "Checkout submission",
+          "No"
+        ],
+        [
+          "paid",
+          "Payment confirmed by Stripe",
+          "Stripe webhook",
+          "Order confirmation"
+        ],
+        [
+          "processing",
+          "Staff is preparing the shipment",
+          "Admin dashboard",
+          "No"
+        ],
+        [
+          "shipped",
+          "Package dispatched with tracking number",
+          "Admin dashboard",
+          "Shipping confirmation with tracking link"
+        ],
+        [
+          "delivered",
+          "Package received by customer",
+          "Tracking webhook or admin",
+          "Delivery confirmation"
+        ],
+        [
+          "cancelled",
+          "Order was cancelled before shipping",
+          "Customer or admin",
+          "Cancellation notice"
+        ],
+        [
+          "refunded",
+          "Payment has been returned to customer",
+          "Admin refund action",
+          "Refund confirmation"
+        ],
+        [
+          "payment_failed",
+          "Stripe payment was declined",
+          "Stripe webhook",
+          "Payment failure notice with retry link"
+        ]
       ]
+    }
+  ],
+  "references": [
+    {
+      "id": "stripe2024docs",
+      "authors": "Stripe",
+      "year": "2024",
+      "title": "Stripe API Documentation",
+      "source": "Stripe",
+      "url": "https://stripe.com/docs/api"
+    },
+    {
+      "id": "mdn2024payments",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "Payment Request API",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Payment_Request_API"
+    },
+    {
+      "id": "w3c2024wai",
+      "authors": "W3C",
+      "year": "2024",
+      "title": "Web Accessibility Initiative (WAI)",
+      "source": "W3C",
+      "url": "https://www.w3.org/WAI/"
+    },
+    {
+      "id": "pci2024dss",
+      "authors": "PCI Security Standards Council",
+      "year": "2024",
+      "title": "PCI Data Security Standard",
+      "source": "PCI SSC",
+      "url": "https://www.pcisecuritystandards.org/"
     }
   ]
 }

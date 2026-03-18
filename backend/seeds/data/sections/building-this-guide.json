@@ -341,5 +341,47 @@
     {
       "$ref": "building-this-guide/production-deployment-you-now-have-the-complete-picture.json"
     }
+  ],
+  "references": [
+    {
+      "id": "react2024docs",
+      "authors": "Meta",
+      "year": "2024",
+      "title": "React Documentation",
+      "source": "React",
+      "url": "https://react.dev/"
+    },
+    {
+      "id": "express2024guide",
+      "authors": "OpenJS Foundation",
+      "year": "2024",
+      "title": "Express.js Guide",
+      "source": "Express.js",
+      "url": "https://expressjs.com/en/guide/routing.html"
+    },
+    {
+      "id": "mongodb2024docs",
+      "authors": "MongoDB",
+      "year": "2024",
+      "title": "MongoDB Documentation",
+      "source": "MongoDB",
+      "url": "https://www.mongodb.com/docs/"
+    },
+    {
+      "id": "docker2024docs",
+      "authors": "Docker",
+      "year": "2024",
+      "title": "Docker Documentation",
+      "source": "Docker",
+      "url": "https://docs.docker.com/"
+    },
+    {
+      "id": "jwt2024intro",
+      "authors": "Auth0",
+      "year": "2024",
+      "title": "Introduction to JSON Web Tokens",
+      "source": "JWT.io",
+      "url": "https://jwt.io/introduction"
+    }
   ]
 }

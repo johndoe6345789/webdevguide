@@ -9,10 +9,16 @@ export interface GuideSection {
   difficulty: 'beginner' | 'intermediate' | 'advanced';
 }
 
+export interface GlossaryTermLink {
+  label: string;
+  url: string;
+}
+
 export interface GlossaryTerm {
   term: string;
   definition: string;
   category: string;
   relatedTerms: string[];
   example?: string;
+  links?: GlossaryTermLink[];
 }

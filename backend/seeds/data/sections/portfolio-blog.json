@@ -6,7 +6,10 @@
   "order": 16,
   "estimatedMinutes": 150,
   "difficulty": "intermediate",
-  "prerequisites": ["react-fundamentals", "javascript-basics"],
+  "prerequisites": [
+    "react-fundamentals",
+    "javascript-basics"
+  ],
   "keyPoints": [
     "Define a content strategy with pillars, posting schedule, and audience focus",
     "Set up a Next.js project with TypeScript and MDX for blog posts",
@@ -30,12 +33,42 @@
       "type": "cardGrid",
       "columns": 3,
       "cards": [
-        { "title": "Content Pillars", "body": "Pick 3-4 topics you can write about repeatedly: tutorials, career advice, tool reviews, project walkthroughs. Pillars keep you focused.", "icon": "ViewColumn", "chip": "Strategy" },
-        { "title": "Posting Schedule", "body": "Consistency beats frequency. One quality post per month is better than four rushed ones. Block time for writing like any other task.", "icon": "CalendarMonth", "chip": "Strategy" },
-        { "title": "Target Audience", "body": "Write for the person you were six months ago. They have the same questions you already answered. Be specific — 'junior React developers' not 'everyone'.", "icon": "People", "chip": "Strategy" },
-        { "title": "Post Formats", "body": "Mix tutorials (step-by-step), explainers (how X works), opinions (why I chose Y), and case studies (building Z) to keep things fresh.", "icon": "Article", "chip": "Format" },
-        { "title": "Evergreen vs Timely", "body": "Prioritize evergreen content that stays useful for years. Timely content (new library release) gets clicks but decays fast.", "icon": "Update", "chip": "Strategy" },
-        { "title": "Repurposing", "body": "Turn each blog post into a Twitter thread, a LinkedIn post, and a dev.to cross-post. One piece of content becomes four distribution channels.", "icon": "Share", "chip": "Growth" }
+        {
+          "title": "Content Pillars",
+          "body": "Pick 3-4 topics you can write about repeatedly: tutorials, career advice, tool reviews, project walkthroughs. Pillars keep you focused.",
+          "icon": "ViewColumn",
+          "chip": "Strategy"
+        },
+        {
+          "title": "Posting Schedule",
+          "body": "Consistency beats frequency. One quality post per month is better than four rushed ones. Block time for writing like any other task.",
+          "icon": "CalendarMonth",
+          "chip": "Strategy"
+        },
+        {
+          "title": "Target Audience",
+          "body": "Write for the person you were six months ago. They have the same questions you already answered. Be specific — 'junior React developers' not 'everyone'.",
+          "icon": "People",
+          "chip": "Strategy"
+        },
+        {
+          "title": "Post Formats",
+          "body": "Mix tutorials (step-by-step), explainers (how X works), opinions (why I chose Y), and case studies (building Z) to keep things fresh.",
+          "icon": "Article",
+          "chip": "Format"
+        },
+        {
+          "title": "Evergreen vs Timely",
+          "body": "Prioritize evergreen content that stays useful for years. Timely content (new library release) gets clicks but decays fast.",
+          "icon": "Update",
+          "chip": "Strategy"
+        },
+        {
+          "title": "Repurposing",
+          "body": "Turn each blog post into a Twitter thread, a LinkedIn post, and a dev.to cross-post. One piece of content becomes four distribution channels.",
+          "icon": "Share",
+          "chip": "Growth"
+        }
       ]
     },
     {
@@ -297,14 +330,42 @@
     {
       "type": "table",
       "heading": "Analytics Metrics That Matter for a Blog",
-      "headers": ["Metric", "What It Tells You", "Tool"],
+      "headers": [
+        "Metric",
+        "What It Tells You",
+        "Tool"
+      ],
       "rows": [
-        ["Page views per post", "Which topics resonate most", "Plausible / Umami"],
-        ["Time on page", "Whether people actually read the post or bounce", "Plausible"],
-        ["Referral sources", "Where your traffic comes from (Twitter, Google, dev.to)", "Plausible / Umami"],
-        ["Scroll depth", "How far down the page readers get", "Custom JS"],
-        ["Newsletter conversion rate", "Percentage of readers who subscribe", "ConvertKit / Buttondown"],
-        ["Outbound link clicks", "Which external links get clicks (GitHub, demo, etc.)", "Plausible events"]
+        [
+          "Page views per post",
+          "Which topics resonate most",
+          "Plausible / Umami"
+        ],
+        [
+          "Time on page",
+          "Whether people actually read the post or bounce",
+          "Plausible"
+        ],
+        [
+          "Referral sources",
+          "Where your traffic comes from (Twitter, Google, dev.to)",
+          "Plausible / Umami"
+        ],
+        [
+          "Scroll depth",
+          "How far down the page readers get",
+          "Custom JS"
+        ],
+        [
+          "Newsletter conversion rate",
+          "Percentage of readers who subscribe",
+          "ConvertKit / Buttondown"
+        ],
+        [
+          "Outbound link clicks",
+          "Which external links get clicks (GitHub, demo, etc.)",
+          "Plausible events"
+        ]
       ]
     },
     {
@@ -336,14 +397,49 @@
     {
       "type": "table",
       "heading": "Blog Monetization Options",
-      "headers": ["Strategy", "Effort", "Revenue Potential", "Best For"],
+      "headers": [
+        "Strategy",
+        "Effort",
+        "Revenue Potential",
+        "Best For"
+      ],
       "rows": [
-        ["Sponsored posts", "Medium — requires audience and outreach", "$$$ per post", "Blogs with 10k+ monthly readers"],
-        ["Affiliate links", "Low — add links to tools you already use", "$ per click/sale", "Tutorial and review posts"],
-        ["Digital products", "High — requires product creation", "$$$$ passive income", "Blogs with established authority"],
-        ["Gumroad/Lemon Squeezy", "Medium — create and sell ebooks or templates", "$$ per sale", "Developers with niche expertise"],
-        ["Course platform", "Very high — video production and support", "$$$$$ recurring", "Experts with large audiences"],
-        ["GitHub Sponsors", "Low — just set it up", "$ recurring", "Open source contributors"]
+        [
+          "Sponsored posts",
+          "Medium — requires audience and outreach",
+          "$$$ per post",
+          "Blogs with 10k+ monthly readers"
+        ],
+        [
+          "Affiliate links",
+          "Low — add links to tools you already use",
+          "$ per click/sale",
+          "Tutorial and review posts"
+        ],
+        [
+          "Digital products",
+          "High — requires product creation",
+          "$$$$ passive income",
+          "Blogs with established authority"
+        ],
+        [
+          "Gumroad/Lemon Squeezy",
+          "Medium — create and sell ebooks or templates",
+          "$$ per sale",
+          "Developers with niche expertise"
+        ],
+        [
+          "Course platform",
+          "Very high — video production and support",
+          "$$$$$ recurring",
+          "Experts with large audiences"
+        ],
+        [
+          "GitHub Sponsors",
+          "Low — just set it up",
+          "$ recurring",
+          "Open source contributors"
+        ]
       ]
     },
     {
@@ -432,6 +528,40 @@
       "heading": "Summary",
       "headingLevel": 2,
       "body": "You have built a complete developer portfolio and blog with a content strategy, filterable project showcase with case study pages, an MDX blog engine with syntax highlighting, table of contents, tags, categories, and reading time, Giscus comments backed by GitHub Discussions, newsletter signup with ConvertKit or Buttondown, dark/light theme with system preference detection, SEO with structured data, RSS feed, and sitemap, social proof with testimonials and GitHub stats, analytics guidance, monetization strategies, and Vercel deployment with custom domain. Write your first post and ship it."
+    }
+  ],
+  "references": [
+    {
+      "id": "nextjs2024docs",
+      "authors": "Vercel",
+      "year": "2024",
+      "title": "Next.js Documentation",
+      "source": "Next.js",
+      "url": "https://nextjs.org/docs"
+    },
+    {
+      "id": "mdn2024seo",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "SEO for Developers",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Glossary/SEO"
+    },
+    {
+      "id": "mdx2024docs",
+      "authors": "MDX Contributors",
+      "year": "2024",
+      "title": "MDX Documentation",
+      "source": "MDX",
+      "url": "https://mdxjs.com/docs/"
+    },
+    {
+      "id": "mdn2024a11y",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "Accessibility",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility"
     }
   ]
 }

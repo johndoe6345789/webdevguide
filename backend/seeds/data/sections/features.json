@@ -64,11 +64,39 @@
         {
           "type": "table",
           "heading": "Rendering strategy comparison",
-          "headers": ["Strategy", "Build Time", "First Load Speed", "SEO", "Data Freshness", "Best For"],
+          "headers": [
+            "Strategy",
+            "Build Time",
+            "First Load Speed",
+            "SEO",
+            "Data Freshness",
+            "Best For"
+          ],
           "rows": [
-            ["CSR", "Fast", "Slow (blank page until JS loads)", "Poor", "Always fresh", "Internal dashboards, authenticated apps"],
-            ["SSR", "N/A (per request)", "Fast (HTML arrives ready)", "Excellent", "Always fresh", "Dynamic pages, personalized content"],
-            ["SSG", "Slow (builds all pages)", "Fastest (pre-built HTML from CDN)", "Excellent", "Stale until rebuild", "Blogs, docs, marketing pages"]
+            [
+              "CSR",
+              "Fast",
+              "Slow (blank page until JS loads)",
+              "Poor",
+              "Always fresh",
+              "Internal dashboards, authenticated apps"
+            ],
+            [
+              "SSR",
+              "N/A (per request)",
+              "Fast (HTML arrives ready)",
+              "Excellent",
+              "Always fresh",
+              "Dynamic pages, personalized content"
+            ],
+            [
+              "SSG",
+              "Slow (builds all pages)",
+              "Fastest (pre-built HTML from CDN)",
+              "Excellent",
+              "Stale until rebuild",
+              "Blogs, docs, marketing pages"
+            ]
           ]
         },
         {
@@ -331,9 +359,21 @@
           "type": "cardGrid",
           "columns": 3,
           "cards": [
-            { "title": "Installable", "body": "Users can add the app to their home screen and launch it like a native app", "icon": "InstallMobile" },
-            { "title": "Offline Ready", "body": "Service Workers cache assets so the app works without an internet connection", "icon": "WifiOff" },
-            { "title": "Push Notifications", "body": "Send notifications to re-engage users even when the app is closed", "icon": "Notifications" }
+            {
+              "title": "Installable",
+              "body": "Users can add the app to their home screen and launch it like a native app",
+              "icon": "InstallMobile"
+            },
+            {
+              "title": "Offline Ready",
+              "body": "Service Workers cache assets so the app works without an internet connection",
+              "icon": "WifiOff"
+            },
+            {
+              "title": "Push Notifications",
+              "body": "Send notifications to re-engage users even when the app is closed",
+              "icon": "Notifications"
+            }
           ]
         },
         {
@@ -414,14 +454,42 @@
         {
           "type": "table",
           "heading": "Performance optimization checklist",
-          "headers": ["Technique", "Impact", "Effort"],
+          "headers": [
+            "Technique",
+            "Impact",
+            "Effort"
+          ],
           "rows": [
-            ["Use next/image for all images", "High -- automatic format, sizing, lazy loading", "Low"],
-            ["Code split with dynamic imports", "High -- reduces initial bundle by 30-60%", "Low"],
-            ["Import specific functions, not entire libraries", "Medium -- can save 50+ KB per library", "Low"],
-            ["Add loading.tsx for route segments", "Medium -- shows instant feedback during navigation", "Low"],
-            ["Use React.memo for expensive list items", "Medium -- prevents unnecessary re-renders", "Medium"],
-            ["Debounce search inputs", "Medium -- reduces API calls and re-renders", "Low"]
+            [
+              "Use next/image for all images",
+              "High -- automatic format, sizing, lazy loading",
+              "Low"
+            ],
+            [
+              "Code split with dynamic imports",
+              "High -- reduces initial bundle by 30-60%",
+              "Low"
+            ],
+            [
+              "Import specific functions, not entire libraries",
+              "Medium -- can save 50+ KB per library",
+              "Low"
+            ],
+            [
+              "Add loading.tsx for route segments",
+              "Medium -- shows instant feedback during navigation",
+              "Low"
+            ],
+            [
+              "Use React.memo for expensive list items",
+              "Medium -- prevents unnecessary re-renders",
+              "Medium"
+            ],
+            [
+              "Debounce search inputs",
+              "Medium -- reduces API calls and re-renders",
+              "Low"
+            ]
           ]
         },
         {
@@ -570,12 +638,32 @@
         {
           "type": "table",
           "heading": "WCAG quick reference",
-          "headers": ["Guideline", "What It Means", "How to Achieve It"],
+          "headers": [
+            "Guideline",
+            "What It Means",
+            "How to Achieve It"
+          ],
           "rows": [
-            ["Perceivable", "Users can see or hear all content", "Alt text on images, captions on video, sufficient color contrast"],
-            ["Operable", "Users can interact with all controls", "Keyboard navigation, no time limits, skip navigation links"],
-            ["Understandable", "Users can comprehend the content", "Clear language, consistent navigation, helpful error messages"],
-            ["Robust", "Works across assistive technologies", "Valid HTML, proper ARIA, semantic elements"]
+            [
+              "Perceivable",
+              "Users can see or hear all content",
+              "Alt text on images, captions on video, sufficient color contrast"
+            ],
+            [
+              "Operable",
+              "Users can interact with all controls",
+              "Keyboard navigation, no time limits, skip navigation links"
+            ],
+            [
+              "Understandable",
+              "Users can comprehend the content",
+              "Clear language, consistent navigation, helpful error messages"
+            ],
+            [
+              "Robust",
+              "Works across assistive technologies",
+              "Valid HTML, proper ARIA, semantic elements"
+            ]
           ]
         },
         {
@@ -642,12 +730,37 @@
         {
           "type": "table",
           "heading": "Which approach to use",
-          "headers": ["Approach", "Scope", "Best For", "Avoid When"],
+          "headers": [
+            "Approach",
+            "Scope",
+            "Best For",
+            "Avoid When"
+          ],
           "rows": [
-            ["useState", "Single component", "Form inputs, toggles, UI-only state", "Data needs to be shared across siblings or distant components"],
-            ["useReducer", "Single component (complex)", "Forms with validation, state machines, multiple related values", "Simple boolean toggles or single values"],
-            ["React Context", "Subtree of components", "Auth, locale, theme (data that changes rarely)", "High-frequency updates (causes entire subtree to re-render)"],
-            ["Redux", "Entire application", "Theme, cart, notifications, data that persists across pages", "Data used by only one component"]
+            [
+              "useState",
+              "Single component",
+              "Form inputs, toggles, UI-only state",
+              "Data needs to be shared across siblings or distant components"
+            ],
+            [
+              "useReducer",
+              "Single component (complex)",
+              "Forms with validation, state machines, multiple related values",
+              "Simple boolean toggles or single values"
+            ],
+            [
+              "React Context",
+              "Subtree of components",
+              "Auth, locale, theme (data that changes rarely)",
+              "High-frequency updates (causes entire subtree to re-render)"
+            ],
+            [
+              "Redux",
+              "Entire application",
+              "Theme, cart, notifications, data that persists across pages",
+              "Data used by only one component"
+            ]
           ]
         },
         {
@@ -735,5 +848,39 @@
   "prerequisites": [
     "Basic understanding of React components, props, and state",
     "Familiarity with JavaScript ES6 features and async/await"
+  ],
+  "references": [
+    {
+      "id": "mdn2024webapis",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "Web APIs",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API"
+    },
+    {
+      "id": "react2024docs",
+      "authors": "Meta",
+      "year": "2024",
+      "title": "React Documentation",
+      "source": "React",
+      "url": "https://react.dev/"
+    },
+    {
+      "id": "w3c2024html",
+      "authors": "W3C",
+      "year": "2024",
+      "title": "HTML Living Standard",
+      "source": "W3C / WHATWG",
+      "url": "https://html.spec.whatwg.org/"
+    },
+    {
+      "id": "mdn2024css",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "CSS Reference",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference"
+    }
   ]
 }

@@ -6,7 +6,10 @@
   "order": 22,
   "estimatedMinutes": 45,
   "difficulty": "advanced",
-  "prerequisites": ["fundamentals", "backend-guide"],
+  "prerequisites": [
+    "fundamentals",
+    "backend-guide"
+  ],
   "keyPoints": [
     "Audio streaming and Web Audio API",
     "Persistent player with queue",
@@ -25,12 +28,42 @@
       "type": "cardGrid",
       "columns": 3,
       "cards": [
-        { "title": "Audio Engine", "body": "HTML5 Audio and Web Audio API for playback, equalization, and visualization.", "icon": "GraphicEq", "chip": "Frontend" },
-        { "title": "Streaming API", "body": "Flask endpoints serving byte-range requests for seekable audio.", "icon": "Cloud", "chip": "Backend" },
-        { "title": "Database", "body": "PostgreSQL schema for tracks, artists, albums, playlists, and social graph.", "icon": "Storage", "chip": "Backend" },
-        { "title": "CDN / Storage", "body": "Object storage for audio files with CDN edge caching.", "icon": "CloudQueue", "chip": "Infrastructure" },
-        { "title": "Player UI", "body": "Persistent bottom bar with queue, seek, volume, shuffle, and repeat.", "icon": "PlayCircle", "chip": "Frontend" },
-        { "title": "Discovery", "body": "Search, charts, collaborative filtering, and personalized recommendations.", "icon": "Explore", "chip": "Full-Stack" }
+        {
+          "title": "Audio Engine",
+          "body": "HTML5 Audio and Web Audio API for playback, equalization, and visualization.",
+          "icon": "GraphicEq",
+          "chip": "Frontend"
+        },
+        {
+          "title": "Streaming API",
+          "body": "Flask endpoints serving byte-range requests for seekable audio.",
+          "icon": "Cloud",
+          "chip": "Backend"
+        },
+        {
+          "title": "Database",
+          "body": "PostgreSQL schema for tracks, artists, albums, playlists, and social graph.",
+          "icon": "Storage",
+          "chip": "Backend"
+        },
+        {
+          "title": "CDN / Storage",
+          "body": "Object storage for audio files with CDN edge caching.",
+          "icon": "CloudQueue",
+          "chip": "Infrastructure"
+        },
+        {
+          "title": "Player UI",
+          "body": "Persistent bottom bar with queue, seek, volume, shuffle, and repeat.",
+          "icon": "PlayCircle",
+          "chip": "Frontend"
+        },
+        {
+          "title": "Discovery",
+          "body": "Search, charts, collaborative filtering, and personalized recommendations.",
+          "icon": "Explore",
+          "chip": "Full-Stack"
+        }
       ]
     },
     {
@@ -49,14 +82,42 @@
     {
       "type": "table",
       "heading": "Track Lifecycle",
-      "headers": ["Stage", "Description", "Component"],
+      "headers": [
+        "Stage",
+        "Description",
+        "Component"
+      ],
       "rows": [
-        ["Upload", "Artist uploads audio file via API", "Flask endpoint"],
-        ["Processing", "Extract metadata, generate waveform, transcode", "Background worker"],
-        ["Storage", "Store file in object storage, save metadata to DB", "S3 / MinIO"],
-        ["Streaming", "Serve via byte-range requests with CDN caching", "Flask + CDN"],
-        ["Playback", "Client fetches stream, renders in Audio element", "React player"],
-        ["Analytics", "Record play in listening_history after 30 seconds", "Flask webhook"]
+        [
+          "Upload",
+          "Artist uploads audio file via API",
+          "Flask endpoint"
+        ],
+        [
+          "Processing",
+          "Extract metadata, generate waveform, transcode",
+          "Background worker"
+        ],
+        [
+          "Storage",
+          "Store file in object storage, save metadata to DB",
+          "S3 / MinIO"
+        ],
+        [
+          "Streaming",
+          "Serve via byte-range requests with CDN caching",
+          "Flask + CDN"
+        ],
+        [
+          "Playback",
+          "Client fetches stream, renders in Audio element",
+          "React player"
+        ],
+        [
+          "Analytics",
+          "Record play in listening_history after 30 seconds",
+          "Flask webhook"
+        ]
       ]
     },
     {
@@ -324,14 +385,63 @@
     {
       "type": "table",
       "heading": "Audio Format Browser Support",
-      "headers": ["Format", "Chrome", "Firefox", "Safari", "Edge", "Recommended Use"],
+      "headers": [
+        "Format",
+        "Chrome",
+        "Firefox",
+        "Safari",
+        "Edge",
+        "Recommended Use"
+      ],
       "rows": [
-        ["MP3", "Yes", "Yes", "Yes", "Yes", "Universal fallback"],
-        ["AAC / M4A", "Yes", "Yes", "Yes", "Yes", "Default for Apple devices"],
-        ["OGG Vorbis", "Yes", "Yes", "No", "Yes", "Open-source alternative"],
-        ["FLAC", "Yes", "Yes", "Yes", "Yes", "Lossless / Hi-Fi tier"],
-        ["WAV", "Yes", "Yes", "Yes", "Yes", "Uncompressed, large files"],
-        ["Opus", "Yes", "Yes", "Safari 15+", "Yes", "Best compression ratio"]
+        [
+          "MP3",
+          "Yes",
+          "Yes",
+          "Yes",
+          "Yes",
+          "Universal fallback"
+        ],
+        [
+          "AAC / M4A",
+          "Yes",
+          "Yes",
+          "Yes",
+          "Yes",
+          "Default for Apple devices"
+        ],
+        [
+          "OGG Vorbis",
+          "Yes",
+          "Yes",
+          "No",
+          "Yes",
+          "Open-source alternative"
+        ],
+        [
+          "FLAC",
+          "Yes",
+          "Yes",
+          "Yes",
+          "Yes",
+          "Lossless / Hi-Fi tier"
+        ],
+        [
+          "WAV",
+          "Yes",
+          "Yes",
+          "Yes",
+          "Yes",
+          "Uncompressed, large files"
+        ],
+        [
+          "Opus",
+          "Yes",
+          "Yes",
+          "Safari 15+",
+          "Yes",
+          "Best compression ratio"
+        ]
       ]
     },
     {
@@ -365,6 +475,40 @@
       "body": "Wire up the Redux store, mount the PlayerBar in App.tsx, and test play, pause, next, previous, shuffle, and repeat from the browser dev console.",
       "code": "// In browser console to verify:\nstore.dispatch(playTrack({\n  track: { id: 1, title: 'Test', artist: 'Artist', artistId: 1,\n           duration: 180, streamUrl: '/api/stream/tracks/1/stream' },\n  queue: [/* more tracks */]\n}));\nconsole.log(store.getState().player);",
       "language": "javascript"
+    }
+  ],
+  "references": [
+    {
+      "id": "mdn2024webaudio",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "Web Audio API",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API"
+    },
+    {
+      "id": "mdn2024mediaelement",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "HTMLMediaElement",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement"
+    },
+    {
+      "id": "howlerjs2024",
+      "authors": "GoldFire Studios",
+      "year": "2024",
+      "title": "Howler.js Documentation",
+      "source": "Howler.js",
+      "url": "https://howlerjs.com/"
+    },
+    {
+      "id": "w3c2024mediasession",
+      "authors": "W3C",
+      "year": "2024",
+      "title": "Media Session API",
+      "source": "W3C",
+      "url": "https://w3c.github.io/mediasession/"
     }
   ]
 }

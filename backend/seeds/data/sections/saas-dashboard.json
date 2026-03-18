@@ -6,7 +6,10 @@
   "order": 17,
   "estimatedMinutes": 75,
   "difficulty": "advanced",
-  "prerequisites": ["backend-guide", "fundamentals"],
+  "prerequisites": [
+    "backend-guide",
+    "fundamentals"
+  ],
   "keyPoints": [
     "Role-based access control (RBAC) restricts what each user can see and do based on their role (admin, user, viewer)",
     "Dashboard layouts use a persistent sidebar for navigation and a main content area that changes based on the selected page",
@@ -198,11 +201,31 @@
     {
       "type": "table",
       "heading": "Multi-Tenancy Strategies",
-      "headers": ["Strategy", "How It Works", "Pros", "Cons"],
+      "headers": [
+        "Strategy",
+        "How It Works",
+        "Pros",
+        "Cons"
+      ],
       "rows": [
-        ["Shared database, shared tables", "All tenants in one table, filtered by tenant_id column", "Simple, cheap, easy to maintain", "Noisy neighbor risk, complex queries"],
-        ["Shared database, separate schemas", "Each tenant gets its own schema (table namespace)", "Good isolation, moderate complexity", "Schema migrations run per tenant"],
-        ["Separate databases", "Each tenant gets their own database", "Maximum isolation and security", "Expensive, complex to manage"]
+        [
+          "Shared database, shared tables",
+          "All tenants in one table, filtered by tenant_id column",
+          "Simple, cheap, easy to maintain",
+          "Noisy neighbor risk, complex queries"
+        ],
+        [
+          "Shared database, separate schemas",
+          "Each tenant gets its own schema (table namespace)",
+          "Good isolation, moderate complexity",
+          "Schema migrations run per tenant"
+        ],
+        [
+          "Separate databases",
+          "Each tenant gets their own database",
+          "Maximum isolation and security",
+          "Expensive, complex to manage"
+        ]
       ]
     },
     {
@@ -256,6 +279,40 @@
         "Add rate limiting to your API endpoints to prevent abuse",
         "Implement Stripe integration for real payment processing"
       ]
+    }
+  ],
+  "references": [
+    {
+      "id": "react2024context",
+      "authors": "Meta",
+      "year": "2024",
+      "title": "Passing Data Deeply with Context",
+      "source": "React",
+      "url": "https://react.dev/learn/passing-data-deeply-with-context"
+    },
+    {
+      "id": "recharts2024",
+      "authors": "Recharts",
+      "year": "2024",
+      "title": "Recharts Documentation",
+      "source": "Recharts",
+      "url": "https://recharts.org/en-US/"
+    },
+    {
+      "id": "mdn2024rbac",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "HTTP Authorization",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Authorization"
+    },
+    {
+      "id": "tanstack2024table",
+      "authors": "TanStack",
+      "year": "2024",
+      "title": "TanStack Table Documentation",
+      "source": "TanStack",
+      "url": "https://tanstack.com/table/latest"
     }
   ]
 }

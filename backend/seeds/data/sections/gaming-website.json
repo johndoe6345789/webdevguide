@@ -6,7 +6,10 @@
   "order": 25,
   "estimatedMinutes": 45,
   "difficulty": "advanced",
-  "prerequisites": ["fundamentals", "backend-guide"],
+  "prerequisites": [
+    "fundamentals",
+    "backend-guide"
+  ],
   "keyPoints": [
     "HTML5 Canvas game engine",
     "Real-time multiplayer with WebSockets",
@@ -25,12 +28,42 @@
       "type": "cardGrid",
       "columns": 3,
       "cards": [
-        { "title": "Game Engine", "body": "HTML5 Canvas and WebGL rendering with a requestAnimationFrame game loop, entity system, and collision detection.", "icon": "SportsEsports", "chip": "Frontend" },
-        { "title": "API Server", "body": "Flask REST API for user accounts, scores, achievements, tournaments, and game metadata.", "icon": "Api", "chip": "Backend" },
-        { "title": "WebSocket Server", "body": "Flask-SocketIO for real-time multiplayer state sync, matchmaking, and in-game chat.", "icon": "Cable", "chip": "Real-Time" },
-        { "title": "Database", "body": "PostgreSQL storing users, scores, achievements, tournaments, game sessions, and chat history.", "icon": "Storage", "chip": "Backend" },
-        { "title": "CDN & Assets", "body": "Sprite sheets, audio files, and game bundles served from a CDN with aggressive caching.", "icon": "Cloud", "chip": "Infrastructure" },
-        { "title": "Admin Panel", "body": "Manage games, moderate users, configure tournaments, and review reported content.", "icon": "AdminPanelSettings", "chip": "Full-Stack" }
+        {
+          "title": "Game Engine",
+          "body": "HTML5 Canvas and WebGL rendering with a requestAnimationFrame game loop, entity system, and collision detection.",
+          "icon": "SportsEsports",
+          "chip": "Frontend"
+        },
+        {
+          "title": "API Server",
+          "body": "Flask REST API for user accounts, scores, achievements, tournaments, and game metadata.",
+          "icon": "Api",
+          "chip": "Backend"
+        },
+        {
+          "title": "WebSocket Server",
+          "body": "Flask-SocketIO for real-time multiplayer state sync, matchmaking, and in-game chat.",
+          "icon": "Cable",
+          "chip": "Real-Time"
+        },
+        {
+          "title": "Database",
+          "body": "PostgreSQL storing users, scores, achievements, tournaments, game sessions, and chat history.",
+          "icon": "Storage",
+          "chip": "Backend"
+        },
+        {
+          "title": "CDN & Assets",
+          "body": "Sprite sheets, audio files, and game bundles served from a CDN with aggressive caching.",
+          "icon": "Cloud",
+          "chip": "Infrastructure"
+        },
+        {
+          "title": "Admin Panel",
+          "body": "Manage games, moderate users, configure tournaments, and review reported content.",
+          "icon": "AdminPanelSettings",
+          "chip": "Full-Stack"
+        }
       ]
     },
     {
@@ -268,17 +301,57 @@
     {
       "type": "table",
       "heading": "Canvas 2D vs WebGL Performance",
-      "headers": ["Factor", "Canvas 2D", "WebGL"],
+      "headers": [
+        "Factor",
+        "Canvas 2D",
+        "WebGL"
+      ],
       "rows": [
-        ["Setup complexity", "Minimal, native API", "Requires shaders, buffers, programs"],
-        ["Draw calls", "~1000 sprites at 60fps", "~10000+ sprites at 60fps"],
-        ["GPU acceleration", "Partial (browser dependent)", "Full GPU pipeline"],
-        ["Text rendering", "Native fillText, easy to use", "Requires texture atlas for fonts"],
-        ["Image effects", "globalCompositeOperation", "Custom fragment shaders"],
-        ["Transparency", "Built-in alpha support", "Requires blend mode setup"],
-        ["Best for", "2D games, UI-heavy, prototypes", "Particle effects, large worlds, 3D"],
-        ["Mobile support", "Excellent", "Good (check WebGL availability)"],
-        ["Memory usage", "Lower baseline", "Higher due to GPU buffer allocation"]
+        [
+          "Setup complexity",
+          "Minimal, native API",
+          "Requires shaders, buffers, programs"
+        ],
+        [
+          "Draw calls",
+          "~1000 sprites at 60fps",
+          "~10000+ sprites at 60fps"
+        ],
+        [
+          "GPU acceleration",
+          "Partial (browser dependent)",
+          "Full GPU pipeline"
+        ],
+        [
+          "Text rendering",
+          "Native fillText, easy to use",
+          "Requires texture atlas for fonts"
+        ],
+        [
+          "Image effects",
+          "globalCompositeOperation",
+          "Custom fragment shaders"
+        ],
+        [
+          "Transparency",
+          "Built-in alpha support",
+          "Requires blend mode setup"
+        ],
+        [
+          "Best for",
+          "2D games, UI-heavy, prototypes",
+          "Particle effects, large worlds, 3D"
+        ],
+        [
+          "Mobile support",
+          "Excellent",
+          "Good (check WebGL availability)"
+        ],
+        [
+          "Memory usage",
+          "Lower baseline",
+          "Higher due to GPU buffer allocation"
+        ]
       ]
     },
     {
@@ -400,6 +473,48 @@
       "severity": "success",
       "title": "Next Steps",
       "body": "You now have a complete gaming platform foundation. Expand it by adding more game types, implementing spectator mode for tournaments, adding replay recording and playback, integrating WebRTC for voice chat, and building an admin dashboard for content moderation and analytics."
+    }
+  ],
+  "references": [
+    {
+      "id": "mdn2024canvas",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "Canvas API",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API"
+    },
+    {
+      "id": "mdn2024webgl",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "WebGL API",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API"
+    },
+    {
+      "id": "mdn2024gamepad",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "Gamepad API",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API"
+    },
+    {
+      "id": "phaser2024",
+      "authors": "Phaser",
+      "year": "2024",
+      "title": "Phaser 3 Documentation",
+      "source": "Phaser",
+      "url": "https://phaser.io/docs/3.60.0"
+    },
+    {
+      "id": "mdn2024requestanimation",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "requestAnimationFrame()",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame"
     }
   ]
 }

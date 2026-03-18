@@ -72,15 +72,47 @@
     {
       "type": "table",
       "heading": "Feature Comparison",
-      "headers": ["Feature", "ChatGPT", "Claude"],
+      "headers": [
+        "Feature",
+        "ChatGPT",
+        "Claude"
+      ],
       "rows": [
-        ["Free tier", "Yes — GPT-4o with limits", "Yes — Claude Sonnet with limits"],
-        ["Best for long code", "Good, may truncate very long outputs", "Excellent — handles large files well"],
-        ["Conversation style", "More conversational and verbose", "More precise and concise"],
-        ["Code explanations", "Excellent detailed explanations", "Excellent with clear structure"],
-        ["Following instructions", "Good at creative interpretation", "Very precise instruction following"],
-        ["CLI tool", "Not available", "Claude Code — works in your terminal"],
-        ["Image understanding", "Can analyze screenshots and designs", "Can analyze screenshots and designs"]
+        [
+          "Free tier",
+          "Yes — GPT-4o with limits",
+          "Yes — Claude Sonnet with limits"
+        ],
+        [
+          "Best for long code",
+          "Good, may truncate very long outputs",
+          "Excellent — handles large files well"
+        ],
+        [
+          "Conversation style",
+          "More conversational and verbose",
+          "More precise and concise"
+        ],
+        [
+          "Code explanations",
+          "Excellent detailed explanations",
+          "Excellent with clear structure"
+        ],
+        [
+          "Following instructions",
+          "Good at creative interpretation",
+          "Very precise instruction following"
+        ],
+        [
+          "CLI tool",
+          "Not available",
+          "Claude Code — works in your terminal"
+        ],
+        [
+          "Image understanding",
+          "Can analyze screenshots and designs",
+          "Can analyze screenshots and designs"
+        ]
       ]
     },
     {
@@ -742,5 +774,39 @@
     "Claude Code CLI lets you work with AI directly in your terminal without copy-pasting",
     "AI has limitations: it can hallucinate packages, suggest outdated patterns, and miss security issues",
     "Use AI to build faster, but always take time to understand what it built for you"
+  ],
+  "references": [
+    {
+      "id": "openai2024api",
+      "authors": "OpenAI",
+      "year": "2024",
+      "title": "OpenAI API Documentation",
+      "source": "OpenAI",
+      "url": "https://platform.openai.com/docs"
+    },
+    {
+      "id": "anthropic2024claude",
+      "authors": "Anthropic",
+      "year": "2024",
+      "title": "Claude API Documentation",
+      "source": "Anthropic",
+      "url": "https://docs.anthropic.com/"
+    },
+    {
+      "id": "github2024copilot",
+      "authors": "GitHub",
+      "year": "2024",
+      "title": "GitHub Copilot Documentation",
+      "source": "GitHub Docs",
+      "url": "https://docs.github.com/en/copilot"
+    },
+    {
+      "id": "bubeck2023sparks",
+      "authors": "Bubeck, S. et al.",
+      "year": "2023",
+      "title": "Sparks of Artificial General Intelligence: Early Experiments with GPT-4",
+      "source": "arXiv preprint arXiv:2303.12712",
+      "url": "https://arxiv.org/abs/2303.12712"
+    }
   ]
 }

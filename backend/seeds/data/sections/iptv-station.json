@@ -6,7 +6,11 @@
   "order": 24,
   "estimatedMinutes": 50,
   "difficulty": "advanced",
-  "prerequisites": ["fundamentals", "backend-guide", "video-platform"],
+  "prerequisites": [
+    "fundamentals",
+    "backend-guide",
+    "video-platform"
+  ],
   "keyPoints": [
     "Live video streaming with HLS/DASH",
     "Multi-channel management",
@@ -25,22 +29,79 @@
       "type": "cardGrid",
       "columns": 3,
       "cards": [
-        { "title": "IPTV (Managed Network)", "body": "Delivered over a private, managed network with guaranteed quality of service. Used by telecom operators like AT&T U-verse.", "icon": "Router", "chip": "Traditional" },
-        { "title": "OTT (Over-The-Top)", "body": "Delivered over the open internet without QoS guarantees. Netflix, YouTube TV, and Hulu are OTT services.", "icon": "Cloud", "chip": "Modern" },
-        { "title": "Broadcast (RF)", "body": "Traditional antenna/cable/satellite delivery using radio frequencies. No internet required but limited interactivity.", "icon": "SettingsInputAntenna", "chip": "Legacy" }
+        {
+          "title": "IPTV (Managed Network)",
+          "body": "Delivered over a private, managed network with guaranteed quality of service. Used by telecom operators like AT&T U-verse.",
+          "icon": "Router",
+          "chip": "Traditional"
+        },
+        {
+          "title": "OTT (Over-The-Top)",
+          "body": "Delivered over the open internet without QoS guarantees. Netflix, YouTube TV, and Hulu are OTT services.",
+          "icon": "Cloud",
+          "chip": "Modern"
+        },
+        {
+          "title": "Broadcast (RF)",
+          "body": "Traditional antenna/cable/satellite delivery using radio frequencies. No internet required but limited interactivity.",
+          "icon": "SettingsInputAntenna",
+          "chip": "Legacy"
+        }
       ]
     },
     {
       "type": "table",
       "heading": "Streaming Protocol Comparison",
-      "headers": ["Protocol", "Latency", "Adaptive", "Browser Support", "Best For"],
+      "headers": [
+        "Protocol",
+        "Latency",
+        "Adaptive",
+        "Browser Support",
+        "Best For"
+      ],
       "rows": [
-        ["HLS", "6-30 seconds", "Yes (variants)", "All browsers", "General-purpose live/VOD streaming"],
-        ["DASH", "6-30 seconds", "Yes (MPD)", "MSE-capable browsers", "DRM-protected premium content"],
-        ["RTMP", "1-3 seconds", "No", "None (Flash deprecated)", "Ingest from encoders to origin server"],
-        ["SRT", "< 1 second", "No", "None (native only)", "Reliable point-to-point contribution feeds"],
-        ["WebRTC", "< 500ms", "Limited", "All modern browsers", "Ultra-low-latency interactive streams"],
-        ["LL-HLS", "2-5 seconds", "Yes", "Safari, growing support", "Low-latency live with broad compatibility"]
+        [
+          "HLS",
+          "6-30 seconds",
+          "Yes (variants)",
+          "All browsers",
+          "General-purpose live/VOD streaming"
+        ],
+        [
+          "DASH",
+          "6-30 seconds",
+          "Yes (MPD)",
+          "MSE-capable browsers",
+          "DRM-protected premium content"
+        ],
+        [
+          "RTMP",
+          "1-3 seconds",
+          "No",
+          "None (Flash deprecated)",
+          "Ingest from encoders to origin server"
+        ],
+        [
+          "SRT",
+          "< 1 second",
+          "No",
+          "None (native only)",
+          "Reliable point-to-point contribution feeds"
+        ],
+        [
+          "WebRTC",
+          "< 500ms",
+          "Limited",
+          "All modern browsers",
+          "Ultra-low-latency interactive streams"
+        ],
+        [
+          "LL-HLS",
+          "2-5 seconds",
+          "Yes",
+          "Safari, growing support",
+          "Low-latency live with broad compatibility"
+        ]
       ]
     },
     {
@@ -53,12 +114,42 @@
       "type": "cardGrid",
       "columns": 3,
       "cards": [
-        { "title": "Nginx-RTMP", "body": "Receives live RTMP feeds from cameras, encoders, or OBS. Acts as the ingest point for all channels.", "icon": "Input", "chip": "Ingest" },
-        { "title": "FFmpeg", "body": "Transcodes each RTMP feed into multiple HLS quality variants (1080p, 720p, 480p) with proper segmentation.", "icon": "Transform", "chip": "Transcoding" },
-        { "title": "Origin Server", "body": "Nginx serving HLS playlists (.m3u8) and segments (.ts) over HTTP. Source of truth for all streams.", "icon": "Storage", "chip": "Distribution" },
-        { "title": "Flask API", "body": "REST API for channel management, EPG data, user auth, DVR control, and stream health monitoring.", "icon": "Api", "chip": "Backend" },
-        { "title": "React Player", "body": "hls.js-powered video player with channel switching, quality selection, EPG overlay, and DVR controls.", "icon": "OndemandVideo", "chip": "Frontend" },
-        { "title": "PostgreSQL", "body": "Stores channels, EPG programs, users, subscriptions, DVR recordings, and analytics data.", "icon": "Database", "chip": "Storage" }
+        {
+          "title": "Nginx-RTMP",
+          "body": "Receives live RTMP feeds from cameras, encoders, or OBS. Acts as the ingest point for all channels.",
+          "icon": "Input",
+          "chip": "Ingest"
+        },
+        {
+          "title": "FFmpeg",
+          "body": "Transcodes each RTMP feed into multiple HLS quality variants (1080p, 720p, 480p) with proper segmentation.",
+          "icon": "Transform",
+          "chip": "Transcoding"
+        },
+        {
+          "title": "Origin Server",
+          "body": "Nginx serving HLS playlists (.m3u8) and segments (.ts) over HTTP. Source of truth for all streams.",
+          "icon": "Storage",
+          "chip": "Distribution"
+        },
+        {
+          "title": "Flask API",
+          "body": "REST API for channel management, EPG data, user auth, DVR control, and stream health monitoring.",
+          "icon": "Api",
+          "chip": "Backend"
+        },
+        {
+          "title": "React Player",
+          "body": "hls.js-powered video player with channel switching, quality selection, EPG overlay, and DVR controls.",
+          "icon": "OndemandVideo",
+          "chip": "Frontend"
+        },
+        {
+          "title": "PostgreSQL",
+          "body": "Stores channels, EPG programs, users, subscriptions, DVR recordings, and analytics data.",
+          "icon": "Database",
+          "chip": "Storage"
+        }
       ]
     },
     {
@@ -312,18 +403,92 @@
     {
       "type": "table",
       "heading": "Technology Stack Summary",
-      "headers": ["Component", "Technology", "Purpose"],
+      "headers": [
+        "Component",
+        "Technology",
+        "Purpose"
+      ],
       "rows": [
-        ["Stream Ingest", "Nginx-RTMP", "Receive live RTMP feeds from encoders"],
-        ["Transcoder", "FFmpeg", "Multi-bitrate HLS packaging with AES-128 encryption"],
-        ["Origin Server", "Nginx HTTP", "Serve HLS playlists and segments"],
-        ["Backend API", "Flask + JWT", "Channel management, EPG, DVR, auth, monitoring"],
-        ["Database", "PostgreSQL 16", "Channels, EPG, users, subscriptions, analytics"],
-        ["Cache/Sessions", "Redis 7", "Stream tokens, rate limiting, session management"],
-        ["Frontend Player", "React + hls.js", "Adaptive video player with EPG overlay"],
-        ["Containerization", "Docker Compose", "Full stack orchestration"],
-        ["CDN", "CloudFront / Cloudflare", "Edge distribution of HLS segments"]
+        [
+          "Stream Ingest",
+          "Nginx-RTMP",
+          "Receive live RTMP feeds from encoders"
+        ],
+        [
+          "Transcoder",
+          "FFmpeg",
+          "Multi-bitrate HLS packaging with AES-128 encryption"
+        ],
+        [
+          "Origin Server",
+          "Nginx HTTP",
+          "Serve HLS playlists and segments"
+        ],
+        [
+          "Backend API",
+          "Flask + JWT",
+          "Channel management, EPG, DVR, auth, monitoring"
+        ],
+        [
+          "Database",
+          "PostgreSQL 16",
+          "Channels, EPG, users, subscriptions, analytics"
+        ],
+        [
+          "Cache/Sessions",
+          "Redis 7",
+          "Stream tokens, rate limiting, session management"
+        ],
+        [
+          "Frontend Player",
+          "React + hls.js",
+          "Adaptive video player with EPG overlay"
+        ],
+        [
+          "Containerization",
+          "Docker Compose",
+          "Full stack orchestration"
+        ],
+        [
+          "CDN",
+          "CloudFront / Cloudflare",
+          "Edge distribution of HLS segments"
+        ]
       ]
+    }
+  ],
+  "references": [
+    {
+      "id": "rfc8216",
+      "authors": "Pantos, R. and May, W.",
+      "year": "2017",
+      "title": "RFC 8216 — HTTP Live Streaming",
+      "source": "IETF",
+      "url": "https://datatracker.ietf.org/doc/html/rfc8216"
+    },
+    {
+      "id": "mdn2024mseiptv",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "Media Source Extensions API",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Media_Source_Extensions_API"
+    },
+    {
+      "id": "dashjs2024",
+      "authors": "Dash Industry Forum",
+      "year": "2024",
+      "title": "dash.js Documentation",
+      "source": "GitHub",
+      "url": "https://github.com/Dash-Industry-Forum/dash.js"
+    },
+    {
+      "id": "videojs2024",
+      "authors": "Video.js",
+      "year": "2024",
+      "title": "Video.js Documentation",
+      "source": "Video.js",
+      "url": "https://videojs.com/guides"
     }
   ]
 }

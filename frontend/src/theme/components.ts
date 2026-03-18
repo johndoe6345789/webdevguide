@@ -45,8 +45,63 @@ export function getComponents(mode: 'light' | 'dark'): Components<Theme> {
               '0 4px 24px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06)',
               '0 4px 24px rgba(0,0,0,0.40), 0 1px 4px rgba(0,0,0,0.20)',
             ),
-            padding: '12px 16px',
-            maxWidth: 360,
+            padding: 0,
+            maxWidth: 400,
+            maxHeight: 320,
+            display: 'flex',
+            flexDirection: 'column' as const,
+            overflow: 'hidden',
+
+            // Scrollable body
+            '& .glossary-tip-body': {
+              padding: '12px 16px',
+              overflowY: 'auto',
+              flex: 1,
+              minHeight: 0,
+              '&::-webkit-scrollbar': { width: 5 },
+              '&::-webkit-scrollbar-track': { background: 'transparent' },
+              '&::-webkit-scrollbar-thumb': {
+                background: pick('rgba(0,0,0,0.15)', 'rgba(255,255,255,0.15)'),
+                borderRadius: 3,
+              },
+              '&::-webkit-scrollbar-thumb:hover': {
+                background: pick('rgba(0,0,0,0.25)', 'rgba(255,255,255,0.25)'),
+              },
+            },
+
+            // Sticky bookmarks footer
+            '& .glossary-tip-footer': {
+              padding: '8px 12px',
+              borderTop: `1px solid ${pick('rgba(0,0,0,0.06)', 'rgba(255,255,255,0.06)')}`,
+              backgroundColor: pick('rgba(0,0,0,0.02)', 'rgba(255,255,255,0.02)'),
+              flexShrink: 0,
+            },
+            '& .glossary-tip-bookmarks-label': {
+              display: 'block',
+              fontSize: '0.625rem',
+              fontWeight: 700,
+              textTransform: 'uppercase' as const,
+              letterSpacing: '0.05em',
+              color: pick('#94a3b8', '#64748b'),
+              marginBottom: 6,
+            },
+            '& .glossary-tip-bookmarks': {
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 4,
+            },
+            '& .glossary-tip-bookmarks-item': {
+              fontSize: '0.65rem',
+              padding: '2px 8px',
+              borderRadius: 10,
+              backgroundColor: pick('rgba(99,102,241,0.08)', 'rgba(129,140,248,0.12)'),
+              color: pick('#6366f1', '#a5b4fc'),
+              textDecoration: 'none',
+              whiteSpace: 'nowrap',
+              '&:hover': {
+                backgroundColor: pick('rgba(99,102,241,0.16)', 'rgba(129,140,248,0.22)'),
+              },
+            },
 
             // Term header
             '& .glossary-tip-header': {
@@ -68,13 +123,6 @@ export function getComponents(mode: 'light' | 'dark'): Components<Theme> {
               color: pick('#6366f1', '#818cf8'),
             },
 
-            // Definition
-            '& .glossary-tip-definition': {
-              fontSize: '0.8125rem',
-              lineHeight: 1.55,
-              color: pick('#334155', '#cbd5e1'),
-            },
-
             // Example
             '& .glossary-tip-example': {
               display: 'block',
@@ -82,26 +130,29 @@ export function getComponents(mode: 'light' | 'dark'): Components<Theme> {
               fontStyle: 'italic',
               lineHeight: 1.5,
               color: pick('#64748b', '#94a3b8'),
-              marginTop: 8,
-              paddingTop: 8,
-              borderTop: `1px solid ${pick('rgba(0,0,0,0.06)', 'rgba(255,255,255,0.06)')}`,
+              marginTop: 6,
+              marginBottom: 2,
             },
 
-            // Related terms
-            '& .glossary-tip-related': {
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 4,
+            // Numbered glossary list
+            '& .glossary-tip-list': {
+              margin: 0,
               marginTop: 8,
+              paddingLeft: 20,
               paddingTop: 8,
               borderTop: `1px solid ${pick('rgba(0,0,0,0.06)', 'rgba(255,255,255,0.06)')}`,
+              listStyleType: 'decimal',
             },
-            '& .glossary-tip-related-chip': {
-              height: 20,
-              fontSize: '0.625rem',
-              fontWeight: 500,
-              backgroundColor: pick('rgba(99,102,241,0.08)', 'rgba(129,140,248,0.12)'),
-              color: pick('#6366f1', '#a5b4fc'),
+            '& .glossary-tip-list-item': {
+              fontSize: '0.775rem',
+              lineHeight: 1.5,
+              marginBottom: 6,
+              color: pick('#334155', '#cbd5e1'),
+              '&:last-child': { marginBottom: 0 },
+              '& strong': {
+                color: pick('#1e293b', '#e2e8f0'),
+                fontWeight: 600,
+              },
             },
           },
         },

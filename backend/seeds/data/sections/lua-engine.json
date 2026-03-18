@@ -6,7 +6,10 @@
   "order": 6,
   "estimatedMinutes": 35,
   "difficulty": "intermediate",
-  "prerequisites": ["fundamentals", "features"],
+  "prerequisites": [
+    "fundamentals",
+    "features"
+  ],
   "keyPoints": [
     "Lua is a lightweight scripting language you can embed inside your web app to let users write custom logic",
     "Fengari and Wasmoon are two libraries that run Lua code directly in the browser — no server needed",
@@ -102,12 +105,37 @@
         },
         {
           "type": "table",
-          "headers": ["Approach", "Flexibility", "Safety", "Complexity"],
+          "headers": [
+            "Approach",
+            "Flexibility",
+            "Safety",
+            "Complexity"
+          ],
           "rows": [
-            ["Hard-coded JS logic", "Low — requires redeployment", "High — developer-controlled", "Low"],
-            ["JSON configuration", "Medium — data only, no logic", "High — just data", "Low"],
-            ["Embedded Lua", "High — full scripting", "High — sandboxed", "Medium"],
-            ["User-provided JavaScript (eval)", "High — full scripting", "Very Low — dangerous", "Low"]
+            [
+              "Hard-coded JS logic",
+              "Low — requires redeployment",
+              "High — developer-controlled",
+              "Low"
+            ],
+            [
+              "JSON configuration",
+              "Medium — data only, no logic",
+              "High — just data",
+              "Low"
+            ],
+            [
+              "Embedded Lua",
+              "High — full scripting",
+              "High — sandboxed",
+              "Medium"
+            ],
+            [
+              "User-provided JavaScript (eval)",
+              "High — full scripting",
+              "Very Low — dangerous",
+              "Low"
+            ]
           ]
         }
       ]
@@ -190,19 +218,67 @@
         },
         {
           "type": "table",
-          "headers": ["Concept", "Lua", "JavaScript"],
+          "headers": [
+            "Concept",
+            "Lua",
+            "JavaScript"
+          ],
           "rows": [
-            ["Declare variable", "local x = 5", "let x = 5; / const x = 5;"],
-            ["Print output", "print(\"hi\")", "console.log(\"hi\");"],
-            ["String join", "\"a\" .. \"b\"", "\"a\" + \"b\""],
-            ["Not equal", "~=", "!=="],
-            ["And / Or / Not", "and / or / not", "&& / || / !"],
-            ["Array index start", "1", "0"],
-            ["Null value", "nil", "null / undefined"],
-            ["Array length", "#myTable", "myArray.length"],
-            ["Block end", "end", "}"],
-            ["Comments", "-- comment", "// comment"],
-            ["Block comments", "--[[ block ]]", "/* block */"]
+            [
+              "Declare variable",
+              "local x = 5",
+              "let x = 5; / const x = 5;"
+            ],
+            [
+              "Print output",
+              "print(\"hi\")",
+              "console.log(\"hi\");"
+            ],
+            [
+              "String join",
+              "\"a\" .. \"b\"",
+              "\"a\" + \"b\""
+            ],
+            [
+              "Not equal",
+              "~=",
+              "!=="
+            ],
+            [
+              "And / Or / Not",
+              "and / or / not",
+              "&& / || / !"
+            ],
+            [
+              "Array index start",
+              "1",
+              "0"
+            ],
+            [
+              "Null value",
+              "nil",
+              "null / undefined"
+            ],
+            [
+              "Array length",
+              "#myTable",
+              "myArray.length"
+            ],
+            [
+              "Block end",
+              "end",
+              "}"
+            ],
+            [
+              "Comments",
+              "-- comment",
+              "// comment"
+            ],
+            [
+              "Block comments",
+              "--[[ block ]]",
+              "/* block */"
+            ]
           ]
         }
       ]
@@ -566,13 +642,43 @@
         },
         {
           "type": "table",
-          "headers": ["Cost", "Wasmoon", "Fengari", "Impact"],
+          "headers": [
+            "Cost",
+            "Wasmoon",
+            "Fengari",
+            "Impact"
+          ],
           "rows": [
-            ["Initial download", "~200-400 KB (WASM binary)", "~150 KB (JS bundle)", "One-time cost, cacheable"],
-            ["Engine startup", "~50-200ms (first run)", "~10-50ms", "Noticeable on first use"],
-            ["Script execution", "Near-native speed", "3-10x slower than native Lua", "Matters for heavy computation"],
-            ["Memory per engine", "~1-2 MB", "~500 KB", "Matters if running many engines"],
-            ["Creating new engine", "~20-50ms", "~5-10ms", "Relevant if creating per request"]
+            [
+              "Initial download",
+              "~200-400 KB (WASM binary)",
+              "~150 KB (JS bundle)",
+              "One-time cost, cacheable"
+            ],
+            [
+              "Engine startup",
+              "~50-200ms (first run)",
+              "~10-50ms",
+              "Noticeable on first use"
+            ],
+            [
+              "Script execution",
+              "Near-native speed",
+              "3-10x slower than native Lua",
+              "Matters for heavy computation"
+            ],
+            [
+              "Memory per engine",
+              "~1-2 MB",
+              "~500 KB",
+              "Matters if running many engines"
+            ],
+            [
+              "Creating new engine",
+              "~20-50ms",
+              "~5-10ms",
+              "Relevant if creating per request"
+            ]
           ]
         },
         {
@@ -682,18 +788,62 @@
         },
         {
           "type": "table",
-          "headers": ["Scenario", "Recommended Approach", "Why"],
+          "headers": [
+            "Scenario",
+            "Recommended Approach",
+            "Why"
+          ],
           "rows": [
-            ["Form validation", "JavaScript", "Direct DOM access needed, simple logic"],
-            ["User-defined pricing rules", "Lua", "Business users edit rules, needs sandbox"],
-            ["API calls and data fetching", "JavaScript", "Lua cannot make network requests"],
-            ["Game enemy AI behavior", "Lua", "Game designers tweak scripts without rebuilding"],
-            ["UI animations", "JavaScript/CSS", "Direct browser API access needed"],
-            ["Custom report formulas", "Lua", "Power users write formulas safely"],
-            ["Authentication flow", "JavaScript", "Security-critical, needs full browser access"],
-            ["Plugin/extension system", "Lua", "Third-party code must be sandboxed"],
-            ["Real-time data processing", "JavaScript", "Performance critical, avoid bridge overhead"],
-            ["Educational coding playground", "Lua", "Safe execution of student code"]
+            [
+              "Form validation",
+              "JavaScript",
+              "Direct DOM access needed, simple logic"
+            ],
+            [
+              "User-defined pricing rules",
+              "Lua",
+              "Business users edit rules, needs sandbox"
+            ],
+            [
+              "API calls and data fetching",
+              "JavaScript",
+              "Lua cannot make network requests"
+            ],
+            [
+              "Game enemy AI behavior",
+              "Lua",
+              "Game designers tweak scripts without rebuilding"
+            ],
+            [
+              "UI animations",
+              "JavaScript/CSS",
+              "Direct browser API access needed"
+            ],
+            [
+              "Custom report formulas",
+              "Lua",
+              "Power users write formulas safely"
+            ],
+            [
+              "Authentication flow",
+              "JavaScript",
+              "Security-critical, needs full browser access"
+            ],
+            [
+              "Plugin/extension system",
+              "Lua",
+              "Third-party code must be sandboxed"
+            ],
+            [
+              "Real-time data processing",
+              "JavaScript",
+              "Performance critical, avoid bridge overhead"
+            ],
+            [
+              "Educational coding playground",
+              "Lua",
+              "Safe execution of student code"
+            ]
           ]
         },
         {
@@ -772,6 +922,39 @@
       "severity": "success",
       "title": "You are ready to go!",
       "body": "Embedding Lua in a web app might sound advanced, but as you have seen, the actual implementation is straightforward. Start with the playground component, get comfortable with the JS-Lua bridge, and then expand to more complex use cases like game scripting or business rules. The Lua community is welcoming, and the language itself is a joy to work with."
+    }
+  ],
+  "references": [
+    {
+      "id": "ierusalimschy2016lua",
+      "authors": "Ierusalimschy, R.",
+      "year": "2016",
+      "title": "Programming in Lua (4th Edition)",
+      "source": "Lua.org"
+    },
+    {
+      "id": "lua2024manual",
+      "authors": "Lua.org",
+      "year": "2024",
+      "title": "Lua 5.4 Reference Manual",
+      "source": "Lua.org",
+      "url": "https://www.lua.org/manual/5.4/"
+    },
+    {
+      "id": "fengari2024docs",
+      "authors": "Fengari Contributors",
+      "year": "2024",
+      "title": "Fengari — Lua for the Browser",
+      "source": "GitHub",
+      "url": "https://fengari.io/"
+    },
+    {
+      "id": "wasmoon2024",
+      "authors": "Cetra, C.",
+      "year": "2024",
+      "title": "Wasmoon — Lua VM on WebAssembly",
+      "source": "GitHub",
+      "url": "https://github.com/ceifa/wasmoon"
     }
   ]
 }

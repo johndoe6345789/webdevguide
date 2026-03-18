@@ -6,7 +6,10 @@
   "order": 31,
   "estimatedMinutes": 35,
   "difficulty": "intermediate",
-  "prerequisites": ["fundamentals", "backend-guide"],
+  "prerequisites": [
+    "fundamentals",
+    "backend-guide"
+  ],
   "keyPoints": [
     "In-app notification bell with unread badge",
     "Real-time delivery via WebSockets and SSE",
@@ -25,23 +28,88 @@
       "type": "cardGrid",
       "columns": 3,
       "cards": [
-        { "title": "In-App Bell", "body": "Real-time badge count and dropdown feed. Users see notifications when they return to your site. Lowest friction, highest visibility for active users.", "icon": "Notifications", "chip": "Core" },
-        { "title": "Push (Browser)", "body": "Reaches users even when your tab is closed. Uses Web Push API with VAPID keys. Great for time-sensitive updates like messages and mentions.", "icon": "NotificationsActive", "chip": "Engagement" },
-        { "title": "Push (Mobile)", "body": "Firebase Cloud Messaging (FCM) or Apple Push Notification Service (APNs). Highest re-engagement rate but users can revoke permission.", "icon": "PhoneAndroid", "chip": "Mobile" },
-        { "title": "Email", "body": "Digests and summaries for users who are away. Best for daily/weekly roundups, account security alerts, and transactional notifications.", "icon": "Email", "chip": "Retention" },
-        { "title": "SMS", "body": "Reserve for critical alerts only — two-factor auth, payment confirmations, urgent account issues. Expensive and intrusive.", "icon": "Sms", "chip": "Critical" },
-        { "title": "Slack / Webhook", "body": "Developer and team notifications. CI/CD results, monitoring alerts, deployment status. Integrate with existing workflows.", "icon": "Webhook", "chip": "DevOps" }
+        {
+          "title": "In-App Bell",
+          "body": "Real-time badge count and dropdown feed. Users see notifications when they return to your site. Lowest friction, highest visibility for active users.",
+          "icon": "Notifications",
+          "chip": "Core"
+        },
+        {
+          "title": "Push (Browser)",
+          "body": "Reaches users even when your tab is closed. Uses Web Push API with VAPID keys. Great for time-sensitive updates like messages and mentions.",
+          "icon": "NotificationsActive",
+          "chip": "Engagement"
+        },
+        {
+          "title": "Push (Mobile)",
+          "body": "Firebase Cloud Messaging (FCM) or Apple Push Notification Service (APNs). Highest re-engagement rate but users can revoke permission.",
+          "icon": "PhoneAndroid",
+          "chip": "Mobile"
+        },
+        {
+          "title": "Email",
+          "body": "Digests and summaries for users who are away. Best for daily/weekly roundups, account security alerts, and transactional notifications.",
+          "icon": "Email",
+          "chip": "Retention"
+        },
+        {
+          "title": "SMS",
+          "body": "Reserve for critical alerts only — two-factor auth, payment confirmations, urgent account issues. Expensive and intrusive.",
+          "icon": "Sms",
+          "chip": "Critical"
+        },
+        {
+          "title": "Slack / Webhook",
+          "body": "Developer and team notifications. CI/CD results, monitoring alerts, deployment status. Integrate with existing workflows.",
+          "icon": "Webhook",
+          "chip": "DevOps"
+        }
       ]
     },
     {
       "type": "table",
       "heading": "Notification Urgency Matrix",
-      "headers": ["Urgency", "In-App", "Push", "Email", "SMS", "Example"],
+      "headers": [
+        "Urgency",
+        "In-App",
+        "Push",
+        "Email",
+        "SMS",
+        "Example"
+      ],
       "rows": [
-        ["Critical", "Yes + Banner", "Immediate", "Immediate", "Yes", "Account compromised, payment failed, system outage"],
-        ["High", "Yes", "Immediate", "Immediate", "No", "Direct message, mention, comment reply"],
-        ["Medium", "Yes", "Batched", "Daily digest", "No", "New follower, post liked, achievement unlocked"],
-        ["Low", "Yes", "No", "Weekly digest", "No", "Product update, feature announcement, tips"]
+        [
+          "Critical",
+          "Yes + Banner",
+          "Immediate",
+          "Immediate",
+          "Yes",
+          "Account compromised, payment failed, system outage"
+        ],
+        [
+          "High",
+          "Yes",
+          "Immediate",
+          "Immediate",
+          "No",
+          "Direct message, mention, comment reply"
+        ],
+        [
+          "Medium",
+          "Yes",
+          "Batched",
+          "Daily digest",
+          "No",
+          "New follower, post liked, achievement unlocked"
+        ],
+        [
+          "Low",
+          "Yes",
+          "No",
+          "Weekly digest",
+          "No",
+          "Product update, feature announcement, tips"
+        ]
       ]
     },
     {
@@ -86,15 +154,55 @@
     {
       "type": "table",
       "heading": "Common Notification Types",
-      "headers": ["Type", "Icon", "Title Template", "Body Template"],
+      "headers": [
+        "Type",
+        "Icon",
+        "Title Template",
+        "Body Template"
+      ],
       "rows": [
-        ["new_follower", "PersonAdd", "{actor.name} followed you", "You have a new follower. Check out their profile."],
-        ["comment_reply", "Reply", "{actor.name} replied to your comment", "\"{comment.preview}\" on {post.title}"],
-        ["post_liked", "Favorite", "{actor.name} liked your post", "{post.title} received a new like."],
-        ["mention", "AlternateEmail", "{actor.name} mentioned you", "You were mentioned in {object.title}"],
-        ["achievement", "EmojiEvents", "Achievement unlocked!", "You earned the \"{achievement.name}\" badge."],
-        ["system", "Campaign", "{title}", "{body}"],
-        ["direct_message", "Chat", "New message from {actor.name}", "\"{message.preview}\""]
+        [
+          "new_follower",
+          "PersonAdd",
+          "{actor.name} followed you",
+          "You have a new follower. Check out their profile."
+        ],
+        [
+          "comment_reply",
+          "Reply",
+          "{actor.name} replied to your comment",
+          "\"{comment.preview}\" on {post.title}"
+        ],
+        [
+          "post_liked",
+          "Favorite",
+          "{actor.name} liked your post",
+          "{post.title} received a new like."
+        ],
+        [
+          "mention",
+          "AlternateEmail",
+          "{actor.name} mentioned you",
+          "You were mentioned in {object.title}"
+        ],
+        [
+          "achievement",
+          "EmojiEvents",
+          "Achievement unlocked!",
+          "You earned the \"{achievement.name}\" badge."
+        ],
+        [
+          "system",
+          "Campaign",
+          "{title}",
+          "{body}"
+        ],
+        [
+          "direct_message",
+          "Chat",
+          "New message from {actor.name}",
+          "\"{message.preview}\""
+        ]
       ]
     },
     {
@@ -329,13 +437,43 @@
     {
       "type": "table",
       "heading": "Notification Analytics — Metrics to Track",
-      "headers": ["Metric", "What It Measures", "Target", "Action if Low"],
+      "headers": [
+        "Metric",
+        "What It Measures",
+        "Target",
+        "Action if Low"
+      ],
       "rows": [
-        ["Delivery rate", "Notifications successfully delivered / total sent", ">99%", "Check push subscription cleanup, email bounces"],
-        ["Open rate", "Notifications seen (feed opened) / delivered", ">60%", "Improve notification titles, reduce volume"],
-        ["Click-through rate", "Notifications clicked / seen", ">15%", "Make action_url more relevant, improve body text"],
-        ["Opt-out rate", "Users disabling a type / total users", "<5%", "Reduce frequency, improve targeting"],
-        ["Time to read", "Median time from creation to is_read=true", "<2 hours", "Check delivery channels, send timing"]
+        [
+          "Delivery rate",
+          "Notifications successfully delivered / total sent",
+          ">99%",
+          "Check push subscription cleanup, email bounces"
+        ],
+        [
+          "Open rate",
+          "Notifications seen (feed opened) / delivered",
+          ">60%",
+          "Improve notification titles, reduce volume"
+        ],
+        [
+          "Click-through rate",
+          "Notifications clicked / seen",
+          ">15%",
+          "Make action_url more relevant, improve body text"
+        ],
+        [
+          "Opt-out rate",
+          "Users disabling a type / total users",
+          "<5%",
+          "Reduce frequency, improve targeting"
+        ],
+        [
+          "Time to read",
+          "Median time from creation to is_read=true",
+          "<2 hours",
+          "Check delivery channels, send timing"
+        ]
       ]
     },
     {
@@ -366,6 +504,40 @@
         "Extract a dedicated notification microservice with its own database and API",
         "Evaluate third-party services (OneSignal, Firebase Cloud Messaging, Amazon SNS) for push at scale"
       ]
+    }
+  ],
+  "references": [
+    {
+      "id": "mdn2024pushapi",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "Push API",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Push_API"
+    },
+    {
+      "id": "mdn2024notifapi",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "Notifications API",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API"
+    },
+    {
+      "id": "rfc8030",
+      "authors": "Thomson, M. et al.",
+      "year": "2016",
+      "title": "RFC 8030 — Generic Event Delivery Using HTTP Push",
+      "source": "IETF",
+      "url": "https://datatracker.ietf.org/doc/html/rfc8030"
+    },
+    {
+      "id": "firebase2024fcm",
+      "authors": "Google",
+      "year": "2024",
+      "title": "Firebase Cloud Messaging",
+      "source": "Firebase",
+      "url": "https://firebase.google.com/docs/cloud-messaging"
     }
   ]
 }

@@ -38,6 +38,48 @@
       "$ref": "fundamentals/intro-how-to-use-this-page.json"
     },
     {
+      "type": "alert",
+      "severity": "info",
+      "title": "You don't need to memorize everything",
+      "body": "Nobody memorizes every HTML tag, CSS property, or JavaScript method. Professional developers look things up constantly. The goal of this page is to build a mental map of what exists so you know what to search for. Bookmark this page and come back whenever you need a refresher."
+    },
+    {
+      "type": "cardGrid",
+      "columns": 3,
+      "cards": [
+        {
+          "title": "HTML",
+          "body": "The structure and content of every web page. HTML elements define headings, paragraphs, links, images, forms, and the overall document outline.",
+          "icon": "Code"
+        },
+        {
+          "title": "CSS",
+          "body": "The visual presentation layer. CSS controls colors, fonts, spacing, layout (Flexbox and Grid), animations, and responsive design across screen sizes.",
+          "icon": "Palette"
+        },
+        {
+          "title": "JavaScript",
+          "body": "The programming language of the web. JavaScript handles interactivity, data fetching, DOM manipulation, and powers frameworks like React.",
+          "icon": "Javascript"
+        },
+        {
+          "title": "TypeScript",
+          "body": "A typed superset of JavaScript that catches bugs before your code runs. Used by most modern teams and required by many job postings.",
+          "icon": "Security"
+        },
+        {
+          "title": "React",
+          "body": "The most popular UI library. React lets you build interfaces from small, reusable components with a declarative approach to managing state and rendering.",
+          "icon": "Widgets"
+        },
+        {
+          "title": "Tooling",
+          "body": "VS Code, Git, npm, ESLint, Prettier, and browser DevTools form the everyday toolkit that makes you productive and your code reliable.",
+          "icon": "Build"
+        }
+      ]
+    },
+    {
       "$ref": "fundamentals/1-how-the-web-works-1-how-the-web-works.json"
     },
     {
@@ -62,6 +104,38 @@
       "$ref": "fundamentals/2-html-deep-dive-semantic-html5-elements.json"
     },
     {
+      "type": "code",
+      "language": "html",
+      "filename": "semantic-page-structure.html",
+      "title": "Quick Reference: Semantic HTML Page Structure",
+      "code": "<header>\n  <nav>\n    <a href=\"/\">Home</a>\n    <a href=\"/blog\">Blog</a>\n    <a href=\"/about\">About</a>\n  </nav>\n</header>\n\n<main>\n  <article>\n    <h1>Page Title</h1>\n    <p>Main content goes here.</p>\n\n    <section>\n      <h2>Subsection</h2>\n      <p>Group related content with section elements.</p>\n    </section>\n  </article>\n\n  <aside>\n    <h2>Sidebar</h2>\n    <p>Related links, ads, or supplementary info.</p>\n  </aside>\n</main>\n\n<footer>\n  <p>&copy; 2025 My Website</p>\n</footer>"
+    },
+    {
+      "type": "table",
+      "heading": "HTML Tags Cheat Sheet",
+      "headers": [
+        "Tag",
+        "Purpose",
+        "Example"
+      ],
+      "rows": [
+        ["<h1> - <h6>", "Headings (h1 is the most important)", "<h1>Welcome</h1>"],
+        ["<p>", "Paragraph of text", "<p>Hello world.</p>"],
+        ["<a>", "Hyperlink to another page or resource", "<a href=\"/about\">About</a>"],
+        ["<img>", "Embed an image", "<img src=\"photo.jpg\" alt=\"A photo\">"],
+        ["<ul> / <ol>", "Unordered (bullets) or ordered (numbered) list", "<ul><li>Item</li></ul>"],
+        ["<div>", "Generic container (no semantic meaning)", "<div class=\"wrapper\">...</div>"],
+        ["<span>", "Inline generic container", "<span class=\"highlight\">text</span>"],
+        ["<form>", "User input form", "<form action=\"/submit\">...</form>"],
+        ["<input>", "Text field, checkbox, radio, etc.", "<input type=\"email\" placeholder=\"you@example.com\">"],
+        ["<button>", "Clickable button", "<button type=\"submit\">Send</button>"],
+        ["<table>", "Tabular data", "<table><tr><td>Cell</td></tr></table>"],
+        ["<header>", "Page or section header", "<header><nav>...</nav></header>"],
+        ["<main>", "Primary page content (one per page)", "<main>...</main>"],
+        ["<footer>", "Page or section footer", "<footer>&copy; 2025</footer>"]
+      ]
+    },
+    {
       "$ref": "fundamentals/2-html-deep-dive-accessibility-and-aria.json"
     },
     {
@@ -80,7 +154,80 @@
       "$ref": "fundamentals/3-css-mastery-flexbox-layout.json"
     },
     {
+      "type": "code",
+      "language": "css",
+      "filename": "flexbox-quick-ref.css",
+      "title": "Quick Reference: CSS Flexbox Centering & Spacing",
+      "code": "/* Center anything horizontally and vertically */\n.center-everything {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-height: 100vh;\n}\n\n/* Space items evenly in a navbar */\n.navbar {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 1rem 2rem;\n  gap: 1rem;\n}\n\n/* Responsive card row that wraps */\n.card-row {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 1.5rem;\n}\n\n.card-row > .card {\n  flex: 1 1 280px; /* grow, shrink, min-width */\n}"
+    },
+    {
       "$ref": "fundamentals/3-css-mastery-css-grid-layout.json"
+    },
+    {
+      "type": "code",
+      "language": "css",
+      "filename": "grid-quick-ref.css",
+      "title": "Quick Reference: CSS Grid 2-Column Layout",
+      "code": "/* Basic 2-column layout: sidebar + main content */\n.page-layout {\n  display: grid;\n  grid-template-columns: 250px 1fr; /* fixed sidebar, fluid content */\n  grid-template-rows: auto 1fr auto; /* header, content, footer */\n  gap: 1.5rem;\n  min-height: 100vh;\n}\n\n/* Make it single-column on small screens */\n@media (max-width: 768px) {\n  .page-layout {\n    grid-template-columns: 1fr;\n  }\n}\n\n/* Equal-width card grid that auto-fills */\n.auto-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));\n  gap: 1.5rem;\n}"
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "CSS Flexbox",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "**Use Flexbox when** you are arranging items in a single direction -- either a row or a column. Flexbox is ideal for:\n\n- Navigation bars\n- Centering content vertically and horizontally\n- Distributing space between items\n- Aligning items of different sizes\n- Card rows that wrap on small screens\n\nThink of Flexbox as a **clothesline**: items are hung along one line (horizontal or vertical) and you control spacing and alignment along that line."
+            },
+            {
+              "type": "code",
+              "language": "css",
+              "code": "/* Flexbox: one-dimensional (row OR column) */\n.flex-nav {\n  display: flex;\n  gap: 1rem;\n  align-items: center;\n}\n\n.flex-nav .logo { margin-right: auto; } /* Push everything else right */"
+            }
+          ]
+        },
+        {
+          "label": "CSS Grid",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "**Use CSS Grid when** you need to control both rows AND columns at the same time. Grid is ideal for:\n\n- Full page layouts (header, sidebar, content, footer)\n- Card grids with consistent sizing\n- Dashboard-style interfaces\n- Any layout where items need to align on both axes\n\nThink of Grid as a **spreadsheet**: you define rows and columns, then place items into cells."
+            },
+            {
+              "type": "code",
+              "language": "css",
+              "code": "/* Grid: two-dimensional (rows AND columns) */\n.grid-layout {\n  display: grid;\n  grid-template-columns: 200px 1fr;\n  grid-template-rows: auto 1fr auto;\n  gap: 1rem;\n  min-height: 100vh;\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "heading": "CSS Properties Beginners Use Most",
+      "headers": [
+        "Property",
+        "What It Does",
+        "Common Values"
+      ],
+      "rows": [
+        ["display", "Sets the layout mode of an element", "block, flex, grid, inline, none"],
+        ["margin", "Space outside an element's border", "0 auto (center), 1rem, 16px"],
+        ["padding", "Space inside an element's border", "1rem, 8px 16px, 0"],
+        ["color", "Text color", "#333, rgb(0,0,0), var(--text)"],
+        ["background-color", "Background fill color", "#fff, transparent, var(--bg)"],
+        ["font-size", "Size of text", "1rem, 16px, clamp(1rem, 2vw, 1.5rem)"],
+        ["font-weight", "Boldness of text", "400 (normal), 700 (bold)"],
+        ["border", "Line around an element", "1px solid #ccc, none"],
+        ["border-radius", "Rounded corners", "4px, 8px, 50% (circle)"],
+        ["width / height", "Explicit size of an element", "100%, 300px, auto, fit-content"],
+        ["gap", "Space between flex/grid children", "1rem, 8px"],
+        ["position", "Positioning scheme", "relative, absolute, fixed, sticky"],
+        ["z-index", "Stack order (higher = on top)", "1, 10, 100, -1"],
+        ["overflow", "What happens when content overflows", "hidden, scroll, auto, visible"],
+        ["transition", "Animate property changes", "all 0.2s ease, color 0.3s"]
+      ]
     },
     {
       "$ref": "fundamentals/3-css-mastery-responsive-design-and-media-queries.json"
@@ -95,16 +242,70 @@
       "$ref": "fundamentals/4-javascript-essentials-variables-types-and-operators.json"
     },
     {
+      "type": "code",
+      "language": "javascript",
+      "filename": "variables-functions-quick-ref.js",
+      "title": "Quick Reference: Variables, Functions & Arrow Functions",
+      "code": "// --- Variables ---\nconst API_URL = 'https://api.example.com'; // constant, cannot be reassigned\nlet count = 0;                             // can be reassigned\n// var is legacy -- always prefer const, then let\n\n// --- Regular function ---\nfunction greet(name) {\n  return `Hello, ${name}!`;\n}\n\n// --- Arrow function (shorter syntax) ---\nconst greetArrow = (name) => `Hello, ${name}!`;\n\n// --- Arrow function with body ---\nconst calculateTax = (price, rate = 0.1) => {\n  const tax = price * rate;\n  return price + tax;\n};\n\n// --- Destructuring ---\nconst user = { name: 'Alice', age: 28, role: 'developer' };\nconst { name, role } = user; // name = 'Alice', role = 'developer'\n\nconst colors = ['red', 'green', 'blue'];\nconst [first, second] = colors; // first = 'red', second = 'green'\n\n// --- Spread operator ---\nconst newColors = [...colors, 'purple']; // ['red', 'green', 'blue', 'purple']\nconst updatedUser = { ...user, age: 29 }; // shallow copy with age overridden\n\n// --- Optional chaining ---\nconst city = user?.address?.city ?? 'Unknown'; // safe deep access"
+    },
+    {
       "$ref": "fundamentals/4-javascript-essentials-functions-and-closures.json"
     },
     {
       "$ref": "fundamentals/4-javascript-essentials-promises-asyncawait-and-error-handling.json"
     },
     {
+      "type": "code",
+      "language": "javascript",
+      "filename": "async-fetch-quick-ref.js",
+      "title": "Quick Reference: async/await Fetch Example",
+      "code": "// Fetch data from an API using async/await\nasync function getUsers() {\n  try {\n    const response = await fetch('https://jsonplaceholder.typicode.com/users');\n\n    if (!response.ok) {\n      throw new Error(`HTTP error! Status: ${response.status}`);\n    }\n\n    const users = await response.json();\n    console.log(users);\n    return users;\n  } catch (error) {\n    console.error('Failed to fetch users:', error.message);\n    return [];\n  }\n}\n\n// POST data to an API\nasync function createUser(userData) {\n  try {\n    const response = await fetch('https://jsonplaceholder.typicode.com/users', {\n      method: 'POST',\n      headers: { 'Content-Type': 'application/json' },\n      body: JSON.stringify(userData),\n    });\n\n    if (!response.ok) throw new Error(`HTTP ${response.status}`);\n    return await response.json();\n  } catch (error) {\n    console.error('Failed to create user:', error.message);\n    throw error; // re-throw so the caller can handle it\n  }\n}"
+    },
+    {
       "$ref": "fundamentals/4-javascript-essentials-array-methods-and-dom-manipulation.json"
     },
     {
+      "type": "code",
+      "language": "javascript",
+      "filename": "array-methods-quick-ref.js",
+      "title": "Quick Reference: Array Methods (map, filter, find)",
+      "code": "const products = [\n  { id: 1, name: 'Laptop', price: 999, inStock: true },\n  { id: 2, name: 'Phone', price: 699, inStock: false },\n  { id: 3, name: 'Tablet', price: 449, inStock: true },\n  { id: 4, name: 'Watch', price: 299, inStock: true },\n];\n\n// map -- transform every item into something new\nconst names = products.map(p => p.name);\n// ['Laptop', 'Phone', 'Tablet', 'Watch']\n\n// filter -- keep only items that pass a test\nconst available = products.filter(p => p.inStock);\n// [{ id: 1, ... }, { id: 3, ... }, { id: 4, ... }]\n\n// find -- get the first item that matches\nconst phone = products.find(p => p.name === 'Phone');\n// { id: 2, name: 'Phone', price: 699, inStock: false }\n\n// Chaining: get names of available products under $500\nconst deals = products\n  .filter(p => p.inStock && p.price < 500)\n  .map(p => p.name);\n// ['Tablet', 'Watch']\n\n// reduce -- accumulate a single value from an array\nconst total = products.reduce((sum, p) => sum + p.price, 0);\n// 2446\n\n// some / every -- boolean checks\nconst anyInStock = products.some(p => p.inStock);   // true\nconst allInStock = products.every(p => p.inStock);  // false"
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "Common Beginner Mistakes to Avoid",
+      "body": "**1. Using == instead of ===** -- Double equals does type coercion (`'5' == 5` is true). Always use strict equality (`===`).\n\n**2. Forgetting that map/filter return new arrays** -- They do not modify the original. You must use the return value: `const result = arr.filter(...)`, not just `arr.filter(...)`.\n\n**3. Mutating state directly in React** -- Never do `state.push(item)`. Use the setter: `setState([...state, item])`.\n\n**4. Missing the dependency array in useEffect** -- An empty `[]` runs once on mount. Omitting it entirely runs on every render and can cause infinite loops.\n\n**5. Not handling async errors** -- Always wrap `await` calls in try/catch or use `.catch()`. Unhandled promise rejections crash Node and confuse users."
+    },
+    {
       "$ref": "fundamentals/4-javascript-essentials-es6-features-you-will-use-daily.json"
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "Before ES6",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "javascript",
+              "filename": "before-es6.js",
+              "code": "// Variables\nvar name = 'Alice';\nvar items = [1, 2, 3];\n\n// Functions\nfunction add(a, b) {\n  return a + b;\n}\n\n// String concatenation\nvar greeting = 'Hello, ' + name + '! You have ' + items.length + ' items.';\n\n// Callbacks for async\nfunction getUser(id, callback) {\n  var xhr = new XMLHttpRequest();\n  xhr.open('GET', '/api/users/' + id);\n  xhr.onload = function() {\n    if (xhr.status === 200) {\n      callback(null, JSON.parse(xhr.responseText));\n    } else {\n      callback(new Error('Request failed'));\n    }\n  };\n  xhr.send();\n}\n\n// Extracting object properties\nvar user = { name: 'Alice', age: 28 };\nvar userName = user.name;\nvar userAge = user.age;\n\n// Default values\nfunction createConfig(options) {\n  var port = options.port || 3000;\n  var host = options.host || 'localhost';\n  return { port: port, host: host };\n}"
+            }
+          ]
+        },
+        {
+          "label": "After ES6+",
+          "blocks": [
+            {
+              "type": "code",
+              "language": "javascript",
+              "filename": "after-es6.js",
+              "code": "// Variables (const by default, let when you need reassignment)\nconst name = 'Alice';\nconst items = [1, 2, 3];\n\n// Arrow functions\nconst add = (a, b) => a + b;\n\n// Template literals\nconst greeting = `Hello, ${name}! You have ${items.length} items.`;\n\n// async/await for async\nasync function getUser(id) {\n  const response = await fetch(`/api/users/${id}`);\n  if (!response.ok) throw new Error('Request failed');\n  return response.json();\n}\n\n// Destructuring\nconst user = { name: 'Alice', age: 28 };\nconst { name: userName, age: userAge } = user;\n\n// Default parameters + shorthand properties\nconst createConfig = ({ port = 3000, host = 'localhost' } = {}) => ({\n  port,\n  host,\n});\n\n// Spread, rest, optional chaining, nullish coalescing\nconst newItems = [...items, 4];\nconst city = user?.address?.city ?? 'Unknown';"
+            }
+          ]
+        }
+      ]
     },
     {
       "$ref": "fundamentals/5-typescript-basics-5-typescript-basics.json"
@@ -114,6 +315,29 @@
     },
     {
       "$ref": "fundamentals/5-typescript-basics-type-narrowing-and-utility-types.json"
+    },
+    {
+      "type": "table",
+      "heading": "JavaScript vs TypeScript Comparison",
+      "headers": [
+        "Feature",
+        "JavaScript",
+        "TypeScript"
+      ],
+      "rows": [
+        ["Type system", "Dynamic -- types checked at runtime", "Static -- types checked at compile time"],
+        ["File extension", ".js / .jsx", ".ts / .tsx"],
+        ["Variable declaration", "const x = 5;", "const x: number = 5;  (type often inferred)"],
+        ["Function params", "function add(a, b) { ... }", "function add(a: number, b: number): number { ... }"],
+        ["Interfaces", "Not available (use JSDoc comments)", "interface User { name: string; age: number; }"],
+        ["Enums", "Object.freeze({ ... }) workaround", "enum Status { Active, Inactive }"],
+        ["Generics", "Not available", "function identity<T>(value: T): T { return value; }"],
+        ["Null safety", "Runtime errors on null access", "Strict null checks catch it at compile time"],
+        ["IDE support", "Basic autocomplete", "Rich autocomplete, inline errors, refactoring"],
+        ["Learning curve", "Easier to start", "Small overhead that pays off quickly"],
+        ["Adoption", "Universal -- runs everywhere", "Compiles to JavaScript -- runs everywhere too"],
+        ["When to use", "Quick scripts, prototypes", "Any project you plan to maintain or grow"]
+      ]
     },
     {
       "$ref": "fundamentals/6-react-core-concepts-6-react-core-concepts.json"
@@ -131,10 +355,23 @@
       "$ref": "fundamentals/6-react-core-concepts-essential-hooks-useeffect-useref-usememo-usecallback.json"
     },
     {
+      "type": "code",
+      "language": "tsx",
+      "filename": "react-hooks-quick-ref.tsx",
+      "title": "Quick Reference: React useState + useEffect",
+      "code": "import { useState, useEffect } from 'react';\n\ninterface User {\n  id: number;\n  name: string;\n  email: string;\n}\n\nexport function UserList() {\n  const [users, setUsers] = useState<User[]>([]);\n  const [loading, setLoading] = useState(true);\n  const [error, setError] = useState<string | null>(null);\n\n  // useEffect runs after the component renders\n  // The empty [] dependency array means \"run once on mount\"\n  useEffect(() => {\n    async function fetchUsers() {\n      try {\n        const res = await fetch('https://jsonplaceholder.typicode.com/users');\n        if (!res.ok) throw new Error(`HTTP ${res.status}`);\n        const data: User[] = await res.json();\n        setUsers(data);\n      } catch (err) {\n        setError(err instanceof Error ? err.message : 'Unknown error');\n      } finally {\n        setLoading(false);\n      }\n    }\n\n    fetchUsers();\n  }, []); // <-- dependency array\n\n  if (loading) return <p>Loading...</p>;\n  if (error) return <p>Error: {error}</p>;\n\n  return (\n    <ul>\n      {users.map(user => (\n        <li key={user.id}>\n          {user.name} ({user.email})\n        </li>\n      ))}\n    </ul>\n  );\n}"
+    },
+    {
       "$ref": "fundamentals/6-react-core-concepts-context-api-for-shared-state.json"
     },
     {
       "$ref": "fundamentals/6-react-core-concepts-custom-hooks-for-reusable-logic.json"
+    },
+    {
+      "type": "alert",
+      "severity": "success",
+      "title": "You are making great progress",
+      "body": "If you have read through HTML, CSS, JavaScript, and React above, you already know the core building blocks of modern web development. The sections below cover the tools and workflows that tie everything together. These are less conceptual and more practical -- install the tools, try the commands, and build something."
     },
     {
       "$ref": "fundamentals/7-package-management-7-package-management.json"
@@ -183,6 +420,12 @@
     },
     {
       "$ref": "fundamentals/10-design-patterns-custom-hooks-pattern-the-modern-approach.json"
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": "What to build first",
+      "body": "The best way to solidify everything on this page is to build a small project. Start with something you will actually use: a personal homepage, a to-do app, or a bookmark manager. Keep it simple -- one page, a few components, maybe a fetch call to a public API. You will look things up constantly, and that is completely normal."
     },
     {
       "$ref": "fundamentals/what-is-next-what-is-next.json"

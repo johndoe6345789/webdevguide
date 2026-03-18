@@ -6,7 +6,9 @@
   "order": 27,
   "estimatedMinutes": 25,
   "difficulty": "beginner",
-  "prerequisites": ["fundamentals"],
+  "prerequisites": [
+    "fundamentals"
+  ],
   "keyPoints": [
     "Write docs that developers actually read -- brevity is the soul of documentation",
     "Code comments should explain WHY, never WHAT -- the code already tells you what it does",
@@ -147,15 +149,47 @@
     {
       "type": "table",
       "heading": "JSDoc Tags Reference",
-      "headers": ["Tag", "Purpose", "When to Use"],
+      "headers": [
+        "Tag",
+        "Purpose",
+        "When to Use"
+      ],
       "rows": [
-        ["@param", "Describe a function parameter", "Always for public APIs, skip for obvious params"],
-        ["@returns", "Describe the return value", "When the return value is not obvious from the type"],
-        ["@throws", "Document exceptions the function can throw", "Always -- callers need to know what to catch"],
-        ["@example", "Show a usage example with expected output", "For any function that is not immediately obvious"],
-        ["@deprecated", "Mark as deprecated with migration path", "When replacing with a new API"],
-        ["@see", "Link to related functions or external docs", "When functions work together as a group"],
-        ["@internal", "Mark as not part of the public API", "For helper functions that consumers should not use"]
+        [
+          "@param",
+          "Describe a function parameter",
+          "Always for public APIs, skip for obvious params"
+        ],
+        [
+          "@returns",
+          "Describe the return value",
+          "When the return value is not obvious from the type"
+        ],
+        [
+          "@throws",
+          "Document exceptions the function can throw",
+          "Always -- callers need to know what to catch"
+        ],
+        [
+          "@example",
+          "Show a usage example with expected output",
+          "For any function that is not immediately obvious"
+        ],
+        [
+          "@deprecated",
+          "Mark as deprecated with migration path",
+          "When replacing with a new API"
+        ],
+        [
+          "@see",
+          "Link to related functions or external docs",
+          "When functions work together as a group"
+        ],
+        [
+          "@internal",
+          "Mark as not part of the public API",
+          "For helper functions that consumers should not use"
+        ]
       ]
     },
     {
@@ -365,15 +399,47 @@
         },
         {
           "type": "table",
-          "headers": ["Prefix", "Changelog Section", "When to Use"],
+          "headers": [
+            "Prefix",
+            "Changelog Section",
+            "When to Use"
+          ],
           "rows": [
-            ["feat:", "Added", "A new feature visible to users"],
-            ["fix:", "Fixed", "A bug fix"],
-            ["perf:", "Changed", "A performance improvement"],
-            ["refactor:", "Not included", "Code restructuring with no behavior change"],
-            ["docs:", "Not included", "Documentation-only changes"],
-            ["chore:", "Not included", "Build scripts, CI, dependencies"],
-            ["BREAKING CHANGE:", "Removed/Changed", "Any change that breaks backward compatibility"]
+            [
+              "feat:",
+              "Added",
+              "A new feature visible to users"
+            ],
+            [
+              "fix:",
+              "Fixed",
+              "A bug fix"
+            ],
+            [
+              "perf:",
+              "Changed",
+              "A performance improvement"
+            ],
+            [
+              "refactor:",
+              "Not included",
+              "Code restructuring with no behavior change"
+            ],
+            [
+              "docs:",
+              "Not included",
+              "Documentation-only changes"
+            ],
+            [
+              "chore:",
+              "Not included",
+              "Build scripts, CI, dependencies"
+            ],
+            [
+              "BREAKING CHANGE:",
+              "Removed/Changed",
+              "Any change that breaks backward compatibility"
+            ]
           ]
         }
       ]
@@ -454,7 +520,11 @@
     {
       "type": "table",
       "heading": "Golden Rules",
-      "headers": ["Rule", "Why", "Example"],
+      "headers": [
+        "Rule",
+        "Why",
+        "Example"
+      ],
       "rows": [
         [
           "Write for scanning, not reading",
@@ -497,6 +567,40 @@
           "Spent 3 hours debugging CORS? Write a troubleshooting entry. Figured out the deploy process? Write a runbook."
         ]
       ]
+    }
+  ],
+  "references": [
+    {
+      "id": "divio2024docs",
+      "authors": "Divio",
+      "year": "2024",
+      "title": "The Documentation System",
+      "source": "Divio",
+      "url": "https://documentation.divio.com/"
+    },
+    {
+      "id": "jsdoc2024",
+      "authors": "JSDoc",
+      "year": "2024",
+      "title": "JSDoc Documentation",
+      "source": "JSDoc",
+      "url": "https://jsdoc.app/"
+    },
+    {
+      "id": "storybook2024",
+      "authors": "Storybook",
+      "year": "2024",
+      "title": "Storybook Documentation",
+      "source": "Storybook",
+      "url": "https://storybook.js.org/docs"
+    },
+    {
+      "id": "swagger2024",
+      "authors": "SmartBear",
+      "year": "2024",
+      "title": "OpenAPI Specification",
+      "source": "Swagger",
+      "url": "https://swagger.io/specification/"
     }
   ]
 }

@@ -334,6 +334,54 @@
     },
     {
       "type": "text",
+      "heading": "Multi-Stage Dockerfile for Node.js",
+      "headingLevel": 3,
+      "body": "The multi-stage pattern works for any language. Here is a production-ready Dockerfile for a Node.js application. The first stage installs dependencies and builds the project, the second stage copies only what is needed to run."
+    },
+    {
+      "type": "code",
+      "language": "dockerfile",
+      "filename": "Dockerfile (Node.js)",
+      "code": "# ---- Stage 1: Build ----\nFROM node:22-alpine AS builder\n\nWORKDIR /app\n\n# Copy package files first for better layer caching\nCOPY package.json package-lock.json ./\n\n# Install ALL dependencies (including devDependencies for the build)\nRUN npm ci\n\n# Copy source code and build\nCOPY . .\nRUN npm run build\n\n# ---- Stage 2: Production ----\nFROM node:22-alpine\n\nWORKDIR /app\n\n# Install only production dependencies\nCOPY package.json package-lock.json ./\nRUN npm ci --omit=dev\n\n# Copy the built output from the builder stage\nCOPY --from=builder /app/dist ./dist\n\n# Run as non-root user for security\nRUN addgroup -S appgroup && adduser -S appuser -G appgroup\nUSER appuser\n\nEXPOSE 3000\n\nCMD [\"node\", \"dist/index.js\"]"
+    },
+    {
+      "type": "text",
+      "heading": "Dockerfile for Python/Flask",
+      "headingLevel": 3,
+      "body": "Flask applications need a production WSGI server like Gunicorn. This Dockerfile sets that up along with a non-root user for security."
+    },
+    {
+      "type": "code",
+      "language": "dockerfile",
+      "filename": "Dockerfile (Python/Flask)",
+      "code": "FROM python:3.12-slim\n\n# Prevent Python from writing .pyc files and enable unbuffered output\nENV PYTHONDONTWRITEBYTECODE=1\nENV PYTHONUNBUFFERED=1\n\nWORKDIR /app\n\n# Install system dependencies (if needed for packages like psycopg2)\nRUN apt-get update && \\\n    apt-get install -y --no-install-recommends gcc libpq-dev && \\\n    rm -rf /var/lib/apt/lists/*\n\n# Copy and install Python dependencies\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt && \\\n    pip install --no-cache-dir gunicorn\n\n# Copy application code\nCOPY . .\n\n# Create a non-root user\nRUN adduser --disabled-password --no-create-home appuser\nUSER appuser\n\nEXPOSE 5000\n\n# Use Gunicorn for production (4 workers, bind to all interfaces)\nCMD [\"gunicorn\", \"--bind\", \"0.0.0.0:5000\", \"--workers\", \"4\", \"app:create_app()\"]"
+    },
+    {
+      "type": "text",
+      "heading": "The .dockerignore File",
+      "headingLevel": 3,
+      "body": "When Docker builds an image, it sends your entire project directory to the Docker daemon as \"build context.\" Without a .dockerignore file, Docker copies everything -- including node_modules, .git history, environment files, and other junk you do not want in the image."
+    },
+    {
+      "type": "alert",
+      "severity": "info",
+      "title": ".dockerignore is like .gitignore for Docker",
+      "body": "Just as .gitignore tells Git which files to skip when committing, .dockerignore tells Docker which files to skip when building. It makes your builds faster (less data to send) and your images smaller (less junk copied in). Always create one at the root of any Docker project."
+    },
+    {
+      "type": "code",
+      "language": "text",
+      "filename": ".dockerignore",
+      "code": "# Version control\n.git\n.gitignore\n\n# Dependencies (will be installed inside the container)\nnode_modules\n__pycache__\n*.pyc\n.venv\n\n# Environment and secrets\n.env\n.env.*\n*.pem\n*.key\n\n# IDE and editor files\n.vscode\n.idea\n*.swp\n*.swo\n\n# OS files\n.DS_Store\nThumbs.db\n\n# Build artifacts and logs\ndist\nbuild\ncoverage\n*.log\n\n# Docker files (no need to copy Dockerfiles into the image)\nDockerfile*\ndocker-compose*\n.dockerignore\n\n# Documentation\nREADME.md\nLICENSE\ndocs/"
+    },
+    {
+      "type": "alert",
+      "severity": "error",
+      "title": "Never put secrets in Dockerfiles",
+      "body": "Docker images are made of layers, and every layer is stored permanently. If you put a password, API key, or private key in a RUN, COPY, or ENV instruction, anyone who pulls the image can extract it -- even if you delete the file in a later layer. Use environment variables at runtime (docker run -e or docker-compose environment) or Docker secrets instead."
+    },
+    {
+      "type": "text",
       "heading": "Building and Running",
       "headingLevel": 2,
       "body": "Now that you have a Dockerfile, let us turn it into a running container."
@@ -396,6 +444,44 @@
     },
     {
       "type": "text",
+      "heading": "Dockerize Your First App",
+      "headingLevel": 2,
+      "body": "Let us walk through dockerizing an existing Node.js Express application from start to finish. By the end of these steps you will have a working containerized app."
+    },
+    {
+      "type": "step",
+      "step": 1,
+      "title": "Create a .dockerignore file",
+      "body": "Before writing the Dockerfile, create a .dockerignore in your project root to prevent unnecessary files from being copied into the image. At a minimum, exclude node_modules, .git, .env, and any build artifacts.",
+      "code": "node_modules\n.git\n.env\n.env.*\ncoverage\n.DS_Store",
+      "language": "text"
+    },
+    {
+      "type": "step",
+      "step": 2,
+      "title": "Write the Dockerfile",
+      "body": "Create a file named `Dockerfile` (no extension) in the project root. Start from the official Node.js Alpine image, copy your package files, install dependencies, copy your source code, and define the start command.",
+      "code": "FROM node:22-alpine\n\nWORKDIR /app\n\nCOPY package.json package-lock.json ./\nRUN npm ci --omit=dev\n\nCOPY . .\n\nEXPOSE 3000\nCMD [\"node\", \"index.js\"]",
+      "language": "dockerfile"
+    },
+    {
+      "type": "step",
+      "step": 3,
+      "title": "Build and run the image",
+      "body": "Open a terminal in your project directory. Build the image, then run it with port mapping so you can access it from your browser.",
+      "code": "# Build the image\ndocker build -t my-express-app .\n\n# Run the container (maps port 3000 on your machine to port 3000 in the container)\ndocker run -p 3000:3000 my-express-app",
+      "language": "bash"
+    },
+    {
+      "type": "step",
+      "step": 4,
+      "title": "Verify and iterate",
+      "body": "Open http://localhost:3000 in your browser. If the app works, congratulations -- it is containerized! If it does not, check the container logs for errors. From here you can add a health check, switch to a multi-stage build for smaller images, or add Docker Compose for additional services like a database.",
+      "code": "# Check logs if something is wrong\ndocker logs $(docker ps -q --filter ancestor=my-express-app)\n\n# Stop the container when done\ndocker stop $(docker ps -q --filter ancestor=my-express-app)",
+      "language": "bash"
+    },
+    {
+      "type": "text",
       "heading": "Docker Compose",
       "headingLevel": 2,
       "body": "Real projects usually have more than one container. Docker Compose lets you define and run them all together."
@@ -412,7 +498,19 @@
       "type": "code",
       "language": "yaml",
       "filename": "docker-compose.yml",
-      "code": "services:\n  # ---- Frontend (React/Next.js) ----\n  frontend:\n    build:\n      context: ./frontend          # Where to find the Dockerfile\n      dockerfile: Dockerfile       # Which Dockerfile to use\n    ports:\n      - \"3000:3000\"                # Map port 3000 on your machine to port 3000 in the container\n    depends_on:\n      backend:\n        condition: service_healthy  # Wait for backend to be healthy before starting\n    environment:\n      - API_URL=http://backend:5000 # Containers can talk to each other by service name\n\n  # ---- Backend (Python Flask) ----\n  backend:\n    build:\n      context: ./backend\n      dockerfile: Dockerfile\n    ports:\n      - \"5000:5000\"\n    volumes:\n      - app-data:/app/data         # Persist data even if container is recreated\n    healthcheck:\n      test: [\"CMD\", \"curl\", \"-f\", \"http://localhost:5000/health\"]\n      interval: 30s                # Check every 30 seconds\n      timeout: 10s                 # Wait up to 10 seconds for a response\n      retries: 3                   # Fail after 3 unsuccessful checks\n      start_period: 10s            # Give the app 10 seconds to start up\n\n  # ---- Database (PostgreSQL) ----\n  db:\n    image: postgres:16             # Use the official PostgreSQL image (no build needed)\n    ports:\n      - \"5432:5432\"\n    environment:\n      POSTGRES_USER: myuser\n      POSTGRES_PASSWORD: mypassword\n      POSTGRES_DB: myapp\n    volumes:\n      - db-data:/var/lib/postgresql/data  # Persist database data\n\n# Named volumes — Docker manages the storage location for you\nvolumes:\n  app-data:\n  db-data:"
+      "code": "services:\n  # ---- Frontend (React/Next.js) ----\n  frontend:\n    build:\n      context: ./frontend          # Where to find the Dockerfile\n      dockerfile: Dockerfile       # Which Dockerfile to use\n    ports:\n      - \"3000:3000\"                # Map port 3000 on your machine to port 3000 in the container\n    depends_on:\n      backend:\n        condition: service_healthy  # Wait for backend to be healthy before starting\n    environment:\n      - API_URL=http://backend:5000 # Containers can talk to each other by service name\n\n  # ---- Backend (Python Flask) ----\n  backend:\n    build:\n      context: ./backend\n      dockerfile: Dockerfile\n    ports:\n      - \"5000:5000\"\n    volumes:\n      - app-data:/app/data         # Persist data even if container is recreated\n    healthcheck:\n      test: [\"CMD\", \"curl\", \"-f\", \"http://localhost:5000/health\"]\n      interval: 30s                # Check every 30 seconds\n      timeout: 10s                 # Wait up to 10 seconds for a response\n      start_period: 10s            # Give the app 10 seconds to start up\n      retries: 3                   # Fail after 3 unsuccessful checks\n\n  # ---- Database (PostgreSQL) ----\n  db:\n    image: postgres:16             # Use the official PostgreSQL image (no build needed)\n    ports:\n      - \"5432:5432\"\n    environment:\n      POSTGRES_USER: myuser\n      POSTGRES_PASSWORD: mypassword\n      POSTGRES_DB: myapp\n    volumes:\n      - db-data:/var/lib/postgresql/data  # Persist database data\n\n# Named volumes — Docker manages the storage location for you\nvolumes:\n  app-data:\n  db-data:"
+    },
+    {
+      "type": "text",
+      "heading": "Docker Compose with Volumes and Networking",
+      "headingLevel": 3,
+      "body": "For more complex setups, you can define custom networks to isolate traffic between services. This example shows a microservices architecture where the frontend can only talk to the backend, and only the backend can talk to the database."
+    },
+    {
+      "type": "code",
+      "language": "yaml",
+      "filename": "docker-compose.yml (advanced networking)",
+      "code": "services:\n  frontend:\n    build: ./frontend\n    ports:\n      - \"3000:3000\"\n    networks:\n      - frontend-net             # Frontend can only reach the backend\n    depends_on:\n      - backend\n\n  backend:\n    build: ./backend\n    ports:\n      - \"5000:5000\"\n    networks:\n      - frontend-net             # Backend is reachable by frontend\n      - backend-net              # Backend can reach the database\n    volumes:\n      - uploads:/app/uploads     # Persist user uploads\n      - ./logs:/app/logs         # Bind mount: logs appear on host filesystem\n    environment:\n      DATABASE_URL: postgres://myuser:mypassword@db:5432/myapp\n\n  db:\n    image: postgres:16\n    networks:\n      - backend-net              # Database is only reachable by the backend\n    volumes:\n      - db-data:/var/lib/postgresql/data\n      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Run SQL on first start\n    environment:\n      POSTGRES_USER: myuser\n      POSTGRES_PASSWORD: mypassword\n      POSTGRES_DB: myapp\n\n  redis:\n    image: redis:7-alpine\n    networks:\n      - backend-net\n    volumes:\n      - redis-data:/data\n    command: redis-server --appendonly yes  # Enable persistence\n\nnetworks:\n  frontend-net:\n  backend-net:\n\nvolumes:\n  db-data:\n  uploads:\n  redis-data:"
     },
     {
       "type": "text",
@@ -463,6 +561,18 @@
       "severity": "info",
       "title": "Starting everything",
       "body": "Run `docker compose up` in the folder with your docker-compose.yml file. Docker will build all the images (if needed), create the containers, and start them together. Add `-d` to run in the background. Run `docker compose down` to stop everything."
+    },
+    {
+      "type": "text",
+      "heading": "Health Check Configuration",
+      "headingLevel": 3,
+      "body": "Health checks let Docker know whether your application is actually working, not just running. You can define them in the Dockerfile itself or in docker-compose.yml. When a container fails its health check, Docker marks it as unhealthy, and dependent services will not start."
+    },
+    {
+      "type": "code",
+      "language": "dockerfile",
+      "filename": "Dockerfile (with health check)",
+      "code": "FROM node:22-alpine\n\nWORKDIR /app\nCOPY package.json package-lock.json ./\nRUN npm ci --omit=dev\nCOPY . .\n\n# Install curl for the health check (Alpine does not include it)\nRUN apk add --no-cache curl\n\nEXPOSE 3000\n\n# Health check: hit the /health endpoint every 30 seconds\nHEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \\\n  CMD curl -f http://localhost:3000/health || exit 1\n\nCMD [\"node\", \"index.js\"]"
     },
     {
       "type": "text",
@@ -526,54 +636,80 @@
     },
     {
       "type": "text",
+      "heading": "Debugging Containers",
+      "headingLevel": 2,
+      "body": "When something goes wrong inside a container, you need to get inside and poke around. The `docker exec` command lets you run commands inside a running container, just like opening a terminal on a remote server."
+    },
+    {
+      "type": "code",
+      "language": "bash",
+      "description": "Common docker exec commands for debugging running containers.",
+      "code": "# Open an interactive shell inside a running container\ndocker exec -it my-running-app sh\n\n# If the container has bash installed (not Alpine), use bash instead\ndocker exec -it my-running-app bash\n\n# Check environment variables inside the container\ndocker exec my-running-app env\n\n# View the filesystem -- useful to verify files were copied correctly\ndocker exec my-running-app ls -la /app\n\n# Check network connectivity from inside the container\ndocker exec my-running-app ping -c 3 db\n\n# Tail the last 100 lines of a log file inside the container\ndocker exec my-running-app tail -100 /app/logs/error.log\n\n# Run a database query from inside the backend container\ndocker exec my-running-app python -c \"from app import db; print(db.engine.url)\"\n\n# Check running processes inside the container\ndocker exec my-running-app ps aux\n\n# Inspect resource usage of all running containers\ndocker stats --no-stream"
+    },
+    {
+      "type": "text",
       "heading": "Common Docker Commands",
       "headingLevel": 2,
       "body": "A quick reference for the commands you will use every day."
     },
     {
-      "type": "text",
-      "heading": "Image and container commands",
-      "headingLevel": 3,
-      "body": ""
-    },
-    {
       "type": "table",
-      "heading": "Image & Container Commands",
+      "heading": "Docker Commands Cheat Sheet",
       "headers": [
         "Command",
-        "Description",
+        "What It Does",
         "Example"
       ],
       "rows": [
         [
           "docker build -t <name> .",
-          "Build an image from the Dockerfile in the current directory and give it a name.",
+          "Build an image from the Dockerfile in the current directory",
           "docker build -t my-app ."
         ],
         [
           "docker run -p <host>:<container> <image>",
-          "Create and start a new container from an image, mapping ports between your machine and the container.",
+          "Create and start a container from an image with port mapping",
           "docker run -p 3000:3000 my-app"
         ],
         [
           "docker ps",
-          "List all running containers. Add -a to also see stopped containers.",
+          "List running containers (add -a for all, including stopped)",
           "docker ps -a"
         ],
         [
-          "docker stop <container>",
-          "Gracefully stop a running container. You can use the container name or ID.",
-          "docker stop my-running-app"
-        ],
-        [
           "docker logs <container>",
-          "View the output (stdout/stderr) of a container. Add -f to follow the log in real time.",
+          "View stdout/stderr output (add -f to follow in real time)",
           "docker logs -f my-running-app"
         ],
         [
-          "docker exec -it <container> <command>",
-          "Run a command inside a running container. The -it flags let you interact with it (like opening a terminal inside the container).",
+          "docker exec -it <container> <cmd>",
+          "Run a command inside a running container interactively",
           "docker exec -it my-running-app bash"
+        ],
+        [
+          "docker stop <container>",
+          "Gracefully stop a running container",
+          "docker stop my-running-app"
+        ],
+        [
+          "docker rm <container>",
+          "Remove a stopped container (add -f to force-remove a running one)",
+          "docker rm my-running-app"
+        ],
+        [
+          "docker image ls",
+          "List all images on your machine with their sizes",
+          "docker image ls"
+        ],
+        [
+          "docker image rm <image>",
+          "Remove an image from your machine",
+          "docker image rm my-app"
+        ],
+        [
+          "docker system prune",
+          "Remove all stopped containers, unused networks, and dangling images",
+          "docker system prune -a"
         ]
       ]
     },
@@ -611,57 +747,13 @@
     },
     {
       "type": "text",
-      "heading": "Cleanup commands",
-      "headingLevel": 3,
-      "body": ""
-    },
-    {
-      "type": "table",
-      "heading": "Cleanup Commands",
-      "headers": [
-        "Command",
-        "Description"
-      ],
-      "rows": [
-        [
-          "docker image ls",
-          "List all images on your machine, showing their size and when they were created."
-        ],
-        [
-          "docker system prune",
-          "Remove all stopped containers, unused networks, and dangling images to free up disk space. Add -a to also remove unused images."
-        ]
-      ]
-    },
-    {
-      "type": "text",
       "heading": "Troubleshooting",
       "headingLevel": 2,
       "body": "Docker problems can be confusing at first. Here are the most common issues and how to fix them."
     },
     {
       "type": "accordion",
-      "title": "Container won't start",
-      "blocks": [
-        {
-          "type": "text",
-          "body": "*Symptoms:* You run docker run and the container exits immediately, or you see an error message."
-        },
-        {
-          "type": "list",
-          "heading": "Solutions",
-          "items": [
-            "Check the logs: docker logs <container-name> -- this almost always tells you what went wrong.",
-            "Make sure your CMD in the Dockerfile is correct. A typo in the filename (e.g., \"app.py\" vs \"main.py\") will crash the container.",
-            "Verify that all required environment variables are set. Missing config is a common cause.",
-            "If the image fails to build, read the build output carefully. It usually fails at a specific RUN step."
-          ]
-        }
-      ]
-    },
-    {
-      "type": "accordion",
-      "title": "Port already in use",
+      "title": "Port conflicts -- \"port is already allocated\"",
       "blocks": [
         {
           "type": "text",
@@ -671,69 +763,95 @@
           "type": "list",
           "heading": "Solutions",
           "items": [
-            "Something else is already using that port on your machine. Find it with: lsof -i :3000 (Mac/Linux) or netstat -ano | findstr :3000 (Windows).",
-            "Stop the other process, or change the host port: docker run -p 3001:3000 my-app -- this maps your port 3001 to the container's port 3000.",
-            "If a previous container is still running, stop it first: docker stop <container-name>."
+            "Something else is already using that port. Find it with: `lsof -i :3000` (Mac/Linux) or `netstat -ano | findstr :3000` (Windows).",
+            "Stop the other process, or change the host port in your mapping: `docker run -p 3001:3000 my-app` -- this maps your port 3001 to the container's port 3000.",
+            "If a previous Docker container is still running, stop it first: `docker stop <container-name>`.",
+            "When using Docker Compose, run `docker compose down` before `docker compose up` to ensure old containers are cleaned up."
           ]
         }
       ]
     },
     {
       "type": "accordion",
-      "title": "File changes not showing up",
+      "title": "Build cache problems -- stale dependencies",
       "blocks": [
         {
           "type": "text",
-          "body": "*Symptoms:* You edit your code but the running container does not reflect the changes."
+          "body": "*Symptoms:* You updated package.json or requirements.txt but the container still uses old dependency versions. Or the build seems to skip steps that should run."
         },
         {
           "type": "list",
           "heading": "Solutions",
           "items": [
-            "If you are NOT using volumes, you need to rebuild: docker compose up --build.",
-            "If you ARE using volumes, make sure the volume path in docker-compose.yml points to the correct directory.",
-            "Check that your framework's hot-reload is working. Some frameworks need WATCHPACK_POLLING=true inside Docker.",
-            "On Windows/Mac, Docker Desktop sometimes has issues with file watching. Try restarting Docker Desktop."
+            "Force a full rebuild with no cache: `docker build --no-cache -t my-app .`",
+            "With Docker Compose: `docker compose build --no-cache`",
+            "If only dependencies changed, make sure your Dockerfile copies the lockfile before the source code so the cache invalidates correctly.",
+            "To clear all build cache: `docker builder prune` (this frees disk space too).",
+            "Remember that each Dockerfile instruction is a cache layer. If you change an early instruction, all subsequent layers are rebuilt."
           ]
         }
       ]
     },
     {
       "type": "accordion",
-      "title": "Out of disk space",
+      "title": "Volume permission errors",
       "blocks": [
         {
           "type": "text",
-          "body": "*Symptoms:* \"no space left on device\" error during build, or Docker Desktop reports high disk usage."
+          "body": "*Symptoms:* \"Permission denied\" errors when writing to mounted volumes, or files created inside the container are owned by root on the host."
         },
         {
           "type": "list",
           "heading": "Solutions",
           "items": [
-            "Run docker system prune to remove stopped containers, unused networks, and dangling images.",
-            "Run docker system prune -a to also remove all unused images (more aggressive).",
-            "Check image sizes with docker image ls and remove large images you no longer need: docker image rm <image-name>.",
-            "In Docker Desktop, go to Settings and increase the disk space limit, or reduce it after pruning."
+            "On Linux, the container user's UID must match the host user's UID. Add `user: \"1000:1000\"` to your docker-compose.yml service to match your host user.",
+            "In the Dockerfile, create a user with the same UID as your host user: `RUN adduser -u 1000 -D appuser`.",
+            "For named volumes, Docker manages permissions automatically. Problems mostly occur with bind mounts (host directory mounts).",
+            "As a quick fix, you can run `chmod -R 777 ./data` on the host directory, but this is not recommended for production.",
+            "On macOS and Windows, Docker Desktop handles permission mapping automatically, so this is mainly a Linux issue."
           ]
         }
       ]
     },
     {
       "type": "accordion",
-      "title": "Cannot connect to Docker daemon",
+      "title": "Container won't start or exits immediately",
       "blocks": [
         {
           "type": "text",
-          "body": "*Symptoms:* \"Cannot connect to the Docker daemon. Is the Docker daemon running?\""
+          "body": "*Symptoms:* You run docker run and the container exits immediately with a status code, or you see an error message."
         },
         {
           "type": "list",
           "heading": "Solutions",
           "items": [
-            "Make sure Docker Desktop is running. Look for the whale icon in your system tray (Windows) or menu bar (Mac).",
-            "On Linux, start the Docker service: sudo systemctl start docker.",
-            "Try restarting Docker Desktop completely.",
-            "On Linux, make sure your user is in the \"docker\" group: sudo usermod -aG docker $USER (then log out and back in)."
+            "Check the logs: `docker logs <container-name>` -- this almost always reveals the error.",
+            "Make sure your CMD in the Dockerfile is correct. A typo in the filename (e.g., \"app.py\" vs \"main.py\") will crash the container.",
+            "Verify that all required environment variables are set. Missing config is a common cause of immediate exits.",
+            "If the container runs and exits instantly, your app might not have a long-running process. A web server stays alive, but a script that finishes will cause the container to stop.",
+            "Try running the container interactively to debug: `docker run -it my-app sh`"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Image too large -- slow builds and deploys",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "*Symptoms:* Your Docker image is several gigabytes, builds take forever, and pushing to a registry is painfully slow."
+        },
+        {
+          "type": "list",
+          "heading": "Solutions",
+          "items": [
+            "Use Alpine-based images (`node:22-alpine` instead of `node:22`) -- they are 5-10x smaller.",
+            "Use multi-stage builds to separate the build environment from the runtime. Your final image only needs the compiled output, not the build tools.",
+            "Create a .dockerignore file to exclude node_modules, .git, and other large directories from the build context.",
+            "Combine RUN commands to reduce the number of layers: `RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*`",
+            "Check image size with `docker image ls` and inspect layers with `docker history <image>` to find what is taking up space.",
+            "Remove unnecessary files in the same RUN command that creates them: `RUN apt-get install -y build-essential && make && apt-get purge -y build-essential`"
           ]
         }
       ]

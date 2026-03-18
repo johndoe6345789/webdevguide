@@ -6,7 +6,11 @@
   "order": 29,
   "estimatedMinutes": 40,
   "difficulty": "intermediate",
-  "prerequisites": ["fundamentals", "backend-guide", "authentication-authorization"],
+  "prerequisites": [
+    "fundamentals",
+    "backend-guide",
+    "authentication-authorization"
+  ],
   "keyPoints": [
     "User profile pages with customization",
     "Threaded comment systems",
@@ -25,12 +29,42 @@
       "type": "cardGrid",
       "columns": 3,
       "cards": [
-        { "title": "Identity", "body": "User profiles give people a home on your platform and a reason to invest in their presence.", "icon": "Person", "chip": "Profiles" },
-        { "title": "Expression", "body": "Comments, posts, and replies let users contribute their voice and feel heard.", "icon": "ChatBubble", "chip": "Comments" },
-        { "title": "Recognition", "body": "Votes, likes, and reactions validate contributions and surface quality content.", "icon": "ThumbUp", "chip": "Votes" },
-        { "title": "Connection", "body": "Follow and friend systems build social graphs that make users invested in each other.", "icon": "People", "chip": "Social" },
-        { "title": "Feedback", "body": "Notifications close the engagement loop by bringing users back when something relevant happens.", "icon": "Notifications", "chip": "Alerts" },
-        { "title": "Progression", "body": "Reputation, karma, and achievements give users long-term goals to work toward.", "icon": "TrendingUp", "chip": "Gamification" }
+        {
+          "title": "Identity",
+          "body": "User profiles give people a home on your platform and a reason to invest in their presence.",
+          "icon": "Person",
+          "chip": "Profiles"
+        },
+        {
+          "title": "Expression",
+          "body": "Comments, posts, and replies let users contribute their voice and feel heard.",
+          "icon": "ChatBubble",
+          "chip": "Comments"
+        },
+        {
+          "title": "Recognition",
+          "body": "Votes, likes, and reactions validate contributions and surface quality content.",
+          "icon": "ThumbUp",
+          "chip": "Votes"
+        },
+        {
+          "title": "Connection",
+          "body": "Follow and friend systems build social graphs that make users invested in each other.",
+          "icon": "People",
+          "chip": "Social"
+        },
+        {
+          "title": "Feedback",
+          "body": "Notifications close the engagement loop by bringing users back when something relevant happens.",
+          "icon": "Notifications",
+          "chip": "Alerts"
+        },
+        {
+          "title": "Progression",
+          "body": "Reputation, karma, and achievements give users long-term goals to work toward.",
+          "icon": "TrendingUp",
+          "chip": "Gamification"
+        }
       ]
     },
     {
@@ -283,13 +317,37 @@
     {
       "type": "table",
       "heading": "Algorithm Comparison",
-      "headers": ["Algorithm", "Formula", "Best For"],
+      "headers": [
+        "Algorithm",
+        "Formula",
+        "Best For"
+      ],
       "rows": [
-        ["Chronological", "ORDER BY created_at DESC", "Chat, real-time feeds, breaking news"],
-        ["Net Score", "upvotes - downvotes", "Simple communities, low traffic — biased toward older content"],
-        ["Wilson Score", "Lower bound of 95% confidence interval", "Reddit 'Best' — handles items with few votes fairly"],
-        ["Hot / Trending", "score / (age_in_hours + 2) ^ gravity", "Hacker News front page — score decays with time"],
-        ["Bayesian Average", "(C * m + sum_ratings) / (C + num_ratings)", "Star ratings (IMDb, Amazon) — pulls toward global mean"]
+        [
+          "Chronological",
+          "ORDER BY created_at DESC",
+          "Chat, real-time feeds, breaking news"
+        ],
+        [
+          "Net Score",
+          "upvotes - downvotes",
+          "Simple communities, low traffic — biased toward older content"
+        ],
+        [
+          "Wilson Score",
+          "Lower bound of 95% confidence interval",
+          "Reddit 'Best' — handles items with few votes fairly"
+        ],
+        [
+          "Hot / Trending",
+          "score / (age_in_hours + 2) ^ gravity",
+          "Hacker News front page — score decays with time"
+        ],
+        [
+          "Bayesian Average",
+          "(C * m + sum_ratings) / (C + num_ratings)",
+          "Star ratings (IMDb, Amazon) — pulls toward global mean"
+        ]
       ]
     },
     {
@@ -356,10 +414,28 @@
         },
         {
           "type": "table",
-          "headers": ["Approach", "How It Works", "Pros", "Cons", "Best For"],
+          "headers": [
+            "Approach",
+            "How It Works",
+            "Pros",
+            "Cons",
+            "Best For"
+          ],
           "rows": [
-            ["Fan-out on Read", "Query events from followed users at request time", "Simple, no storage duplication, writes are fast", "Slow reads for users following many people, expensive at scale", "Small to medium platforms (under 100K users)"],
-            ["Fan-out on Write", "When a user posts, push event into each follower's Redis feed", "Fast reads (pre-computed), consistent feed delivery", "Expensive writes for users with millions of followers, storage duplication", "Large platforms (Twitter, Instagram scale)"]
+            [
+              "Fan-out on Read",
+              "Query events from followed users at request time",
+              "Simple, no storage duplication, writes are fast",
+              "Slow reads for users following many people, expensive at scale",
+              "Small to medium platforms (under 100K users)"
+            ],
+            [
+              "Fan-out on Write",
+              "When a user posts, push event into each follower's Redis feed",
+              "Fast reads (pre-computed), consistent feed delivery",
+              "Expensive writes for users with millions of followers, storage duplication",
+              "Large platforms (Twitter, Instagram scale)"
+            ]
           ]
         }
       ]
@@ -422,12 +498,42 @@
       "type": "cardGrid",
       "columns": 3,
       "cards": [
-        { "title": "New Follower", "body": "Notify when someone follows you. Include follower name and avatar.", "icon": "PersonAdd", "chip": "Social" },
-        { "title": "Comment Reply", "body": "Notify when someone replies to your comment in a thread.", "icon": "Reply", "chip": "Discussion" },
-        { "title": "Post Comment", "body": "Notify when someone comments on your post or article.", "icon": "Comment", "chip": "Content" },
-        { "title": "Upvote Milestone", "body": "Notify at milestones: 10, 100, 1000 upvotes on your content.", "icon": "Celebration", "chip": "Achievement" },
-        { "title": "Mention", "body": "Notify when someone uses @username to reference you.", "icon": "AlternateEmail", "chip": "Social" },
-        { "title": "Content Update", "body": "Notify when bookmarked content is updated or receives new activity.", "icon": "Update", "chip": "Follow-up" }
+        {
+          "title": "New Follower",
+          "body": "Notify when someone follows you. Include follower name and avatar.",
+          "icon": "PersonAdd",
+          "chip": "Social"
+        },
+        {
+          "title": "Comment Reply",
+          "body": "Notify when someone replies to your comment in a thread.",
+          "icon": "Reply",
+          "chip": "Discussion"
+        },
+        {
+          "title": "Post Comment",
+          "body": "Notify when someone comments on your post or article.",
+          "icon": "Comment",
+          "chip": "Content"
+        },
+        {
+          "title": "Upvote Milestone",
+          "body": "Notify at milestones: 10, 100, 1000 upvotes on your content.",
+          "icon": "Celebration",
+          "chip": "Achievement"
+        },
+        {
+          "title": "Mention",
+          "body": "Notify when someone uses @username to reference you.",
+          "icon": "AlternateEmail",
+          "chip": "Social"
+        },
+        {
+          "title": "Content Update",
+          "body": "Notify when bookmarked content is updated or receives new activity.",
+          "icon": "Update",
+          "chip": "Follow-up"
+        }
       ]
     },
     {
@@ -486,15 +592,47 @@
     {
       "type": "table",
       "heading": "Reputation Points by Action",
-      "headers": ["Action", "Points", "Rationale"],
+      "headers": [
+        "Action",
+        "Points",
+        "Rationale"
+      ],
       "rows": [
-        ["Your post is upvoted", "+10", "Primary reward for quality content"],
-        ["Your answer is accepted", "+15", "Higher reward for directly solving a problem"],
-        ["Your comment is upvoted", "+5", "Smaller reward for conversational contributions"],
-        ["Your post is downvoted", "-2", "Mild penalty, less than the upvote reward to avoid discouraging posting"],
-        ["Your comment is downvoted", "-1", "Minimal penalty for low-quality comments"],
-        ["You downvote someone", "-1", "Small cost discourages frivolous downvoting"],
-        ["Your post is bookmarked", "+2", "Signal that content has lasting value"]
+        [
+          "Your post is upvoted",
+          "+10",
+          "Primary reward for quality content"
+        ],
+        [
+          "Your answer is accepted",
+          "+15",
+          "Higher reward for directly solving a problem"
+        ],
+        [
+          "Your comment is upvoted",
+          "+5",
+          "Smaller reward for conversational contributions"
+        ],
+        [
+          "Your post is downvoted",
+          "-2",
+          "Mild penalty, less than the upvote reward to avoid discouraging posting"
+        ],
+        [
+          "Your comment is downvoted",
+          "-1",
+          "Minimal penalty for low-quality comments"
+        ],
+        [
+          "You downvote someone",
+          "-1",
+          "Small cost discourages frivolous downvoting"
+        ],
+        [
+          "Your post is bookmarked",
+          "+2",
+          "Signal that content has lasting value"
+        ]
       ]
     },
     {
@@ -513,12 +651,42 @@
       "type": "cardGrid",
       "columns": 3,
       "cards": [
-        { "title": "DAU/MAU Ratio", "body": "Daily active users divided by monthly active users. Above 0.5 is excellent (like messaging apps). 0.1-0.2 is typical for content platforms.", "icon": "BarChart", "chip": "Core" },
-        { "title": "Session Length", "body": "Average time users spend per visit. Longer sessions indicate engaging content and features.", "icon": "Timer", "chip": "Depth" },
-        { "title": "Pages per Session", "body": "How many pages users view before leaving. More pages suggest good content discovery.", "icon": "Layers", "chip": "Depth" },
-        { "title": "Return Rate", "body": "Percentage of users who return within 7 days. The most direct measure of engagement.", "icon": "Replay", "chip": "Retention" },
-        { "title": "Comment Rate", "body": "Percentage of viewers who leave a comment. Typically 1-5% for healthy communities.", "icon": "Chat", "chip": "Participation" },
-        { "title": "Vote Rate", "body": "Percentage of viewers who vote on content. Higher than comment rate since voting is lower effort.", "icon": "HowToVote", "chip": "Participation" }
+        {
+          "title": "DAU/MAU Ratio",
+          "body": "Daily active users divided by monthly active users. Above 0.5 is excellent (like messaging apps). 0.1-0.2 is typical for content platforms.",
+          "icon": "BarChart",
+          "chip": "Core"
+        },
+        {
+          "title": "Session Length",
+          "body": "Average time users spend per visit. Longer sessions indicate engaging content and features.",
+          "icon": "Timer",
+          "chip": "Depth"
+        },
+        {
+          "title": "Pages per Session",
+          "body": "How many pages users view before leaving. More pages suggest good content discovery.",
+          "icon": "Layers",
+          "chip": "Depth"
+        },
+        {
+          "title": "Return Rate",
+          "body": "Percentage of users who return within 7 days. The most direct measure of engagement.",
+          "icon": "Replay",
+          "chip": "Retention"
+        },
+        {
+          "title": "Comment Rate",
+          "body": "Percentage of viewers who leave a comment. Typically 1-5% for healthy communities.",
+          "icon": "Chat",
+          "chip": "Participation"
+        },
+        {
+          "title": "Vote Rate",
+          "body": "Percentage of viewers who vote on content. Higher than comment rate since voting is lower effort.",
+          "icon": "HowToVote",
+          "chip": "Participation"
+        }
       ]
     },
     {
@@ -583,6 +751,39 @@
       "filename": "utils/rate_limit.py",
       "description": "Flask rate limiting decorator using in-memory tracking. Limits comments to 1 per 30 seconds and votes to 30 per minute per user.",
       "code": "import time\nfrom functools import wraps\nfrom collections import defaultdict\nfrom flask import jsonify\nfrom flask_jwt_extended import get_jwt_identity\n\n# In-memory store: {user_id: [(timestamp, action), ...]}\n_rate_store: dict[int, list[tuple[float, str]]] = defaultdict(list)\n\nRATE_LIMITS = {\n    \"comment\": {\"max\": 1, \"window\": 30},    # 1 comment per 30 seconds\n    \"vote\": {\"max\": 30, \"window\": 60},       # 30 votes per minute\n    \"post\": {\"max\": 3, \"window\": 300},       # 3 posts per 5 minutes\n    \"follow\": {\"max\": 20, \"window\": 60},     # 20 follows per minute\n    \"report\": {\"max\": 5, \"window\": 300},     # 5 reports per 5 minutes\n}\n\n\ndef rate_limit(action: str):\n    \"\"\"Decorator that enforces per-user rate limits.\"\"\"\n    def decorator(f):\n        @wraps(f)\n        def wrapped(*args, **kwargs):\n            user_id = get_jwt_identity()\n            config = RATE_LIMITS.get(action)\n            if not config:\n                return f(*args, **kwargs)\n\n            now = time.time()\n            window = config[\"window\"]\n            max_count = config[\"max\"]\n\n            # Clean old entries\n            entries = _rate_store[user_id]\n            entries[:] = [\n                (ts, act) for ts, act in entries\n                if now - ts < window and act == action\n            ]\n\n            # Check limit\n            recent = [e for e in entries if e[1] == action]\n            if len(recent) >= max_count:\n                retry_after = int(window - (now - recent[0][0]))\n                return jsonify({\n                    \"error\": \"Rate limit exceeded\",\n                    \"retryAfter\": retry_after,\n                }), 429\n\n            # Record this action\n            entries.append((now, action))\n            return f(*args, **kwargs)\n        return wrapped\n    return decorator"
+    }
+  ],
+  "references": [
+    {
+      "id": "mdn2024intersectionobs",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "Intersection Observer API",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API"
+    },
+    {
+      "id": "mdn2024notifications",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "Notifications API",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API"
+    },
+    {
+      "id": "eyal2014hooked",
+      "authors": "Eyal, N.",
+      "year": "2014",
+      "title": "Hooked: How to Build Habit-Forming Products",
+      "source": "Portfolio/Penguin"
+    },
+    {
+      "id": "react2024usememo",
+      "authors": "Meta",
+      "year": "2024",
+      "title": "useMemo",
+      "source": "React",
+      "url": "https://react.dev/reference/react/useMemo"
     }
   ]
 }

@@ -17,16 +17,66 @@
       "type": "cardGrid",
       "columns": 2,
       "cards": [
-        { "title": "To-Do App", "body": "Full CRUD with React state", "icon": "CheckCircle", "chip": "Beginner" },
-        { "title": "Weather Dashboard", "body": "API integration with fetch", "icon": "Cloud", "chip": "Beginner" },
-        { "title": "Chat Interface", "body": "Real-time messaging UI", "icon": "Chat", "chip": "Intermediate" },
-        { "title": "Image Gallery", "body": "Grid layout with lightbox", "icon": "Photo", "chip": "Beginner" },
-        { "title": "Calculator", "body": "State machine pattern", "icon": "Calculate", "chip": "Intermediate" },
-        { "title": "Blog with Markdown", "body": "MDX rendering pipeline", "icon": "Article", "chip": "Intermediate" },
-        { "title": "Authentication Flow", "body": "Login, register, protected routes", "icon": "Lock", "chip": "Advanced" },
-        { "title": "Data Table", "body": "Sorting, filtering, pagination", "icon": "TableChart", "chip": "Intermediate" },
-        { "title": "Shopping Cart", "body": "Add, remove, quantity, total", "icon": "ShoppingCart", "chip": "Intermediate" },
-        { "title": "Dashboard Charts", "body": "Data visualization with SVG", "icon": "BarChart", "chip": "Intermediate" }
+        {
+          "title": "To-Do App",
+          "body": "Full CRUD with React state",
+          "icon": "CheckCircle",
+          "chip": "Beginner"
+        },
+        {
+          "title": "Weather Dashboard",
+          "body": "API integration with fetch",
+          "icon": "Cloud",
+          "chip": "Beginner"
+        },
+        {
+          "title": "Chat Interface",
+          "body": "Real-time messaging UI",
+          "icon": "Chat",
+          "chip": "Intermediate"
+        },
+        {
+          "title": "Image Gallery",
+          "body": "Grid layout with lightbox",
+          "icon": "Photo",
+          "chip": "Beginner"
+        },
+        {
+          "title": "Calculator",
+          "body": "State machine pattern",
+          "icon": "Calculate",
+          "chip": "Intermediate"
+        },
+        {
+          "title": "Blog with Markdown",
+          "body": "MDX rendering pipeline",
+          "icon": "Article",
+          "chip": "Intermediate"
+        },
+        {
+          "title": "Authentication Flow",
+          "body": "Login, register, protected routes",
+          "icon": "Lock",
+          "chip": "Advanced"
+        },
+        {
+          "title": "Data Table",
+          "body": "Sorting, filtering, pagination",
+          "icon": "TableChart",
+          "chip": "Intermediate"
+        },
+        {
+          "title": "Shopping Cart",
+          "body": "Add, remove, quantity, total",
+          "icon": "ShoppingCart",
+          "chip": "Intermediate"
+        },
+        {
+          "title": "Dashboard Charts",
+          "body": "Data visualization with SVG",
+          "icon": "BarChart",
+          "chip": "Intermediate"
+        }
       ]
     },
     {
@@ -332,5 +382,31 @@
   "prerequisites": [
     "Basic understanding of React components and JSX",
     "Familiarity with JavaScript ES6 features (arrow functions, destructuring, spread operator)"
+  ],
+  "references": [
+    {
+      "id": "react2024learn",
+      "authors": "Meta",
+      "year": "2024",
+      "title": "Learn React",
+      "source": "React",
+      "url": "https://react.dev/learn"
+    },
+    {
+      "id": "mdn2024jsguide",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "JavaScript Guide",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide"
+    },
+    {
+      "id": "react2024hooks",
+      "authors": "Meta",
+      "year": "2024",
+      "title": "Built-in React Hooks",
+      "source": "React",
+      "url": "https://react.dev/reference/react/hooks"
+    }
   ]
 }

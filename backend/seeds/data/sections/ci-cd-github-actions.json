@@ -56,6 +56,42 @@
     },
     {
       "type": "text",
+      "heading": "Set Up CI/CD from Scratch",
+      "headingLevel": 2,
+      "body": "Let us walk through adding a complete CI/CD pipeline to an existing project. By the end of these steps, every push will be automatically linted, tested, and deployed."
+    },
+    {
+      "type": "step",
+      "step": 1,
+      "title": "Create the workflow directory",
+      "body": "GitHub Actions looks for workflow files in a specific location. Create the required directory structure in your repository root.",
+      "code": "mkdir -p .github/workflows",
+      "language": "bash"
+    },
+    {
+      "type": "step",
+      "step": 2,
+      "title": "Write your first workflow file",
+      "body": "Create a YAML file in the workflows directory. The filename can be anything (e.g., ci.yml). Start with a simple lint-and-test workflow that runs on every push and pull request. Use the example in the \"Workflow File Anatomy\" section below as your starting point.",
+      "code": "touch .github/workflows/ci.yml",
+      "language": "bash"
+    },
+    {
+      "type": "step",
+      "step": 3,
+      "title": "Add secrets and environment variables",
+      "body": "Go to your repository on GitHub, then Settings > Secrets and variables > Actions. Add any secrets your workflow needs (deploy tokens, API keys, etc.). These will be available as `${{ secrets.SECRET_NAME }}` in your workflow."
+    },
+    {
+      "type": "step",
+      "step": 4,
+      "title": "Push and verify",
+      "body": "Commit and push your workflow file. Go to the Actions tab on GitHub to see your workflow running. If it fails, click into the failed job to see the logs for each step. Fix any issues and push again -- the workflow will re-run automatically.",
+      "code": "git add .github/workflows/ci.yml\ngit commit -m \"Add CI workflow\"\ngit push",
+      "language": "bash"
+    },
+    {
+      "type": "text",
       "heading": "Workflow File Anatomy",
       "headingLevel": 2,
       "body": "A GitHub Actions workflow is a YAML file that lives in the `.github/workflows/` directory. Every workflow has three main sections: a **name**, **triggers** (when it runs), and **jobs** (what it does). Let us break down each piece."
@@ -147,6 +183,52 @@
       "code": "# Run on push to specific branches\non:\n  push:\n    branches: [main, develop]\n    paths:                       # Only run when these files change\n      - 'frontend/**'\n      - 'package.json'\n\n---\n# Run on pull request events\non:\n  pull_request:\n    types: [opened, synchronize, reopened]\n    branches: [main]\n\n---\n# Run on a schedule (cron syntax, UTC time)\non:\n  schedule:\n    - cron: '0 9 * * 1'          # Every Monday at 9 AM UTC\n\n---\n# Manual trigger with inputs\non:\n  workflow_dispatch:\n    inputs:\n      environment:\n        description: 'Deploy target'\n        required: true\n        default: 'staging'\n        type: choice\n        options:\n          - staging\n          - production"
     },
     {
+      "type": "table",
+      "heading": "Workflow Triggers Reference",
+      "headers": [
+        "Trigger",
+        "When It Fires",
+        "Common Use Case"
+      ],
+      "rows": [
+        [
+          "push",
+          "When commits are pushed to a branch",
+          "Run CI on every push to main or develop; use paths filter to only run when relevant files change"
+        ],
+        [
+          "pull_request",
+          "When a PR is opened, updated, or reopened",
+          "Run linters and tests on every PR before merging; the most common CI trigger"
+        ],
+        [
+          "schedule",
+          "On a cron schedule (UTC time)",
+          "Nightly builds, weekly dependency audits, scheduled security scans (e.g., cron: '0 2 * * *' for 2 AM daily)"
+        ],
+        [
+          "workflow_dispatch",
+          "Manually triggered from the GitHub UI",
+          "On-demand deployments, manual database migrations, one-off tasks that need human approval"
+        ],
+        [
+          "release",
+          "When a GitHub release is published",
+          "Build and publish Docker images, npm packages, or binaries when you tag a release"
+        ],
+        [
+          "workflow_call",
+          "Called by another workflow",
+          "Create reusable workflows that multiple repos or pipelines can share"
+        ],
+        [
+          "repository_dispatch",
+          "Triggered by an external webhook (API call)",
+          "Start a workflow from an external service like Slack, a CMS, or another CI system"
+        ]
+      ]
+    },
+    {
       "type": "text",
       "heading": "Environment Variables and Secrets",
       "headingLevel": 2,
@@ -166,6 +248,12 @@
       "body": "Your workflow files are committed to git and visible to anyone with repo access. Always use GitHub Secrets for passwords, tokens, and API keys. Secrets are encrypted at rest and masked in log output."
     },
     {
+      "type": "alert",
+      "severity": "warning",
+      "title": "Secrets are not available in fork PRs",
+      "body": "For security, GitHub does not pass repository secrets to workflows triggered by pull requests from forks. This prevents a malicious fork from stealing your secrets. If your CI needs secrets to run tests, consider using the pull_request_target trigger with caution, or design tests so they can run without secrets."
+    },
+    {
       "type": "text",
       "heading": "Matrix Builds",
       "headingLevel": 2,
@@ -175,8 +263,8 @@
       "type": "code",
       "language": "yaml",
       "filename": ".github/workflows/matrix.yml",
-      "description": "A matrix build that tests across multiple Node.js and Python versions in parallel.",
-      "code": "name: Matrix Test\n\non: [push, pull_request]\n\njobs:\n  test:\n    runs-on: ubuntu-latest\n\n    strategy:\n      matrix:\n        node-version: [18, 20, 22]\n        python-version: ['3.10', '3.11', '3.12']\n      fail-fast: false       # Continue other matrix jobs even if one fails\n\n    steps:\n      - uses: actions/checkout@v4\n\n      - name: Set up Node.js ${{ matrix.node-version }}\n        uses: actions/setup-node@v4\n        with:\n          node-version: ${{ matrix.node-version }}\n\n      - name: Set up Python ${{ matrix.python-version }}\n        uses: actions/setup-python@v5\n        with:\n          python-version: ${{ matrix.python-version }}\n\n      - name: Install and test frontend\n        run: cd frontend && npm ci && npm test\n\n      - name: Install and test backend\n        run: cd backend && pip install -r requirements.txt && pytest"
+      "description": "A matrix build that tests across multiple Node.js versions in parallel.",
+      "code": "name: Matrix Test\n\non: [push, pull_request]\n\njobs:\n  test:\n    runs-on: ubuntu-latest\n\n    strategy:\n      matrix:\n        node-version: [18, 20, 22]\n      fail-fast: false       # Continue other matrix jobs even if one fails\n\n    steps:\n      - uses: actions/checkout@v4\n\n      - name: Set up Node.js ${{ matrix.node-version }}\n        uses: actions/setup-node@v4\n        with:\n          node-version: ${{ matrix.node-version }}\n\n      - name: Install and test\n        run: |\n          npm ci\n          npm run lint\n          npm test"
     },
     {
       "type": "text",
@@ -203,6 +291,45 @@
       "filename": ".github/workflows/lint-and-test.yml",
       "description": "A complete lint-and-test workflow for a full-stack project with both frontend (Next.js) and backend (Flask).",
       "code": "name: Lint & Test\n\non:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]\n\njobs:\n  frontend:\n    name: Frontend Checks\n    runs-on: ubuntu-latest\n\n    steps:\n      - name: Checkout code\n        uses: actions/checkout@v4\n\n      - name: Set up Node.js\n        uses: actions/setup-node@v4\n        with:\n          node-version: '22'\n          cache: 'npm'\n          cache-dependency-path: frontend/package-lock.json\n\n      - name: Install dependencies\n        run: npm ci\n        working-directory: frontend\n\n      - name: Run ESLint\n        run: npm run lint\n        working-directory: frontend\n\n      - name: Run TypeScript type check\n        run: npx tsc --noEmit\n        working-directory: frontend\n\n      - name: Run Jest tests with coverage\n        run: npm test -- --coverage --ci\n        working-directory: frontend\n\n      - name: Upload coverage report\n        uses: actions/upload-artifact@v4\n        with:\n          name: frontend-coverage\n          path: frontend/coverage/\n          retention-days: 7\n\n  backend:\n    name: Backend Checks\n    runs-on: ubuntu-latest\n\n    steps:\n      - name: Checkout code\n        uses: actions/checkout@v4\n\n      - name: Set up Python\n        uses: actions/setup-python@v5\n        with:\n          python-version: '3.12'\n\n      - name: Cache pip\n        uses: actions/cache@v4\n        with:\n          path: ~/.cache/pip\n          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}\n\n      - name: Install dependencies\n        run: pip install -r requirements.txt\n        working-directory: backend\n\n      - name: Run flake8 linting\n        run: |\n          pip install flake8\n          flake8 . --max-line-length=120 --exclude=__pycache__\n        working-directory: backend\n\n      - name: Run pytest\n        run: |\n          pip install pytest\n          pytest -v --tb=short\n        working-directory: backend\n\n      - name: Seed database (verify seed data is valid)\n        run: |\n          FLASK_APP=app:create_app python -m flask seed-db\n        working-directory: backend"
+    },
+    {
+      "type": "text",
+      "heading": "Deploy to Vercel Workflow",
+      "headingLevel": 2,
+      "body": "Vercel is one of the most popular hosting platforms for Next.js applications. While Vercel has its own built-in CI/CD, using GitHub Actions gives you more control -- you can run your own tests first, deploy to preview environments on PRs, and only deploy to production after all checks pass."
+    },
+    {
+      "type": "code",
+      "language": "yaml",
+      "filename": ".github/workflows/deploy-vercel.yml",
+      "description": "Deploy to Vercel with preview deployments on PRs and production deployments on merge to main.",
+      "code": "name: Deploy to Vercel\n\non:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]\n\njobs:\n  test:\n    name: Lint & Test\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: '22'\n          cache: 'npm'\n      - run: npm ci\n      - run: npm run lint\n      - run: npm test\n\n  deploy-preview:\n    name: Deploy Preview\n    needs: test\n    if: github.event_name == 'pull_request'\n    runs-on: ubuntu-latest\n    environment:\n      name: preview\n      url: ${{ steps.deploy.outputs.url }}\n    steps:\n      - uses: actions/checkout@v4\n\n      - name: Install Vercel CLI\n        run: npm install -g vercel\n\n      - name: Pull Vercel environment\n        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}\n\n      - name: Build\n        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}\n\n      - name: Deploy to preview\n        id: deploy\n        run: |\n          URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})\n          echo \"url=$URL\" >> $GITHUB_OUTPUT\n\n  deploy-production:\n    name: Deploy Production\n    needs: test\n    if: github.event_name == 'push' && github.ref == 'refs/heads/main'\n    runs-on: ubuntu-latest\n    environment:\n      name: production\n      url: https://myapp.vercel.app\n    steps:\n      - uses: actions/checkout@v4\n\n      - name: Install Vercel CLI\n        run: npm install -g vercel\n\n      - name: Pull Vercel environment\n        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}\n\n      - name: Build\n        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}\n\n      - name: Deploy to production\n        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}"
+    },
+    {
+      "type": "text",
+      "heading": "Release Workflow with Changelog",
+      "headingLevel": 2,
+      "body": "When you tag a release (e.g., v1.2.0), this workflow automatically generates a changelog from your commit history and creates a GitHub Release. It is a great way to keep users informed about what changed in each version."
+    },
+    {
+      "type": "code",
+      "language": "yaml",
+      "filename": ".github/workflows/release.yml",
+      "description": "Automatically create GitHub releases with changelogs when you push a version tag.",
+      "code": "name: Release\n\non:\n  push:\n    tags:\n      - 'v*'                     # Trigger on version tags like v1.0.0, v2.1.3\n\npermissions:\n  contents: write                # Needed to create releases\n\njobs:\n  release:\n    name: Create Release\n    runs-on: ubuntu-latest\n\n    steps:\n      - uses: actions/checkout@v4\n        with:\n          fetch-depth: 0           # Fetch full history for changelog generation\n\n      - name: Set up Node.js\n        uses: actions/setup-node@v4\n        with:\n          node-version: '22'\n          cache: 'npm'\n\n      - name: Install and build\n        run: |\n          npm ci\n          npm run build\n\n      - name: Run tests\n        run: npm test\n\n      - name: Generate changelog\n        id: changelog\n        run: |\n          # Get commits since the previous tag\n          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo \"\")\n          if [ -z \"$PREV_TAG\" ]; then\n            CHANGES=$(git log --pretty=format:\"- %s (%h)\" HEAD)\n          else\n            CHANGES=$(git log --pretty=format:\"- %s (%h)\" $PREV_TAG..HEAD)\n          fi\n          # Write to output (multiline)\n          echo \"changes<<EOF\" >> $GITHUB_OUTPUT\n          echo \"$CHANGES\" >> $GITHUB_OUTPUT\n          echo \"EOF\" >> $GITHUB_OUTPUT\n\n      - name: Create GitHub Release\n        uses: softprops/action-gh-release@v2\n        with:\n          body: |\n            ## What's Changed\n            ${{ steps.changelog.outputs.changes }}\n          draft: false\n          prerelease: ${{ contains(github.ref, '-rc') || contains(github.ref, '-beta') }}"
+    },
+    {
+      "type": "text",
+      "heading": "Branch Protection Workflow",
+      "headingLevel": 2,
+      "body": "You can enforce branch protection programmatically using a workflow that checks PR metadata -- such as requiring a specific title format, labels, or linked issues. This complements the GitHub branch protection UI settings."
+    },
+    {
+      "type": "code",
+      "language": "yaml",
+      "filename": ".github/workflows/pr-checks.yml",
+      "description": "Enforce PR conventions: title format, required labels, and linked issues.",
+      "code": "name: PR Checks\n\non:\n  pull_request:\n    types: [opened, edited, labeled, unlabeled, synchronize]\n\njobs:\n  pr-lint:\n    name: Validate PR\n    runs-on: ubuntu-latest\n\n    steps:\n      - name: Check PR title format\n        run: |\n          TITLE=\"${{ github.event.pull_request.title }}\"\n          # Require conventional commit format: type(scope): description\n          if ! echo \"$TITLE\" | grep -qE '^(feat|fix|docs|style|refactor|test|chore)(\\(.+\\))?: .+'; then\n            echo \"::error::PR title must follow conventional commit format.\"\n            echo \"Examples: 'feat(auth): add login page', 'fix: resolve crash on startup'\"\n            exit 1\n          fi\n\n      - name: Check for required labels\n        run: |\n          LABELS='${{ toJSON(github.event.pull_request.labels.*.name) }}'\n          # Require at least one type label\n          if ! echo \"$LABELS\" | grep -qE '(bug|feature|enhancement|documentation|chore)'; then\n            echo \"::error::PR must have at least one type label (bug, feature, enhancement, documentation, or chore).\"\n            exit 1\n          fi"
     },
     {
       "type": "text",
@@ -274,6 +401,104 @@
     },
     {
       "type": "text",
+      "heading": "GitHub Actions vs Other CI/CD Platforms",
+      "headingLevel": 2,
+      "body": "GitHub Actions is not the only CI/CD platform. Here is how it compares to two other popular options. The best choice depends on where your code lives and what features matter most to your team."
+    },
+    {
+      "type": "tabs",
+      "tabs": [
+        {
+          "label": "GitHub Actions",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "**Best for:** Projects already hosted on GitHub. Tightly integrated with pull requests, issues, and the GitHub ecosystem."
+            },
+            {
+              "type": "list",
+              "heading": "Strengths",
+              "items": [
+                "Zero setup -- workflows live in your repo and run automatically",
+                "Massive marketplace of reusable actions (20,000+)",
+                "Free for public repos, generous free tier for private repos (2,000 minutes/month)",
+                "Native integration with GitHub features (status checks, environments, deployments)",
+                "Matrix builds, caching, and artifacts built in"
+              ]
+            },
+            {
+              "type": "list",
+              "heading": "Limitations",
+              "items": [
+                "Tied to GitHub -- cannot use with GitLab or Bitbucket repos",
+                "YAML-only configuration (no visual pipeline editor)",
+                "Debugging can be tedious (no SSH into runners on the free tier)"
+              ]
+            }
+          ]
+        },
+        {
+          "label": "GitLab CI",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "**Best for:** Teams using GitLab for source control, or organizations that want a self-hosted, all-in-one DevOps platform."
+            },
+            {
+              "type": "list",
+              "heading": "Strengths",
+              "items": [
+                "Built-in container registry, package registry, and security scanning",
+                "Visual pipeline editor and pipeline graphs",
+                "Easy to self-host runners on your own infrastructure",
+                "Powerful environment and approval workflows",
+                "Auto DevOps can generate CI/CD pipelines automatically"
+              ]
+            },
+            {
+              "type": "list",
+              "heading": "Limitations",
+              "items": [
+                "Configuration file (.gitlab-ci.yml) can become very complex for large projects",
+                "Smaller ecosystem of reusable components compared to GitHub Actions marketplace",
+                "Free tier includes only 400 CI/CD minutes per month"
+              ]
+            }
+          ]
+        },
+        {
+          "label": "CircleCI",
+          "blocks": [
+            {
+              "type": "text",
+              "body": "**Best for:** Teams that need advanced features like SSH debugging, Docker layer caching, and granular resource control."
+            },
+            {
+              "type": "list",
+              "heading": "Strengths",
+              "items": [
+                "SSH into running CI jobs for live debugging",
+                "Excellent Docker support with built-in Docker layer caching",
+                "Orbs (reusable config packages) simplify complex setups",
+                "Works with GitHub, GitLab, and Bitbucket",
+                "Fine-grained resource classes (choose CPU and RAM per job)"
+              ]
+            },
+            {
+              "type": "list",
+              "heading": "Limitations",
+              "items": [
+                "External service -- requires granting third-party access to your repo",
+                "Free tier limited to 6,000 build minutes per month but only 1 concurrent job",
+                "Configuration syntax has a steeper learning curve than GitHub Actions"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
       "heading": "Branch Protection Rules",
       "headingLevel": 2,
       "body": "Workflows are only useful if they are enforced. Branch protection rules prevent anyone from pushing directly to main or merging a pull request until all CI checks pass."
@@ -334,6 +559,112 @@
       "code": "jobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: '22'\n\n      - run: npm ci && npm test -- --coverage\n        working-directory: frontend\n\n      # Upload coverage report (always, even if tests fail)\n      - name: Upload coverage\n        uses: actions/upload-artifact@v4\n        if: always()\n        with:\n          name: coverage-report\n          path: frontend/coverage/\n          retention-days: 14\n\n      # Upload Playwright screenshots on failure\n      - name: Upload test screenshots\n        uses: actions/upload-artifact@v4\n        if: failure()\n        with:\n          name: test-screenshots\n          path: frontend/test-results/\n          retention-days: 7"
     },
     {
+      "type": "text",
+      "heading": "Workflow Recipes",
+      "headingLevel": 2,
+      "body": "Here are ready-to-use patterns for common CI/CD tasks. Expand any recipe to see the implementation."
+    },
+    {
+      "type": "accordion",
+      "title": "Auto-label PRs based on changed files",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Automatically add labels like `frontend`, `backend`, or `docs` to pull requests based on which files were changed. This makes it easy to filter and review PRs."
+        },
+        {
+          "type": "code",
+          "language": "yaml",
+          "filename": ".github/workflows/auto-label.yml",
+          "code": "name: Auto Label PR\n\non:\n  pull_request:\n    types: [opened, synchronize]\n\njobs:\n  label:\n    runs-on: ubuntu-latest\n    permissions:\n      pull-requests: write\n    steps:\n      - uses: actions/labeler@v5\n        with:\n          repo-token: ${{ secrets.GITHUB_TOKEN }}"
+        },
+        {
+          "type": "text",
+          "body": "Create a `.github/labeler.yml` file to define the mapping: `frontend: ['frontend/**']`, `backend: ['backend/**']`, etc."
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Run Playwright end-to-end tests",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Run browser-based end-to-end tests in CI using Playwright. This spins up your app in a container and tests it with real browsers."
+        },
+        {
+          "type": "code",
+          "language": "yaml",
+          "filename": ".github/workflows/e2e.yml",
+          "code": "name: E2E Tests\n\non: [push, pull_request]\n\njobs:\n  e2e:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: '22'\n      - run: npm ci\n        working-directory: frontend\n      - name: Install Playwright browsers\n        run: npx playwright install --with-deps\n        working-directory: frontend\n      - name: Run Playwright tests\n        run: npx playwright test\n        working-directory: frontend\n      - uses: actions/upload-artifact@v4\n        if: failure()\n        with:\n          name: playwright-report\n          path: frontend/playwright-report/"
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Scheduled dependency security audit",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Run `npm audit` on a weekly schedule to catch known vulnerabilities in your dependencies before they become a problem."
+        },
+        {
+          "type": "code",
+          "language": "yaml",
+          "filename": ".github/workflows/security-audit.yml",
+          "code": "name: Security Audit\n\non:\n  schedule:\n    - cron: '0 9 * * 1'    # Every Monday at 9 AM UTC\n  workflow_dispatch:         # Allow manual trigger\n\njobs:\n  audit:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: '22'\n      - run: npm ci\n        working-directory: frontend\n      - name: Run security audit\n        run: npm audit --audit-level=high\n        working-directory: frontend\n        continue-on-error: true\n      - name: Check for critical vulnerabilities\n        run: npm audit --audit-level=critical\n        working-directory: frontend"
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Comment build size on PRs",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Automatically comment on pull requests with the bundle size of the build, so reviewers can catch unexpected size increases."
+        },
+        {
+          "type": "code",
+          "language": "yaml",
+          "filename": ".github/workflows/bundle-size.yml",
+          "code": "name: Bundle Size\n\non:\n  pull_request:\n    branches: [main]\n\njobs:\n  size:\n    runs-on: ubuntu-latest\n    permissions:\n      pull-requests: write\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: '22'\n          cache: 'npm'\n      - run: npm ci && npm run build\n        working-directory: frontend\n      - name: Calculate and comment bundle size\n        run: |\n          SIZE=$(du -sh frontend/.next/ | cut -f1)\n          gh pr comment ${{ github.event.number }} \\\n            --body \"Build size: **$SIZE** (commit ${{ github.sha }})\"\n        env:\n          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}"
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Notify Slack on deployment",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Send a Slack notification when a deployment succeeds or fails, so the team knows immediately."
+        },
+        {
+          "type": "code",
+          "language": "yaml",
+          "filename": ".github/workflows/notify.yml (add to deploy job)",
+          "code": "      - name: Notify Slack on success\n        if: success()\n        run: |\n          curl -X POST -H 'Content-type: application/json' \\\n            --data '{\"text\":\"Deployed ${{ github.sha }} to production\"}' \\\n            ${{ secrets.SLACK_WEBHOOK_URL }}\n\n      - name: Notify Slack on failure\n        if: failure()\n        run: |\n          curl -X POST -H 'Content-type: application/json' \\\n            --data '{\"text\":\"Deployment FAILED for ${{ github.sha }}. Check: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}' \\\n            ${{ secrets.SLACK_WEBHOOK_URL }}"
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "title": "Enforce code coverage thresholds",
+      "blocks": [
+        {
+          "type": "text",
+          "body": "Fail the CI build if code coverage drops below a minimum threshold. This prevents merging PRs that reduce test coverage."
+        },
+        {
+          "type": "code",
+          "language": "yaml",
+          "filename": ".github/workflows/coverage-check.yml",
+          "code": "      - name: Run tests with coverage\n        run: npm test -- --coverage --ci\n        working-directory: frontend\n\n      - name: Check coverage threshold\n        run: |\n          # Extract coverage percentage from the summary\n          COVERAGE=$(npx istanbul report --include=frontend/coverage/coverage-final.json text-summary | grep 'Statements' | awk '{print $3}' | tr -d '%')\n          echo \"Coverage: $COVERAGE%\"\n          # Fail if coverage is below 80%\n          if (( $(echo \"$COVERAGE < 80\" | bc -l) )); then\n            echo \"::error::Code coverage ($COVERAGE%) is below the 80% threshold.\"\n            exit 1\n          fi"
+        }
+      ]
+    },
+    {
       "type": "accordion",
       "title": "Debugging Failed Workflows",
       "defaultExpanded": false,
@@ -353,6 +684,24 @@
           ]
         }
       ]
+    },
+    {
+      "type": "text",
+      "heading": "Security Tips for Secrets Management",
+      "headingLevel": 2,
+      "body": "Secrets are the most sensitive part of your CI/CD pipeline. A leaked deploy token or API key can compromise your entire production environment. Follow these rules to keep your pipeline secure."
+    },
+    {
+      "type": "alert",
+      "severity": "error",
+      "title": "Use environment-scoped secrets for production",
+      "body": "GitHub lets you scope secrets to specific environments (e.g., production, staging). This means your production deploy token is only available to jobs that target the production environment, which you can gate behind required reviewers. Go to Settings > Environments > production > Add secret to set this up."
+    },
+    {
+      "type": "alert",
+      "severity": "warning",
+      "title": "Rotate secrets regularly and use OIDC when possible",
+      "body": "Static secrets (long-lived tokens) are risky because a single leak exposes them forever. Rotate deploy tokens and API keys at least every 90 days. For cloud providers (AWS, GCP, Azure), use OpenID Connect (OIDC) instead of static credentials. OIDC generates short-lived tokens for each workflow run, so there is nothing long-lived to steal. GitHub has built-in OIDC support -- see the docs for `aws-actions/configure-aws-credentials` with `role-to-assume`."
     },
     {
       "type": "table",
