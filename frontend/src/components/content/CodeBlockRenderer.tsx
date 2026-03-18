@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import CodeBlock from '@/components/common/CodeBlock';
+import Markdown from '@/components/common/Markdown';
 import type { CodeBlock as CodeBlockType } from '@/types/content';
 
 export default function CodeBlockRenderer(
@@ -10,7 +10,7 @@ export default function CodeBlockRenderer(
   return (
     <Box>
       {description && (
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>{description}</Typography>
+        <Markdown variant="body2" color="text.secondary">{description}</Markdown>
       )}
       <CodeBlock code={code} language={language} filename={filename} />
     </Box>

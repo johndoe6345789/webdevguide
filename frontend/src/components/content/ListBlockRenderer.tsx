@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import Markdown from '@/components/common/Markdown';
 import type { ListBlock } from '@/types/content';
 
 export default function ListBlockRenderer(
@@ -14,7 +15,7 @@ export default function ListBlockRenderer(
       )}
       <Box component={Tag} sx={{ pl: 3, '& li': { mb: 0.5 } }}>
         {items.map((item, i) => (
-          <Typography key={i} component="li" variant="body1">{item}</Typography>
+          <li key={i}><Markdown variant="body1">{item}</Markdown></li>
         ))}
       </Box>
     </Box>

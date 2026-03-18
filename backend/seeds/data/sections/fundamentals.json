@@ -190,5 +190,45 @@
     {
       "$ref": "fundamentals/what-is-next-ready-to-build.json"
     }
+  ],
+  "references": [
+    {
+      "id": "mdn2024html",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "HTML: HyperText Markup Language",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML"
+    },
+    {
+      "id": "mdn2024css",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "CSS: Cascading Style Sheets",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS"
+    },
+    {
+      "id": "mdn2024js",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "JavaScript Guide",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide"
+    },
+    {
+      "id": "flanagan2020",
+      "authors": "Flanagan, D.",
+      "year": "2020",
+      "title": "JavaScript: The Definitive Guide",
+      "source": "O'Reilly Media"
+    },
+    {
+      "id": "duckett2011",
+      "authors": "Duckett, J.",
+      "year": "2011",
+      "title": "HTML and CSS: Design and Build Websites",
+      "source": "John Wiley & Sons"
+    }
   ]
 }

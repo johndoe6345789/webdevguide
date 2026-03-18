@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import Markdown from '@/components/common/Markdown';
 import type { TextBlock } from '@/types/content';
 
 export default function TextBlockRenderer(
@@ -14,7 +15,7 @@ export default function TextBlockRenderer(
           {heading}
         </Typography>
       )}
-      <Typography variant="body1" sx={{ lineHeight: 1.8 }}>{body}</Typography>
+      <Markdown>{body}</Markdown>
     </Box>
   );
 }

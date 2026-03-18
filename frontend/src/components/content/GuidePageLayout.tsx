@@ -8,6 +8,7 @@ import BookmarkButton from '@/components/common/BookmarkButton';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import type { GuideSectionContent } from '@/types/content';
 import KeyPointsList from './KeyPointsList';
+import ReferenceList from './ReferenceList';
 import SectionRenderer from './SectionRenderer';
 
 interface GuidePageLayoutProps {
@@ -41,6 +42,10 @@ export default function GuidePageLayout(
         <Box sx={{ mt: 4 }}>
           <KeyPointsList points={section.keyPoints} />
         </Box>
+      )}
+
+      {section.references && section.references.length > 0 && (
+        <ReferenceList references={section.references} />
       )}
     </Container>
   );

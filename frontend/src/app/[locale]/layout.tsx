@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
+import GlossaryProvider from '@/components/common/GlossaryProvider';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
 import { routing } from '@/i18n/routing';
@@ -28,9 +29,11 @@ export default async function LocaleLayout({
     <NextIntlClientProvider locale={locale} messages={messages}>
       <StoreProvider>
         <ThemeRegistry>
-          <Header />
-          <main style={{ minHeight: 'calc(100vh - 128px)' }}>{children}</main>
-          <Footer />
+          <GlossaryProvider>
+            <Header />
+            <main style={{ minHeight: 'calc(100vh - 128px)' }}>{children}</main>
+            <Footer />
+          </GlossaryProvider>
         </ThemeRegistry>
       </StoreProvider>
     </NextIntlClientProvider>

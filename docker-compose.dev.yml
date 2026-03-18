@@ -5,7 +5,7 @@ services:
     ports:
       - "3009:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:5000/api}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:5009/api}
     volumes:
       - frontend_next_cache:/app/.next/cache
     depends_on:
@@ -15,7 +15,7 @@ services:
     build:
       context: ./backend
     ports:
-      - "5000:5000"
+      - "5009:5000"
     environment:
       - FLASK_ENV=development
       - CORS_ORIGINS=http://localhost:3009

@@ -3,6 +3,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import CodeBlock from '@/components/common/CodeBlock';
+import Markdown from '@/components/common/Markdown';
 import type { StepBlock } from '@/types/content';
 
 export default function StepBlockRenderer(
@@ -17,7 +18,9 @@ export default function StepBlockRenderer(
           </Box>
           <Typography variant="h6" fontWeight={600}>{title}</Typography>
         </Box>
-        <Typography variant="body1" sx={{ ml: 6, mb: code ? 2 : 0 }}>{body}</Typography>
+        <Box sx={{ ml: 6, mb: code ? 2 : 0 }}>
+          <Markdown>{body}</Markdown>
+        </Box>
         {code && <Box sx={{ ml: 6 }}><CodeBlock code={code} language={language ?? 'bash'} /></Box>}
       </CardContent>
     </Card>

@@ -168,5 +168,29 @@
     {
       "$ref": "data-architecture/summary-summary.json"
     }
+  ],
+  "references": [
+    {
+      "id": "codd1970",
+      "authors": "Codd, E.F.",
+      "year": "1970",
+      "title": "A Relational Model of Data for Large Shared Data Banks",
+      "source": "Communications of the ACM, 13(6), pp.377-387"
+    },
+    {
+      "id": "kleppmann2017",
+      "authors": "Kleppmann, M.",
+      "year": "2017",
+      "title": "Designing Data-Intensive Applications",
+      "source": "O'Reilly Media"
+    },
+    {
+      "id": "mongodb2024",
+      "authors": "MongoDB Inc.",
+      "year": "2024",
+      "title": "MongoDB Documentation",
+      "source": "MongoDB",
+      "url": "https://www.mongodb.com/docs/"
+    }
   ]
 }

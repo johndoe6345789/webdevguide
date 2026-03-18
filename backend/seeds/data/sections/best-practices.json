@@ -192,5 +192,28 @@
     {
       "$ref": "best-practices/common-beginner-pitfalls-the-golden-rule.json"
     }
+  ],
+  "references": [
+    {
+      "id": "martin2009bp",
+      "authors": "Martin, R.C.",
+      "year": "2009",
+      "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
+      "source": "Prentice Hall"
+    },
+    {
+      "id": "hunt1999",
+      "authors": "Hunt, A. and Thomas, D.",
+      "year": "1999",
+      "title": "The Pragmatic Programmer",
+      "source": "Addison-Wesley Professional"
+    },
+    {
+      "id": "gamma1994",
+      "authors": "Gamma, E. et al.",
+      "year": "1994",
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "source": "Addison-Wesley Professional"
+    }
   ]
 }

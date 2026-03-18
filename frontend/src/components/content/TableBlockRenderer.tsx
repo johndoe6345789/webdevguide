@@ -7,6 +7,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
+import Markdown from '@/components/common/Markdown';
 import type { TableBlock } from '@/types/content';
 
 export default function TableBlockRenderer(
@@ -28,7 +29,9 @@ export default function TableBlockRenderer(
             {rows.map((row, ri) => (
               <TableRow key={ri}>
                 {row.map((cell, ci) => (
-                  <TableCell key={ci}>{cell}</TableCell>
+                  <TableCell key={ci}>
+                    <Markdown variant="body2">{cell}</Markdown>
+                  </TableCell>
                 ))}
               </TableRow>
             ))}

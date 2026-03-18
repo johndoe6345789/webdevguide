@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
+import Markdown from '@/components/common/Markdown';
 
 interface KeyPointsListProps {
   points: string[];
@@ -16,7 +17,7 @@ export default function KeyPointsList({ points }: KeyPointsListProps) {
         {points.map((point, i) => (
           <Box key={i} sx={{ display: 'flex', gap: 1, alignItems: 'flex-start', mb: 1 }}>
             <CheckCircleOutlineIcon color="success" fontSize="small" sx={{ mt: 0.3 }} />
-            <Typography variant="body2">{point}</Typography>
+            <Markdown variant="body2">{point}</Markdown>
           </Box>
         ))}
       </CardContent>

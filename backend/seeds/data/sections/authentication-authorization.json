@@ -6,7 +6,10 @@
   "order": 28,
   "estimatedMinutes": 40,
   "difficulty": "intermediate",
-  "prerequisites": ["fundamentals", "backend-guide"],
+  "prerequisites": [
+    "fundamentals",
+    "backend-guide"
+  ],
   "keyPoints": [
     "Authentication vs Authorization",
     "Session-based vs Token-based auth",
@@ -28,16 +31,52 @@
     {
       "type": "table",
       "heading": "Authentication vs Authorization",
-      "headers": ["Aspect", "Authentication (AuthN)", "Authorization (AuthZ)"],
+      "headers": [
+        "Aspect",
+        "Authentication (AuthN)",
+        "Authorization (AuthZ)"
+      ],
       "rows": [
-        ["Question answered", "Who are you?", "What can you do?"],
-        ["When it happens", "First -- before anything else", "Second -- after identity is confirmed"],
-        ["What it checks", "Credentials (password, biometrics, token)", "Permissions, roles, policies"],
-        ["Failure response", "401 Unauthorized", "403 Forbidden"],
-        ["User visible?", "Yes -- login forms, OAuth prompts", "Usually invisible -- happens behind the scenes"],
-        ["Can change?", "Rarely -- your identity stays the same", "Often -- permissions change with roles"],
-        ["Example", "Entering your password to log in", "Only admins can delete user accounts"],
-        ["Restaurant analogy", "Bouncer checks your ID at the door", "Host seats you at regular table or VIP"]
+        [
+          "Question answered",
+          "Who are you?",
+          "What can you do?"
+        ],
+        [
+          "When it happens",
+          "First -- before anything else",
+          "Second -- after identity is confirmed"
+        ],
+        [
+          "What it checks",
+          "Credentials (password, biometrics, token)",
+          "Permissions, roles, policies"
+        ],
+        [
+          "Failure response",
+          "401 Unauthorized",
+          "403 Forbidden"
+        ],
+        [
+          "User visible?",
+          "Yes -- login forms, OAuth prompts",
+          "Usually invisible -- happens behind the scenes"
+        ],
+        [
+          "Can change?",
+          "Rarely -- your identity stays the same",
+          "Often -- permissions change with roles"
+        ],
+        [
+          "Example",
+          "Entering your password to log in",
+          "Only admins can delete user accounts"
+        ],
+        [
+          "Restaurant analogy",
+          "Bouncer checks your ID at the door",
+          "Host seats you at regular table or VIP"
+        ]
       ]
     },
     {
@@ -147,13 +186,31 @@
     {
       "type": "table",
       "heading": "Session-Based Auth: Pros and Cons",
-      "headers": ["Pros", "Cons"],
+      "headers": [
+        "Pros",
+        "Cons"
+      ],
       "rows": [
-        ["Simple to implement and understand", "Server must store session data (stateful)"],
-        ["Easy to revoke -- just delete the session", "Hard to scale horizontally without shared session store"],
-        ["Browser handles cookies automatically", "Vulnerable to CSRF attacks without protection"],
-        ["No token management on the client", "Not ideal for mobile apps or third-party APIs"],
-        ["Built-in support in every web framework", "Cookie size limits and cross-domain complexity"]
+        [
+          "Simple to implement and understand",
+          "Server must store session data (stateful)"
+        ],
+        [
+          "Easy to revoke -- just delete the session",
+          "Hard to scale horizontally without shared session store"
+        ],
+        [
+          "Browser handles cookies automatically",
+          "Vulnerable to CSRF attacks without protection"
+        ],
+        [
+          "No token management on the client",
+          "Not ideal for mobile apps or third-party APIs"
+        ],
+        [
+          "Built-in support in every web framework",
+          "Cookie size limits and cross-domain complexity"
+        ]
       ]
     },
     {
@@ -222,13 +279,31 @@
     {
       "type": "table",
       "heading": "JWT Pros and Cons",
-      "headers": ["Pros", "Cons"],
+      "headers": [
+        "Pros",
+        "Cons"
+      ],
       "rows": [
-        ["Stateless -- no server-side session storage needed", "Cannot be revoked without extra infrastructure (blocklist)"],
-        ["Works across domains and services", "Larger than session cookies (especially with many claims)"],
-        ["Self-contained -- payload carries user info", "Vulnerable to XSS if stored in localStorage"],
-        ["Great for microservices and APIs", "Token expiry requires refresh token logic"],
-        ["Easy to pass to mobile apps and third-party clients", "Sensitive data in payload is only encoded, not encrypted"]
+        [
+          "Stateless -- no server-side session storage needed",
+          "Cannot be revoked without extra infrastructure (blocklist)"
+        ],
+        [
+          "Works across domains and services",
+          "Larger than session cookies (especially with many claims)"
+        ],
+        [
+          "Self-contained -- payload carries user info",
+          "Vulnerable to XSS if stored in localStorage"
+        ],
+        [
+          "Great for microservices and APIs",
+          "Token expiry requires refresh token logic"
+        ],
+        [
+          "Easy to pass to mobile apps and third-party clients",
+          "Sensitive data in payload is only encoded, not encrypted"
+        ]
       ]
     },
     {
@@ -245,15 +320,55 @@
         {
           "type": "table",
           "heading": "Standard JWT Claims (RFC 7519)",
-          "headers": ["Claim", "Full Name", "Purpose", "Example"],
+          "headers": [
+            "Claim",
+            "Full Name",
+            "Purpose",
+            "Example"
+          ],
           "rows": [
-            ["iss", "Issuer", "Who created and signed the token", "\"https://auth.myapp.com\""],
-            ["sub", "Subject", "Who the token is about (usually user ID)", "\"user_12345\""],
-            ["aud", "Audience", "Who the token is intended for", "\"https://api.myapp.com\""],
-            ["exp", "Expiration Time", "When the token expires (Unix timestamp)", "1700000000"],
-            ["iat", "Issued At", "When the token was created", "1699999100"],
-            ["nbf", "Not Before", "Token is not valid before this time", "1699999100"],
-            ["jti", "JWT ID", "Unique identifier to prevent replay attacks", "\"a1b2c3d4-e5f6\""]
+            [
+              "iss",
+              "Issuer",
+              "Who created and signed the token",
+              "\"https://auth.myapp.com\""
+            ],
+            [
+              "sub",
+              "Subject",
+              "Who the token is about (usually user ID)",
+              "\"user_12345\""
+            ],
+            [
+              "aud",
+              "Audience",
+              "Who the token is intended for",
+              "\"https://api.myapp.com\""
+            ],
+            [
+              "exp",
+              "Expiration Time",
+              "When the token expires (Unix timestamp)",
+              "1700000000"
+            ],
+            [
+              "iat",
+              "Issued At",
+              "When the token was created",
+              "1699999100"
+            ],
+            [
+              "nbf",
+              "Not Before",
+              "Token is not valid before this time",
+              "1699999100"
+            ],
+            [
+              "jti",
+              "JWT ID",
+              "Unique identifier to prevent replay attacks",
+              "\"a1b2c3d4-e5f6\""
+            ]
           ]
         },
         {
@@ -376,16 +491,52 @@
     {
       "type": "table",
       "heading": "API Keys vs JWTs",
-      "headers": ["Aspect", "API Keys", "JWTs"],
+      "headers": [
+        "Aspect",
+        "API Keys",
+        "JWTs"
+      ],
       "rows": [
-        ["Best for", "Server-to-server, public APIs", "User authentication, SPAs, mobile"],
-        ["Contains user data?", "No -- opaque, looked up server-side", "Yes -- self-contained claims"],
-        ["Stateful/Stateless", "Stateful -- requires database lookup", "Stateless -- verified by signature"],
-        ["Expiry", "Usually long-lived or never", "Short-lived (minutes to hours)"],
-        ["Revocation", "Easy -- delete from database", "Hard -- requires blocklist"],
-        ["Rotation", "Manual -- user generates new key", "Automatic with refresh tokens"],
-        ["Rate limiting", "Natural -- one key per consumer", "Possible but less natural"],
-        ["Granularity", "Scopes assigned per key", "Claims embedded in token"]
+        [
+          "Best for",
+          "Server-to-server, public APIs",
+          "User authentication, SPAs, mobile"
+        ],
+        [
+          "Contains user data?",
+          "No -- opaque, looked up server-side",
+          "Yes -- self-contained claims"
+        ],
+        [
+          "Stateful/Stateless",
+          "Stateful -- requires database lookup",
+          "Stateless -- verified by signature"
+        ],
+        [
+          "Expiry",
+          "Usually long-lived or never",
+          "Short-lived (minutes to hours)"
+        ],
+        [
+          "Revocation",
+          "Easy -- delete from database",
+          "Hard -- requires blocklist"
+        ],
+        [
+          "Rotation",
+          "Manual -- user generates new key",
+          "Automatic with refresh tokens"
+        ],
+        [
+          "Rate limiting",
+          "Natural -- one key per consumer",
+          "Possible but less natural"
+        ],
+        [
+          "Granularity",
+          "Scopes assigned per key",
+          "Claims embedded in token"
+        ]
       ]
     },
     {
@@ -536,16 +687,43 @@
     {
       "type": "table",
       "heading": "Password Rules: DO vs DON'T",
-      "headers": ["DO", "DON'T"],
+      "headers": [
+        "DO",
+        "DON'T"
+      ],
       "rows": [
-        ["Use bcrypt, scrypt, or argon2 for hashing", "Store passwords in plaintext -- ever"],
-        ["Enforce minimum 8 characters", "Use MD5 or SHA1 for password hashing"],
-        ["Allow passwords up to 128 characters", "Limit password length to less than 64 characters"],
-        ["Check against breached password lists (HIBP)", "Require specific character types (uppercase, symbols)"],
-        ["Encourage passphrases (multiple words)", "Truncate or silently modify user passwords"],
-        ["Use a unique salt per password (bcrypt does this)", "Use a single global salt for all passwords"],
-        ["Rate-limit login attempts", "Lock accounts permanently after failed attempts"],
-        ["Allow password managers to autofill", "Disable paste on password fields"]
+        [
+          "Use bcrypt, scrypt, or argon2 for hashing",
+          "Store passwords in plaintext -- ever"
+        ],
+        [
+          "Enforce minimum 8 characters",
+          "Use MD5 or SHA1 for password hashing"
+        ],
+        [
+          "Allow passwords up to 128 characters",
+          "Limit password length to less than 64 characters"
+        ],
+        [
+          "Check against breached password lists (HIBP)",
+          "Require specific character types (uppercase, symbols)"
+        ],
+        [
+          "Encourage passphrases (multiple words)",
+          "Truncate or silently modify user passwords"
+        ],
+        [
+          "Use a unique salt per password (bcrypt does this)",
+          "Use a single global salt for all passwords"
+        ],
+        [
+          "Rate-limit login attempts",
+          "Lock accounts permanently after failed attempts"
+        ],
+        [
+          "Allow password managers to autofill",
+          "Disable paste on password fields"
+        ]
       ]
     },
     {
@@ -576,16 +754,70 @@
     {
       "type": "table",
       "heading": "Example Role Permission Matrix",
-      "headers": ["Permission", "Viewer", "Editor", "Admin", "Super Admin"],
+      "headers": [
+        "Permission",
+        "Viewer",
+        "Editor",
+        "Admin",
+        "Super Admin"
+      ],
       "rows": [
-        ["Read posts", "Yes", "Yes", "Yes", "Yes"],
-        ["Create posts", "No", "Yes", "Yes", "Yes"],
-        ["Edit own posts", "No", "Yes", "Yes", "Yes"],
-        ["Delete any post", "No", "No", "Yes", "Yes"],
-        ["View users", "No", "No", "Yes", "Yes"],
-        ["Manage users", "No", "No", "No", "Yes"],
-        ["View settings", "No", "No", "Yes", "Yes"],
-        ["Change settings", "No", "No", "No", "Yes"]
+        [
+          "Read posts",
+          "Yes",
+          "Yes",
+          "Yes",
+          "Yes"
+        ],
+        [
+          "Create posts",
+          "No",
+          "Yes",
+          "Yes",
+          "Yes"
+        ],
+        [
+          "Edit own posts",
+          "No",
+          "Yes",
+          "Yes",
+          "Yes"
+        ],
+        [
+          "Delete any post",
+          "No",
+          "No",
+          "Yes",
+          "Yes"
+        ],
+        [
+          "View users",
+          "No",
+          "No",
+          "Yes",
+          "Yes"
+        ],
+        [
+          "Manage users",
+          "No",
+          "No",
+          "No",
+          "Yes"
+        ],
+        [
+          "View settings",
+          "No",
+          "No",
+          "Yes",
+          "Yes"
+        ],
+        [
+          "Change settings",
+          "No",
+          "No",
+          "No",
+          "Yes"
+        ]
       ]
     },
     {
@@ -604,14 +836,49 @@
     {
       "type": "table",
       "heading": "RBAC vs ABAC vs Permission-Based",
-      "headers": ["Aspect", "RBAC", "ABAC", "Permission-Based"],
+      "headers": [
+        "Aspect",
+        "RBAC",
+        "ABAC",
+        "Permission-Based"
+      ],
       "rows": [
-        ["Complexity", "Low -- simple role assignments", "High -- complex policy rules", "Medium -- explicit permission grants"],
-        ["Flexibility", "Limited to role definitions", "Very flexible -- any attribute combo", "Moderate -- per-resource grants"],
-        ["Scalability", "Roles can explode (role explosion)", "Scales with policy engine", "Grows linearly with users/resources"],
-        ["Auditability", "Easy -- check role assignments", "Hard -- must trace policy evaluation", "Easy -- check permission table"],
-        ["Best for", "Most web apps, clear hierarchies", "Enterprise, regulated industries", "File systems, document sharing"],
-        ["Example", "Admin can delete any post", "Engineering dept can edit docs during business hours", "User X has 'write' on Document Y"]
+        [
+          "Complexity",
+          "Low -- simple role assignments",
+          "High -- complex policy rules",
+          "Medium -- explicit permission grants"
+        ],
+        [
+          "Flexibility",
+          "Limited to role definitions",
+          "Very flexible -- any attribute combo",
+          "Moderate -- per-resource grants"
+        ],
+        [
+          "Scalability",
+          "Roles can explode (role explosion)",
+          "Scales with policy engine",
+          "Grows linearly with users/resources"
+        ],
+        [
+          "Auditability",
+          "Easy -- check role assignments",
+          "Hard -- must trace policy evaluation",
+          "Easy -- check permission table"
+        ],
+        [
+          "Best for",
+          "Most web apps, clear hierarchies",
+          "Enterprise, regulated industries",
+          "File systems, document sharing"
+        ],
+        [
+          "Example",
+          "Admin can delete any post",
+          "Engineering dept can edit docs during business hours",
+          "User X has 'write' on Document Y"
+        ]
       ]
     },
     {
@@ -676,16 +943,79 @@
     {
       "type": "table",
       "heading": "Self-Hosted vs Auth-as-a-Service",
-      "headers": ["Aspect", "Self-Hosted", "Auth0", "Clerk", "Supabase Auth", "Firebase Auth"],
+      "headers": [
+        "Aspect",
+        "Self-Hosted",
+        "Auth0",
+        "Clerk",
+        "Supabase Auth",
+        "Firebase Auth"
+      ],
       "rows": [
-        ["Setup time", "Days to weeks", "Hours", "Hours", "Hours", "Hours"],
-        ["Cost", "Infrastructure only", "Free tier, then per-user", "Free tier, then per-user", "Free tier included", "Free tier, generous limits"],
-        ["Social login", "Build it yourself", "30+ providers built-in", "20+ providers built-in", "Built-in", "Built-in"],
-        ["MFA support", "Build it yourself", "Built-in", "Built-in", "Built-in", "Built-in"],
-        ["Customization", "Full control", "High (Actions, Forms)", "High (components, hooks)", "Moderate", "Moderate"],
-        ["Compliance", "Your responsibility", "SOC2, HIPAA, GDPR", "SOC2, GDPR", "SOC2", "SOC2, ISO 27001"],
-        ["Vendor lock-in", "None", "Moderate", "Moderate", "Low", "Moderate"],
-        ["Best for", "Full control needed", "Enterprise, complex requirements", "Developer experience focus", "Supabase stack", "Firebase/Google stack"]
+        [
+          "Setup time",
+          "Days to weeks",
+          "Hours",
+          "Hours",
+          "Hours",
+          "Hours"
+        ],
+        [
+          "Cost",
+          "Infrastructure only",
+          "Free tier, then per-user",
+          "Free tier, then per-user",
+          "Free tier included",
+          "Free tier, generous limits"
+        ],
+        [
+          "Social login",
+          "Build it yourself",
+          "30+ providers built-in",
+          "20+ providers built-in",
+          "Built-in",
+          "Built-in"
+        ],
+        [
+          "MFA support",
+          "Build it yourself",
+          "Built-in",
+          "Built-in",
+          "Built-in",
+          "Built-in"
+        ],
+        [
+          "Customization",
+          "Full control",
+          "High (Actions, Forms)",
+          "High (components, hooks)",
+          "Moderate",
+          "Moderate"
+        ],
+        [
+          "Compliance",
+          "Your responsibility",
+          "SOC2, HIPAA, GDPR",
+          "SOC2, GDPR",
+          "SOC2",
+          "SOC2, ISO 27001"
+        ],
+        [
+          "Vendor lock-in",
+          "None",
+          "Moderate",
+          "Moderate",
+          "Low",
+          "Moderate"
+        ],
+        [
+          "Best for",
+          "Full control needed",
+          "Enterprise, complex requirements",
+          "Developer experience focus",
+          "Supabase stack",
+          "Firebase/Google stack"
+        ]
       ]
     },
     {
@@ -734,17 +1064,79 @@
     {
       "type": "table",
       "heading": "Auth Vulnerabilities and Defenses",
-      "headers": ["Vulnerability", "Attack", "Prevention"],
+      "headers": [
+        "Vulnerability",
+        "Attack",
+        "Prevention"
+      ],
       "rows": [
-        ["SQL Injection in Login", "Attacker enters ' OR 1=1 -- as username to bypass login", "Use parameterized queries or an ORM. Never concatenate user input into SQL."],
-        ["Session Fixation", "Attacker sets a known session ID before victim logs in, then hijacks the session", "Regenerate session ID after login. Never accept session IDs from URL parameters."],
-        ["Cross-Site Request Forgery (CSRF)", "Malicious site submits forms to your app using the victim's cookies", "Use CSRF tokens, SameSite cookies, and verify Origin/Referer headers."],
-        ["XSS Token Theft", "Injected script reads JWT from localStorage or document.cookie", "Store tokens in httpOnly cookies. Use Content Security Policy headers. Sanitize output."],
-        ["Brute Force", "Attacker tries thousands of password combinations against a login endpoint", "Rate limiting, account lockout, CAPTCHA after failed attempts, strong password requirements."],
-        ["Credential Stuffing", "Attacker uses leaked email/password combos from other breaches to try your site", "Check passwords against breached lists (HIBP), enforce MFA, detect unusual login patterns."],
-        ["Insecure Password Reset", "Attacker requests password reset and intercepts or guesses the reset token", "Use long random tokens with short expiry. Send only to verified email. One-time use. Invalidate on password change."],
-        ["JWT Algorithm Confusion", "Attacker changes JWT header from RS256 to HS256, signs with the public key as HMAC secret", "Always specify allowed algorithms in jwt.decode(). Never use 'none' algorithm. Pin the expected algorithm."]
+        [
+          "SQL Injection in Login",
+          "Attacker enters ' OR 1=1 -- as username to bypass login",
+          "Use parameterized queries or an ORM. Never concatenate user input into SQL."
+        ],
+        [
+          "Session Fixation",
+          "Attacker sets a known session ID before victim logs in, then hijacks the session",
+          "Regenerate session ID after login. Never accept session IDs from URL parameters."
+        ],
+        [
+          "Cross-Site Request Forgery (CSRF)",
+          "Malicious site submits forms to your app using the victim's cookies",
+          "Use CSRF tokens, SameSite cookies, and verify Origin/Referer headers."
+        ],
+        [
+          "XSS Token Theft",
+          "Injected script reads JWT from localStorage or document.cookie",
+          "Store tokens in httpOnly cookies. Use Content Security Policy headers. Sanitize output."
+        ],
+        [
+          "Brute Force",
+          "Attacker tries thousands of password combinations against a login endpoint",
+          "Rate limiting, account lockout, CAPTCHA after failed attempts, strong password requirements."
+        ],
+        [
+          "Credential Stuffing",
+          "Attacker uses leaked email/password combos from other breaches to try your site",
+          "Check passwords against breached lists (HIBP), enforce MFA, detect unusual login patterns."
+        ],
+        [
+          "Insecure Password Reset",
+          "Attacker requests password reset and intercepts or guesses the reset token",
+          "Use long random tokens with short expiry. Send only to verified email. One-time use. Invalidate on password change."
+        ],
+        [
+          "JWT Algorithm Confusion",
+          "Attacker changes JWT header from RS256 to HS256, signs with the public key as HMAC secret",
+          "Always specify allowed algorithms in jwt.decode(). Never use 'none' algorithm. Pin the expected algorithm."
+        ]
       ]
+    }
+  ],
+  "references": [
+    {
+      "id": "oauth2012",
+      "authors": "IETF",
+      "year": "2012",
+      "title": "The OAuth 2.0 Authorization Framework (RFC 6749)",
+      "source": "Internet Engineering Task Force",
+      "url": "https://datatracker.ietf.org/doc/html/rfc6749"
+    },
+    {
+      "id": "jwt2015",
+      "authors": "Jones, M., Bradley, J. and Sakimura, N.",
+      "year": "2015",
+      "title": "JSON Web Token (JWT) (RFC 7519)",
+      "source": "Internet Engineering Task Force",
+      "url": "https://datatracker.ietf.org/doc/html/rfc7519"
+    },
+    {
+      "id": "owasp2024",
+      "authors": "OWASP Foundation",
+      "year": "2024",
+      "title": "Authentication Cheat Sheet",
+      "source": "OWASP",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html"
     }
   ]
 }

@@ -7,6 +7,7 @@ import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
+import Markdown from '@/components/common/Markdown';
 import type { GlossaryTerm } from '@/types/guide';
 
 export default function TermCard(
@@ -21,7 +22,9 @@ export default function TermCard(
           <Typography variant="h6" fontWeight={700}>{term}</Typography>
           <Chip label={category} size="small" variant="outlined" color="primary" />
         </Box>
-        <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>{definition}</Typography>
+        <Box sx={{ mb: 2 }}>
+          <Markdown>{definition}</Markdown>
+        </Box>
         {example && (
           <Paper variant="outlined" sx={{ p: 1.5, mb: 2, bgcolor: 'action.hover' }}>
             <Typography variant="caption" fontWeight={600} color="text.secondary">{t('exampleLabel')}</Typography>

@@ -252,15 +252,39 @@
     },
     {
       "type": "table",
-      "headers": ["Question", "Answer"],
+      "headers": [
+        "Question",
+        "Answer"
+      ],
       "rows": [
-        ["Would you like to use TypeScript?", "Yes"],
-        ["Would you like to use ESLint?", "Yes"],
-        ["Would you like to use Tailwind CSS?", "Yes"],
-        ["Would you like your code inside a `src/` directory?", "Yes"],
-        ["Would you like to use App Router?", "Yes"],
-        ["Would you like to use Turbopack for next dev?", "Yes"],
-        ["Would you like to customize the import alias?", "No"]
+        [
+          "Would you like to use TypeScript?",
+          "Yes"
+        ],
+        [
+          "Would you like to use ESLint?",
+          "Yes"
+        ],
+        [
+          "Would you like to use Tailwind CSS?",
+          "Yes"
+        ],
+        [
+          "Would you like your code inside a `src/` directory?",
+          "Yes"
+        ],
+        [
+          "Would you like to use App Router?",
+          "Yes"
+        ],
+        [
+          "Would you like to use Turbopack for next dev?",
+          "Yes"
+        ],
+        [
+          "Would you like to customize the import alias?",
+          "No"
+        ]
       ]
     },
     {
@@ -314,19 +338,55 @@
     {
       "type": "table",
       "heading": "Project Structure",
-      "headers": ["File / Folder", "Description"],
+      "headers": [
+        "File / Folder",
+        "Description"
+      ],
       "rows": [
-        ["package.json", "The ID card of your project. It lists its name, the libraries it depends on, and the commands you can run (like npm run dev)."],
-        ["node_modules/", "A folder full of code other people wrote that your project depends on. You never need to edit anything in here."],
-        ["src/", "Where YOUR code lives. Almost all of your work happens inside this folder."],
-        ["src/app/", "The App Router folder. Each subfolder inside here can become a page on your website."],
-        ["src/app/layout.tsx", "The root layout. It wraps every page on your site with shared elements like fonts and metadata."],
-        ["src/app/page.tsx", "The home page of your website. This is the file you see when you visit localhost:3000."],
-        ["src/app/globals.css", "Global CSS styles that apply to every page."],
-        ["public/", "Static files like images and icons. Anything you put here is accessible directly in the browser."],
-        ["next.config.ts", "Configuration for the Next.js framework. You rarely need to touch this as a beginner."],
-        ["tsconfig.json", "Configuration for TypeScript. The defaults are fine for now."],
-        ["tailwind.config.ts", "Configuration for Tailwind CSS, the styling library. We will explore this later."]
+        [
+          "package.json",
+          "The ID card of your project. It lists its name, the libraries it depends on, and the commands you can run (like npm run dev)."
+        ],
+        [
+          "node_modules/",
+          "A folder full of code other people wrote that your project depends on. You never need to edit anything in here."
+        ],
+        [
+          "src/",
+          "Where YOUR code lives. Almost all of your work happens inside this folder."
+        ],
+        [
+          "src/app/",
+          "The App Router folder. Each subfolder inside here can become a page on your website."
+        ],
+        [
+          "src/app/layout.tsx",
+          "The root layout. It wraps every page on your site with shared elements like fonts and metadata."
+        ],
+        [
+          "src/app/page.tsx",
+          "The home page of your website. This is the file you see when you visit localhost:3000."
+        ],
+        [
+          "src/app/globals.css",
+          "Global CSS styles that apply to every page."
+        ],
+        [
+          "public/",
+          "Static files like images and icons. Anything you put here is accessible directly in the browser."
+        ],
+        [
+          "next.config.ts",
+          "Configuration for the Next.js framework. You rarely need to touch this as a beginner."
+        ],
+        [
+          "tsconfig.json",
+          "Configuration for TypeScript. The defaults are fine for now."
+        ],
+        [
+          "tailwind.config.ts",
+          "Configuration for Tailwind CSS, the styling library. We will explore this later."
+        ]
       ]
     },
     {
@@ -405,6 +465,40 @@
       "heading": "You Did It!",
       "headingLevel": 2,
       "body": "You installed all the tools a professional web developer uses, created a real React project, made your first code change, and learned how to control the development server. You are ready to move on to the next chapter."
+    }
+  ],
+  "references": [
+    {
+      "id": "nodejs2024",
+      "authors": "OpenJS Foundation",
+      "year": "2024",
+      "title": "Node.js Documentation",
+      "source": "Node.js",
+      "url": "https://nodejs.org/en/docs"
+    },
+    {
+      "id": "nextjs2024",
+      "authors": "Vercel",
+      "year": "2024",
+      "title": "Getting Started with Next.js",
+      "source": "Next.js Documentation",
+      "url": "https://nextjs.org/docs/getting-started"
+    },
+    {
+      "id": "vscode2024",
+      "authors": "Microsoft",
+      "year": "2024",
+      "title": "Visual Studio Code Documentation",
+      "source": "Visual Studio Code",
+      "url": "https://code.visualstudio.com/docs"
+    },
+    {
+      "id": "git2024",
+      "authors": "Chacon, S. and Straub, B.",
+      "year": "2024",
+      "title": "Pro Git",
+      "source": "Git SCM",
+      "url": "https://git-scm.com/book/en/v2"
     }
   ]
 }

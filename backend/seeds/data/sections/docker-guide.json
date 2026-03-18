@@ -65,14 +65,42 @@
     {
       "type": "table",
       "heading": "Docker vs VM Comparison",
-      "headers": ["Feature", "Docker Container", "Virtual Machine"],
+      "headers": [
+        "Feature",
+        "Docker Container",
+        "Virtual Machine"
+      ],
       "rows": [
-        ["Startup time", "Seconds", "Minutes"],
-        ["Size", "Megabytes (typically 50-500 MB)", "Gigabytes (often 2-10 GB)"],
-        ["OS", "Shares host OS kernel", "Runs its own full OS"],
-        ["Performance", "Near-native speed", "Some overhead from virtualization"],
-        ["Isolation", "Process-level isolation", "Full hardware-level isolation"],
-        ["Resource usage", "Lightweight -- run dozens on one machine", "Heavy -- each VM reserves its own RAM and CPU"]
+        [
+          "Startup time",
+          "Seconds",
+          "Minutes"
+        ],
+        [
+          "Size",
+          "Megabytes (typically 50-500 MB)",
+          "Gigabytes (often 2-10 GB)"
+        ],
+        [
+          "OS",
+          "Shares host OS kernel",
+          "Runs its own full OS"
+        ],
+        [
+          "Performance",
+          "Near-native speed",
+          "Some overhead from virtualization"
+        ],
+        [
+          "Isolation",
+          "Process-level isolation",
+          "Full hardware-level isolation"
+        ],
+        [
+          "Resource usage",
+          "Lightweight -- run dozens on one machine",
+          "Heavy -- each VM reserves its own RAM and CPU"
+        ]
       ]
     },
     {
@@ -511,14 +539,42 @@
     {
       "type": "table",
       "heading": "Image & Container Commands",
-      "headers": ["Command", "Description", "Example"],
+      "headers": [
+        "Command",
+        "Description",
+        "Example"
+      ],
       "rows": [
-        ["docker build -t <name> .", "Build an image from the Dockerfile in the current directory and give it a name.", "docker build -t my-app ."],
-        ["docker run -p <host>:<container> <image>", "Create and start a new container from an image, mapping ports between your machine and the container.", "docker run -p 3000:3000 my-app"],
-        ["docker ps", "List all running containers. Add -a to also see stopped containers.", "docker ps -a"],
-        ["docker stop <container>", "Gracefully stop a running container. You can use the container name or ID.", "docker stop my-running-app"],
-        ["docker logs <container>", "View the output (stdout/stderr) of a container. Add -f to follow the log in real time.", "docker logs -f my-running-app"],
-        ["docker exec -it <container> <command>", "Run a command inside a running container. The -it flags let you interact with it (like opening a terminal inside the container).", "docker exec -it my-running-app bash"]
+        [
+          "docker build -t <name> .",
+          "Build an image from the Dockerfile in the current directory and give it a name.",
+          "docker build -t my-app ."
+        ],
+        [
+          "docker run -p <host>:<container> <image>",
+          "Create and start a new container from an image, mapping ports between your machine and the container.",
+          "docker run -p 3000:3000 my-app"
+        ],
+        [
+          "docker ps",
+          "List all running containers. Add -a to also see stopped containers.",
+          "docker ps -a"
+        ],
+        [
+          "docker stop <container>",
+          "Gracefully stop a running container. You can use the container name or ID.",
+          "docker stop my-running-app"
+        ],
+        [
+          "docker logs <container>",
+          "View the output (stdout/stderr) of a container. Add -f to follow the log in real time.",
+          "docker logs -f my-running-app"
+        ],
+        [
+          "docker exec -it <container> <command>",
+          "Run a command inside a running container. The -it flags let you interact with it (like opening a terminal inside the container).",
+          "docker exec -it my-running-app bash"
+        ]
       ]
     },
     {
@@ -530,11 +586,27 @@
     {
       "type": "table",
       "heading": "Docker Compose Commands",
-      "headers": ["Command", "Description", "Example"],
+      "headers": [
+        "Command",
+        "Description",
+        "Example"
+      ],
       "rows": [
-        ["docker compose up", "Build images (if needed) and start all services defined in docker-compose.yml. Add -d to run in the background. Add --build to force a rebuild.", "docker compose up -d --build"],
-        ["docker compose down", "Stop and remove all containers, networks, and resources created by 'up'. Add -v to also remove volumes (deletes data!).", "docker compose down -v"],
-        ["docker compose logs <service>", "View logs for a specific service. Omit the service name to see logs from all services.", "docker compose logs -f backend"]
+        [
+          "docker compose up",
+          "Build images (if needed) and start all services defined in docker-compose.yml. Add -d to run in the background. Add --build to force a rebuild.",
+          "docker compose up -d --build"
+        ],
+        [
+          "docker compose down",
+          "Stop and remove all containers, networks, and resources created by 'up'. Add -v to also remove volumes (deletes data!).",
+          "docker compose down -v"
+        ],
+        [
+          "docker compose logs <service>",
+          "View logs for a specific service. Omit the service name to see logs from all services.",
+          "docker compose logs -f backend"
+        ]
       ]
     },
     {
@@ -546,10 +618,19 @@
     {
       "type": "table",
       "heading": "Cleanup Commands",
-      "headers": ["Command", "Description"],
+      "headers": [
+        "Command",
+        "Description"
+      ],
       "rows": [
-        ["docker image ls", "List all images on your machine, showing their size and when they were created."],
-        ["docker system prune", "Remove all stopped containers, unused networks, and dangling images to free up disk space. Add -a to also remove unused images."]
+        [
+          "docker image ls",
+          "List all images on your machine, showing their size and when they were created."
+        ],
+        [
+          "docker system prune",
+          "Remove all stopped containers, unused networks, and dangling images to free up disk space. Add -a to also remove unused images."
+        ]
       ]
     },
     {
@@ -704,5 +785,29 @@
     "Use volume mounts in development for live code reloading, and baked-in images for production",
     "Multi-platform builds with Buildx and QEMU let you produce images for both amd64 and arm64 from a single machine",
     "Always check container logs first when troubleshooting issues"
+  ],
+  "references": [
+    {
+      "id": "docker2024",
+      "authors": "Docker Inc.",
+      "year": "2024",
+      "title": "Docker Documentation",
+      "source": "Docker Docs",
+      "url": "https://docs.docker.com/"
+    },
+    {
+      "id": "merkel2014",
+      "authors": "Merkel, D.",
+      "year": "2014",
+      "title": "Docker: Lightweight Linux Containers for Consistent Development and Deployment",
+      "source": "Linux Journal, 2014(239), p.2"
+    },
+    {
+      "id": "turnbull2014",
+      "authors": "Turnbull, J.",
+      "year": "2014",
+      "title": "The Docker Book",
+      "source": "James Turnbull"
+    }
   ]
 }

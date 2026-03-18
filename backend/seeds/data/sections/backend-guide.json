@@ -343,5 +343,38 @@
     {
       "$ref": "backend-guide/intro-next-steps-try-adding-more-fe.json"
     }
+  ],
+  "references": [
+    {
+      "id": "fielding2000",
+      "authors": "Fielding, R.T.",
+      "year": "2000",
+      "title": "Architectural Styles and the Design of Network-based Software Architectures",
+      "source": "Doctoral dissertation, University of California, Irvine"
+    },
+    {
+      "id": "mdn2024http",
+      "authors": "Mozilla",
+      "year": "2024",
+      "title": "HTTP Overview",
+      "source": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview"
+    },
+    {
+      "id": "express2024",
+      "authors": "OpenJS Foundation",
+      "year": "2024",
+      "title": "Express.js Documentation",
+      "source": "Express.js",
+      "url": "https://expressjs.com/"
+    },
+    {
+      "id": "flask2024",
+      "authors": "Pallets Projects",
+      "year": "2024",
+      "title": "Flask Documentation",
+      "source": "Flask",
+      "url": "https://flask.palletsprojects.com/"
+    }
   ]
 }

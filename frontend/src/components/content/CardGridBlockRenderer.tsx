@@ -3,6 +3,7 @@ import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
+import Markdown from '@/components/common/Markdown';
 import type { CardGridBlock } from '@/types/content';
 
 export default function CardGridBlockRenderer(
@@ -18,7 +19,7 @@ export default function CardGridBlockRenderer(
             <CardContent>
               {card.chip && <Chip label={card.chip} size="small" color="primary" sx={{ mb: 1 }} />}
               <Typography variant="subtitle1" fontWeight={600} gutterBottom>{card.title}</Typography>
-              <Typography variant="body2" color="text.secondary">{card.body}</Typography>
+              <Markdown variant="body2" color="text.secondary">{card.body}</Markdown>
             </CardContent>
           </Card>
         </Grid>

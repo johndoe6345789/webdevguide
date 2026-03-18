@@ -81,6 +81,16 @@ export interface CardGridBlock {
   columns?: number;
 }
 
+/** Harvard-style reference entry. */
+export interface Reference {
+  id: string;
+  authors: string;
+  year: string;
+  title: string;
+  source: string;
+  url?: string;
+}
+
 /** A full guide section as returned by the API. */
 export interface GuideSectionContent {
   id: string;
@@ -94,4 +104,5 @@ export interface GuideSectionContent {
   blocks: ContentBlock[];
   keyPoints?: string[];
   prerequisites?: string[];
+  references?: Reference[];
 }

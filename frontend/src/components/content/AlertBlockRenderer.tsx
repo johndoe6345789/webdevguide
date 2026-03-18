@@ -1,5 +1,6 @@
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
+import Markdown from '@/components/common/Markdown';
 import type { AlertBlock } from '@/types/content';
 
 export default function AlertBlockRenderer(
@@ -8,7 +9,7 @@ export default function AlertBlockRenderer(
   return (
     <Alert severity={severity}>
       {title && <AlertTitle>{title}</AlertTitle>}
-      {body}
+      <Markdown>{body}</Markdown>
     </Alert>
   );
 }

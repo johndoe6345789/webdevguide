@@ -6,7 +6,10 @@
   "order": 18,
   "estimatedMinutes": 60,
   "difficulty": "intermediate",
-  "prerequisites": ["fundamentals", "backend-guide"],
+  "prerequisites": [
+    "fundamentals",
+    "backend-guide"
+  ],
   "keyPoints": [
     "Unit tests verify that individual functions return the correct output for a given input -- they are fast and cheap to write",
     "Component tests render React components in a fake browser and simulate user interactions like clicking and typing",
@@ -278,13 +281,49 @@
     {
       "type": "table",
       "heading": "Testing Tool Comparison",
-      "headers": ["Tool", "Type", "Speed", "What It Tests", "When to Use"],
+      "headers": [
+        "Tool",
+        "Type",
+        "Speed",
+        "What It Tests",
+        "When to Use"
+      ],
       "rows": [
-        ["Jest", "Unit / Component", "Very fast (ms)", "Functions, hooks, component rendering", "Every function with logic, every component with interactions"],
-        ["React Testing Library", "Component", "Fast (ms)", "User-visible behavior, form interactions", "Any component the user interacts with"],
-        ["Playwright", "End-to-end", "Slow (seconds)", "Full user workflows across pages", "Critical paths: login, checkout, signup"],
-        ["pytest", "Unit / Integration", "Fast (ms)", "API endpoints, data processing, business logic", "Every API route, every service function"],
-        ["MSW (Mock Service Worker)", "API mocking", "Fast (ms)", "Frontend code that calls APIs", "When you want to mock API responses without mocking fetch"]
+        [
+          "Jest",
+          "Unit / Component",
+          "Very fast (ms)",
+          "Functions, hooks, component rendering",
+          "Every function with logic, every component with interactions"
+        ],
+        [
+          "React Testing Library",
+          "Component",
+          "Fast (ms)",
+          "User-visible behavior, form interactions",
+          "Any component the user interacts with"
+        ],
+        [
+          "Playwright",
+          "End-to-end",
+          "Slow (seconds)",
+          "Full user workflows across pages",
+          "Critical paths: login, checkout, signup"
+        ],
+        [
+          "pytest",
+          "Unit / Integration",
+          "Fast (ms)",
+          "API endpoints, data processing, business logic",
+          "Every API route, every service function"
+        ],
+        [
+          "MSW (Mock Service Worker)",
+          "API mocking",
+          "Fast (ms)",
+          "Frontend code that calls APIs",
+          "When you want to mock API responses without mocking fetch"
+        ]
       ]
     },
     {
@@ -312,6 +351,38 @@
       "severity": "success",
       "title": "Your testing toolkit is complete",
       "body": "You now know how to write unit tests with Jest, component tests with React Testing Library, E2E tests with Playwright, and API tests with pytest. You know how to mock dependencies, measure coverage, and run tests in CI. Start with the most critical parts of your application and expand coverage over time."
+    }
+  ],
+  "references": [
+    {
+      "id": "jest2024",
+      "authors": "Meta",
+      "year": "2024",
+      "title": "Jest Documentation",
+      "source": "Jest",
+      "url": "https://jestjs.io/docs/getting-started"
+    },
+    {
+      "id": "beck2003",
+      "authors": "Beck, K.",
+      "year": "2003",
+      "title": "Test-Driven Development: By Example",
+      "source": "Addison-Wesley Professional"
+    },
+    {
+      "id": "cypress2024",
+      "authors": "Cypress.io",
+      "year": "2024",
+      "title": "Cypress Documentation",
+      "source": "Cypress",
+      "url": "https://docs.cypress.io/"
+    },
+    {
+      "id": "martin2009",
+      "authors": "Martin, R.C.",
+      "year": "2009",
+      "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
+      "source": "Prentice Hall"
     }
   ]
 }

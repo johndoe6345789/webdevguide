@@ -6,7 +6,10 @@
   "order": 19,
   "estimatedMinutes": 55,
   "difficulty": "intermediate",
-  "prerequisites": ["docker-guide", "testing-qa"],
+  "prerequisites": [
+    "docker-guide",
+    "testing-qa"
+  ],
   "keyPoints": [
     "CI (Continuous Integration) automatically runs linters and tests on every push so broken code never reaches the main branch",
     "CD (Continuous Deployment) automatically deploys your application when code is merged to main",
@@ -67,19 +70,67 @@
     {
       "type": "table",
       "heading": "Workflow YAML Keywords",
-      "headers": ["Keyword", "Purpose", "Example"],
+      "headers": [
+        "Keyword",
+        "Purpose",
+        "Example"
+      ],
       "rows": [
-        ["name", "Display name for the workflow in GitHub UI", "name: CI/CD Pipeline"],
-        ["on", "Defines what events trigger the workflow", "on: push, pull_request, schedule"],
-        ["jobs", "Groups of steps that run on a fresh VM", "jobs: lint:, test:, deploy:"],
-        ["runs-on", "Operating system for the job's VM", "runs-on: ubuntu-latest"],
-        ["steps", "Individual commands or actions within a job", "steps: - run: npm test"],
-        ["uses", "Reference a reusable action from the marketplace", "uses: actions/checkout@v4"],
-        ["with", "Pass inputs to a reusable action", "with: node-version: '22'"],
-        ["run", "Execute a shell command", "run: npm ci"],
-        ["env", "Set environment variables", "env: NODE_ENV: production"],
-        ["needs", "Declare job dependencies (run after another job)", "needs: lint-and-test"],
-        ["if", "Conditional execution of a step or job", "if: github.ref == 'refs/heads/main'"]
+        [
+          "name",
+          "Display name for the workflow in GitHub UI",
+          "name: CI/CD Pipeline"
+        ],
+        [
+          "on",
+          "Defines what events trigger the workflow",
+          "on: push, pull_request, schedule"
+        ],
+        [
+          "jobs",
+          "Groups of steps that run on a fresh VM",
+          "jobs: lint:, test:, deploy:"
+        ],
+        [
+          "runs-on",
+          "Operating system for the job's VM",
+          "runs-on: ubuntu-latest"
+        ],
+        [
+          "steps",
+          "Individual commands or actions within a job",
+          "steps: - run: npm test"
+        ],
+        [
+          "uses",
+          "Reference a reusable action from the marketplace",
+          "uses: actions/checkout@v4"
+        ],
+        [
+          "with",
+          "Pass inputs to a reusable action",
+          "with: node-version: '22'"
+        ],
+        [
+          "run",
+          "Execute a shell command",
+          "run: npm ci"
+        ],
+        [
+          "env",
+          "Set environment variables",
+          "env: NODE_ENV: production"
+        ],
+        [
+          "needs",
+          "Declare job dependencies (run after another job)",
+          "needs: lint-and-test"
+        ],
+        [
+          "if",
+          "Conditional execution of a step or job",
+          "if: github.ref == 'refs/heads/main'"
+        ]
       ]
     },
     {
@@ -188,13 +239,37 @@
     {
       "type": "table",
       "heading": "Multi-Platform Build Components",
-      "headers": ["Component", "Purpose", "Why You Need It"],
+      "headers": [
+        "Component",
+        "Purpose",
+        "Why You Need It"
+      ],
       "rows": [
-        ["docker/setup-qemu-action", "Emulates other CPU architectures", "Lets an amd64 GitHub runner build arm64 images"],
-        ["docker/setup-buildx-action", "Installs Docker Buildx (extended builder)", "Required for multi-platform builds and advanced caching"],
-        ["platforms: linux/amd64,linux/arm64", "Specifies target architectures", "Produces a single manifest that works on Intel/AMD and ARM servers"],
-        ["cache-from / cache-to: type=gha", "Uses GitHub Actions cache for Docker layers", "Speeds up subsequent builds by reusing unchanged layers"],
-        ["docker-entrypoint.sh", "Runtime sed script in the frontend image", "Replaces a build-time placeholder with the real NEXT_PUBLIC_API_URL at container start -- one image works in any environment"]
+        [
+          "docker/setup-qemu-action",
+          "Emulates other CPU architectures",
+          "Lets an amd64 GitHub runner build arm64 images"
+        ],
+        [
+          "docker/setup-buildx-action",
+          "Installs Docker Buildx (extended builder)",
+          "Required for multi-platform builds and advanced caching"
+        ],
+        [
+          "platforms: linux/amd64,linux/arm64",
+          "Specifies target architectures",
+          "Produces a single manifest that works on Intel/AMD and ARM servers"
+        ],
+        [
+          "cache-from / cache-to: type=gha",
+          "Uses GitHub Actions cache for Docker layers",
+          "Speeds up subsequent builds by reusing unchanged layers"
+        ],
+        [
+          "docker-entrypoint.sh",
+          "Runtime sed script in the frontend image",
+          "Replaces a build-time placeholder with the real NEXT_PUBLIC_API_URL at container start -- one image works in any environment"
+        ]
       ]
     },
     {
@@ -282,18 +357,51 @@
     {
       "type": "table",
       "heading": "GitHub Actions Cheat Sheet",
-      "headers": ["Task", "Syntax"],
+      "headers": [
+        "Task",
+        "Syntax"
+      ],
       "rows": [
-        ["Run only on main branch", "if: github.ref == 'refs/heads/main'"],
-        ["Run only on pull requests", "on: pull_request"],
-        ["Access repo name", "${{ github.repository }}"],
-        ["Access commit SHA", "${{ github.sha }}"],
-        ["Access a secret", "${{ secrets.MY_SECRET }}"],
-        ["Run a step only on failure", "if: failure()"],
-        ["Run a step always", "if: always()"],
-        ["Set output from a step", "echo \"key=value\" >> $GITHUB_OUTPUT"],
-        ["Use output from another step", "${{ steps.step_id.outputs.key }}"],
-        ["Run steps in a specific directory", "working-directory: frontend"]
+        [
+          "Run only on main branch",
+          "if: github.ref == 'refs/heads/main'"
+        ],
+        [
+          "Run only on pull requests",
+          "on: pull_request"
+        ],
+        [
+          "Access repo name",
+          "${{ github.repository }}"
+        ],
+        [
+          "Access commit SHA",
+          "${{ github.sha }}"
+        ],
+        [
+          "Access a secret",
+          "${{ secrets.MY_SECRET }}"
+        ],
+        [
+          "Run a step only on failure",
+          "if: failure()"
+        ],
+        [
+          "Run a step always",
+          "if: always()"
+        ],
+        [
+          "Set output from a step",
+          "echo \"key=value\" >> $GITHUB_OUTPUT"
+        ],
+        [
+          "Use output from another step",
+          "${{ steps.step_id.outputs.key }}"
+        ],
+        [
+          "Run steps in a specific directory",
+          "working-directory: frontend"
+        ]
       ]
     },
     {
@@ -301,6 +409,31 @@
       "severity": "success",
       "title": "Your CI/CD pipeline is ready",
       "body": "You now have everything you need to set up automated linting, testing, building, and deployment with GitHub Actions. Start with the lint-and-test workflow on your next project, then add deployment workflows as your project matures. Remember: the best CI pipeline is one that your team actually trusts and uses."
+    }
+  ],
+  "references": [
+    {
+      "id": "github2024",
+      "authors": "GitHub",
+      "year": "2024",
+      "title": "GitHub Actions Documentation",
+      "source": "GitHub Docs",
+      "url": "https://docs.github.com/en/actions"
+    },
+    {
+      "id": "humble2010",
+      "authors": "Humble, J. and Farley, D.",
+      "year": "2010",
+      "title": "Continuous Delivery: Reliable Software Releases through Build, Test, and Deployment Automation",
+      "source": "Addison-Wesley Professional"
+    },
+    {
+      "id": "fowler2006",
+      "authors": "Fowler, M.",
+      "year": "2006",
+      "title": "Continuous Integration",
+      "source": "martinfowler.com",
+      "url": "https://martinfowler.com/articles/continuousIntegration.html"
     }
   ]
 }
