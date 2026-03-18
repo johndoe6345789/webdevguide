@@ -3016,19 +3016,6 @@
     ]
   },
   {
-    "id": 205,
-    "term": "Route",
-    "definition": "A URL pattern that your server listens for. When a user visits that URL, the server runs the matching code and returns a response.",
-    "category": "Backend",
-    "relatedTerms": [
-      "Flask",
-      "Endpoint",
-      "Decorator",
-      "Blueprint"
-    ],
-    "example": "The route '/users' might return a list of all users, while '/users/42' returns just one specific user."
-  },
-  {
     "id": 206,
     "term": "jsonify",
     "definition": "A helper function that converts data into the lightweight text format that web browsers and apps expect when talking to a server. It also sets the right headers so the receiver knows what format the data is in.",
@@ -3063,19 +3050,6 @@
         "url": "https://flask-cors.readthedocs.io/"
       }
     ]
-  },
-  {
-    "id": 208,
-    "term": "Middleware",
-    "definition": "Code that runs between receiving a request and sending a response, like a security guard checking everyone before they enter a building. It can modify requests, check permissions, or log activity.",
-    "category": "Backend",
-    "relatedTerms": [
-      "Request",
-      "Response",
-      "Flask-CORS",
-      "Authentication"
-    ],
-    "example": "An authentication middleware checks every incoming request for a valid token before letting it reach your route code."
   },
   {
     "id": 209,

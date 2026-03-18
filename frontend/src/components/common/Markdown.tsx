@@ -27,7 +27,7 @@ function GlossaryTooltip({ entry, children }: { entry: GlossaryTerm; children: R
   const glossaryItems: { term: string; definition: string }[] = [
     { term: entry.term, definition: entry.definition },
   ];
-  for (const rt of entry.relatedTerms) {
+  for (const rt of (entry.relatedTerms ?? [])) {
     const related = termMap.get(rt.toLowerCase());
     if (related) {
       glossaryItems.push({ term: related.term, definition: related.definition });
@@ -36,7 +36,7 @@ function GlossaryTooltip({ entry, children }: { entry: GlossaryTerm; children: R
 
   // Collect all links from this term and its related terms
   const allLinks = [...(entry.links ?? [])];
-  for (const rt of entry.relatedTerms) {
+  for (const rt of (entry.relatedTerms ?? [])) {
     const related = termMap.get(rt.toLowerCase());
     if (related?.links) {
       for (const link of related.links) {

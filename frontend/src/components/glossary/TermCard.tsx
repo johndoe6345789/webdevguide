@@ -31,7 +31,7 @@ export default function TermCard(
             <Typography variant="body2" sx={{ mt: 0.5, fontFamily: 'monospace' }}>{example}</Typography>
           </Paper>
         )}
-        {relatedTerms.length > 0 && (
+        {relatedTerms?.length > 0 && (
           <Box>
             <Typography variant="caption" color="text.secondary" fontWeight={600}>{t('relatedLabel')}{' '}</Typography>
             {relatedTerms.map((rt) => (
