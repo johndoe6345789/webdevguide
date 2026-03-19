@@ -3,9 +3,9 @@ services:
     build:
       context: ./frontend
     ports:
-      - "3456:3000"
+      - "9134:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:5679/api}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:6823/api}
     depends_on:
       - backend
 
@@ -13,7 +13,7 @@ services:
     build:
       context: ./backend
     ports:
-      - "5679:5000"
+      - "6823:5000"
     environment:
       - FLASK_ENV=development
-      - CORS_ORIGINS=http://localhost:3456
+      - CORS_ORIGINS=http://localhost:9134
