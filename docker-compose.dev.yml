@@ -3,11 +3,9 @@ services:
     build:
       context: ./frontend
     ports:
-      - "3009:3000"
+      - "3456:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:5009/api}
-    volumes:
-      - frontend_next_cache:/app/.next/cache
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:5679/api}
     depends_on:
       - backend
 
@@ -15,13 +13,7 @@ services:
     build:
       context: ./backend
     ports:
-      - "5009:5000"
+      - "5679:5000"
     environment:
       - FLASK_ENV=development
-      - CORS_ORIGINS=http://localhost:3009
-    volumes:
-      - backend_pycache:/app/__pycache__
-
-volumes:
-  frontend_next_cache:
-  backend_pycache:
+      - CORS_ORIGINS=http://localhost:3456
