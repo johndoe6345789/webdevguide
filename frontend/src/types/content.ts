@@ -56,9 +56,12 @@ export interface TabsBlock {
 
 export interface AccordionBlock {
   type: 'accordion';
-  title: string;
-  blocks: ContentBlock[];
+  // Single-panel format: title + nested ContentBlocks
+  title?: string;
+  blocks?: ContentBlock[];
   defaultExpanded?: boolean;
+  // Multi-panel FAQ format: array of {title, body/content}
+  items?: { title: string; body?: string; content?: string }[];
 }
 
 export interface TableBlock {
