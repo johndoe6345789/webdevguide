@@ -11,7 +11,7 @@ interface SectionRendererProps {
 export default function SectionRenderer({ blocks }: SectionRendererProps) {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-      {blocks.map((block, i) => (
+      {(blocks ?? []).map((block, i) => (
         <BlockRenderer key={i} block={block} />
       ))}
     </Box>

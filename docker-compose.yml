@@ -1,11 +1,18 @@
 services:
+  nginx:
+    build: ./docker/nginx
+    ports:
+      - "8743:80"
+    depends_on:
+      - frontend
+      - backend
+    restart: unless-stopped
+
   frontend:
     build:
       context: ./frontend
-    ports:
-      - "8743:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:7291/api}
+      - NEXT_PUBLIC_API_URL=/api
     volumes:
       - frontend_next_cache:/app/.next/cache
     depends_on:
@@ -18,7 +25,7 @@ services:
       - "7291:5000"
     environment:
       - FLASK_ENV=production
-      - CORS_ORIGINS=http://localhost:8743
+      - CORS_ORIGINS=*
     volumes:
       - backend_pycache:/app/__pycache__
 

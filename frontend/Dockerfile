@@ -20,6 +20,8 @@ COPY . .
 # Ensure public directory exists so COPY never fails
 RUN mkdir -p /app/public
 
+# Cap build heap: constrained 3.8 GB host runs metabuilder stack concurrently
+ENV NODE_OPTIONS=--max-old-space-size=1024
 RUN npm run build
 
 # ---------- runtime stage ----------
