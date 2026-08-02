@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint . --ignore-pattern next-env.d.ts --ignore-pattern .next",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",

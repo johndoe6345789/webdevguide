@@ -78,7 +78,7 @@ jobs:
           docker compose up -d
           echo "Waiting for services to be ready..."
           for i in $(seq 1 30); do
-            if curl -sf http://localhost:5000/api/health > /dev/null 2>&1; then
+            if curl -sf http://localhost:7291/api/health > /dev/null 2>&1; then
               echo "Health check passed on attempt $i"
               exit 0
             fi
